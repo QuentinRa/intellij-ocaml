@@ -1,0 +1,15 @@
+<idea-plugin>
+    <id>ocaml</id>
+    <name>OCaml</name>
+    <vendor email="admin@lgs-games.com" url="https://github.com/memorize-code/ocaml-plugin-intellij">QuentinRa</vendor>
+    <description><![CDATA[Based on the ReasonML, providing support of OCaml with native Ocaml binaries or opam, and without dune/esy/etc.]]></description>
+
+    <actions>
+
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+    </extensions>
+
+</idea-plugin>

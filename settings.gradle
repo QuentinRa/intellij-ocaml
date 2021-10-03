@@ -1,0 +1,2 @@
+rootProject.name = 'ocaml-plugin-intellij'
+//include 'jps-plugin'

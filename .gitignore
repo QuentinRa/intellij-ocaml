@@ -1,0 +1,12 @@
+.gradle/
+!.idea/
+.idea/*
+!.idea/codeStyles/
+!.idea/google-java-format.xml
+out/
+build/
+*.iml
+idea-flex*.skeleton
+jflex-*.jar
+jps-plugin/build
+jps-plugin/out
