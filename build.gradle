@@ -17,7 +17,9 @@ apply plugin: 'org.jetbrains.intellij'
 group = pluginGroup
 version = pluginVersion + '-' + platformVersion
 
-sourceCompatibility = '16.0'
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
 compileJava.options.encoding = 'UTF-8'
 
 sourceSets {
@@ -56,14 +58,3 @@ runIde {
     systemProperty 'idea.is.internal', true
     jvmArgs '-Xmx2G'
 }
-
-/*
-project(':jps-plugin') {
-    jar.archiveFileName = "jps-plugin.jar"
-    patchPluginXml.enabled = false
-}
-
-dependencies {
-    implementation project(':jps-plugin')
-}
-*/

@@ -4,12 +4,49 @@
     <vendor email="admin@lgs-games.com" url="https://github.com/memorize-code/ocaml-plugin-intellij">QuentinRa</vendor>
     <description><![CDATA[Based on the ReasonML, providing support of OCaml with native Ocaml binaries or opam, and without dune/esy/etc.]]></description>
 
-    <actions>
+    <depends optional="true" config-file="plugin-java.xml">com.intellij.modules.java</depends>
 
+    <actions>
+        <action id="OCaml.SelectSDK" class="com.ocaml.ide.sdk.select.SelectSDKAction"
+                text="Select OCaml SDK" description="Set the project SDK for OCaml" icon="AllIcons.General.AddJdk">
+            <!--
+            add in the bar with "build", "run", ...
+             or directly inside the file in IntelliJ
+             -->
+            <add-to-group group-id="ToolbarRunGroup" anchor="first" />
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+        <!--
+         | File types
+         -->
+        <fileType extensions="mli" name="OCAML_INTF" fieldName="INSTANCE" language="OCaml"
+                  implementationClass="com.ocaml.ide.files.OclInterfaceFileType"/>
+        <fileType extensions="ml" name="OCAML" fieldName="INSTANCE" language="OCaml"
+                  implementationClass="com.ocaml.ide.files.OclFileType"/>
 
+        <!--
+         | Templates
+         -->
+        <liveTemplateContext implementation="com.ocaml.ide.template.OCamlContentType"/>
+        <liveTemplateContext implementation="com.ocaml.ide.template.OCamlContentType$OCamlExpressionTemplates"/>
+        <liveTemplateContext implementation="com.ocaml.ide.template.OCamlContentType$OCamlCommentTemplates"/>
+        <defaultLiveTemplates file="liveTemplates/OCaml.xml"/>
+
+        <!--
+         | SDK types
+         -->
+        <sdkType implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
+
+        <orderRootType implementation="com.ocaml.ide.sdk.sources.OCamlSourcesOrderRootType"
+                       id="OCAML_SOURCES" order="FIRST"/>
+
+        <!--
+         | OCaml module builder
+         -->
+        <moduleType id="ocamlModuleType" implementationClass="com.ocaml.ide.modules.OCamlModuleType"/>
+        <moduleBuilder builderClass="com.ocaml.ide.modules.OCamlModuleBuilder"/>
     </extensions>
 
 </idea-plugin>
