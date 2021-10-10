@@ -1,9 +1,13 @@
 package com.ocaml.ide.sdk;
 
+import com.intellij.ide.*;
 import com.intellij.notification.*;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
+import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
 import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
@@ -18,6 +22,7 @@ import org.jetbrains.annotations.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.regex.*;
 
 /**
@@ -29,7 +34,7 @@ import java.util.regex.*;
  * => setupSdkPaths: look for the source roots of the SDK and "import/index" them.
  * If no sources are found, a message is shown.
  */
-public class OCamlSdkType extends SdkType /*download SDK => implements JavaSdkType???*/ {
+public class OCamlSdkType extends SdkType implements SdkDownload {
 
     public static final String ID = "OCaml SDK";
     public static final Pattern VERSION_REGEXP = Pattern.compile(".*/?(\\d\\.\\d\\d(\\.\\d)?[^/]*)/?.*");
@@ -179,6 +184,27 @@ public class OCamlSdkType extends SdkType /*download SDK => implements JavaSdkTy
             return OpamUtils.getOpamSDKSourceFolder(sdkHome, version);
         }
         return null;
+    }
+
+    @Override public boolean supportsDownload(@NotNull SdkTypeId sdkTypeId) {
+        return sdkTypeId.getName().equals(ID);
+    }
+
+    @Override public void showDownloadUI(@NotNull SdkTypeId sdkTypeId, @NotNull SdkModel sdkModel, @NotNull JComponent parentComponent, @Nullable Sdk selectedSdk, @NotNull Consumer<SdkDownloadTask> sdkCreatedCallback) {
+        DataContext dataContext = DataManager.getInstance().getDataContext(parentComponent);
+        Project project = CommonDataKeys.PROJECT.getData(dataContext);
+        if (project != null && project.isDisposed()) return;
+
+        // ProjectSdksModel#doDownload
+        // #createDownloadActions
+        // mySdkTypeCreationFilter
+        // SdkDownload
+        // com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkDownloader
+
+        Messages.showErrorDialog(project,
+                "No SDK available for download yet.",
+                "Download OCaml SDK"
+        );
     }
 
     private static final class OCamlSDKNotification extends Notification {

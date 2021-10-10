@@ -38,6 +38,7 @@
          | SDK types
          -->
         <sdkType implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
+        <sdkDownload implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
 
         <orderRootType implementation="com.ocaml.ide.sdk.sources.OCamlSourcesOrderRootType"
                        id="OCAML_SOURCES" order="FIRST"/>
