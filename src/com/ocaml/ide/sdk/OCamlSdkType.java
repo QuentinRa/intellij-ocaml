@@ -1,13 +1,10 @@
 package com.ocaml.ide.sdk;
 
-import com.intellij.ide.*;
 import com.intellij.notification.*;
-import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
-import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
 import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
@@ -37,7 +34,7 @@ import java.util.regex.*;
 public class OCamlSdkType extends SdkType implements SdkDownload {
 
     public static final String ID = "OCaml SDK";
-    public static final Pattern VERSION_REGEXP = Pattern.compile(".*/?(\\d\\.\\d\\d(\\.\\d)?[^/]*)/?.*");
+    public static final Pattern VERSION_REGEXP = Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?)/?.*");
     public static final String ADD_SOURCES_POPUP = "<html>"
             + "To enjoy most of the plugin features, you need to set up the sources.\n"
             + "see <a href=\"https://giraud.github.io/reasonml-idea-plugin/docs/language-support/ocaml\">the documentation</a>."
@@ -186,26 +183,34 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         return null;
     }
 
-    @Override public boolean supportsDownload(@NotNull SdkTypeId sdkTypeId) {
-        return sdkTypeId.getName().equals(ID);
+    //
+    // Download
+    //
+
+     @Override public boolean supportsDownload(@NotNull SdkTypeId sdkTypeId) {
+        return false; //sdkTypeId.getName().equals(ID);
     }
 
-    @Override public void showDownloadUI(@NotNull SdkTypeId sdkTypeId, @NotNull SdkModel sdkModel, @NotNull JComponent parentComponent, @Nullable Sdk selectedSdk, @NotNull Consumer<SdkDownloadTask> sdkCreatedCallback) {
-        DataContext dataContext = DataManager.getInstance().getDataContext(parentComponent);
-        Project project = CommonDataKeys.PROJECT.getData(dataContext);
-        if (project != null && project.isDisposed()) return;
-
-        // ProjectSdksModel#doDownload
-        // #createDownloadActions
-        // mySdkTypeCreationFilter
-        // SdkDownload
-        // com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkDownloader
-
-        Messages.showErrorDialog(project,
-                "No SDK available for download yet.",
-                "Download OCaml SDK"
-        );
+     @Override public void showDownloadUI(@NotNull SdkTypeId sdkTypeId, @NotNull SdkModel sdkModel, @NotNull JComponent parentComponent, @Nullable Sdk selectedSdk, @NotNull Consumer<SdkDownloadTask> sdkCreatedCallback) {
+        //DataContext dataContext = DataManager.getInstance().getDataContext(parentComponent);
+        //Project project = CommonDataKeys.PROJECT.getData(dataContext);
+        //if (project != null && project.isDisposed()) return;
+        //
+        // //ProjectSdksModel#doDownload
+        // //#createDownloadActions
+        // //mySdkTypeCreationFilter
+        // //SdkDownload
+        // //com.intellij.openapi.projectRoots.impl.jdkDownloader.JdkDownloader
+        //
+        //Messages.showErrorDialog(project,
+        //        "No SDK available for download yet.",
+        //        "Download OCaml SDK"
+        //);
     }
+
+    //
+    // Utils
+    //
 
     private static final class OCamlSDKNotification extends Notification {
         private OCamlSDKNotification(@NotNull String title, @NotNull String subtitle, @NotNull String content) {

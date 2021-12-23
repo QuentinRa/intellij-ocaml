@@ -1,6 +1,5 @@
 package com.ocaml.ide.sdk;
 
-import com.intellij.openapi.util.*;
 import com.ocaml.comp.vanilla.tools.*;
 import org.jetbrains.annotations.*;
 
@@ -24,28 +23,9 @@ public class OCamlSDKFinder {
 
     public static Collection<String> findExistingSDKs() {
         HashSet<Path> roots = new HashSet<>();
-        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
-
-        // ex: C:/ocaml, C:/Ocaml64 or /
-        for (Path root : rootDirectories) {
-            if (!root.toFile().exists()) {
-                continue;
-            }
-            if (SystemInfo.isWindows) {
-                roots.add(root.resolve("ocaml"));
-                roots.add(root.resolve("OCaml64"));
-            } else if (SystemInfo.isLinux) {
-                roots.add(root);
-            }
-        }
-
-        if (SystemInfo.isWindows) {
-            PortableOpamUtils.lookForSDK(roots);
-        }
-
         // check opam
         OpamUtils.lookForSDK(roots);
-
+        // scan
         return scanAll(roots);
     }
 
@@ -72,14 +52,11 @@ public class OCamlSDKFinder {
         }
 
         for (File candidate : files) {
-            for (File adjusted : Collections.singletonList(candidate)) {
-                scanFolder(adjusted, false, result);
-            }
+            scanFolder(candidate, false, result);
         }
     }
 
     private static boolean checkForJdk(File homePath) {
-        return new File(homePath, "bin/ocaml").isFile() ||
-                new File(homePath, "bin/ocaml.exe").isFile();
+        return new File(homePath, "bin/ocaml").isFile();
     }
 }

@@ -48,6 +48,13 @@
          -->
         <moduleType id="ocamlModuleType" implementationClass="com.ocaml.ide.modules.OCamlModuleType"/>
         <moduleBuilder builderClass="com.ocaml.ide.modules.OCamlModuleBuilder"/>
+
+        <!--
+         | OCaml Settings
+         -->
+        <projectService serviceImplementation="com.ocaml.ide.settings.ORSettings"/>
+        <projectConfigurable id="settings.ocaml" groupId="language" displayName="OCaml"
+                             instance="com.ocaml.ide.settings.ORSettingsConfigurable"/>
     </extensions>
 
 </idea-plugin>

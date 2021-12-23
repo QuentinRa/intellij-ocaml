@@ -23,7 +23,7 @@ As I'm not planning to release it on the Marketplace, the only way to install th
 ![img.png](_screens/module1.png)
 ![img.png](_screens/module2.png)
 
-* **Switch JDK** (on it, can switch after setting once)
+* **Switch JDK** (on it, can't switch back after setting once)
 
 ![img.png](_screens/switch.png)
 

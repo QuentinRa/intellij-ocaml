@@ -63,12 +63,8 @@ public abstract class VanillaProcess {
         args.set(0, mySdkHome + args.get(0));
 
         // create command line
-        GeneralCommandLine cli;
-        if (PortableOpamUtils.isPortableOpam(mySdkHome)) {
-            cli = PortableOpamUtils.makeGeneralCommandLine(args);
-        } else {
-            cli = new GeneralCommandLine(args);
-        }
+        // todo: there may be something to do here
+        GeneralCommandLine cli = new GeneralCommandLine(args);
         cli.setWorkDirectory(mySdkHome);
         cli.setRedirectErrorStream(myRedirectOnErrors);
         return cli;
