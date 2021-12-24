@@ -40,6 +40,8 @@
         <sdkType implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
         <sdkDownload implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
 
+        <library.type implementation="com.ocaml.ide.sdk.library.OCamlLibraryType"/>
+
         <orderRootType implementation="com.ocaml.ide.sdk.sources.OCamlSourcesOrderRootType"
                        id="OCAML_SOURCES" order="FIRST"/>
 
@@ -55,6 +57,11 @@
         <projectService serviceImplementation="com.ocaml.ide.settings.ORSettings"/>
         <projectConfigurable id="settings.ocaml" groupId="language" displayName="OCaml"
                              instance="com.ocaml.ide.settings.ORSettingsConfigurable"/>
+
+        <!--
+        | Services
+        -->
+        <projectService serviceImplementation="com.ocaml.comp.opam.OpamService"/>
     </extensions>
 
 </idea-plugin>

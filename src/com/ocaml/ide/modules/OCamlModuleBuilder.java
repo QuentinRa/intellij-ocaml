@@ -1,16 +1,18 @@
 package com.ocaml.ide.modules;
 
-import com.intellij.execution.impl.*;
+import com.intellij.execution.wsl.*;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.*;
 import com.intellij.openapi.module.*;
-import com.intellij.openapi.options.*;
-import com.intellij.openapi.project.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.libraries.*;
 import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
 import com.ocaml.ide.sdk.*;
+import com.ocaml.ide.sdk.library.*;
+import com.ocaml.ide.sdk.sources.*;
+import com.ocaml.ide.settings.*;
 import com.ocaml.utils.*;
 import icons.*;
 import org.jetbrains.annotations.*;
@@ -65,12 +67,6 @@ public class OCamlModuleBuilder extends ModuleBuilder {
 
     @Override
     public void setupRootModel(@NotNull final ModifiableRootModel rootModel) {
-        if (myJdk != null) {
-            rootModel.setSdk(myJdk);
-        } else {
-            rootModel.inheritSdk();
-        }
-
         final ContentEntry contentEntry = doAddContentEntry(rootModel);
         if (contentEntry != null) {
             for (final String sourcePath : getSourcePaths()) {
@@ -81,6 +77,41 @@ public class OCamlModuleBuilder extends ModuleBuilder {
                     contentEntry.addSourceFolder(sourceRoot, false);
                 }
             }
+        }
+
+        if (myJdk != null && myJdk.getHomePath() != null) {
+            // the JDK Name is OCaml-version (ex: OCaml-4.05.0)
+            // but, we know that the switchName is 4.05.0 (=the version)
+            // so there is no need to match the version in the name
+            // we are fetching the version directly
+            String switchName = myJdk.getVersionString();
+            String homePath = myJdk.getHomePath();
+
+            // create
+            LibraryTable.ModifiableModel projectLibraryModel = rootModel.getModuleLibraryTable()
+                    .getModifiableModel();
+            Library library = projectLibraryModel.createLibrary("switch:"+switchName,
+                    OCamlLibraryKind.INSTANCE);
+            Library.ModifiableModel libraryModel = library.getModifiableModel();
+
+            // set roots
+            OCamlSourcesOrderRootType SOURCES = OCamlSourcesOrderRootType.getInstance();
+            VirtualFile[] files = myJdk.getRootProvider().getFiles(SOURCES);
+            for (VirtualFile f: files) {
+                libraryModel.addRoot(f, SOURCES);
+                libraryModel.addRoot(f, OrderRootType.CLASSES);
+            }
+
+            // save
+            libraryModel.commit();
+            projectLibraryModel.commit();
+
+            ORSettings service = rootModel.getProject().getService(ORSettings.class);
+
+            // set up settings default values
+            service.setOpamLocation(homePath);
+            service.setIsWsl(homePath.startsWith(WSLDistribution.UNC_PREFIX));
+            service.setSwitchName(switchName);
         }
     }
 

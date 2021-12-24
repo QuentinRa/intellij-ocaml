@@ -1,16 +1,14 @@
 package com.ocaml.ide.sdk;
 
 import com.intellij.notification.*;
-import com.intellij.openapi.project.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
 import com.intellij.openapi.util.*;
 import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
-import com.ocaml.comp.vanilla.*;
-import com.ocaml.comp.vanilla.commands.*;
-import com.ocaml.comp.vanilla.tools.*;
+import com.ocaml.comp.opam.*;
+import com.ocaml.comp.opam.process.*;
 import com.ocaml.ide.sdk.sources.*;
 import icons.*;
 import org.jdom.*;
@@ -39,6 +37,7 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
             + "To enjoy most of the plugin features, you need to set up the sources.\n"
             + "see <a href=\"https://giraud.github.io/reasonml-idea-plugin/docs/language-support/ocaml\">the documentation</a>."
             + "</html>";
+    private static final String UNKNOWN_VERSION = "unknown version";
 
     public OCamlSdkType() {
         super(ID);
@@ -58,8 +57,9 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     }
 
     @Override public @NotNull Collection<String> suggestHomePaths() {
-        Collection<String> foundPaths = OCamlSDKFinder.findExistingSDKs();
-        ArrayList<String> paths = new ArrayList<>(foundPaths);
+        Collection<FindSwitchProcess.OpamSwitch> foundPaths = OpamUtils.findExistingSDKs();
+        ArrayList<String> paths = new ArrayList<>();
+        foundPaths.forEach(s -> paths.add(s.path));
         paths.sort((o1, o2) -> Comparing.compare(o2, o1));
         return paths;
     }
@@ -69,19 +69,17 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     }
 
     @Override public boolean isValidSdkHome(@NotNull String sdkHome) {
-        return !getVersionString(sdkHome).equals(OCamlVersionProcess.UNKNOWN_VERSION);
+        return !getVersionString(sdkHome).equals(UNKNOWN_VERSION);
     }
 
     @NotNull @Override public String getVersionString(@NotNull String sdkHome) {
+        // read the version in the name
         String serialized = sdkHome.replace("\\", "/");
         Matcher m1 = VERSION_REGEXP.matcher(serialized);
         if (m1.matches()) {
             return m1.group(1);
         }
-
-        // call "ocaml -version"
-        VanillaProcess process = new OCamlVersionProcess(sdkHome);
-        return process.call();
+        return UNKNOWN_VERSION;
     }
 
     @NotNull @Override public String suggestSdkName(String currentSdkName, @NotNull String sdkHome) {
@@ -177,10 +175,7 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     }
 
     private static String getSourceRootPath(File sdkHome, String version) {
-        if (OpamUtils.isOpam(sdkHome)) {
-            return OpamUtils.getOpamSDKSourceFolder(sdkHome, version);
-        }
-        return null;
+        return OpamUtils.getOpamSDKSourceFolder(sdkHome, version);
     }
 
     //
@@ -211,6 +206,7 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     //
     // Utils
     //
+    // todo: move this?
 
     private static final class OCamlSDKNotification extends Notification {
         private OCamlSDKNotification(@NotNull String title, @NotNull String subtitle, @NotNull String content) {
@@ -224,11 +220,5 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
             OCamlSDKNotification n = new OCamlSDKNotification(title, subtitle, content);
             Notifications.Bus.notify(n);
         }
-    }
-
-    @Nullable
-    public static Sdk getSDK(@NotNull Project project) {
-        Sdk projectSDK = ProjectRootManager.getInstance(project).getProjectSdk();
-        return projectSDK != null && ID.equals(projectSDK.getSdkType().getName()) ? projectSDK : null;
     }
 }

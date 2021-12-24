@@ -17,7 +17,6 @@ import java.util.*;
 
 /**
  * Menu to see the sources, and add more manually
- * IntelliJ-only (todo: add it inside the settings for others)
  */
 public class OCamlSourcesOrderRootTypeUIFactory extends SourcesOrderRootTypeUIFactory {
 
