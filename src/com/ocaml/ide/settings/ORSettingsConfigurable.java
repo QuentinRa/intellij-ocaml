@@ -1,14 +1,23 @@
 package com.ocaml.ide.settings;
 
 import com.intellij.execution.wsl.*;
+import com.intellij.openapi.application.*;
 import com.intellij.openapi.fileChooser.*;
+import com.intellij.openapi.module.*;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.project.*;
+import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.libraries.*;
 import com.intellij.openapi.ui.*;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.ui.*;
 import com.ocaml.comp.opam.*;
 import com.ocaml.comp.opam.process.*;
+import com.ocaml.ide.modules.*;
+import com.ocaml.ide.sdk.library.*;
+import com.ocaml.ide.sdk.sources.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;
@@ -16,6 +25,8 @@ import javax.swing.table.*;
 import java.awt.event.*;
 import java.util.*;
 
+// todo: fix error when loaded for the first time (not always happening, the
+//  menu listing libraries)
 public class ORSettingsConfigurable implements SearchableConfigurable, Configurable.NoScroll {
     private final @NotNull Project myProject;
     private ORSettings mySettings;
@@ -77,9 +88,50 @@ public class ORSettingsConfigurable implements SearchableConfigurable, Configura
     @Override
     public void apply() {
         // Opam
+        String opamSwitch = (String) mySwitchSelect.getSelectedItem();
+        String lastSwitch = mySettings.getSwitchName();
         mySettings.setOpamLocation(sanitizeInput(myOpamLocation));
         mySettings.setIsWsl(myIsWsl);
-        mySettings.setSwitchName((String) mySwitchSelect.getSelectedItem());
+        mySettings.setSwitchName(opamSwitch);
+
+        // Update switch
+        if (opamSwitch != null && !opamSwitch.isEmpty()) {
+            for (Module m: ModuleManager.getInstance(myProject).getModules()) {
+                if (ModuleType.get(m) instanceof OCamlModuleType) {
+                    ModifiableRootModel rootModel = ModuleRootManager.getInstance(m).getModifiableModel();
+                    LibraryTable.ModifiableModel projectLibraryModel = rootModel.getModuleLibraryTable()
+                            .getModifiableModel();
+                    Library library = projectLibraryModel.getLibraryByName("switch:" + lastSwitch);
+                    if (library != null) projectLibraryModel.removeLibrary(library);
+
+                    // adding new library
+                    library = projectLibraryModel.createLibrary("switch:" + opamSwitch, OCamlLibraryKind.INSTANCE);
+                    Library.ModifiableModel libraryModel = library.getModifiableModel();
+
+                    Sdk jdk = ProjectJdkTable.getInstance().findJdk("OCaml-" + opamSwitch);
+
+                    if (jdk != null) {
+                        // set roots
+                        OCamlSourcesOrderRootType SOURCES = OCamlSourcesOrderRootType.getInstance();
+                        VirtualFile[] files = jdk.getRootProvider().getFiles(SOURCES);
+                        for (VirtualFile f: files) {
+                            libraryModel.addRoot(f, SOURCES);
+                            libraryModel.addRoot(f, OrderRootType.CLASSES);
+                        }
+                    } else {
+                        // todo: !!!
+                        System.out.println("Create JDK");
+                    }
+
+                    // Save
+                    ApplicationManager.getApplication().invokeAndWait(() -> WriteAction.run(() -> {
+                        libraryModel.commit();
+                        projectLibraryModel.commit();
+                        rootModel.commit();
+                    }));
+                }
+            }
+        }
     }
 
     private void listLibraries(@NotNull String version) {
