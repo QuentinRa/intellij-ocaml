@@ -19,7 +19,7 @@ public class OCamlLibraryType extends LibraryType<DummyLibraryProperties> {
         return "OCaml";
     }
 
-    @Override // todo: ignored?
+    @Override
     public @NotNull Icon getIcon(@Nullable DummyLibraryProperties properties) {
         return ORIcons.OCL_SDK;
     }

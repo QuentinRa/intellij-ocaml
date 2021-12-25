@@ -16,6 +16,7 @@ import com.intellij.util.ui.*;
 import com.ocaml.comp.opam.*;
 import com.ocaml.comp.opam.process.*;
 import com.ocaml.ide.modules.*;
+import com.ocaml.ide.sdk.*;
 import com.ocaml.ide.sdk.library.*;
 import com.ocaml.ide.sdk.sources.*;
 import org.jetbrains.annotations.*;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.event.*;
+import java.io.*;
 import java.util.*;
 
 // todo: fix error when loaded for the first time (not always happening, the
@@ -90,12 +92,34 @@ public class ORSettingsConfigurable implements SearchableConfigurable, Configura
         // Opam
         String opamSwitch = (String) mySwitchSelect.getSelectedItem();
         String lastSwitch = mySettings.getSwitchName();
-        mySettings.setOpamLocation(sanitizeInput(myOpamLocation));
+        String homePath = sanitizeInput(myOpamLocation);
+        mySettings.setOpamLocation(homePath);
         mySettings.setIsWsl(myIsWsl);
         mySettings.setSwitchName(opamSwitch);
 
         // Update switch
         if (opamSwitch != null && !opamSwitch.isEmpty()) {
+            Sdk sdk = ProjectJdkTable.getInstance().findJdk("OCaml-" + opamSwitch);
+
+            // create sdk
+            if (sdk == null) {
+                sdk = ProjectJdkTable.getInstance()
+                        .createSdk("OCaml-" + opamSwitch, OCamlSdkType.getInstance());
+                SdkModificator sdkModificator = sdk.getSdkModificator();
+
+                homePath += opamSwitch;
+
+                // Update
+                sdkModificator.setHomePath(homePath);
+                sdkModificator.setVersionString(opamSwitch);
+                OCamlSdkType.addSources(new File(homePath), sdkModificator, opamSwitch);
+                ApplicationManager.getApplication().invokeAndWait(() -> WriteAction.run(sdkModificator::commitChanges));
+            }
+
+            // find roots
+            OCamlSourcesOrderRootType SOURCES = OCamlSourcesOrderRootType.getInstance();
+            VirtualFile[] files = sdk.getRootProvider().getFiles(SOURCES);
+
             for (Module m: ModuleManager.getInstance(myProject).getModules()) {
                 if (ModuleType.get(m) instanceof OCamlModuleType) {
                     ModifiableRootModel rootModel = ModuleRootManager.getInstance(m).getModifiableModel();
@@ -108,19 +132,10 @@ public class ORSettingsConfigurable implements SearchableConfigurable, Configura
                     library = projectLibraryModel.createLibrary("switch:" + opamSwitch, OCamlLibraryKind.INSTANCE);
                     Library.ModifiableModel libraryModel = library.getModifiableModel();
 
-                    Sdk jdk = ProjectJdkTable.getInstance().findJdk("OCaml-" + opamSwitch);
-
-                    if (jdk != null) {
-                        // set roots
-                        OCamlSourcesOrderRootType SOURCES = OCamlSourcesOrderRootType.getInstance();
-                        VirtualFile[] files = jdk.getRootProvider().getFiles(SOURCES);
-                        for (VirtualFile f: files) {
-                            libraryModel.addRoot(f, SOURCES);
-                            libraryModel.addRoot(f, OrderRootType.CLASSES);
-                        }
-                    } else {
-                        // todo: !!!
-                        System.out.println("Create JDK");
+                    // set roots
+                    for (VirtualFile f: files) {
+                        libraryModel.addRoot(f, SOURCES);
+                        libraryModel.addRoot(f, OrderRootType.CLASSES);
                     }
 
                     // Save
