@@ -3,6 +3,6 @@
         <OrderRootTypeUI key="OCAML_SOURCES"
                          implementationClass="com.ocaml.ide.sdk.sources.OCamlSourcesOrderRootTypeUIFactory"/>
 
-        <projectSdkSetupValidator implementation="com.ocaml.ide.sdk.select.OCamlSDKValidator"/>
+<!--        <projectSdkSetupValidator implementation="com.ocaml.ide.sdk.select.OCamlSDKValidator"/>-->
     </extensions>
 </idea-plugin>

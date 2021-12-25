@@ -19,6 +19,7 @@ import org.jetbrains.annotations.*;
  *
  * @see SelectSDKAction
  */
+@Deprecated(forRemoval = true)
 public class OCamlSDKValidator implements ProjectSdkSetupValidator {
 
     public static final String CONFIGURE_OCAMLC_SDK = "Please configure the OCaml SDK";

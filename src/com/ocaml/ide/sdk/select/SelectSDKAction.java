@@ -22,6 +22,7 @@ import java.awt.event.*;
  * @see OCamlSDKValidator (this popup loaded inside the fileview)
  * @see OCamlSdkType (download, detect SDK, filter SDKs, ...)
  */
+@Deprecated(forRemoval = true)
 public class SelectSDKAction extends AnAction {
 
     private JBPopup myPopup;

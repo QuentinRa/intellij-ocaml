@@ -7,14 +7,14 @@
     <depends optional="true" config-file="plugin-java.xml">com.intellij.modules.java</depends>
 
     <actions>
-        <action id="OCaml.SelectSDK" class="com.ocaml.ide.sdk.select.SelectSDKAction"
-                text="Select OCaml SDK" description="Set the project SDK for OCaml" icon="AllIcons.General.AddJdk">
-            <!--
-            add in the bar with "build", "run", ...
-             or directly inside the file in IntelliJ
-             -->
-            <add-to-group group-id="ToolbarRunGroup" anchor="first" />
-        </action>
+<!--        <action id="OCaml.SelectSDK" class="com.ocaml.ide.sdk.select.SelectSDKAction"-->
+<!--                text="Select OCaml SDK" description="Set the project SDK for OCaml" icon="AllIcons.General.AddJdk">-->
+<!--            &lt;!&ndash;-->
+<!--            add in the bar with "build", "run", ...-->
+<!--             or directly inside the file in IntelliJ-->
+<!--             &ndash;&gt;-->
+<!--            <add-to-group group-id="ToolbarRunGroup" anchor="first" />-->
+<!--        </action>-->
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
