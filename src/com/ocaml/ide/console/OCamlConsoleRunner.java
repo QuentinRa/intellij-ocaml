@@ -16,6 +16,7 @@ import com.intellij.openapi.util.*;
 import com.intellij.openapi.wm.*;
 import com.intellij.ui.content.*;
 import com.ocaml.comp.opam.*;
+import com.ocaml.ide.console.process.*;
 import icons.*;
 import org.jetbrains.annotations.*;
 
@@ -34,7 +35,6 @@ import java.util.*;
  * todo: handle errors (no System.out)
  * todo: make the console like in the R plugin, meaning that "we are directly interacting with
  *   the process".
- * todo: add ";;" if needed, each time the user is pressing enter
  */
 public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlConsoleView> {
 
@@ -129,7 +129,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     }
 
     @Override protected @NotNull ProcessBackedConsoleExecuteActionHandler createExecuteActionHandler() {
-        return new ProcessBackedConsoleExecuteActionHandler(getProcessHandler(), true);
+        return new OCamlExecuteActionHandler(getProcessHandler(), true);
     }
 
     // Run
