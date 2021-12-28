@@ -18,7 +18,7 @@ import com.intellij.openapi.wm.*;
 import com.intellij.ui.*;
 import com.intellij.ui.content.*;
 import com.ocaml.comp.opam.*;
-import com.ocaml.ide.console.process.*;
+import com.ocaml.ide.console.actions.*;
 import icons.*;
 import org.jetbrains.annotations.*;
 
@@ -31,8 +31,6 @@ import java.util.*;
  * for now, there is no history, and almost no features. It would be good if we
  * could see the current variables that we created for instance.
  *
- * todo: when switching ocaml version, reload the console
- * todo: allow the user to restart the console
  * todo: a table with the variables created and their values (as in the R plugin)
  * todo: handle errors (no System.out)
  * todo: make the console like in the R plugin, meaning that "we are directly interacting with
@@ -40,8 +38,9 @@ import java.util.*;
  */
 public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlConsoleView> {
 
-    private final ToolWindow myWindow;
+    final ToolWindow myWindow;
     private final GeneralCommandLine commandLine;
+    private Content myContent;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
         super(project, "OCaml", null);
@@ -80,9 +79,19 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         panel.setToolbar(toolbar.getComponent());
 
         // add
-        Content content = ContentFactory.SERVICE.getInstance().createContent(panel, "", true);
-        myWindow.getContentManager().addContent(content);
+        myContent = ContentFactory.SERVICE.getInstance().createContent(panel, "", true);
+        myWindow.getContentManager().addContent(myContent);
         Disposer.register(myWindow.getDisposable(), consoleView);
+    }
+
+    public void destroy() {
+        // kill process
+        ProcessHandler processHandler = getProcessHandler();
+        processHandler.destroyProcess();
+        //processHandler.waitFor(); // cannot call sync in EDT
+
+        // remove content
+        myWindow.getContentManager().removeContent(myContent, true);
     }
 
     // create the toolbar with some actions
@@ -93,6 +102,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         // add run actions
         ArrayList<AnAction> runActions = new ArrayList<>();
         runActions.add(createConsoleExecAction(getConsoleExecuteActionHandler()));
+        runActions.add(new OCamlRestartAction(getProject()));
         group.addAll(runActions);
 
         // add other actions

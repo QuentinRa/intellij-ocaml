@@ -1,4 +1,4 @@
-package com.ocaml.ide.console.process;
+package com.ocaml.ide.console.actions;
 
 import com.intellij.execution.console.*;
 import com.intellij.execution.process.*;

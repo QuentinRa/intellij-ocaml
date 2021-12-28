@@ -74,8 +74,6 @@ public class OpamService {
         cli.setWorkDirectory(opamLocation + "/" + opamSwitch);
         cli.setRedirectErrorStream(true);
 
-        System.out.println(cli.getWorkDirectory());
-
         return OpamUtils.patchCommandLine(opamLocation, cli, myProject);
     }
 }
