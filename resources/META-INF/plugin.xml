@@ -7,14 +7,6 @@
     <depends optional="true" config-file="plugin-java.xml">com.intellij.modules.java</depends>
 
     <actions>
-<!--        <action id="OCaml.SelectSDK" class="com.ocaml.ide.sdk.select.SelectSDKAction"-->
-<!--                text="Select OCaml SDK" description="Set the project SDK for OCaml" icon="AllIcons.General.AddJdk">-->
-<!--            &lt;!&ndash;-->
-<!--            add in the bar with "build", "run", ...-->
-<!--             or directly inside the file in IntelliJ-->
-<!--             &ndash;&gt;-->
-<!--            <add-to-group group-id="ToolbarRunGroup" anchor="first" />-->
-<!--        </action>-->
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -57,6 +49,11 @@
         <projectService serviceImplementation="com.ocaml.ide.settings.ORSettings"/>
         <projectConfigurable id="settings.ocaml" groupId="language" displayName="OCaml"
                              instance="com.ocaml.ide.settings.ORSettingsConfigurable"/>
+
+        <!--
+        | REPL
+        -->
+        <toolWindow factoryClass="com.ocaml.ide.console.OCamlToolWindowFactory" id="ocaml" anchor="bottom"/>
 
         <!--
         | Services

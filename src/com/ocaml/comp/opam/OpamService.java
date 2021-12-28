@@ -6,6 +6,7 @@ import com.intellij.execution.process.*;
 import com.intellij.openapi.project.*;
 import com.intellij.openapi.util.*;
 import com.ocaml.comp.opam.process.*;
+import com.ocaml.ide.settings.*;
 import com.ocaml.utils.*;
 import org.jetbrains.annotations.*;
 
@@ -61,5 +62,20 @@ public class OpamService {
         } catch (ExecutionException e) {
             onProcessTerminated.call(installedLibs);
         }
+    }
+
+    public GeneralCommandLine ocaml() {
+        ORSettings service = myProject.getService(ORSettings.class);
+        String opamLocation = service.getOpamLocation();
+        String opamSwitch = service.getSwitchName();
+
+        // assuming Linux-based directories
+        GeneralCommandLine cli = new GeneralCommandLine("./bin/ocaml");
+        cli.setWorkDirectory(opamLocation + "/" + opamSwitch);
+        cli.setRedirectErrorStream(true);
+
+        System.out.println(cli.getWorkDirectory());
+
+        return OpamUtils.patchCommandLine(opamLocation, cli, myProject);
     }
 }

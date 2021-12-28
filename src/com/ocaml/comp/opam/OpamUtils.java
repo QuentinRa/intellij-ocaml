@@ -70,8 +70,9 @@ public class OpamUtils {
         ).getAbsolutePath();
     }
 
-    public static GeneralCommandLine patchCommandLine(@NotNull String opamRoot, @NotNull GeneralCommandLine cli,
-                                        @Nullable Project project) {
+    public static GeneralCommandLine patchCommandLine(@NotNull String opamRoot,
+                                                      @NotNull GeneralCommandLine cli,
+                                                      @Nullable Project project) {
         if (SystemInfo.isWindows) {
             if (opamRoot.startsWith(WSLDistribution.UNC_PREFIX)) {
                 String path = StringUtil.trimStart(opamRoot, WSLDistribution.UNC_PREFIX);

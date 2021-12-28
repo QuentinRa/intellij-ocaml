@@ -119,10 +119,11 @@ public class OCamlModuleBuilder extends ModuleBuilder {
     public List<String> getSourcePaths() {
         @NonNls final String path = getContentEntryPath() + File.separator + "src";
 
-        if(new File(path).mkdirs()) LOG.info("Create src folder: " + path);
-        else LOG.warn("Failed to create src folder: " + path);
+        // create "src", put it should not be a source folder
+        // because that's something for Java classes
+        boolean ignored = new File(path).mkdirs();
 
-        return Collections.singletonList(path);
+        return Collections.emptyList();
     }
 
     @Override

@@ -1,34 +1,21 @@
 # OCaml plugin IntelliJ
 
-This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugin), but I'm tuning it for my personal use. I'm not planning to maintain this repository, so you would either have to submit Pull Requests to the original plugin, fork this one, or ask me to become the maintainer.
+This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugin), but **I'm tuning it for my personal use**. **I'm not planning to maintain this repository**, so you should work on the original plugin.
 
-<hr>
-
-## Setup
-
-As I'm not planning to release it on the Marketplace, the only way to install this plugin is to
-
-* Download the zip
-* Go to your plugins folder
-* Extract the zip
-* Restart your IDE
-* Done
+> **Created on**: Windows 10/11 for IntelliJ<br>
+> **Goal**: easy to install, complete, compatible in minor IDE, OCaml only. Use WSL+opam on Windows.
 
 <hr>
 
 ## My features
 
-* **create a project** (seems OK)
+I'm starting the plugin "from scratch". The features here, are the ONLY features available.
+
+* **create a project**: 
 
 ![img.png](_screens/module1.png)
 ![img.png](_screens/module2.png)
 
-* **Switch JDK** (on it, can't switch back after setting once)
-
-![img.png](_screens/switch.png)
-
-* **Download SDK** (not yet)
-
-This is not available yet, but we will be able to download an SDK given a version using my portable opam.
-
-![img.png](_screens/download_sdk.png)
+> It will set up a library for OCaml in External libraries. You will be able to change the version of OCaml in the Settings. You may only pick an OCaml version installed using opam.
+> 
+> **Note**: multiples modules aren't supported (problem with the settings: switching SDK, etc.). Allow the user to install new versions/packages.
