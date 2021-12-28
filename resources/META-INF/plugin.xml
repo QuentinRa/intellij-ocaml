@@ -53,7 +53,7 @@
         <!--
         | REPL
         -->
-        <toolWindow factoryClass="com.ocaml.ide.console.OCamlToolWindowFactory" id="ocaml" anchor="bottom"/>
+        <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
 
         <!--
         | Services
