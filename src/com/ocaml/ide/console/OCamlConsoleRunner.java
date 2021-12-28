@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.*;
 import com.intellij.execution.console.*;
 import com.intellij.execution.process.*;
 import com.intellij.execution.runners.*;
+import com.intellij.execution.ui.*;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.actions.*;
 import com.intellij.openapi.editor.ex.*;
@@ -14,6 +15,7 @@ import com.intellij.openapi.project.*;
 import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
 import com.intellij.openapi.wm.*;
+import com.intellij.ui.*;
 import com.intellij.ui.content.*;
 import com.ocaml.comp.opam.*;
 import com.ocaml.ide.console.process.*;
@@ -64,7 +66,14 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
         // main panel
         OCamlConsoleView consoleView = getConsoleView();
-        panel.setContent(consoleView.getComponent());
+
+        JBSplitter split = new JBSplitter(false, 0.5f);
+        split.setFirstComponent(consoleView.getComponent());
+        split.setSecondComponent(new OCamlVariablesView(consoleView));
+        split.setShowDividerControls(true);
+        split.setHonorComponentsMinimumSize(true);
+
+        panel.setContent(split);
 
         // toolbar
         ActionToolbar toolbar = createToolbar(consoleView, panel);
@@ -143,15 +152,18 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
                     indicator.setText("Connecting to console...");
                 }
             });
-
-            //getConsoleExecuteActionHandler().processLine("5;;");
         } catch (Exception e) {
             showErrorsInConsole(e);
         }
     }
 
     private void showErrorsInConsole(Exception e) {
-        // todo: code
         System.out.println(e.getMessage());
+    }
+
+    @Deprecated // we are not using the console, because we are now
+    // showing the console in "run"
+    @Override protected void showConsole(Executor defaultExecutor,
+                                         @NotNull RunContentDescriptor contentDescriptor) {
     }
 }

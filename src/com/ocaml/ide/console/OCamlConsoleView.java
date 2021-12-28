@@ -7,6 +7,8 @@ import com.intellij.openapi.project.*;
 import com.ocaml.lang.ocaml.*;
 import org.jetbrains.annotations.*;
 
+import java.awt.*;
+
 public class OCamlConsoleView extends LanguageConsoleImpl implements ObservableConsoleView {
 
     public OCamlConsoleView(@NotNull Project project) {

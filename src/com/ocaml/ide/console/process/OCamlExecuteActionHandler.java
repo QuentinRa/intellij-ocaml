@@ -17,4 +17,8 @@ public class OCamlExecuteActionHandler extends ProcessBackedConsoleExecuteAction
         if (!text.endsWith(";;")) text += ";;";
         super.execute(text, console);
     }
+
+    // runExecuteAction -> fetch the command
+    // -> add to history -> execute command
+    // -> call doExecute -> call execute
 }
