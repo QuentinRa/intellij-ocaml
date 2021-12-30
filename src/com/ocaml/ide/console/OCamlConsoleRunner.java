@@ -33,19 +33,21 @@ import java.util.*;
  *
  * todo: a table with the variables created and their values (as in the R plugin)
  * todo: handle errors (no System.out)
- * todo: make the console like in the R plugin, meaning that "we are directly interacting with
- *   the process".
  */
 public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlConsoleView> {
 
-    final ToolWindow myWindow;
     private final GeneralCommandLine commandLine;
     private Content myContent;
+    final ToolWindow myWindow;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
         super(project, "OCaml", null);
         myWindow = window;
-        commandLine = getProject().getService(OpamService.class).ocaml();
+
+        PtyCommandLine ocaml = new PtyCommandLine(getProject().getService(OpamService.class).ocaml());
+        ocaml.withInitialColumns(PtyCommandLine.MAX_COLUMNS);
+
+        commandLine = ocaml;
     }
 
     // Console view
@@ -103,6 +105,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         ArrayList<AnAction> runActions = new ArrayList<>();
         runActions.add(createConsoleExecAction(getConsoleExecuteActionHandler()));
         runActions.add(new OCamlRestartAction(getProject()));
+        runActions.add(Objects.requireNonNull(ConsoleHistoryController.getController(getConsoleView())).getBrowseHistory());
         group.addAll(runActions);
 
         // add other actions
@@ -141,13 +144,15 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
     @Override protected OSProcessHandler createProcessHandler(Process process) {
         try {
-            return new OSProcessHandler(commandLine);
+            return new OCamlProcessHandler(commandLine, getConsoleView());
         } catch (ExecutionException e) {
             return null;
         }
     }
 
     @Override protected @NotNull ProcessBackedConsoleExecuteActionHandler createExecuteActionHandler() {
+        ConsoleHistoryController historyController = new ConsoleHistoryController(OCamlConsoleRootType.getInstance(), "", getConsoleView());
+        historyController.install();
         return new OCamlExecuteActionHandler(getProcessHandler(), true);
     }
 
@@ -160,6 +165,9 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
                     "Connecting to Console", false) {
                 @Override public void run(@NotNull ProgressIndicator indicator) {
                     indicator.setText("Connecting to console...");
+
+                    OCamlConsoleView consoleView = OCamlConsoleRunner.this.getConsoleView();
+                    consoleView.setup();
                 }
             });
         } catch (Exception e) {

@@ -54,6 +54,7 @@
         | REPL
         -->
         <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
+        <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>
 
         <!--
         | Services
