@@ -33,6 +33,13 @@ public class OCamlcRunConfiguration extends RunConfigurationBase<OcamlcRunConfig
         getOptions().setScriptName(scriptName);
     }
 
+    public String getWorkingDirectory() {
+        return getOptions().getWorkingDirectory();
+    }
+    public void setWorkingDirectory(String workingDirectory) {
+        getOptions().setWorkingDirectory(workingDirectory);
+    }
+
     @Override public @NotNull SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
         return new OCamlcSettingsEditor(getProject());
     }
@@ -45,7 +52,7 @@ public class OCamlcRunConfiguration extends RunConfigurationBase<OcamlcRunConfig
         return new CommandLineState(executionEnvironment) {
             @Override protected @NotNull ProcessHandler startProcess() throws ExecutionException {
                 Project project = getProject();
-                GeneralCommandLine cli = project.getService(OpamService.class).ocamlc(getScriptName());
+                GeneralCommandLine cli = project.getService(OpamService.class).ocamlc(getScriptName(), getWorkingDirectory());
                 OSProcessHandler processHandler = ProcessHandlerFactory.getInstance()
                         .createColoredProcessHandler(cli);
                 ProcessTerminatedListener.attach(processHandler);

@@ -12,9 +12,9 @@ public class OCamlcSettingsEditor extends SettingsEditor<OCamlcRunConfiguration>
 
     private JPanel myPanel;
     private LabeledComponent<TextFieldWithBrowseButton> myScriptName;
+    private LabeledComponent<TextFieldWithBrowseButton> myWorkingDirectory;
 
     public OCamlcSettingsEditor(@NotNull Project project) {
-        // SINGLE_FILE_DESCRIPTOR => SINGLE_DIRECTORY_DESCRIPTOR for the WorkingDirectory
         myScriptName.getComponent()
                 .addBrowseFolderListener(
                         "Choose Target OCaml File",
@@ -22,16 +22,25 @@ public class OCamlcSettingsEditor extends SettingsEditor<OCamlcRunConfiguration>
                         project,
                         BrowseFilesListener.SINGLE_FILE_DESCRIPTOR
         );
+        myWorkingDirectory.getComponent()
+                .addBrowseFolderListener(
+                        "Choose Working Directory",
+                        "",
+                        project,
+                        BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR
+        );
     }
 
     @Override
     protected void resetEditorFrom(OCamlcRunConfiguration runConfiguration) {
         myScriptName.getComponent().setText(runConfiguration.getScriptName());
+        myWorkingDirectory.getComponent().setText(runConfiguration.getWorkingDirectory());
     }
 
     @Override
     protected void applyEditorTo(@NotNull OCamlcRunConfiguration runConfiguration) {
         runConfiguration.setScriptName(myScriptName.getComponent().getText());
+        runConfiguration.setWorkingDirectory(myWorkingDirectory.getComponent().getText());
     }
 
     @NotNull
@@ -43,6 +52,9 @@ public class OCamlcSettingsEditor extends SettingsEditor<OCamlcRunConfiguration>
     private void createUIComponents() {
         myScriptName = new LabeledComponent<>();
         myScriptName.setComponent(new TextFieldWithBrowseButton());
+
+        myWorkingDirectory = new LabeledComponent<>();
+        myWorkingDirectory.setComponent(new TextFieldWithBrowseButton());
     }
 
 }

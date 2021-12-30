@@ -80,7 +80,7 @@ public class OpamService {
         return OpamUtils.patchCommandLine(opamLocation, cli, myProject);
     }
 
-    public GeneralCommandLine ocamlc(String file) {
+    public GeneralCommandLine ocamlc(String file, String workingDirectory) {
         ORSettings service = myProject.getService(ORSettings.class);
         String opamLocation = service.getOpamLocation();
         String ocamlc = opamLocation+service.getSwitchName() + "/bin/ocamlc";
@@ -92,13 +92,15 @@ public class OpamService {
             ocamlc = StringUtil.trimStart(ocamlc, WSLDistribution.UNC_PREFIX);
             ocamlc = StringUtil.trimStart(ocamlc, distribution.getPresentableName());
             ocamlc = ocamlc.replace("\\", "/");
+
+            workingDirectory = FileUtil.toSystemDependentName(workingDirectory);
         } else {
             // assuming that the user is on Linux
-            file = FileUtil.toSystemDependentName(file, '/');
+            file = FileUtil.toSystemDependentName(file);
+            workingDirectory = FileUtil.toSystemDependentName(workingDirectory);
         }
-        // todo: use a "build" folder
         GeneralCommandLine cli = new GeneralCommandLine(ocamlc, file);
-        cli.setWorkDirectory("C:\\Users\\quent\\IdeaProjects\\untitled\\src");
+        cli.setWorkDirectory(workingDirectory);
         cli.setRedirectErrorStream(true);
 
         // Update the command line if we are using a WSL
