@@ -41,6 +41,9 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         return true;
     }
 
+    // If it's a long-running mostly idle daemon process,
+    // consider overriding OSProcessHandler#readerOptions with
+    // 'BaseOutputReader.Options.forMostlySilentProcess()' to reduce CPU usage.
     @NotNull
     protected Options readerOptions() {
         return Options.forMostlySilentProcess();

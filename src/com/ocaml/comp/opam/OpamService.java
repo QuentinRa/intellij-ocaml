@@ -3,8 +3,11 @@ package com.ocaml.comp.opam;
 import com.intellij.execution.*;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.process.*;
+import com.intellij.execution.wsl.*;
 import com.intellij.openapi.project.*;
 import com.intellij.openapi.util.*;
+import com.intellij.openapi.util.io.*;
+import com.intellij.openapi.util.text.StringUtil;
 import com.ocaml.comp.opam.process.*;
 import com.ocaml.ide.settings.*;
 import com.ocaml.utils.*;
@@ -75,5 +78,30 @@ public class OpamService {
         cli.setRedirectErrorStream(true);
 
         return OpamUtils.patchCommandLine(opamLocation, cli, myProject);
+    }
+
+    public GeneralCommandLine ocamlc(String file) {
+        ORSettings service = myProject.getService(ORSettings.class);
+        String opamLocation = service.getOpamLocation();
+        String ocamlc = opamLocation+service.getSwitchName() + "/bin/ocamlc";
+
+        WSLDistribution distribution = OpamUtils.getDistribution(opamLocation);
+        if (distribution != null) {
+            file = distribution.getWslPath(file);
+            // to Unix Path
+            ocamlc = StringUtil.trimStart(ocamlc, WSLDistribution.UNC_PREFIX);
+            ocamlc = StringUtil.trimStart(ocamlc, distribution.getPresentableName());
+            ocamlc = ocamlc.replace("\\", "/");
+        } else {
+            // assuming that the user is on Linux
+            file = FileUtil.toSystemDependentName(file, '/');
+        }
+        // todo: use a "build" folder
+        GeneralCommandLine cli = new GeneralCommandLine(ocamlc, file);
+        cli.setWorkDirectory("C:\\Users\\quent\\IdeaProjects\\untitled\\src");
+        cli.setRedirectErrorStream(true);
+
+        // Update the command line if we are using a WSL
+        return OpamUtils.patchCommandLine(distribution, cli, myProject);
     }
 }

@@ -70,23 +70,41 @@ public class OpamUtils {
         ).getAbsolutePath();
     }
 
-    public static GeneralCommandLine patchCommandLine(@NotNull String opamRoot,
-                                                      @NotNull GeneralCommandLine cli,
-                                                      @Nullable Project project) {
+    public static WSLDistribution getDistribution(@NotNull String opamRoot) {
         if (SystemInfo.isWindows) {
             if (opamRoot.startsWith(WSLDistribution.UNC_PREFIX)) {
                 String path = StringUtil.trimStart(opamRoot, WSLDistribution.UNC_PREFIX);
                 int index = path.indexOf('\\');
                 if (index != -1) {
                     String distName = path.substring(0, index);
-                    WSLDistribution distribution = WslDistributionManager.getInstance()
+                    return WslDistributionManager.getInstance()
                             .getOrCreateDistributionByMsId(distName);
-                    try {
-                        cli = distribution.patchCommandLine(cli, project, new WSLCommandLineOptions());
-                    } catch (ExecutionException ignore) {
-                    }
                 }
             }
+        }
+        return null;
+    }
+
+    public static GeneralCommandLine patchCommandLine(@NotNull String opamRoot,
+                                                      @NotNull GeneralCommandLine cli,
+                                                      @Nullable Project project) {
+        WSLDistribution distribution = getDistribution(opamRoot);
+        if (distribution != null) {
+            try {
+                cli = distribution.patchCommandLine(cli, project, new WSLCommandLineOptions());
+            } catch (ExecutionException ignore) {
+            }
+        }
+        return cli;
+    }
+
+    public static GeneralCommandLine patchCommandLine(@Nullable WSLDistribution distribution,
+                                                      @NotNull GeneralCommandLine cli,
+                                                      @Nullable Project project) {
+        if (distribution != null) {
+            try {
+                cli = distribution.patchCommandLine(cli, project, new WSLCommandLineOptions());
+            } catch (ExecutionException ignore) {}
         }
         return cli;
     }

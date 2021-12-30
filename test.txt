@@ -1,3 +1,1 @@
 java.lang.Throwable: Please call WslDistributionManager.getInstalledDistributions on a background thread and not under read action as it runs a potentially long operation.
-
-If it's a long-running mostly idle daemon process, consider overriding OSProcessHandler#readerOptions with 'BaseOutputReader.Options.forMostlySilentProcess()' to reduce CPU usage.

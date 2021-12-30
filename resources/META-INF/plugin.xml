@@ -57,6 +57,11 @@
         <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>
 
         <!--
+        | Run
+        -->
+        <configurationType implementation="com.ocaml.ide.sdk.runConfiguration.OCamlcRunConfigurationType"/>
+
+        <!--
         | Services
         -->
         <projectService serviceImplementation="com.ocaml.comp.opam.OpamService"/>

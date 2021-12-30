@@ -4,6 +4,7 @@ import com.intellij.execution.wsl.*;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.*;
 import com.intellij.openapi.module.*;
+import com.intellij.openapi.project.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.*;
@@ -21,6 +22,10 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ * todo: do not ask for the JDK again if multiples modules
+ *  (this solves the problem of having only one value in the settings)
+ */
 public class OCamlModuleBuilder extends ModuleBuilder {
     private static final String OCAML_GROUP_NAME = "OCaml Language";
     private static final Log LOG = Log.create("module.builder");
@@ -106,12 +111,15 @@ public class OCamlModuleBuilder extends ModuleBuilder {
             libraryModel.commit();
             projectLibraryModel.commit();
 
-            ORSettings service = rootModel.getProject().getService(ORSettings.class);
+            Project project = rootModel.getProject();
+            ORSettings service = project.getService(ORSettings.class);
 
             // set up settings default values
-            service.setOpamLocation(homePath);
-            service.setIsWsl(homePath.startsWith(WSLDistribution.UNC_PREFIX));
-            service.setSwitchName(switchName);
+            if (service.getOpamLocation().isEmpty()) {
+                service.setOpamLocation(homePath);
+                service.setIsWsl(homePath.startsWith(WSLDistribution.UNC_PREFIX));
+                service.setSwitchName(switchName);
+            }
         }
     }
 
