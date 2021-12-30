@@ -34,4 +34,10 @@ public class OCamlcRunConfigurationType implements ConfigurationType {
     public ConfigurationFactory @NotNull [] getConfigurationFactories() {
         return new ConfigurationFactory[]{new OCamlcConfigurationFactory(this)};
     }
+
+    @Override public boolean isDumbAware() {
+        return true;
+    }
+
+    // GetInstance => ConfigurationTypeUtil.findConfigurationType
 }

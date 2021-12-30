@@ -9,7 +9,12 @@ import com.intellij.openapi.project.*;
 import com.ocaml.comp.opam.*;
 import org.jetbrains.annotations.*;
 
+/**
+ * The configuration itself.
+ * We are only saving the file that we will compile, for now.
+ */
 public class OCamlcRunConfiguration extends RunConfigurationBase<OcamlcRunConfigurationOptions> {
+
     public OCamlcRunConfiguration(@NotNull Project project,
                                   OCamlcConfigurationFactory factory,
                                   String name) {
@@ -29,7 +34,7 @@ public class OCamlcRunConfiguration extends RunConfigurationBase<OcamlcRunConfig
     }
 
     @Override public @NotNull SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        return new OCamlcSettingsEditor();
+        return new OCamlcSettingsEditor(getProject());
     }
 
     @Override public void checkConfiguration() {
