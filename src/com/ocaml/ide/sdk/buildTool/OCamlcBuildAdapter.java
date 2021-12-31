@@ -46,6 +46,7 @@ public class OCamlcBuildAdapter extends ProcessAdapter {
                 context.myStarted
         );
         descriptor.withContentDescriptor(() -> buildContentDescriptor);
+        // todo: add actions
         // descriptor.withRestartAction(); // rerun
         // descriptor.withRestartAction(); // stop
 

@@ -159,7 +159,6 @@ public class OCamlBuildTaskRunner extends ProjectTaskRunner {
                                     new OCamlcBuildAdapter(this, buildProgressListener));
                             myProcessHandler.startNotify();
                         }
-                        System.out.println("start process");
                     }
                 }
         );

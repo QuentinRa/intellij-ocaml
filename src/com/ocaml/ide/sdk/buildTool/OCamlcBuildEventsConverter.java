@@ -115,7 +115,6 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
             int columnIndexEnd = Integer.parseInt(matcher.group(4));
 
             File file = new File(myIsWsl ? WSLtoWindowsPath(path) : path);
-            System.out.println(file);
             fileLocation = new FilePosition(
                     file,
                     lineIndex, columnIndexStart, lineIndex+1, columnIndexEnd
