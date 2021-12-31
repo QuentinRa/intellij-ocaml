@@ -99,7 +99,8 @@ public class OpamService {
             file = FileUtil.toSystemDependentName(file);
             workingDirectory = FileUtil.toSystemDependentName(workingDirectory);
         }
-        GeneralCommandLine cli = new GeneralCommandLine(ocamlc, file);
+        // todo: -color=never??
+        GeneralCommandLine cli = new GeneralCommandLine(ocamlc, file, "-w", "+A");
         cli.setWorkDirectory(workingDirectory);
         cli.setRedirectErrorStream(true);
 

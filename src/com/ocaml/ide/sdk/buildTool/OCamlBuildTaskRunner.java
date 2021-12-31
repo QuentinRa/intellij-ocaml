@@ -31,11 +31,11 @@ public class OCamlBuildTaskRunner extends ProjectTaskRunner {
         if (projectTask instanceof ModuleBuildTask) {
             Module module = ((ModuleBuildTask) projectTask).getModule();
             return ModuleType.get(module).equals(OCamlModuleType.getInstance());
-        } else if (projectTask instanceof ProjectModelBuildTask) {
+        } /*todo: ukn else if (projectTask instanceof ProjectModelBuildTask) {
             ProjectModelBuildTask<?> buildTask = ((ProjectModelBuildTask<?>) projectTask);
             ProjectModelBuildableElement buildableElement = buildTask.getBuildableElement();
             return buildableElement instanceof OCamlcRunConfiguration;
-        }
+        }*/
         return false;
     }
 
