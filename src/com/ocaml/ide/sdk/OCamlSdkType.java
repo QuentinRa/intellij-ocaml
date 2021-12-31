@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.*;
 import com.ocaml.comp.opam.*;
 import com.ocaml.comp.opam.process.*;
 import com.ocaml.ide.sdk.sources.*;
+import com.ocaml.utils.*;
 import icons.*;
 import org.jdom.*;
 import org.jetbrains.annotations.*;
@@ -156,7 +157,12 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         String rootPath = getSourceRootPath(jdkHome, version);
         if (rootPath == null) {
             // show notification so that the user know that he/she must add sources manually
-            OCamlSDKNotification.notify("OCamlSDK", "Sources are missing", ADD_SOURCES_POPUP);
+            var notification = new ORNotifications.OCamlNotificationData(ADD_SOURCES_POPUP);
+            notification.myTitle = "OCamlSDK";
+            notification.mySubtitle = "Sources are missing";
+            notification.myListener = NotificationListener.URL_OPENING_LISTENER;
+            notification.myIcon = ORIcons.OCL_SDK;
+            ORNotifications.notify(notification);
             return;
         }
         VirtualFile rootCandidate = LocalFileSystem
@@ -201,24 +207,5 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         //        "No SDK available for download yet.",
         //        "Download OCaml SDK"
         //);
-    }
-
-    //
-    // Utils
-    //
-    // todo: move this?
-
-    private static final class OCamlSDKNotification extends Notification {
-        private OCamlSDKNotification(@NotNull String title, @NotNull String subtitle, @NotNull String content) {
-            super("OCaml", title, content, NotificationType.INFORMATION);
-            setIcon(ORIcons.OCL_SDK);
-            setSubtitle(subtitle);
-            setListener(NotificationListener.URL_OPENING_LISTENER);
-        }
-
-        public static void notify(String title, String subtitle, String content) {
-            OCamlSDKNotification n = new OCamlSDKNotification(title, subtitle, content);
-            Notifications.Bus.notify(n);
-        }
     }
 }

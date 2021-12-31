@@ -60,11 +60,19 @@
         | Run
         -->
         <configurationType implementation="com.ocaml.ide.sdk.runConfiguration.OCamlcRunConfigurationType"/>
+        <projectTaskRunner implementation="com.ocaml.ide.sdk.buildTool.OCamlBuildTaskRunner"/>
+        <programRunner implementation="com.ocaml.ide.sdk.buildTool.OCamlcCommandRunner"/>
 
         <!--
         | Services
         -->
         <projectService serviceImplementation="com.ocaml.comp.opam.OpamService"/>
+
+        <!--
+        | Notifications
+        -->
+        <notificationGroup id="OCaml Plugin" displayType="BALLOON"/>
+        <notificationGroup id="OCaml Build Log" displayType="NONE"/>
     </extensions>
 
 </idea-plugin>
