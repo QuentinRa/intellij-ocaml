@@ -27,8 +27,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-// todo: fix error when loaded for the first time (not always happening, the
-//  menu listing libraries)
 public class ORSettingsConfigurable implements SearchableConfigurable, Configurable.NoScroll {
     private final @NotNull Project myProject;
     private ORSettings mySettings;

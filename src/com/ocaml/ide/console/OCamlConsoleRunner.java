@@ -30,9 +30,6 @@ import java.util.*;
  * and we are sending commands to the process. It's quite tiring to use
  * for now, there is no history, and almost no features. It would be good if we
  * could see the current variables that we created for instance.
- *
- * todo: a table with the variables created and their values (as in the R plugin)
- * todo: handle errors (no System.out)
  */
 public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlConsoleView> {
 

@@ -22,10 +22,6 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
-/**
- * todo: do not ask for the JDK again if multiples modules
- *  (this solves the problem of having only one value in the settings)
- */
 public class OCamlModuleBuilder extends ModuleBuilder {
     private static final String OCAML_GROUP_NAME = "OCaml Language";
     private static final Log LOG = Log.create("module.builder");

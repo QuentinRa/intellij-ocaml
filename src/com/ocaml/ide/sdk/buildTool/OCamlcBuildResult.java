@@ -11,12 +11,6 @@ public class OCamlcBuildResult {
 
     public OCamlcBuildResult(boolean succeeded,
                              boolean canceled,
-                             Long started) {
-        this(succeeded, canceled, started, 0L, 0, 0, "");
-    }
-
-    public OCamlcBuildResult(boolean succeeded,
-                             boolean canceled,
                              Long started,
                              Long duration,
                              int errors,
