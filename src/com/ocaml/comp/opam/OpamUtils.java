@@ -108,4 +108,11 @@ public class OpamUtils {
         }
         return cli;
     }
+
+    public static String WSLtoWindowsPath(String path) {
+        path = path.replace("/mnt/", "");
+        int sep = path.indexOf("/");
+        String mount = path.substring(0, sep) + ":";
+        return mount+path.substring(sep).replace("/", "\\");
+    }
 }

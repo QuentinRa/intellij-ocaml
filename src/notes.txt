@@ -1,3 +1,5 @@
 ./.opam/4.05.0/bin/ocamlc -i test.ml
 val x : 'a -> int
 val main : unit -> unit
+
+for i in {5..9}; do ~/.opam/4.0$i.0/bin/ocamlc test.ml -w +A; done

@@ -45,10 +45,12 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
   * [x] Stop build
   * [x] The build show warnings/errors
     * [ ] The parser was properly tested
+      * [x] use tuareg file as reference for error messages
     * [ ] Add some colors?
-    * [ ] Add some context?
+    * [x] Add some context?
     * [ ] Add some quick fix?
-    * [ ] Sort the results by name then line
+    * ~~[ ] Sort the results by name then line~~
+    * [x] Add support for alerts (deprecated)
   * [ ] Do not force every file to be valid
 * [x] **Can execute .ml file**
   * [ ] Should build then run
@@ -61,7 +63,7 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
 * [x] Change switch -> change the library for every module
   * [ ] Can download a new switch from the IDE
 * [x] See opam installed libraries (name, desc, version)
-  * [ ] Fix bug (error, when loading libs for the first time)
+  * [ ] Fix bug (error, when loading libs for the first time -> loaded then loaded error)
   * [ ] Can update library
   * [ ] Can install library
   * [ ] Can uninstall library
@@ -78,3 +80,14 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
   * [ ] Add local/headless run ? (like in JUnit tests, or in R?).
   * [ ] Add some shortcut
 * [ ] Show variables / env
+
+### Code
+
+* [x] Create file ml/mli
+  * [ ] ask to create ml when creating mli (if not found)?
+* [ ] Comment line
+* [ ] Comment block
+* [ ] Spellchecking
+* [ ] Show variables types (in grey, as when using var in Java and JetBrains is inferring types. We may use `ocamlc -i test.ml -w -A` or H. G. `rincewind`)
+* [ ] Show unused
+* [ ] Show errors
