@@ -7,11 +7,11 @@ import com.intellij.execution.impl.*;
 import com.intellij.execution.process.*;
 import com.intellij.execution.runners.*;
 import com.intellij.openapi.application.*;
+import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.*;
 import com.intellij.openapi.project.*;
-import com.intellij.openapi.roots.*;
 import com.intellij.task.*;
 import com.intellij.task.impl.*;
 import com.intellij.util.ui.*;
@@ -218,6 +218,7 @@ public class OCamlBuildTaskRunner extends ProjectTaskRunner {
                                 return;
                             }
 
+                            FileDocumentManager.getInstance().saveAllDocuments();
                             context.doExecute();
                         }
                     });

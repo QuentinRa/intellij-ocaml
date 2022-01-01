@@ -61,16 +61,10 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
     Note: Send some events belonging to the task
     Note: Send Stop
     ...
-    - todo: This is only working for one task/file for now.
-    - todo: Also, there "may" (not for now) be duplicates.
-    - Preview
+    Preview of the result
       test.ml 2 warnings
         - Warning 39: unused rec flag.:1 ==> Warning 39: unused rec flag.
         - Warning 27: unused variable i.:1 ==> Warning 27: unused variable i.
-    - todo: there is no colors
-    - todo: There is a bug, Compile file is marked as test
-    - todo: sort the results? by name, then by line
-    - todo: show some context (if available?) => see if (fileLocation != null) return true;
      */
 
     @Override public boolean parse(String line,
@@ -93,14 +87,14 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
             if (fileLocation != null) return true;
             if (line.startsWith("Process finished with exit code")) {
                 // Done
-                var finishBuildEvent = new FinishBuildEventImpl(
+                var finishEvent = new FinishEventImpl(
                         eventId,
                         myContext.myBuildId,
                         System.currentTimeMillis(),
                         "Compiling file",
                         new SuccessResultImpl(true)
                 );
-                messageConsumer.accept(finishBuildEvent);
+                messageConsumer.accept(finishEvent);
                 return true;
             }
             return false;
@@ -124,7 +118,7 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
             MessageEvent.Kind kind = isError ? MessageEvent.Kind.ERROR : MessageEvent.Kind.WARNING;
 
             var fileEvent = new FileMessageEventImpl(
-                    eventId++,
+                    eventId,
                     kind,
                     "OCamlc Compiler",
                     line,
