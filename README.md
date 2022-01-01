@@ -46,11 +46,12 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
   * [x] The build show warnings/errors
     * [ ] The parser was properly tested
       * [x] use tuareg file as reference for error messages
-    * [ ] Add some colors?
+    * [x] Add some colors?
     * [x] Add some context?
     * [ ] Add some quick fix?
     * ~~[ ] Sort the results by name then line~~
-    * [x] Add support for alerts (deprecated)
+    * [x] Add support for alerts (ex: deprecated)
+    * [ ] Hyperlink (or whatever it's called) files/paths that are inside the details of a build message
   * [ ] Do not force every file to be valid
 * [x] **Can execute .ml file**
   * [ ] Should build then run

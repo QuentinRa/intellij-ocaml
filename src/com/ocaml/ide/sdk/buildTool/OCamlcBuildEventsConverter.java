@@ -5,6 +5,7 @@ import com.intellij.build.events.*;
 import com.intellij.build.events.impl.*;
 import com.intellij.build.output.*;
 import com.intellij.openapi.util.*;
+import com.intellij.openapi.util.text.*;
 import com.ocaml.comp.opam.*;
 import com.ocaml.ide.settings.*;
 
@@ -139,18 +140,23 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
         boolean isError = currentMessage.kind == MessageEvent.Kind.ERROR;
 
         // format messages
-        String title = (isError ? "Error:" : "Warning") + currentMessage.shortMessage;
+        String title = (isError ? "Error:" : "Warning:") + currentMessage.shortMessage;
         String detailedMessage = "";
         if (!currentMessage.context.isEmpty()) detailedMessage += currentMessage.context;
         detailedMessage += title + "\n";
         if (!currentMessage.message.isEmpty()) detailedMessage += currentMessage.message;
+        // Show warning in Yellow
+        if (!isError) {
+            detailedMessage = detailedMessage.replace("Warning:",  "\u001b[0m\u001b[1m\u001b[33mWarning:\u001b[0m\u001b[0m\u001b[1m");
+            detailedMessage = detailedMessage.replace("^",  "\u001b[0m\u001b[1m\u001b[^\u001b[0m\u001b[0m\u001b[1m");
+        }
 
         // send
         messageConsumer.accept(new FileMessageEventImpl(
                 task0Id,
                 currentMessage.kind,
                 GROUP_TITLE,
-                (isError ? "Error:" : "Warning") + currentMessage.shortMessage,
+                title,
                 detailedMessage,
                 currentMessage.filePosition
         ));
@@ -213,9 +219,6 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
      * If so, the part after : contains some message.
      */
     private boolean tryFireMessage(String line, Consumer<? super BuildEvent> messageConsumer) {
-        System.out.println("here with Line:"+line);
-        System.out.println("currentMessage is:"+currentMessage);
-
         // if we are done with the previous message
         // we need to fire and start anew
         if (line.startsWith("File") && currentMessage != null) {
@@ -235,17 +238,17 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
             } else if (line.startsWith("Warning")) {
                 currentMessage.kind = MessageEvent.Kind.WARNING;
                 currentMessage.shortMessage = extractWarningMessage(line);
+                OCamlcBuildEventsConverterColors.quantizeAnsiColors(currentMessage.message += "\u001b[0m\u001b[1m\u001b[33mwarning\u001b[0m\u001b[0m\u001b[1m: unused import: `std::os::raw::c_int`\u001b[0m\n\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m--> \u001b[0m\u001b[0msrc/main.rs:1:5\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m\u001b[1m\u001b[38;5;12m1\u001b[0m\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0muse std::os::raw::c_int;\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0m    \u001b[0m\u001b[0m\u001b[1m\u001b[33m^^^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m= \u001b[0m\u001b[0m\u001b[1mnote\u001b[0m\u001b[0m: `#[warn(unused_imports)]` on by default\u001b[0m\n\n");
             } else if (line.startsWith("Alert")) {
                 currentMessage.kind = MessageEvent.Kind.WARNING;
                 currentMessage.shortMessage = extractAlertMessage(line);
+                OCamlcBuildEventsConverterColors.quantizeAnsiColors(currentMessage.message += "\u001b[0m\u001b[1m\u001b[33mwarning\u001b[0m\u001b[0m\u001b[1m: unused import: `std::os::raw::c_int`\u001b[0m\n\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m--> \u001b[0m\u001b[0msrc/main.rs:1:5\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m\u001b[1m\u001b[38;5;12m1\u001b[0m\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0muse std::os::raw::c_int;\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0m    \u001b[0m\u001b[0m\u001b[1m\u001b[33m^^^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m= \u001b[0m\u001b[0m\u001b[1mnote\u001b[0m\u001b[0m: `#[warn(unused_imports)]` on by default\u001b[0m\n\n");
             } else if (currentMessage.kind == null) {
                 // we are reading the context
                 currentMessage.context += line+"\n";
             } else {
                 // we are reading a message on multiples lines
-                // todo: handle nested files
                 currentMessage.message += line+"\n";
-                System.out.println(currentMessage);
             }
         }
 
