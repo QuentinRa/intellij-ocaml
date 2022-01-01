@@ -14,6 +14,7 @@ public interface OclTypes {
 
   IElementType AMPERSAND = new OclTokenType("&");
   IElementType AND = new OclTokenType("and");
+  IElementType ANNOTATION = new OclTokenType("ANNOTATION");
   IElementType ARROBASE = new OclTokenType("@");
   IElementType ARROBASE_2 = new OclTokenType("@@");
   IElementType ARROBASE_3 = new OclTokenType("@@@");

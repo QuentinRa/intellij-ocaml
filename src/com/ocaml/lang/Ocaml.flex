@@ -167,6 +167,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "'"{LOWERCASE}{IDENTCHAR}*       { return OclTypes.TYPE_ARGUMENT; }
     "`"{UPPERCASE}{IDENTCHAR}*       { return OclTypes.POLY_VARIANT; }
     "`"{LOWERCASE}{IDENTCHAR}*       { return OclTypes.POLY_VARIANT; }
+    "[@@" .* "]"                     { return OclTypes.ANNOTATION; }
 
     "\"" { if (!inComment) yybegin(IN_STRING); tokenStart(); }
     "(*" { yybegin(IN_OCAML_ML_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }

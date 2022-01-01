@@ -106,8 +106,9 @@
 
         TYPE_ARGUMENT="regexp:'[a-z_][A-Za-z_0-9']*"
         POLY_VARIANT="regexp:`(([a-z_][A-Za-z_0-9']*)|([A-Z][A-Za-z_0-9']*))"
-        SINGLE_COMMENT   = "regexp:\(\*[^\n]*\*\)"
-        MULTI_COMMENT    = "regexp:\(\*.*\*\)"
+        SINGLE_COMMENT= "regexp:\(\*[^\n]*\*\)"
+        MULTI_COMMENT="regexp:\(\*.*\*\)"
+        ANNOTATION="regexp:\[@@.*]"
 //        CHAR_VALUE
 //        STRING_VALUE
 //        LIDENT

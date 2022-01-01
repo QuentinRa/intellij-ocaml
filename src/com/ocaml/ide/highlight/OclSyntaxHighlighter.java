@@ -17,6 +17,7 @@ import static com.intellij.psi.TokenType.BAD_CHARACTER;
 public class OclSyntaxHighlighter implements SyntaxHighlighter {
     private static final TextAttributesKey TYPE_ARGUMENT_KEY = TextAttributesKey.createTextAttributesKey("TYPE_ARGUMENT");
 
+    public static final TextAttributesKey ANNOTATION_ = createTextAttributesKey("REASONML_ANNOTATION", DefaultLanguageHighlighterColors.METADATA);
     public static final TextAttributesKey BRACES_ = createTextAttributesKey("OCAML_BRACES", DefaultLanguageHighlighterColors.BRACES);
     public static final TextAttributesKey BRACKETS_ = createTextAttributesKey("OCAML_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
     public static final TextAttributesKey KEYWORD_ = createTextAttributesKey("OCAML_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
@@ -31,6 +32,7 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
     public static final TextAttributesKey TYPE_ARGUMENT_ = createTextAttributesKey("OCAML_TYPE_ARGUMENT", TYPE_ARGUMENT_KEY);
     private static final TextAttributesKey BAD_CHAR_ = createTextAttributesKey("OCAML_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
+    private static final TextAttributesKey[] ANNOTATION_KEYS = new TextAttributesKey[]{ANNOTATION_};
     private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER_};
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{RML_COMMENT_};
     private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING_};
@@ -86,6 +88,8 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
             return OPTION_KEYS;
         } else if (BAD_CHARACTER.equals(tokenType)) {
             return BAD_CHAR_KEYS;
+        }  else if (OclTypes.ANNOTATION.equals(tokenType)) {
+            return ANNOTATION_KEYS;
         }
 
         return EMPTY_KEYS;

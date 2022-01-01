@@ -13,6 +13,7 @@ import java.util.*;
 public class ORColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS =
             new AttributesDescriptor[]{
+                    new AttributesDescriptor("Annotation", OclSyntaxHighlighter.ANNOTATION_),
                     new AttributesDescriptor("Braces", OclSyntaxHighlighter.BRACES_),
                     new AttributesDescriptor("Brackets", OclSyntaxHighlighter.BRACKETS_),
                     new AttributesDescriptor("Comment", OclSyntaxHighlighter.RML_COMMENT_),

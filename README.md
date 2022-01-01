@@ -99,11 +99,11 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
 * [ ] **Highlight**
   * [x] Keywords
   * [x] Comments
-    * [ ] Fix bug of the " in comment
+    * [x] Fix bug of the " in comment
   * [x] Numbers (Int, Float)
   * [x] Char / String
   * [x] Operators
-  * [ ] Annotations
+  * [x] Annotations
 * [ ] **Braces matching**
 * [ ] **Entry in Colors and Fonts**
   * [x] Can edit properties
