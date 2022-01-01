@@ -4,13 +4,10 @@ package com.ocaml.lang.core.psi;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
-import com.ocaml.lang.core.OcElementType;
 import com.ocaml.lang.core.OclTokenType;
-import com.ocaml.lang.core.psi.impl.*;
 
 public interface OclTypes {
 
-  IElementType EXPR = new OcElementType("EXPR");
 
   IElementType AMPERSAND = new OclTokenType("&");
   IElementType AND = new OclTokenType("and");
@@ -156,12 +153,5 @@ public interface OclTypes {
   IElementType WITH = new OclTokenType("with");
 
   class Factory {
-    public static PsiElement createElement(ASTNode node) {
-      IElementType type = node.getElementType();
-      if (type == EXPR) {
-        return new OclExprImpl(node);
-      }
-      throw new AssertionError("Unknown element type: " + type);
-    }
   }
 }

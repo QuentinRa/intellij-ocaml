@@ -17,7 +17,9 @@ public class OclParserDefinition implements ParserDefinition {
 
     // Tokens
     @NotNull @Override public PsiElement createElement(ASTNode node) {
-        return OclTypes.Factory.createElement(node);
+        // return OclTypes.Factory.createElement(node);
+        IElementType type = node.getElementType();
+        throw new AssertionError("Unknown element type: " + type);
     }
     @NotNull @Override public TokenSet getWhitespaceTokens() {
         return WHITE_SPACES;

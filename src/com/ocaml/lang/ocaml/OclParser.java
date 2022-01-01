@@ -36,21 +36,8 @@ public class OclParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expr
   static boolean File(PsiBuilder b, int l) {
-    return expr(b, l + 1);
-  }
-
-  /* ********************************************************** */
-  // LET LIDENT EQ INT_VALUE
-  public static boolean expr(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "expr")) return false;
-    if (!nextTokenIs(b, LET)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, LET, LIDENT, EQ, INT_VALUE);
-    exit_section_(b, m, EXPR, r);
-    return r;
+    return true;
   }
 
 }

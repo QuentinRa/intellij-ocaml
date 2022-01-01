@@ -7,10 +7,6 @@ import com.ocaml.lang.core.OclElement;
 
 public class OclVisitor extends PsiElementVisitor {
 
-  public void visitExpr(@NotNull OclExpr o) {
-    visitElement(o);
-  }
-
   public void visitElement(@NotNull OclElement o) {
     super.visitElement(o);
   }

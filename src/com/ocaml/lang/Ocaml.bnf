@@ -194,7 +194,4 @@
 }
 
 // todo: stop playing around and star the parser :)
-
-File ::= expr
-
-expr ::= LET LIDENT EQ INT_VALUE
+File ::=
