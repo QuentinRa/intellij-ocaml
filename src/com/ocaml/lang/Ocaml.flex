@@ -14,7 +14,7 @@ import static com.intellij.psi.TokenType.*;
     private int tokenStartIndex;
     private CharSequence quotedStringId;
     private int commentDepth;
-    private boolean inCommentString = false;
+    private boolean inComment = false;
 
     //Store the start index of a token
     private void tokenStart() {
@@ -168,8 +168,8 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "`"{UPPERCASE}{IDENTCHAR}*       { return OclTypes.POLY_VARIANT; }
     "`"{LOWERCASE}{IDENTCHAR}*       { return OclTypes.POLY_VARIANT; }
 
-    "\"" { yybegin(IN_STRING); tokenStart(); }
-    "(*" { yybegin(IN_OCAML_ML_COMMENT); commentDepth = 1; tokenStart(); }
+    "\"" { if (!inComment) yybegin(IN_STRING); tokenStart(); }
+    "(*" { yybegin(IN_OCAML_ML_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
 
     "#if"     { return OclTypes.DIRECTIVE_IF; }
     "#else"   { return OclTypes.DIRECTIVE_ELSE; }
@@ -257,11 +257,10 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
 }
 
 <IN_OCAML_ML_COMMENT> {
-    "(*" { if (!inCommentString) commentDepth += 1; }
-    "*)" { if (!inCommentString) { commentDepth -= 1; if(commentDepth == 0) { yybegin(INITIAL); tokenEnd(); return OclTypes.MULTI_COMMENT; } } }
-     "\"" { inCommentString = !inCommentString; }
+    "(*" { commentDepth += 1; }
+    "*)" { commentDepth -= 1; if (commentDepth == 0) { inComment = false; yybegin(INITIAL); tokenEnd(); return OclTypes.MULTI_COMMENT; } }
      . | {NEWLINE} { }
-    <<EOF>> { yybegin(INITIAL); tokenEnd(); return OclTypes.MULTI_COMMENT; }
+     <<EOF>> { yybegin(INITIAL); tokenEnd(); return OclTypes.MULTI_COMMENT; }
 }
 
 [^] { return BAD_CHARACTER; }
