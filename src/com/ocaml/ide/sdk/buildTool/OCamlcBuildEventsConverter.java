@@ -5,7 +5,6 @@ import com.intellij.build.events.*;
 import com.intellij.build.events.impl.*;
 import com.intellij.build.output.*;
 import com.intellij.openapi.util.*;
-import com.intellij.openapi.util.text.*;
 import com.ocaml.comp.opam.*;
 import com.ocaml.ide.settings.*;
 
@@ -148,7 +147,7 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
         // Show warning in Yellow
         if (!isError) {
             detailedMessage = detailedMessage.replace("Warning:",  "\u001b[0m\u001b[1m\u001b[33mWarning:\u001b[0m\u001b[0m\u001b[1m");
-            detailedMessage = detailedMessage.replace("^",  "\u001b[0m\u001b[1m\u001b[^\u001b[0m\u001b[0m\u001b[1m");
+            detailedMessage = detailedMessage.replace("^",  "\u001b[0m\u001b[1m\u001b[33m^\u001b[0m\u001b[0m\u001b[1m");
         }
 
         // send
@@ -162,6 +161,7 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
         ));
 
         // reset
+        myMessages.add(currentMessage);
         currentMessage = null;
 
         // update
@@ -193,8 +193,17 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
             Message message = (Message) o;
             // same file
             if (!Objects.equals(filePosition, message.filePosition)) return false;
+            // same kind
+            if (kind != message.kind) return false;
             // same error
             return Objects.equals(shortMessage, message.shortMessage);
+        }
+
+        @Override public int hashCode() {
+            int result = filePosition != null ? filePosition.hashCode() : 0;
+            result = 31 * result + (kind != null ? kind.hashCode() : 0);
+            result = 31 * result + (shortMessage != null ? shortMessage.hashCode() : 0);
+            return result;
         }
     }
 
@@ -238,11 +247,9 @@ public class OCamlcBuildEventsConverter implements BuildOutputParser {
             } else if (line.startsWith("Warning")) {
                 currentMessage.kind = MessageEvent.Kind.WARNING;
                 currentMessage.shortMessage = extractWarningMessage(line);
-                OCamlcBuildEventsConverterColors.quantizeAnsiColors(currentMessage.message += "\u001b[0m\u001b[1m\u001b[33mwarning\u001b[0m\u001b[0m\u001b[1m: unused import: `std::os::raw::c_int`\u001b[0m\n\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m--> \u001b[0m\u001b[0msrc/main.rs:1:5\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m\u001b[1m\u001b[38;5;12m1\u001b[0m\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0muse std::os::raw::c_int;\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0m    \u001b[0m\u001b[0m\u001b[1m\u001b[33m^^^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m= \u001b[0m\u001b[0m\u001b[1mnote\u001b[0m\u001b[0m: `#[warn(unused_imports)]` on by default\u001b[0m\n\n");
             } else if (line.startsWith("Alert")) {
                 currentMessage.kind = MessageEvent.Kind.WARNING;
                 currentMessage.shortMessage = extractAlertMessage(line);
-                OCamlcBuildEventsConverterColors.quantizeAnsiColors(currentMessage.message += "\u001b[0m\u001b[1m\u001b[33mwarning\u001b[0m\u001b[0m\u001b[1m: unused import: `std::os::raw::c_int`\u001b[0m\n\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m--> \u001b[0m\u001b[0msrc/main.rs:1:5\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m\u001b[1m\u001b[38;5;12m1\u001b[0m\u001b[0m \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0muse std::os::raw::c_int;\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m| \u001b[0m\u001b[0m    \u001b[0m\u001b[0m\u001b[1m\u001b[33m^^^^^^^^^^^^^^^^^^^\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m|\u001b[0m\n\u001b[0m  \u001b[0m\u001b[0m\u001b[1m\u001b[38;5;12m= \u001b[0m\u001b[0m\u001b[1mnote\u001b[0m\u001b[0m: `#[warn(unused_imports)]` on by default\u001b[0m\n\n");
             } else if (currentMessage.kind == null) {
                 // we are reading the context
                 currentMessage.context += line+"\n";

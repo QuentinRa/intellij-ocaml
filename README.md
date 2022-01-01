@@ -46,6 +46,7 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
   * [x] The build show warnings/errors
     * [ ] The parser was properly tested
       * [x] use tuareg file as reference for error messages
+      * [x] removing duplicates (may happen)
     * [x] Add some colors?
     * [x] Add some context?
     * [ ] Add some quick fix?
