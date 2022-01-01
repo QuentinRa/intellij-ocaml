@@ -38,6 +38,13 @@
                        id="OCAML_SOURCES" order="FIRST"/>
 
         <!--
+        | Parser
+        -->
+        <lang.parserDefinition language="OCaml" implementationClass="com.ocaml.lang.OclParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="OCaml"
+                                       implementationClass="com.ocaml.ide.highlight.OclSyntaxHighlighterFactory"/>
+
+        <!--
          | OCaml module builder
          -->
         <moduleType id="ocamlModuleType" implementationClass="com.ocaml.ide.modules.OCamlModuleType"/>
@@ -49,6 +56,7 @@
         <projectService serviceImplementation="com.ocaml.ide.settings.ORSettings"/>
         <projectConfigurable id="settings.ocaml" groupId="language" displayName="OCaml"
                              instance="com.ocaml.ide.settings.ORSettingsConfigurable"/>
+        <colorSettingsPage implementation="com.ocaml.ide.settings.ORColorSettingsPage"/>
 
         <!--
         | REPL

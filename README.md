@@ -93,3 +93,21 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
 * [ ] Show variables types (in grey, as when using var in Java and JetBrains is inferring types. We may use `ocamlc -i test.ml -w -A` or H. G. `rincewind`)
 * [ ] Show unused
 * [ ] Show errors
+
+### Parser
+
+* [ ] **Highlight**
+  * [x] Keywords
+  * [x] Comments
+    * [ ] Fix bug of the " in comment
+  * [x] Numbers (Int, Float)
+  * [x] Char / String
+  * [x] Operators
+  * [ ] Annotations
+* [ ] **Braces matching**
+* [ ] **Entry in Colors and Fonts**
+  * [x] Can edit properties
+  * [ ] OCaml code (actually: Reason)
+* [x] **Live templates**
+  * [ ] Smart suggestions of lives templates
+  * [ ] Handle context for templates (ex: comment, code)
