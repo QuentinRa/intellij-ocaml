@@ -14,7 +14,7 @@ import com.ocaml.ide.sdk.*;
 import com.ocaml.ide.sdk.library.*;
 import com.ocaml.ide.sdk.sources.*;
 import com.ocaml.ide.settings.*;
-import com.ocaml.utils.*;
+import jpsplugin.com.reason.Log;
 import icons.*;
 import org.jetbrains.annotations.*;
 

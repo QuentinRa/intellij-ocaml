@@ -6,6 +6,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.stubs.*;
 import com.intellij.psi.util.*;
 import com.intellij.util.xml.model.gotosymbol.*;
+import com.reason.ide.search.*;
 import com.reason.lang.core.*;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.stub.*;
@@ -53,7 +54,13 @@ public class PsiIncludeImpl extends PsiTokenStub<ORTypes, PsiInclude, PsiInclude
         if (stub != null) {
             return stub.getResolvedPath();
         }
-        return null;
+        // Iterate over previous elements, can't use references here because it needs to work during indexing
+        String includePath = getIncludePath();
+        PsiFinder psiFinder = getProject().getService(PsiFinder.class);
+        PsiQualifiedPathElement resolvedElement = psiFinder.findModuleBack(this, includePath);
+
+        String path = resolvedElement == null ? includePath : resolvedElement.getQualifiedName();
+        return path == null ? null : path.split("\\.");
     }
 
     // deprecate ?

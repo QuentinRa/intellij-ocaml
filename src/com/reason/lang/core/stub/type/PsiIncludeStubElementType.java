@@ -5,6 +5,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.*;
 import com.reason.ide.files.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.psi.impl.*;
 import com.reason.lang.core.stub.*;
@@ -55,6 +56,7 @@ public class PsiIncludeStubElementType extends ORStubElementType<PsiIncludeStub,
 
     @Override
     public void indexStub(@NotNull PsiIncludeStub stub, @NotNull IndexSink sink) {
+        sink.occurrence(IndexKeys.INCLUDES, Joiner.join(".", stub.getResolvedPath()));
     }
 
     @Override

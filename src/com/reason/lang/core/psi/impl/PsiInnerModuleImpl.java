@@ -8,6 +8,7 @@ import com.intellij.psi.stubs.*;
 import com.intellij.psi.util.*;
 import com.intellij.util.*;
 import com.reason.ide.files.*;
+import com.reason.ide.search.*;
 import com.reason.lang.*;
 import com.reason.lang.core.*;
 import com.reason.lang.core.psi.*;
@@ -147,9 +148,19 @@ public class PsiInnerModuleImpl extends PsiTokenStub<ORTypes, PsiModule, PsiModu
     public @NotNull Collection<PsiNamedElement> getExpressions(@NotNull ExpressionScope eScope, @Nullable ExpressionFilter filter) {
         Collection<PsiNamedElement> result = emptyList();
 
+        Project project = getProject();
+        PsiFinder psiFinder = project.getService(PsiFinder.class);
+
         String alias = getAlias();
         if (alias != null) {
             // Open alias and getExpressions on alias
+            Set<PsiModule> modulesByName = psiFinder.findModulesbyName(alias, interfaceOrImplementation, null);
+            if (!modulesByName.isEmpty()) {
+                PsiModule moduleAlias = modulesByName.iterator().next();
+                if (moduleAlias != null) {
+                    result = moduleAlias.getExpressions(eScope, filter);
+                }
+            }
         } else {
             PsiModuleType moduleType = getModuleType();
             if (moduleType == null) {
@@ -159,6 +170,31 @@ public class PsiInnerModuleImpl extends PsiTokenStub<ORTypes, PsiModule, PsiModu
                             ORUtil.findImmediateFirstChildOfClass(this, PsiFunctorCall.class);
                     if (functorCall != null) {
                         result = new ArrayList<>();
+                        // Include all expressions from functor
+                        QNameFinder qnameFinder = QNameFinderFactory.getQNameFinder(getLanguage());
+
+                        Set<String> potentialPaths = qnameFinder.extractPotentialPaths(functorCall);
+                        for (String potentialPath : potentialPaths) {
+                            Set<PsiModule> modules =
+                                    psiFinder.findModulesFromQn(
+                                            potentialPath + "." + functorCall.getFunctorName(),
+                                            true,
+                                            interfaceOrImplementation
+                                    );
+                            for (PsiModule module : modules) {
+                                result.addAll(module.getExpressions(eScope, filter));
+                            }
+                        }
+
+                        Set<PsiModule> modules =
+                                psiFinder.findModulesFromQn(
+                                        functorCall.getFunctorName(),
+                                        true,
+                                        interfaceOrImplementation
+                                );
+                        for (PsiModule module : modules) {
+                            result.addAll(module.getExpressions(eScope, filter));
+                        }
                     }
                 } else {
                     result = new ArrayList<>();

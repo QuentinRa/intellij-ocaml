@@ -3,6 +3,7 @@ package com.reason.lang.core.stub.type;
 import com.intellij.lang.*;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.psi.impl.*;
 import com.reason.lang.core.stub.*;
@@ -62,6 +63,29 @@ public abstract class PsiModuleStubElementType extends ORStubElementType<PsiModu
     }
 
     public void indexStub(@NotNull PsiModuleStub stub, @NotNull IndexSink sink) {
+        String name = stub.getName();
+        if (name != null) {
+            sink.occurrence(IndexKeys.MODULES, name);
+            if (stub.isTopLevel()) {
+                sink.occurrence(IndexKeys.MODULES_TOP_LEVEL, name);
+            }
+            if (stub.isComponent()) {
+                sink.occurrence(IndexKeys.MODULES_COMP, name);
+            }
+            String alias = stub.getAlias();
+            if (alias != null) {
+                int pos = alias.indexOf(".");
+                String topName = pos < 0 ? alias : alias.substring(0, pos);
+                sink.occurrence(IndexKeys.MODULES_ALIASED, topName);
+                sink.occurrence(IndexKeys.MODULES_ALIASES, stub.getQualifiedName());
+            }
+        }
+
+        int fqnHash = stub.getQualifiedName().hashCode();
+        sink.occurrence(IndexKeys.MODULES_FQN, fqnHash);
+        if (stub.isComponent()) {
+            sink.occurrence(IndexKeys.MODULES_COMP_FQN, fqnHash);
+        }
     }
 
     @NotNull

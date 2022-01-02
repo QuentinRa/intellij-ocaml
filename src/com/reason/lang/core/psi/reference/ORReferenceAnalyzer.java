@@ -6,6 +6,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.*;
 import com.intellij.psi.tree.*;
 import com.reason.ide.files.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.*;
 import com.reason.lang.core.psi.PsiType;
 import com.reason.lang.core.psi.*;
@@ -16,11 +17,23 @@ import org.jetbrains.annotations.*;
 import java.util.*;
 
 public class ORReferenceAnalyzer {
+    private static final String[] EMPTY_ARRAY = new String[0];
+
     private ORReferenceAnalyzer() {
     }
 
     static class ORUpperSymbolWithResolution extends ORFakeResolvedElement {
         public ORUpperSymbolWithResolution(@NotNull PsiElement element) {
+            super(element);
+        }
+
+        @Override public String toString() {
+            return getOriginalElement().toString();
+        }
+    }
+
+    static class ORUpperResolvedSymbol extends ORFakeResolvedElement {
+        public ORUpperResolvedSymbol(@NotNull PsiElement element) {
             super(element);
         }
 
@@ -145,6 +158,7 @@ public class ORReferenceAnalyzer {
 
     static @NotNull Deque<CodeInstruction> resolveInstructions(@NotNull Deque<PsiElement> instructions, @NotNull Project project) {
         Deque<CodeInstruction> resolvedInstructions = new LinkedList<>();
+        GlobalSearchScope scope = GlobalSearchScope.allScope(project);
 
         while (!instructions.isEmpty()) {
             PsiElement psiElement = instructions.removeFirst();
@@ -172,14 +186,31 @@ public class ORReferenceAnalyzer {
                 // Try to resolve aliases with full path
                 boolean alreadyReplaced = false;
                 if (withResolution) {
-                    StringBuilder qname = new StringBuilder(name);
+                    String qname = name;
                     Iterator<CodeInstruction> rIt = resolvedInstructions.iterator();
                     boolean hasNext = rIt.hasNext();
                     while (hasNext) {
                         CodeInstruction instruction = rIt.next();
                         if (instruction.mySource instanceof PsiUpperSymbol) {
-                            qname.insert(0, instruction.mySource.getText() + ".");
-                            hasNext = rIt.hasNext();
+                            qname = instruction.mySource.getText() + "." + qname;
+                            Collection<PsiModule> elements = ModuleAliasesIndex.getElements(qname, project, scope);
+                            if (elements.isEmpty()) {
+                                hasNext = rIt.hasNext();
+                            } else {
+                                // Remove all elements until current instruction
+                                CodeInstruction peek = resolvedInstructions.pop();
+                                while (peek != null && peek.mySource != instruction.mySource) {
+                                    peek = resolvedInstructions.pop();
+                                }
+                                // and replace them with new path
+                                String elementAlias = elements.iterator().next().getAlias();
+                                String[] aliasPath = elementAlias == null ? EMPTY_ARRAY : elementAlias.split("\\.");
+                                for (String p : aliasPath) {
+                                    resolvedInstructions.push(new CodeInstruction(new ORUpperResolvedSymbol(element), p));
+                                }
+                                hasNext = false;
+                                alreadyReplaced = true;
+                            }
                         } else {
                             hasNext = false;
                         }

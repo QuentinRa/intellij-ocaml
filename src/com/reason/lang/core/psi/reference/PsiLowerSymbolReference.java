@@ -6,7 +6,10 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.*;
 import com.intellij.util.*;
 import com.reason.ide.files.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.*;
+import com.reason.lang.core.psi.PsiParameter;
+import com.reason.lang.core.psi.PsiType;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.psi.impl.*;
 import com.reason.lang.core.type.*;
@@ -63,7 +66,28 @@ public class PsiLowerSymbolReference extends ORMultiSymbolReference<PsiLowerSymb
         ORElementResolver.Resolutions resolutions = project.getService(ORElementResolver.class).getComputation();
         GlobalSearchScope scope = GlobalSearchScope.allScope(project);
 
+        Collection<PsiType> types = TypeIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiVal> vals = ValIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiLet> lets = LetIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiExternal> externals = ExternalIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiRecordField> recordFields = RecordFieldIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiObjectField> objectFields = ObjectFieldIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiParameter> parameters = ParameterIndex.getElements(myReferenceName, project, scope);
+
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("  indexes: types=" + types.size() + ", vals=" + vals.size() + ", lets=" + lets.size() +
+                    ", externals=" + externals.size() + ", fieds=" + (recordFields.size() + objectFields.size()) + ", params=" + parameters.size());
+        }
+
         long endIndexes = System.currentTimeMillis();
+
+        resolutions.add(types, false);
+        resolutions.add(vals, false);
+        resolutions.add(lets, false);
+        resolutions.add(externals, false);
+        resolutions.add(recordFields, false);
+        resolutions.add(objectFields, false);
+        resolutions.add(parameters, false);
 
         long endAddResolutions = System.currentTimeMillis();
 

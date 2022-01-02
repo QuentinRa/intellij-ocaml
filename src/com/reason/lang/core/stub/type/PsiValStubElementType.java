@@ -3,6 +3,7 @@ package com.reason.lang.core.stub.type;
 import com.intellij.lang.*;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.psi.impl.*;
 import com.reason.lang.core.stub.*;
@@ -49,6 +50,13 @@ public class PsiValStubElementType extends ORStubElementType<PsiValStub, PsiVal>
     }
 
     public void indexStub(@NotNull PsiValStub stub, @NotNull IndexSink sink) {
+        String name = stub.getName();
+        if (name != null) {
+            sink.occurrence(IndexKeys.VALS, name);
+        }
+
+        String fqn = stub.getQualifiedName();
+        sink.occurrence(IndexKeys.VALS_FQN, fqn.hashCode());
     }
 
     @NotNull

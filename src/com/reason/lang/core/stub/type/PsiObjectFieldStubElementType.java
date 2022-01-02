@@ -3,6 +3,7 @@ package com.reason.lang.core.stub.type;
 import com.intellij.lang.*;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.psi.impl.*;
 import com.reason.lang.core.stub.*;
 import com.reason.lang.core.type.*;
@@ -45,6 +46,10 @@ public class PsiObjectFieldStubElementType extends ORStubElementType<PsiObjectFi
     }
 
     public void indexStub(@NotNull PsiObjectFieldStub stub, @NotNull IndexSink sink) {
+        String name = stub.getName();
+        if (name != null) {
+            sink.occurrence(IndexKeys.OBJECT_FIELDS, name);
+        }
     }
 
     @NotNull

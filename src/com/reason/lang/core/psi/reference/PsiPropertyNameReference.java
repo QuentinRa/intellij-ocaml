@@ -4,6 +4,7 @@ import com.intellij.openapi.project.*;
 import com.intellij.openapi.util.*;
 import com.intellij.psi.*;
 import com.reason.ide.files.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.psi.PsiParameter;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.psi.impl.*;
@@ -38,6 +39,7 @@ public class PsiPropertyNameReference extends PsiPolyVariantReferenceBase<PsiLea
 
         // Comp.make function from module
         // Find all elements by name and create a list of paths
+        resolutions.add(LetIndex.getElements("make", project, null), false);
 
         // Gather instructions from element up to the file root
         Deque<PsiElement> instructions = ORReferenceAnalyzer.createInstructions(myElement, myTypes);

@@ -6,6 +6,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.*;
 import com.intellij.util.*;
 import com.reason.ide.files.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.*;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.psi.impl.*;
@@ -64,9 +65,16 @@ public class PsiUpperSymbolReference extends ORMultiSymbolReference<PsiUpperSymb
         //GlobalSearchScope scope = module == null ? GlobalSearchScope.projectScope(project) : GlobalSearchScope.moduleScope(module);
         GlobalSearchScope scope = GlobalSearchScope.allScope(project);
 
+        Collection<PsiModule> modules = ModuleIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiVariantDeclaration> variants = VariantIndex.getElements(myReferenceName, project, scope);
+        Collection<PsiException> exceptions = ExceptionIndex.getElements(myReferenceName, project, scope);
+
         long endIndexes = System.currentTimeMillis();
 
         ORElementResolver.Resolutions resolutions = project.getService(ORElementResolver.class).getComputation();
+        resolutions.add(modules, true);
+        resolutions.add(variants, false);
+        resolutions.add(exceptions, false);
 
         //if (LOG.isTraceEnabled()) {
         //    LOG.trace("  Resolutions", resolutions.myResolutions.values());

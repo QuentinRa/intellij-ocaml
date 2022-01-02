@@ -4,6 +4,7 @@ import com.intellij.lang.*;
 import com.intellij.psi.*;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.psi.*;
 import com.reason.lang.core.psi.impl.*;
 import com.reason.lang.core.stub.*;
@@ -88,6 +89,28 @@ public class PsiLetStubElementType extends ORStubElementType<PsiLetStub, PsiLet>
     }
 
     public void indexStub(@NotNull PsiLetStub stub, @NotNull IndexSink sink) {
+        List<String> deconstructionNames = stub.getDeconstructionNames();
+        if (deconstructionNames.isEmpty()) {
+            // Normal let
+
+            String name = stub.getName();
+            if (name != null) {
+                sink.occurrence(IndexKeys.LETS, name);
+            }
+
+            String fqn = stub.getQualifiedName();
+            sink.occurrence(IndexKeys.LETS_FQN, fqn.hashCode());
+        } else {
+            // Deconstruction
+
+            for (String name : deconstructionNames) {
+                sink.occurrence(IndexKeys.LETS, name);
+            }
+
+            for (String fqn : stub.getQualifiedNames()) {
+                sink.occurrence(IndexKeys.LETS_FQN, fqn.hashCode());
+            }
+        }
     }
 
     public @NotNull String getExternalId() {

@@ -2,7 +2,13 @@ package com.reason.lang.core.psi.reference;
 
 import com.intellij.openapi.*;
 import com.intellij.openapi.project.*;
+import com.intellij.openapi.util.*;
+import com.intellij.openapi.util.text.*;
+import com.intellij.psi.search.*;
+import com.intellij.psi.stubs.*;
 import com.intellij.psi.util.*;
+import com.intellij.util.*;
+import com.reason.ide.search.index.*;
 import com.reason.lang.core.psi.*;
 import jpsplugin.com.reason.*;
 import org.jetbrains.annotations.*;
@@ -22,7 +28,54 @@ public class ORElementResolver implements Disposable {
         CachedValuesManager cachedValuesManager = CachedValuesManager.getManager(project);
 
         myCachedIncludeDependencies = cachedValuesManager.createCachedValue(() -> {
+            Map<String, Set<Pair<String, String[]>>> topIncludedModules = new HashMap<>();
             Map<String, Set<String[]>> dependencies = new HashMap<>();
+
+            StubIndex stubIndex = StubIndex.getInstance();
+            stubIndex.processAllKeys(IndexKeys.INCLUDES, myProject, includePath -> {
+                stubIndex.processElements(IndexKeys.INCLUDES, includePath, myProject, null, PsiInclude.class, psiInclude -> {
+                    String[] includeQPath = psiInclude.getQualifiedPath();
+                    String[] resolvedPath = psiInclude.getResolvedPath();
+                    if (Arrays.equals(resolvedPath, includeQPath)) {
+                        // !? coq ?
+                        LOG.info("Equality with recursion found: " + psiInclude + " [" + Joiner.join(".", includeQPath) + "] in " + psiInclude.getContainingFile().getVirtualFile());
+                        return true;
+                    }
+
+                    Set<String[]> depPaths = dependencies.computeIfAbsent(includePath, k -> new TreeSet<>(ArrayUtil::lexicographicCompare));
+                    depPaths.add(includeQPath);
+
+                    String includeModuleName = includeQPath[0];
+
+                    if (resolvedPath == null) return false;
+
+                    Set<Pair<String, String[]>> alternatePaths = topIncludedModules.get(resolvedPath[0]);
+                    if (alternatePaths != null) {
+                        for (Pair<String, String[]> alternatePath : alternatePaths) {
+                            String alternateKey = alternatePath.first;
+                            Set<String[]> alternateDependencies = dependencies.get(alternateKey);
+                            String[] newPath = new String[alternatePath.second.length];
+                            System.arraycopy(alternatePath.second, 0, newPath, 0, alternatePath.second.length);
+                            newPath[0] = includeModuleName;
+                            alternateDependencies.add(newPath);
+                        }
+                    }
+
+                    Set<Pair<String, String[]>> topIncludes = topIncludedModules.computeIfAbsent(includeModuleName, k -> new TreeSet<>((o1, o2) -> {
+                        int compare = NaturalComparator.INSTANCE.compare(o1.first, o2.first);
+                        if (compare != 0) {
+                            return compare;
+                        }
+
+                        return ArrayUtil.lexicographicCompare(o1.second, o2.second);
+                    }));
+                    topIncludes.add(Pair.create(includePath, includeQPath));
+
+                    return true;
+                });
+                return true;
+            });
+
             return CachedValueProvider.Result.create(dependencies, PsiModificationTracker.MODIFICATION_COUNT);
         });
 
@@ -121,6 +174,37 @@ public class ORElementResolver implements Disposable {
                         resolution.myElements.add(source);
                     }
                 }
+            }
+
+            Project project = elements.iterator().next().getProject();
+            List<Resolution> aliasResolutions = new ArrayList<>();
+            for (Map.Entry<String, Map<String, Resolution>> entry : myResolutionsPerTopModule.entrySet()) {
+                String first = entry.getKey();
+                Collection<Resolution> resolutions = entry.getValue().values();
+
+                Collection<PsiModule> aliases = ModuleAliasedIndex.getElements(first, project, GlobalSearchScope.allScope(project));
+                for (PsiModule alias : aliases) {
+                    String[] aliasPath = alias.getQualifiedNameAsPath();
+                    for (Resolution resolution : resolutions) {
+                        Resolution aliasResolution = Resolution.createAlternate(resolution, aliasPath);
+                        aliasResolutions.add(aliasResolution);
+                    }
+                }
+            }
+
+            for (Resolution aliasResolution : aliasResolutions) {
+                String topModuleName = aliasResolution.getTopModuleName();
+                Map<String, Resolution> resolutionsPerQName = myResolutionsPerTopModule.get(topModuleName);
+                //noinspection Java8MapApi
+                if (resolutionsPerQName == null) {
+                    resolutionsPerQName = new HashMap<>();
+                    myResolutionsPerTopModule.put(topModuleName, resolutionsPerQName);
+                }
+
+                PsiQualifiedPathElement aliasElement = aliasResolution.myElements.get(0);
+                String aliasQName = aliasResolution.joinPath() + (aliasElement instanceof PsiModule ? "" : "." + aliasElement.getName());
+
+                resolutionsPerQName.put(aliasQName, aliasResolution);
             }
         }
 
@@ -225,7 +309,9 @@ public class ORElementResolver implements Disposable {
                 }
             }
 
-            myWeightPerLevel.putAll(newWeights);
+            for (Map.Entry<Integer, Integer> weightLevel : newWeights.entrySet()) {
+                myWeightPerLevel.put(weightLevel.getKey(), weightLevel.getValue());
+            }
         }
 
         public void udpateTerminalWeight(@NotNull String value) {

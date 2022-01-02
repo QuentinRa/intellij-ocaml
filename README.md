@@ -2,10 +2,10 @@
 
 [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
-This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugin), but **I'm tuning it for my personal use**. **I'm not planning to maintain this repository**, so you should work on the original plugin.
+This plugin is based on/explicitly using [ReasonML](https://github.com/giraud/reasonml-idea-plugin), but **I'm tuning it for my personal use**. **I'm not planning to maintain this repository**, so you should work on the original plugin.
 
 > **Created on**: Windows 10/11 for IntelliJ<br>
-> **Goal**: easy to install, complete, compatible in minor IDE, OCaml only. Use WSL+opam on Windows.
+> **Goal**: easy to install, complete, compatible in minor IDE, OCaml only. Use WSL+opam on Windows. Drop support for Dune, Esy, Reason, Bs, etc. (everything that was supported in the original plugin that was making the code hard for me to get started...).
 
 <hr>
 
@@ -96,7 +96,7 @@ This plugin is based on [ReasonML](https://github.com/giraud/reasonml-idea-plugi
 
 ### Parser
 
-* [ ] **Highlight**
+* [x] **Highlight**
   * [x] Keywords
   * [x] Comments
     * [x] Fix bug of the " in comment
