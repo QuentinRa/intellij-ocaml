@@ -81,6 +81,12 @@
         -->
         <notificationGroup id="OCaml Plugin" displayType="BALLOON"/>
         <notificationGroup id="OCaml Build Log" displayType="NONE"/>
+
+        <!--
+        | Features
+        -->
+        <lang.commenter language="OCaml" implementationClass="com.reason.ide.comment.OclCommenter"/>
+        <lang.braceMatcher language="OCaml" implementationClass="com.reason.ide.match.OclPairedBraceMatcher"/>
     </extensions>
 
 </idea-plugin>

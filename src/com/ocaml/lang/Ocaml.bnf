@@ -20,7 +20,7 @@
     psiImplPackage="com.ocaml.lang.core.psi.impl"
 
     tokens = [
-        // todo: annotations? records? double quotes?
+        // todo: records? double quotes?
 
         AND              =  'and'
         AS               =  'as'
