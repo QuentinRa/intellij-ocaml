@@ -2,10 +2,15 @@
 
 [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
-This plugin is based on/explicitly using [ReasonML](https://github.com/giraud/reasonml-idea-plugin), but **I'm tuning it for my personal use**. **I'm not planning to maintain this repository**, so you should work on the original plugin.
+This plugin is based on/explicitly using [ReasonML](https://github.com/giraud/reasonml-idea-plugin), but **I'm tuning it for my personal use** ("basically, it's my playground"). **I'm not planning to maintain this repository**, so you should improve the original plugin.
 
-> **Created on**: Windows 10/11 for IntelliJ<br>
-> **Goal**: easy to install, complete, compatible in minor IDE, OCaml only. Use WSL+opam on Windows. Drop support for Dune, Esy, Reason, Bs, etc. (everything that was supported in the original plugin that was making the code hard for me to get started...).
+> **Tested on**: Windows 10/11 on IntelliJ<br>
+> **Goal**: Easy to install, Complete, Compatible with minor IDE, OCaml only. Using WSL+opam on Windows. Dropping support for Dune, Esy, Reason, Bs, etc. (everything that was supported in the original plugin that was making the code hard for me to get started...).
+
+Improvements that I made in the original plugin:
+
+* [x] adding basic spellchecking
+* [x] adding file templates
 
 <hr>
 
@@ -104,7 +109,7 @@ This plugin is based on/explicitly using [ReasonML](https://github.com/giraud/re
   * [x] Char / String
   * [x] Operators
   * [x] Annotations
-* [ ] **Braces matching**
+* [x] **Braces matching** (and more...)
 * [ ] **Entry in Colors and Fonts**
   * [x] Can edit properties
   * [ ] OCaml code (actually: Reason)

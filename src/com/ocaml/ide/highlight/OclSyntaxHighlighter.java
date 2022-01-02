@@ -87,10 +87,9 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
             return OPTION_KEYS;
         } else if (BAD_CHARACTER.equals(tokenType)) {
             return BAD_CHAR_KEYS;
+        } else if (OclTypes.INSTANCE.ANNOTATION.equals(tokenType)) {
+            return ANNOTATION_KEYS;
         }
-        //else if (OclTypes.INSTANCE.ANNOTATION.equals(tokenType)) {
-        //    return ANNOTATION_KEYS;
-        //}
 
         return EMPTY_KEYS;
     }

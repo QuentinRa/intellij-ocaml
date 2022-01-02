@@ -99,6 +99,7 @@ public abstract class ORTypes {
 
   // Token element types
 
+  public ORTokenElementType ANNOTATION;
   public ORTokenElementType BOOL_VALUE;
   public ORTokenElementType STRING_VALUE;
   public ORTokenElementType FLOAT_VALUE;

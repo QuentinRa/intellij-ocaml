@@ -107,6 +107,7 @@ public class OclTypes extends ORTypes {
 
         // Token element types
 
+        ANNOTATION =  new ORTokenElementType("ANNOTATION", OclLanguage.INSTANCE);
         BOOL_VALUE = new ORTokenElementType("BOOL_VALUE", OclLanguage.INSTANCE);
         STRING_VALUE = new ORTokenElementType("STRING_VALUE", OclLanguage.INSTANCE);
         FLOAT_VALUE = new ORTokenElementType("FLOAT_VALUE", OclLanguage.INSTANCE);
