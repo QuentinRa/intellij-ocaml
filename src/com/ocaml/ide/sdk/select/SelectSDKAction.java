@@ -6,7 +6,7 @@ import com.intellij.openapi.project.*;
 import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.openapi.ui.popup.*;
 import com.intellij.openapi.vfs.*;
-import com.ocaml.ide.files.*;
+import com.reason.ide.files.*;
 import com.ocaml.ide.sdk.*;
 import org.jetbrains.annotations.*;
 

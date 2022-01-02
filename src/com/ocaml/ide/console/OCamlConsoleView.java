@@ -1,12 +1,11 @@
 package com.ocaml.ide.console;
 
 import com.intellij.execution.console.*;
-import com.intellij.execution.impl.*;
 import com.intellij.openapi.application.*;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.ex.*;
 import com.intellij.openapi.project.*;
-import com.ocaml.lang.ocaml.*;
+import com.reason.lang.ocaml.*;
 import org.jetbrains.annotations.*;
 
 public class OCamlConsoleView extends LanguageConsoleImpl {

@@ -14,9 +14,9 @@
          | File types
          -->
         <fileType extensions="mli" name="OCAML_INTF" fieldName="INSTANCE" language="OCaml"
-                  implementationClass="com.ocaml.ide.files.OclInterfaceFileType"/>
+                  implementationClass="com.reason.ide.files.OclInterfaceFileType"/>
         <fileType extensions="ml" name="OCAML" fieldName="INSTANCE" language="OCaml"
-                  implementationClass="com.ocaml.ide.files.OclFileType"/>
+                  implementationClass="com.reason.ide.files.OclFileType"/>
 
         <!--
          | Templates
@@ -40,9 +40,15 @@
         <!--
         | Parser
         -->
-        <lang.parserDefinition language="OCaml" implementationClass="com.ocaml.lang.OclParserDefinition"/>
+        <stubElementTypeHolder externalIdPrefix="OCaml." class="com.reason.lang.core.stub.OclStubBasedElementTypes"/>
+        <lang.ast.factory language="OCaml" implementationClass="com.reason.lang.ocaml.OclASTFactory"/>
+        <lang.parserDefinition language="OCaml" implementationClass="com.reason.lang.ocaml.OclParserDefinition"/>
+        <lang.parserDefinition language="OCaml" implementationClass="com.reason.lang.ocaml.OclParserDefinition"/>
         <lang.syntaxHighlighterFactory language="OCaml"
                                        implementationClass="com.ocaml.ide.highlight.OclSyntaxHighlighterFactory"/>
+        <projectService serviceImplementation="com.reason.lang.core.psi.reference.ORElementResolver"/>
+        <lang.elementManipulator forClass="com.reason.lang.core.psi.PsiLiteralExpression"
+                                 implementationClass="com.reason.lang.core.LiteralStringManipulator"/>
 
         <!--
          | OCaml module builder

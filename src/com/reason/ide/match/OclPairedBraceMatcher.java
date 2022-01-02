@@ -3,22 +3,22 @@ package com.reason.ide.match;
 import com.intellij.lang.*;
 import com.intellij.psi.*;
 import com.intellij.psi.tree.*;
-import com.ocaml.lang.core.psi.*;
+import com.reason.lang.ocaml.*;
 import org.jetbrains.annotations.*;
 
 public class OclPairedBraceMatcher implements PairedBraceMatcher {
     private static final BracePair[] PAIRS =
             new BracePair[]{ //
-                    new BracePair(OclTypes.LBRACE, OclTypes.RBRACE, false), //
-                    new BracePair(OclTypes.BEGIN, OclTypes.END, false), //
-                    new BracePair(OclTypes.STRUCT, OclTypes.END, false), //
-                    new BracePair(OclTypes.SIG, OclTypes.END, false), //
-                    new BracePair(OclTypes.OBJECT, OclTypes.END, false), //
-                    new BracePair(OclTypes.LPAREN, OclTypes.RPAREN, false),
-                    new BracePair(OclTypes.LBRACKET, OclTypes.RBRACKET, false),
-                    new BracePair(OclTypes.LARRAY, OclTypes.RARRAY, false), //
-                    new BracePair(OclTypes.LT, OclTypes.GT, false), //
-                    new BracePair(OclTypes.DO, OclTypes.DONE, false), //
+                    new BracePair(OclTypes.INSTANCE.LBRACE, OclTypes.INSTANCE.RBRACE, false), //
+                    new BracePair(OclTypes.INSTANCE.BEGIN, OclTypes.INSTANCE.END, false), //
+                    new BracePair(OclTypes.INSTANCE.STRUCT, OclTypes.INSTANCE.END, false), //
+                    new BracePair(OclTypes.INSTANCE.SIG, OclTypes.INSTANCE.END, false), //
+                    new BracePair(OclTypes.INSTANCE.OBJECT, OclTypes.INSTANCE.END, false), //
+                    new BracePair(OclTypes.INSTANCE.LPAREN, OclTypes.INSTANCE.RPAREN, false),
+                    new BracePair(OclTypes.INSTANCE.LBRACKET, OclTypes.INSTANCE.RBRACKET, false),
+                    new BracePair(OclTypes.INSTANCE.LARRAY, OclTypes.INSTANCE.RARRAY, false), //
+                    new BracePair(OclTypes.INSTANCE.LT, OclTypes.INSTANCE.GT, false), //
+                    new BracePair(OclTypes.INSTANCE.DO, OclTypes.INSTANCE.DONE, false), //
             };
 
     @Override

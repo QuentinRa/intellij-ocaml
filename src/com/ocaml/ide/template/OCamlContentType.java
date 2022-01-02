@@ -3,7 +3,7 @@ package com.ocaml.ide.template;
 import com.intellij.codeInsight.template.*;
 import com.intellij.psi.*;
 import com.intellij.psi.util.*;
-import com.ocaml.lang.ocaml.*;
+import com.reason.lang.ocaml.*;
 import org.jetbrains.annotations.*;
 
 /**

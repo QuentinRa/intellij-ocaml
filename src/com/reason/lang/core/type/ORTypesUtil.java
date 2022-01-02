@@ -1,0 +1,13 @@
+package com.reason.lang.core.type;
+
+import com.intellij.lang.Language;
+import com.reason.lang.ocaml.OclTypes;
+import org.jetbrains.annotations.NotNull;
+
+public final class ORTypesUtil {
+
+  @NotNull
+  public static ORTypes getInstance(@NotNull Language language) {
+    return OclTypes.INSTANCE;
+  }
+}

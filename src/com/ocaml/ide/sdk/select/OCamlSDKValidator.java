@@ -9,7 +9,7 @@ import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.vfs.*;
 import com.intellij.ui.*;
-import com.ocaml.ide.files.*;
+import com.reason.ide.files.*;
 import com.ocaml.ide.sdk.*;
 import org.jetbrains.annotations.*;
 

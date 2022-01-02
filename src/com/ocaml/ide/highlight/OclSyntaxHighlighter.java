@@ -5,8 +5,7 @@ import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.colors.*;
 import com.intellij.openapi.fileTypes.*;
 import com.intellij.psi.tree.*;
-import com.ocaml.lang.core.psi.*;
-import com.ocaml.lang.ocaml.*;
+import com.reason.lang.ocaml.*;
 import org.jetbrains.annotations.*;
 
 import java.util.*;
@@ -51,34 +50,34 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
     @Override public @NotNull Lexer getHighlightingLexer() {
-        return new OclLexerAdapter();
+        return new OclLexer();
     }
 
     @Override public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
-        if (tokenType.equals(OclTypes.MULTI_COMMENT) || tokenType.equals(OclTypes.SINGLE_COMMENT)) {
+        if (tokenType.equals(OclTypes.INSTANCE.MULTI_COMMENT) || tokenType.equals(OclTypes.INSTANCE.SINGLE_COMMENT)) {
             return COMMENT_KEYS;
-        } else if (tokenType.equals(OclTypes.LBRACE) || tokenType.equals(OclTypes.RBRACE)) {
+        } else if (tokenType.equals(OclTypes.INSTANCE.LBRACE) || tokenType.equals(OclTypes.INSTANCE.RBRACE)) {
             return BRACE_KEYS;
-        } else if (tokenType.equals(OclTypes.LBRACKET)
-                || tokenType.equals(OclTypes.RBRACKET)
-                || tokenType.equals(OclTypes.LARRAY)
-                || tokenType.equals(OclTypes.RARRAY)) {
+        } else if (tokenType.equals(OclTypes.INSTANCE.LBRACKET)
+                || tokenType.equals(OclTypes.INSTANCE.RBRACKET)
+                || tokenType.equals(OclTypes.INSTANCE.LARRAY)
+                || tokenType.equals(OclTypes.INSTANCE.RARRAY)) {
             return BRACKET_KEYS;
-        } else if (tokenType.equals(OclTypes.LPAREN) || tokenType.equals(OclTypes.RPAREN)) {
+        } else if (tokenType.equals(OclTypes.INSTANCE.LPAREN) || tokenType.equals(OclTypes.INSTANCE.RPAREN)) {
             return PAREN_KEYS;
-        } else if (tokenType.equals(OclTypes.INT_VALUE) || tokenType.equals(OclTypes.FLOAT_VALUE)) {
+        } else if (tokenType.equals(OclTypes.INSTANCE.INT_VALUE) || tokenType.equals(OclTypes.INSTANCE.FLOAT_VALUE)) {
             return NUMBER_KEYS;
-        } else if (OclTypes.DOT.equals(tokenType)) {
+        } else if (OclTypes.INSTANCE.DOT.equals(tokenType)) {
             return DOT_KEYS;
-        } else if (OclTypes.TYPE_ARGUMENT.equals(tokenType)) {
+        } else if (OclTypes.INSTANCE.TYPE_ARGUMENT.equals(tokenType)) {
             return TYPE_ARGUMENT_KEYS;
-        } else if (OclTypes.POLY_VARIANT.equals(tokenType)) {
+        } else if (OclTypes.INSTANCE.POLY_VARIANT.equals(tokenType)) {
             return POLY_VARIANT_KEYS;
-        } else if (OclTypes.COMMA.equals(tokenType)) {
+        } else if (OclTypes.INSTANCE.COMMA.equals(tokenType)) {
             return COMMA_KEYS;
-        } else if (OclTypes.SEMI.equals(tokenType) || OclTypes.SEMISEMI.equals(tokenType)) {
+        } else if (OclTypes.INSTANCE.SEMI.equals(tokenType) || OclTypes.INSTANCE.SEMISEMI.equals(tokenType)) {
             return SEMICOLON_KEYS;
-        } else if (OclTypes.STRING_VALUE.equals(tokenType) || OclTypes.CHAR_VALUE.equals(tokenType)) {
+        } else if (OclTypes.INSTANCE.STRING_VALUE.equals(tokenType) || OclTypes.INSTANCE.CHAR_VALUE.equals(tokenType)) {
             return STRING_KEYS;
         } else if (OCL_KEYWORD_TYPES.contains(tokenType)) {
             return KEYWORD_KEYS;
@@ -88,9 +87,10 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
             return OPTION_KEYS;
         } else if (BAD_CHARACTER.equals(tokenType)) {
             return BAD_CHAR_KEYS;
-        }  else if (OclTypes.ANNOTATION.equals(tokenType)) {
-            return ANNOTATION_KEYS;
         }
+        //else if (OclTypes.INSTANCE.ANNOTATION.equals(tokenType)) {
+        //    return ANNOTATION_KEYS;
+        //}
 
         return EMPTY_KEYS;
     }
@@ -104,121 +104,121 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
 
     private static final Set<IElementType> OCL_KEYWORD_TYPES =
             of(
-                    OclTypes.OPEN,
-                    OclTypes.MODULE,
-                    OclTypes.FUN,
-                    OclTypes.LET,
-                    OclTypes.TYPE,
-                    OclTypes.INCLUDE,
-                    OclTypes.EXTERNAL,
-                    OclTypes.IF,
-                    OclTypes.ELSE,
-                    OclTypes.ENDIF,
-                    OclTypes.SWITCH,
-                    OclTypes.TRY,
-                    OclTypes.RAISE,
-                    OclTypes.FOR,
-                    OclTypes.IN,
-                    OclTypes.TO,
-                    OclTypes.BOOL_VALUE,
-                    OclTypes.REF,
-                    OclTypes.EXCEPTION,
-                    OclTypes.WHEN,
-                    OclTypes.AND,
-                    OclTypes.REC,
-                    OclTypes.WHILE,
-                    OclTypes.ASR,
-                    OclTypes.CLASS,
-                    OclTypes.CONSTRAINT,
-                    OclTypes.DOWNTO,
-                    OclTypes.FUNCTOR,
-                    OclTypes.INHERIT,
-                    OclTypes.INITIALIZER,
-                    OclTypes.LAND,
-                    OclTypes.LOR,
-                    OclTypes.LSL,
-                    OclTypes.LSR,
-                    OclTypes.LXOR,
-                    OclTypes.METHOD,
-                    OclTypes.MOD,
-                    OclTypes.NEW,
-                    OclTypes.NONREC,
-                    OclTypes.OR,
-                    OclTypes.PRIVATE,
-                    OclTypes.VIRTUAL,
-                    OclTypes.AS,
-                    OclTypes.MUTABLE,
-                    OclTypes.OF,
-                    OclTypes.VAL,
-                    OclTypes.PRI,
+                    OclTypes.INSTANCE.OPEN,
+                    OclTypes.INSTANCE.MODULE,
+                    OclTypes.INSTANCE.FUN,
+                    OclTypes.INSTANCE.LET,
+                    OclTypes.INSTANCE.TYPE,
+                    OclTypes.INSTANCE.INCLUDE,
+                    OclTypes.INSTANCE.EXTERNAL,
+                    OclTypes.INSTANCE.IF,
+                    OclTypes.INSTANCE.ELSE,
+                    OclTypes.INSTANCE.ENDIF,
+                    OclTypes.INSTANCE.SWITCH,
+                    OclTypes.INSTANCE.TRY,
+                    OclTypes.INSTANCE.RAISE,
+                    OclTypes.INSTANCE.FOR,
+                    OclTypes.INSTANCE.IN,
+                    OclTypes.INSTANCE.TO,
+                    OclTypes.INSTANCE.BOOL_VALUE,
+                    OclTypes.INSTANCE.REF,
+                    OclTypes.INSTANCE.EXCEPTION,
+                    OclTypes.INSTANCE.WHEN,
+                    OclTypes.INSTANCE.AND,
+                    OclTypes.INSTANCE.REC,
+                    OclTypes.INSTANCE.WHILE,
+                    OclTypes.INSTANCE.ASR,
+                    OclTypes.INSTANCE.CLASS,
+                    OclTypes.INSTANCE.CONSTRAINT,
+                    OclTypes.INSTANCE.DOWNTO,
+                    OclTypes.INSTANCE.FUNCTOR,
+                    OclTypes.INSTANCE.INHERIT,
+                    OclTypes.INSTANCE.INITIALIZER,
+                    OclTypes.INSTANCE.LAND,
+                    OclTypes.INSTANCE.LOR,
+                    OclTypes.INSTANCE.LSL,
+                    OclTypes.INSTANCE.LSR,
+                    OclTypes.INSTANCE.LXOR,
+                    OclTypes.INSTANCE.METHOD,
+                    OclTypes.INSTANCE.MOD,
+                    OclTypes.INSTANCE.NEW,
+                    OclTypes.INSTANCE.NONREC,
+                    OclTypes.INSTANCE.OR,
+                    OclTypes.INSTANCE.PRIVATE,
+                    OclTypes.INSTANCE.VIRTUAL,
+                    OclTypes.INSTANCE.AS,
+                    OclTypes.INSTANCE.MUTABLE,
+                    OclTypes.INSTANCE.OF,
+                    OclTypes.INSTANCE.VAL,
+                    OclTypes.INSTANCE.PRI,
                     // OCaml
-                    OclTypes.MATCH,
-                    OclTypes.WITH,
-                    OclTypes.DO,
-                    OclTypes.DONE,
-                    //OclTypes.RECORD,
-                    OclTypes.BEGIN,
-                    OclTypes.END,
-                    OclTypes.LAZY,
-                    OclTypes.ASSERT,
-                    OclTypes.THEN,
-                    OclTypes.FUNCTION,
-                    OclTypes.STRUCT,
-                    OclTypes.SIG,
-                    OclTypes.OBJECT,
-                    OclTypes.DIRECTIVE_IF,
-                    OclTypes.DIRECTIVE_ELSE,
-                    OclTypes.DIRECTIVE_ELIF,
-                    OclTypes.DIRECTIVE_END,
-                    OclTypes.DIRECTIVE_ENDIF);
+                    OclTypes.INSTANCE.MATCH,
+                    OclTypes.INSTANCE.WITH,
+                    OclTypes.INSTANCE.DO,
+                    OclTypes.INSTANCE.DONE,
+                    //OclTypes.INSTANCE.RECORD,
+                    OclTypes.INSTANCE.BEGIN,
+                    OclTypes.INSTANCE.END,
+                    OclTypes.INSTANCE.LAZY,
+                    OclTypes.INSTANCE.ASSERT,
+                    OclTypes.INSTANCE.THEN,
+                    OclTypes.INSTANCE.FUNCTION,
+                    OclTypes.INSTANCE.STRUCT,
+                    OclTypes.INSTANCE.SIG,
+                    OclTypes.INSTANCE.OBJECT,
+                    OclTypes.INSTANCE.DIRECTIVE_IF,
+                    OclTypes.INSTANCE.DIRECTIVE_ELSE,
+                    OclTypes.INSTANCE.DIRECTIVE_ELIF,
+                    OclTypes.INSTANCE.DIRECTIVE_END,
+                    OclTypes.INSTANCE.DIRECTIVE_ENDIF);
 
     private static final Set<IElementType> OCL_OPERATION_SIGN_TYPES = of(
-            OclTypes.L_AND,
-            OclTypes.L_OR,
-            OclTypes.SHORTCUT,
-            OclTypes.ARROW,
-            OclTypes.PIPE_FORWARD,
-            OclTypes.EQEQEQ,
-            OclTypes.EQEQ,
-            OclTypes.EQ,
-            OclTypes.NOT_EQEQ,
-            OclTypes.NOT_EQ,
-            OclTypes.OP_STRUCT_DIFF,
-            OclTypes.COLON,
-            OclTypes.SINGLE_QUOTE,
-            //OclTypes.DOUBLE_QUOTE,
-            OclTypes.CARRET,
-            OclTypes.PLUSDOT,
-            OclTypes.MINUSDOT,
-            OclTypes.SLASHDOT,
-            OclTypes.STARDOT,
-            OclTypes.PLUS,
-            OclTypes.MINUS,
-            OclTypes.SLASH,
-            OclTypes.STAR,
-            OclTypes.PERCENT,
-            OclTypes.PIPE,
-            OclTypes.ARROBASE,
-            OclTypes.SHARP,
-            OclTypes.SHARPSHARP,
-            OclTypes.QUESTION_MARK,
-            OclTypes.EXCLAMATION_MARK,
-            OclTypes.LT_OR_EQUAL,
-            OclTypes.GT_OR_EQUAL,
-            OclTypes.AMPERSAND,
-            OclTypes.LEFT_ARROW,
-            OclTypes.RIGHT_ARROW,
-            OclTypes.COLON_EQ,
-            OclTypes.COLON_GT,
-            OclTypes.GT,
-            //OclTypes.GT_BRACE,
-            //OclTypes.GT_BRACKET,
-            //OclTypes.BRACKET_GT,
-            //OclTypes.BRACKET_LT,
-            //OclTypes.BRACE_LT,
-            OclTypes.DOTDOT
+            OclTypes.INSTANCE.L_AND,
+            OclTypes.INSTANCE.L_OR,
+            OclTypes.INSTANCE.SHORTCUT,
+            OclTypes.INSTANCE.ARROW,
+            OclTypes.INSTANCE.PIPE_FORWARD,
+            OclTypes.INSTANCE.EQEQEQ,
+            OclTypes.INSTANCE.EQEQ,
+            OclTypes.INSTANCE.EQ,
+            OclTypes.INSTANCE.NOT_EQEQ,
+            OclTypes.INSTANCE.NOT_EQ,
+            OclTypes.INSTANCE.OP_STRUCT_DIFF,
+            OclTypes.INSTANCE.COLON,
+            OclTypes.INSTANCE.SINGLE_QUOTE,
+            //OclTypes.INSTANCE.DOUBLE_QUOTE,
+            OclTypes.INSTANCE.CARRET,
+            OclTypes.INSTANCE.PLUSDOT,
+            OclTypes.INSTANCE.MINUSDOT,
+            OclTypes.INSTANCE.SLASHDOT,
+            OclTypes.INSTANCE.STARDOT,
+            OclTypes.INSTANCE.PLUS,
+            OclTypes.INSTANCE.MINUS,
+            OclTypes.INSTANCE.SLASH,
+            OclTypes.INSTANCE.STAR,
+            OclTypes.INSTANCE.PERCENT,
+            OclTypes.INSTANCE.PIPE,
+            OclTypes.INSTANCE.ARROBASE,
+            OclTypes.INSTANCE.SHARP,
+            OclTypes.INSTANCE.SHARPSHARP,
+            OclTypes.INSTANCE.QUESTION_MARK,
+            OclTypes.INSTANCE.EXCLAMATION_MARK,
+            OclTypes.INSTANCE.LT_OR_EQUAL,
+            OclTypes.INSTANCE.GT_OR_EQUAL,
+            OclTypes.INSTANCE.AMPERSAND,
+            OclTypes.INSTANCE.LEFT_ARROW,
+            OclTypes.INSTANCE.RIGHT_ARROW,
+            OclTypes.INSTANCE.COLON_EQ,
+            OclTypes.INSTANCE.COLON_GT,
+            OclTypes.INSTANCE.GT,
+            //OclTypes.INSTANCE.GT_BRACE,
+            //OclTypes.INSTANCE.GT_BRACKET,
+            //OclTypes.INSTANCE.BRACKET_GT,
+            //OclTypes.INSTANCE.BRACKET_LT,
+            //OclTypes.INSTANCE.BRACE_LT,
+            OclTypes.INSTANCE.DOTDOT
     );
 
     private static final Set<IElementType> OCL_OPTIONS_TYPES =
-            of(OclTypes.NONE, OclTypes.SOME);
+            of(OclTypes.INSTANCE.NONE, OclTypes.INSTANCE.SOME);
 }
