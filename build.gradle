@@ -1,0 +1,104 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.jetbrains.intellij' version '1.3.0'
+    id 'org.jetbrains.grammarkit' version '2021.1.3'
+    id 'net.saliman.properties' version '1.5.1'
+    id 'org.gradle.test-retry' version '1.3.1'
+}
+
+// The same as `--stacktrace` param
+gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
+
+var platformVersion = property("platformVersion") as Integer
+var baseIDE = property("baseIDE")
+var baseVersion = property("ideaVersion")
+
+// plugins to List
+String psiViewerPlugin = "PsiViewer:"+property("psiViewerPluginVersion")
+String indicesPlugin = "com.jetbrains.hackathon.indices.viewer:"+property("indicesVersion")
+String javaPlugin = "com.intellij.java"
+String javaIdePlugin = "com.intellij.java.ide"
+ArrayList<String> ideaPlugins = new ArrayList<>();
+ideaPlugins.add(psiViewerPlugin);
+ideaPlugins.add(indicesPlugin);
+ideaPlugins.add(javaPlugin);
+ideaPlugins.add(javaIdePlugin);
+
+apply plugin: "idea"
+apply plugin: "org.jetbrains.grammarkit"
+apply plugin: "org.jetbrains.intellij"
+apply plugin: "org.gradle.test-retry"
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    all {
+        // Allows using project dependencies instead of IDE dependencies
+        // during compilation and test running
+        resolutionStrategy.sortArtifacts(ResolutionStrategy.SortOrder.DEPENDENCY_FIRST)
+    }
+}
+
+// set version
+var versionSuffix = "-"+platformVersion
+var majorVersion = property("majorVersion")
+var minorVersion = property("minorVersion")
+var patchVersion = property("patchVersion")
+version = "$majorVersion.$minorVersion.$patchVersion$versionSuffix" as String
+
+// optinos for IntelliJ
+intellij {
+    version = baseVersion
+    pluginName = "intellij-ocaml"
+    downloadSources = true
+    updateSinceUntilBuild = true
+    plugins = ideaPlugins
+    sandboxDir = "$buildDir/$baseIDE-sandbox-$platformVersion"
+}
+
+grammarKit {
+    grammarKitRelease = "2021.1.2"
+}
+
+// Java Version -> use constant ?
+sourceCompatibility = '11.0'
+// encoding
+compileJava.options.encoding = 'UTF-8'
+
+// We are defining that the src/resources folders
+// which are both a "main" folder inside resources/src/tests
+// and a folder such as "212" or "213"
+sourceSets {
+    main.java.srcDirs = ["src/$platformVersion", "src/main"]
+    main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
+    test.java.srcDirs = ["test/$platformVersion/", "test/main"]
+    test.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
+}
+
+buildPlugin {
+    // Set proper name for final plugin zip.
+    // Otherwise, base name is the same as gradle module name
+    archiveBaseName.set("intellij-ocaml")
+}
+
+runIde {
+    systemProperty 'idea.is.internal', true
+
+    // Default args for IDEA installation
+    jvmArgs("-Xmx768m", "-XX:+UseConcMarkSweepGC", "-XX:SoftRefLRUPolicyMSPerMB=50")
+    // Disable plugin auto reloading. See `com.intellij.ide.plugins.DynamicPluginVfsListener`
+    jvmArgs("-Didea.auto.reload.plugins=false")
+    // Don't show "Tip of the Day" at startup
+    jvmArgs("-Dide.show.tips.on.startup.default.value=false")
+
+    // Uncomment to enable localization testing mode
+    // jvmArgs("-Didea.l10n=true")
+}
+
+// https://plugins.jetbrains.com/docs/intellij/api-changes-list.html
+runPluginVerifier {
+    ideVersions = [baseVersion]
+}
