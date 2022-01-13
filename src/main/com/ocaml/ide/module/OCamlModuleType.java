@@ -1,10 +1,11 @@
-package com.ocaml.ide.projectWizard;
+package com.ocaml.ide.module;
 
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.*;
 import com.ocaml.*;
 import com.ocaml.icons.*;
+import com.ocaml.ide.projectWizard.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;

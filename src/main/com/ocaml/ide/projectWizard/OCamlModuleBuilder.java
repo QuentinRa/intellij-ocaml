@@ -6,6 +6,7 @@ import com.intellij.openapi.module.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
+import com.ocaml.ide.module.*;
 import com.ocaml.ide.sdk.*;
 import org.jetbrains.annotations.*;
 

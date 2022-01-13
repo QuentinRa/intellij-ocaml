@@ -18,7 +18,8 @@
         <!-- Add your extensions here -->
         <!-- MODULE -->
         <moduleBuilder builderClass="com.ocaml.ide.projectWizard.OCamlModuleBuilder" order="first"/>
-        <moduleType implementationClass="com.ocaml.ide.projectWizard.OCamlModuleType"/>
+        <moduleType id="OCAML_MODULE" implementationClass="com.ocaml.ide.module.OCamlModuleType"/>
+        <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
 
         <!-- SDK -->
         <sdkType implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
