@@ -9,14 +9,9 @@ plugins {
 // The same as `--stacktrace` param
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
 
-var platformVersion = property("platformVersion") as Integer
-var baseIDE = property("baseIDE")
-var baseVersion = property("ideaVersion")
-
 apply plugin: 'java'
-apply plugin: 'org.jetbrains.grammarkit'
 apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'org.gradle.test-retry'
+apply plugin: 'org.jetbrains.grammarkit'
 
 repositories {
     mavenCentral()
@@ -30,29 +25,23 @@ configurations {
     }
 }
 
-// set version
-var versionSuffix = "-"+platformVersion
-var majorVersion = property("majorVersion")
-var minorVersion = property("minorVersion")
-var patchVersion = property("patchVersion")
-version = "$majorVersion.$minorVersion.$patchVersion$versionSuffix" as String
+group = 'com.ocaml'
+version = "$majorVersion.$minorVersion.$patchVersion-$platformVersion" as String
 
-// options for IntelliJ
 intellij {
-    version = baseVersion
+    version = ideaVersion
     pluginName = "intellij-ocaml"
-    downloadSources = true
-    updateSinceUntilBuild = true
     plugins = [
             'java',
-            'PsiViewer:'+property("psiViewerPluginVersion"),
-            'com.jetbrains.hackathon.indices.viewer:'+property("indicesVersion")
+            'com.jetbrains.hackathon.indices.viewer:'+indicesVersion,
+            'PsiViewer:'+psiViewerPluginVersion
     ]
-    sandboxDir = "$buildDir/$baseIDE-sandbox-$platformVersion"
+    downloadSources = true
+    sandboxDir = "$buildDir/idea-sandbox-$platformVersion"
 
     patchPluginXml {
-        sinceBuild = property("sinceBuild")
-        untilBuild = property("untilBuild")
+        sinceBuild = pluginSinceBuild
+        untilBuild = pluginUntilBuild
         changeNotes = """
                 Add changes notes here.
             """.stripIndent()
@@ -60,7 +49,7 @@ intellij {
 }
 
 grammarKit {
-    grammarKitRelease = "2021.1.2"
+    grammarKitRelease = '2021.1.2'
 }
 
 sourceCompatibility = '11.0'
@@ -98,5 +87,5 @@ runIde {
 
 // https://plugins.jetbrains.com/docs/intellij/api-changes-list.html
 runPluginVerifier {
-    ideVersions = [baseVersion]
+    ideVersions = [ideaVersion]
 }
