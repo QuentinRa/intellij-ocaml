@@ -1,4 +1,4 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
+<idea-plugin>
     <id>intellij-ocaml</id>
     <name>OCaml</name>
     <vendor email="admin@lgs-games.com" url="https://github.com/memorize-code/ocaml-plugin-intellij">QuentinRa</vendor>

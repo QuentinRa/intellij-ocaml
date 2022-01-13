@@ -1,8 +1,0 @@
-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="true">
-    <xi:include href="/META-INF/ocaml-core.xml" xpointer="xpointer(/idea-plugin/*)"/>
-
-    <change-notes><![CDATA[
-        Add changes notes here.<br>
-        ]]>
-    </change-notes>
-</idea-plugin>
