@@ -26,6 +26,30 @@ On Linux, I will directly use ocaml and/or opam, for the reasons mentioned above
 
 I'm also planning to allow someone to compile on a remote host. This is an experimental feature, hence I'm not sure how it will go, but I will try.
 
+## 🚀 Features
+
+| Setup                                                    |
+|----------------------------------------------------------|
+| ❌ Set the project SDK, you can use it in a module        |
+| ❌ Set the SDK for a module                               |
+| ✅ Set the output folder for the project                  |
+| ✅ Set the output folder for the module                   |
+| ❌ The project is created from a template with src...     |
+| ❌ The project is created with a default runConfiguration |
+| 😬 You can add libraries for a module (wizard+editor)    |
+
+Once basics are done, you will be able to create an OCaml Project with a default project. You may later use "Project Structure" to set things like the output folder if needed, either for the project or each module.
+
+| SDK                                                              |
+|------------------------------------------------------------------|
+| ✅ You can pick you OCaml SDK                                     |
+| ❌ The SDK is verified                                            |
+| ❌ The user can either pick a SDK (opam) or use a binary          |
+| ❌ The sources are indexed, can add more sources (autocompletion) |
+| 😬 You can download OCaml                                        |
+
+In this part, you are now able to add OCaml SDKs. You may go to "Project Structure" and SDKs to manage them. You will be able to add/remove sources, which are used for autocompletion.
+
 ## 📄 License
 
 This project is [MIT licensed](LICENSE).
