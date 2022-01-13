@@ -16,7 +16,8 @@ import org.jetbrains.annotations.*;
  * You may use this to move this module
  * to the top in the list, if needed (ex: 100).
  *
- * @see JavaModuleBuilder
+ * -- getGroupName / getParentGroup
+ * You may use this if this module is inside a group.
  */
 public class OCamlModuleBuilder extends ModuleBuilder {
 
