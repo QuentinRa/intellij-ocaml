@@ -13,17 +13,21 @@ import java.awt.*;
  * But, I changed some code so that we are setting the SDK for the project
  * (if we are creating a project) or a module (else).
  *
- * -------------- OCamlCompilerWizardStep ----------
+ * <br>-------------- OCamlCompilerWizardStep ----------<br>
  * I changed the texts in the Labels.
  *
- * -------------- updateDataModel --------------
+ * <br>-------------- updateDataModel --------------<br>
  * Now, the function is checking if we already create a project.
  * If we did, then we are setting the project SDK,
  * otherwise, we are setting the module SDK.
  *
- * todo: ensure that the SDK was set for the module
+ * to do: ensure that the SDK was set for the module
  *  if we are setting the project SDK.
+ *
+ * @deprecated this is not enough for what we need.
+ * @see OCamlSdkWizardStep
  */
+@Deprecated(since = "0.0.2")
 public class OCamlCompilerWizardStep extends ProjectJdkForModuleStep {
     private final WizardContext myWizardContext;
     private final OCamlModuleBuilder myModuleBuilder;

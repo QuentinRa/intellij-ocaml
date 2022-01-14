@@ -41,6 +41,6 @@ public class OCamlModuleBuilder extends ModuleBuilder {
     }
 
     @Nullable @Override public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-        return new OCamlCompilerWizardStep(context, this);
+        return new OCamlSdkWizardStep(context, this);
     }
 }
