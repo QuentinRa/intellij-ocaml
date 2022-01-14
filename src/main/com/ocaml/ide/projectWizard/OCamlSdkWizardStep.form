@@ -86,7 +86,7 @@
                   <text resource-bundle="messages/OCamlBundle" key="project.wizard.ocaml.binary"/>
                 </properties>
               </component>
-              <component id="64997" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="myOcamlBinLocation">
+              <component id="64997" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="myOCamlLocation">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -132,11 +132,13 @@
                   <text resource-bundle="messages/OCamlBundle" key="project.wizard.ocamlc.binary"/>
                 </properties>
               </component>
-              <component id="b3c66" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="myOCamlCompilerLocation">
+              <component id="b26f5" class="javax.swing.JLabel" binding="myOCamlCompilerLocation">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <text value=""/>
+                </properties>
               </component>
             </children>
           </grid>
@@ -146,7 +148,6 @@
             </constraints>
             <properties>
               <enabled value="true"/>
-              <foreground color="-4508630"/>
               <text resource-bundle="messages/OCamlBundle" key="project.wizard.create.opam.warning"/>
               <visible value="false"/>
             </properties>

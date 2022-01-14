@@ -1,17 +1,20 @@
 package com.ocaml.ide.projectWizard;
 
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.project.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
 import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
+import com.intellij.openapi.vfs.*;
 import com.intellij.ui.*;
 import com.ocaml.*;
-import com.ocaml.comp.*;
-import com.ocaml.comp.opam.*;
+import com.ocaml.compiler.*;
+import com.ocaml.compiler.opam.*;
 import com.ocaml.ide.sdk.*;
+import com.ocaml.utils.listener.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;
@@ -44,21 +47,25 @@ import java.awt.*;
  * Features of the class
  * <ul>
  *     <li><b>KO</b>: can add/use an SDK using the JdkComboBox</li>
+ *     <li><b>KO</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
  *     <li><b>OK</b>: prefill the ocaml binary location</li>
  *     <li><b>OK</b>: prefill the ocamlc binary location</li>
  *     <li><b>OK</b>: prefill the ocaml version</li>
  *     <li><b>OK</b>: prefill the sources location</li>
- *     <li><b>KO</b>: fill the ocamlc binary location when ocaml binary location is defined</li>
- *     <li><b>KO</b>: fill the ocaml version when the ocaml binary location is defined</li>
- *     <li><b>KO</b>: fill the ocaml version when the ocaml binary location is defined</li>
+ *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined</li>
+ *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined</li>
+ *     <li><b>KO</b>: add a loading icon</li>
+ *     <li><b>KO</b>: add a check (valid/invalid) icon, as we have in CLion</li>
  *     <li><b>KO</b>: check that everything is valid</li>
+ *     <li><b>KO</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  * </ul>
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;
     @NotNull private final OCamlModuleBuilder myModuleBuilder;
     @NotNull private JPanel myPanel;
+    private Project myProject;
 
     @SuppressWarnings("unused") private PanelWithText myInstructionsLabel;
     private JLabel myLabelSdk; // to prompt "Project" or "Module"
@@ -73,8 +80,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     private JPanel myCreateComponents;
     private JLabel myOcamlVersion;
     private TextFieldWithBrowseButton mySdkSources;
-    private TextFieldWithBrowseButton myOcamlBinLocation;
-    private TextFieldWithBrowseButton myOCamlCompilerLocation;
+    private TextFieldWithBrowseButton myOCamlLocation;
+    private JLabel myOCamlCompilerLocation;
     private JLabel myOpamWarning;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
@@ -103,17 +110,44 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
         // Detect and prefill fields
         OCamlDetector.detectBinaries(output -> {
-            myOcamlBinLocation.setText(output.ocaml);
+            myOCamlLocation.setText(output.ocaml);
             myOCamlCompilerLocation.setText(output.ocamlCompiler);
             mySdkSources.setText(output.sources);
             myOcamlVersion.setText(output.version);
         });
 
+        // On Field Updated (manually)
+        DeferredDocumentListener.addDeferredDocumentListener(
+                myOCamlLocation.getTextField(),
+                e -> onOCamlLocationChange(), 1000);
+        // On File selected
+        myOCamlLocation.addBrowseFolderListener(
+                new TextBrowseFolderListener(FileChooserDescriptorFactory.createSingleFolderDescriptor(), myProject) {
+                    @SuppressWarnings("UnstableApiUsage")
+                    @Override protected void onFileChosen(@NotNull VirtualFile chosenFile) {
+                        super.onFileChosen(chosenFile);
+                        onOCamlLocationChange();
+                    }
+                }
+        );
+
+        // Set the foreground using a JBColor
         myOpamWarning.setForeground(JBColor.RED);
     }
 
+    // update the two other labels once the ocaml location was set
+    private void onOCamlLocationChange() {
+        String path = myOCamlLocation.getText();
+        myOCamlCompilerLocation.setText(path.replace("/bin/ocaml", "/bin/ocamlc"));
+        OCamlUtils.ocamlCompilerVersion(myOCamlCompilerLocation.getText(), v -> {
+            myOcamlVersion.setText(v);
+            showWarning();
+        });
+    }
+
+    // show the warning "opam ..." if needed
     private void showWarning() {
-        boolean show = !isUseSelected && OpamUtils.isOpamBinary(myOcamlBinLocation.getText());
+        boolean show = !isUseSelected && OpamUtils.isOpamBinary(myOCamlCompilerLocation.getText());
         myOpamWarning.setVisible(show);
     }
 
@@ -131,7 +165,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @Override public void updateDataModel() {
         Sdk sdk;
         if (!isUseSelected) {
-            // todo: ...
             throw new UnsupportedOperationException("creating SDK not supported yet.");
         } else {
             sdk = myJdkChooser.getSelectedJdk();
@@ -147,9 +180,14 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         }
     }
 
+    // create components, needed by the ".form" since some must be created manually.
+    // called before the rest of the constructor, after initializing the first two variables
+    // that's why this code can't be moved in the constructor.
+    // Moreover, variables that are initialized by the ".form" are also null here.
     public void createUIComponents() {
         Project project = myWizardContext.getProject();
         project = project != null ? project : ProjectManager.getInstance().getDefaultProject();
+        myProject = project;
 
         final ProjectStructureConfigurable projectConfig = ProjectStructureConfigurable.getInstance(project);
         ProjectSdksModel sdksModel = projectConfig.getProjectJdksModel();
