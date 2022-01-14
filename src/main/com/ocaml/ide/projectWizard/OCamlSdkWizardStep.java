@@ -1,7 +1,9 @@
 package com.ocaml.ide.projectWizard;
 
+import com.intellij.ide.*;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.fileChooser.*;
+import com.intellij.openapi.options.*;
 import com.intellij.openapi.project.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ui.configuration.*;
@@ -47,7 +49,7 @@ import java.awt.*;
  * Features of the class
  * <ul>
  *     <li><b>KO</b>: can add/use an SDK using the JdkComboBox</li>
- *     <li><b>KO</b>: can create an SDK using the other fields</li>
+ *     <li><b>OK</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
  *     <li><b>OK</b>: prefill the ocaml binary location</li>
  *     <li><b>OK</b>: prefill the ocamlc binary location</li>
@@ -57,8 +59,9 @@ import java.awt.*;
  *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined</li>
  *     <li><b>KO</b>: add a loading icon</li>
  *     <li><b>KO</b>: add a check (valid/invalid) icon, as we have in CLion</li>
- *     <li><b>KO</b>: check that everything is valid</li>
- *     <li><b>KO</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
+ *     <li><b>OK</b>: check that everything is valid</li>
+ *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
+ *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
  * </ul>
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
@@ -83,6 +86,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     private TextFieldWithBrowseButton myOCamlLocation;
     private JLabel myOCamlCompilerLocation;
     private JLabel myOpamWarning;
+    private Sdk createSDK;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
                               @NotNull OCamlModuleBuilder moduleBuilder) {
@@ -122,7 +126,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                 e -> onOCamlLocationChange(), 1000);
         // On File selected
         myOCamlLocation.addBrowseFolderListener(
-                new TextBrowseFolderListener(FileChooserDescriptorFactory.createSingleFolderDescriptor(), myProject) {
+                new TextBrowseFolderListener(FileChooserDescriptorFactory.createSingleFileDescriptor(), myProject) {
                     @SuppressWarnings("UnstableApiUsage")
                     @Override protected void onFileChosen(@NotNull VirtualFile chosenFile) {
                         super.onFileChosen(chosenFile);
@@ -138,11 +142,17 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     // update the two other labels once the ocaml location was set
     private void onOCamlLocationChange() {
         String path = myOCamlLocation.getText();
+        // Linux
         myOCamlCompilerLocation.setText(path.replace("/bin/ocaml", "/bin/ocamlc"));
+        // Windows
+        myOCamlCompilerLocation.setText(path.replace("\\bin\\ocaml", "\\bin\\ocamlc"));
+        // we are waiting for a version
+        myOcamlVersion.setText("");
         OCamlUtils.ocamlCompilerVersion(myOCamlCompilerLocation.getText(), v -> {
             myOcamlVersion.setText(v);
-            showWarning();
         });
+        // opam warning
+        showWarning();
     }
 
     // show the warning "opam ..." if needed
@@ -163,12 +173,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     }
 
     @Override public void updateDataModel() {
-        Sdk sdk;
-        if (!isUseSelected) {
-            throw new UnsupportedOperationException("creating SDK not supported yet.");
-        } else {
-            sdk = myJdkChooser.getSelectedJdk();
-        }
+        Sdk sdk = getSdk();
 
         // are we inside a project?
         boolean isProject = myWizardContext.getProject() == null;
@@ -180,22 +185,54 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         }
     }
 
+    private Sdk getSdk() { return isUseSelected ? myJdkChooser.getSelectedJdk() : createSDK; }
+
+    @Override public void updateStep() {
+    }
+
+    @Override public @Nullable Icon getIcon() {
+        return myWizardContext.getStepIcon();
+    }
+
+    @Override public boolean validate() throws ConfigurationException {
+        final Sdk sdk;
+        if (isUseSelected) sdk = myJdkChooser.getSelectedJdk();
+        else {
+            sdk = OCamlSdkUtils.createSdk(
+                    myOCamlLocation.getText(),
+                    myOcamlVersion.getText(),
+                    myOCamlCompilerLocation.getText(),
+                    mySdkSources.getText()
+            );
+            createSDK = sdk;
+        }
+
+        if (sdk == null) {
+            int result = Messages.showOkCancelDialog(JavaUiBundle.message("prompt.confirm.project.no.jdk"),
+                            JavaUiBundle.message("title.no.jdk.specified"),
+                            Messages.getOkButton(),
+                            Messages.getCancelButton(),
+                            Messages.getWarningIcon());
+            return result == Messages.OK;
+        }
+        return true;
+    }
+
     // create components, needed by the ".form" since some must be created manually.
     // called before the rest of the constructor, after initializing the first two variables
     // that's why this code can't be moved in the constructor.
     // Moreover, variables that are initialized by the ".form" are also null here.
     public void createUIComponents() {
-        Project project = myWizardContext.getProject();
-        project = project != null ? project : ProjectManager.getInstance().getDefaultProject();
-        myProject = project;
+        myProject = myWizardContext.getProject();
+        myProject = myProject != null ? myProject : ProjectManager.getInstance().getDefaultProject();
 
-        final ProjectStructureConfigurable projectConfig = ProjectStructureConfigurable.getInstance(project);
+        final ProjectStructureConfigurable projectConfig = ProjectStructureConfigurable.getInstance(myProject);
         ProjectSdksModel sdksModel = projectConfig.getProjectJdksModel();
 
         SdkType type = OCamlSdkType.getInstance();
         Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof SdkType && (type == null || type.equals(sdk));
 
-        myJdkChooser = new JdkComboBox(project,
+        myJdkChooser = new JdkComboBox(myProject,
                 sdksModel,
                 sdkTypeFilter,
                 null,
