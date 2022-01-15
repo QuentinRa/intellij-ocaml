@@ -41,14 +41,14 @@ public class OCamlSdkUtilsTest extends OCamlBaseTest {
     protected static final String N_OCAML_SOURCES_FOLDER_WSL = "\\\\wsl$\\Fedora\\usr\\lib\\ocaml";
 
     // assuming that ocaml IS installed on this path
-    protected static final String V_OCAML_BINARY_WIN = "C:\\cygwin64\\bin\\ocaml";
-    protected static final String V_OCAML_COMPILER_WIN = "C:\\cygwin64\\bin\\ocamlc";
+    protected static final String V_OCAML_BINARY_WIN = "C:\\cygwin64\\bin\\ocaml.exe";
+    protected static final String V_OCAML_COMPILER_WIN = "C:\\cygwin64\\bin\\ocamlc.exe";
     protected static final String V_OCAML_VERSION_WIN = "4.10.0";
     protected static final String V_OCAML_SOURCES_FOLDER_WIN = "C:\\cygwin64\\lib\\ocaml";
 
     // assuming that ocaml IS NOT installed on this path
-    protected static final String I_OCAML_BINARY_WIN = "C:\\cygwin\\bin\\ocaml";
-    protected static final String I_OCAML_COMPILER_WIN = "C:\\cygwin\\bin\\ocamlc";
+    protected static final String I_OCAML_BINARY_WIN = "C:\\cygwin\\bin\\ocaml.exe";
+    protected static final String I_OCAML_COMPILER_WIN = "C:\\cygwin\\bin\\ocamlc.exe";
     protected static final String I_OCAML_VERSION_WIN = "4.10.0";
     protected static final String I_OCAML_SOURCES_FOLDER_WIN = "C:\\cygwin\\lib\\ocaml";
 
@@ -146,17 +146,15 @@ public class OCamlSdkUtilsTest extends OCamlBaseTest {
     }
     // WSL: 3/5, every value is valid
     @Test
-    public void testSourceValidFormatWSL() {
+    public void testValidFormatWSL() {
         CreateSdkParams params = CreateSdkParams.validWSL();
         assertConfigurationOK(params);
     }
     // WSL: 4/5, every value is valid, but the WSL do not exist
     @Test
-    public void testSourceInvalidWSL() {
+    public void testInvalidWSL() {
         CreateSdkParams params = CreateSdkParams.nonExistingWSL();
-        assertConfigurationFailed(
-                OCamlBundle.message("sdk.path.binary.wsl.invalid", N_NAME_WSL), params
-        );
+        assertConfigurationFailed(OCamlBundle.message("sdk.path.binary.wsl.invalid", N_NAME_WSL), params);
     }
     // WSL: 5/5, valid, but sources' folder ends with a trailing slash
     @Test
@@ -181,7 +179,7 @@ public class OCamlSdkUtilsTest extends OCamlBaseTest {
     }
     // Windows: 3/4, every value is valid
     @Test
-    public void testSourceValidFormatWin() {
+    public void testValidFormatWin() {
         CreateSdkParams params = CreateSdkParams.validWin();
         assertConfigurationOK(params);
     }
@@ -191,5 +189,51 @@ public class OCamlSdkUtilsTest extends OCamlBaseTest {
         CreateSdkParams params = CreateSdkParams.validWin();
         params.ocamlSources += "\\";
         assertConfigurationOK(params);
+    }
+
+    //
+    // The binary is assumed to be valid, but the path may or not exists
+    //
+
+    // WSL: see testValidFormatWSL
+    // WSL: see testSourceExtraFolderSeparatorWSL
+    @Test
+    public void testBinaryNotFoundWSL() {
+        CreateSdkParams params = CreateSdkParams.invalidWSL();
+        assertConfigurationFailed(OCamlBundle.message("sdk.ocaml.binary.not.found"), params);
+    }
+    @Test
+    public void testCompilerNotFoundWSL() {
+        CreateSdkParams params = CreateSdkParams.invalidWSL();
+        params.ocamlBinary = V_OCAML_BINARY_WSL;
+        assertConfigurationFailed(OCamlBundle.message("sdk.ocaml.compiler.not.found"), params);
+    }
+    @Test
+    public void testSourcesNotFoundWSL() {
+        CreateSdkParams params = CreateSdkParams.invalidWSL();
+        params.ocamlBinary = V_OCAML_BINARY_WSL;
+        params.ocamlCompiler = V_OCAML_COMPILER_WSL;
+        assertConfigurationFailed(OCamlBundle.message("sdk.ocaml.sources.not.found"), params);
+    }
+
+    // Windows: see testValidFormatWin
+    // Windows: see testSourceExtraFolderSeparatorWin
+    @Test
+    public void testBinaryNotFoundWin() {
+        CreateSdkParams params = CreateSdkParams.invalidWin();
+        assertConfigurationFailed(OCamlBundle.message("sdk.ocaml.binary.not.found"), params);
+    }
+    @Test
+    public void testCompilerNotFoundWin() {
+        CreateSdkParams params = CreateSdkParams.invalidWin();
+        params.ocamlBinary = V_OCAML_BINARY_WIN;
+        assertConfigurationFailed(OCamlBundle.message("sdk.ocaml.compiler.not.found"), params);
+    }
+    @Test
+    public void testSourcesNotFoundWin() {
+        CreateSdkParams params = CreateSdkParams.invalidWin();
+        params.ocamlBinary = V_OCAML_BINARY_WIN;
+        params.ocamlCompiler = V_OCAML_COMPILER_WIN;
+        assertConfigurationFailed(OCamlBundle.message("sdk.ocaml.sources.not.found"), params);
     }
 }

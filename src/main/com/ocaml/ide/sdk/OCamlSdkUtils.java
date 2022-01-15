@@ -1,28 +1,32 @@
 package com.ocaml.ide.sdk;
 
+import com.intellij.execution.*;
+import com.intellij.execution.configurations.*;
+import com.intellij.execution.wsl.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.projectRoots.*;
-import com.intellij.util.*;
 import com.ocaml.*;
+import com.ocaml.utils.files.*;
 import org.jetbrains.annotations.*;
 
 import java.io.*;
 import java.nio.file.*;
 
-/**
- * Todo: tests for this class
- * Todo: files must be checked on the WSL if we are using a WSL
- * Todo: must work on Windows too
- * Todo: must work on Linux too
- */
+//else {
+//    // handle Windows, WSL not found, and Linux
+//    throw new ConfigurationException("Not supported yet.");
+//}
+// todo: improve error message if "\\" instead of "/"
+// todo: ocamlopt (fallback)
+// todo: .exe allowed
 public final class OCamlSdkUtils {
 
     /**
      * Create an SDK or raise an exception with some information
      * as to why the creation failed.
      *
-     * @param ocamlBinary must ends with <code>/bin/ocaml</code>
-     * @param ocamlCompilerBinary must ends with <code>/bin/ocamlc</code>
+     * @param ocamlBinary must ends with <code>/bin/ocaml</code> (.exe allowed)
+     * @param ocamlCompilerBinary must ends with <code>/bin/ocamlc</code> (.exe allowed)
      * @param ocamlSourcesFolder ex: <code>/usr/lib/ocaml</code> or <code>/lib/ocaml</code> for opam.
      *                           Must ends with <code>/lib/ocaml</code>
      * @return an SDK, null if there is no data to create an SDK
@@ -32,35 +36,104 @@ public final class OCamlSdkUtils {
                                 @NotNull String version,
                                 @NotNull String ocamlCompilerBinary,
                                 @NotNull String ocamlSourcesFolder) throws ConfigurationException {
-        if (version.isEmpty()) // todo: translate
-            throw new ConfigurationException("No OCaml version. Please, wait until we detect the version of ocaml.");
-        if (!PathUtil.toSystemIndependentName(ocamlBinary).endsWith("/bin/ocaml"))
-            throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.binary.invalid"));
-        // the user can set the compiler path, so we are good for this one
-        // todo: check library folder
+        System.out.println("here with1:"+ocamlBinary);
+        System.out.println("here with2:"+version);
+        System.out.println("here with3:"+ocamlCompilerBinary);
+        System.out.println("here with4:"+ocamlSourcesFolder);
 
-        String homePath;
+        if (version.isEmpty())
+            throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.version.empty"));
 
-        try {
-            Path ocamlBinaryPath = Path.of(ocamlBinary);
-            // Path ocamlCompilerPath = Path.of(ocamlCompilerBinary);
-            // ocaml
-            File file = ocamlBinaryPath.toFile();
-            if (!file.exists() || !file.isFile() || !file.canExecute())
-                throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.binary.not.exist"));
-            // ocaml compiler
-            //file = ocamlCompilerPath.toFile();
-            //if (!file.exists() || !file.isFile() || !file.canExecute())
-            //    throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.compiler.not.exist"));
+        WslPath wslPath = WslPath.parseWindowsUncPath(ocamlBinary);
+        WSLDistribution distribution = null;
+        if (wslPath != null) {
+            distribution = wslPath.getDistribution();
+            if (distribution.getVersion() == -1)
+                throw new ConfigurationException(OCamlBundle.message("sdk.path.binary.wsl.invalid", distribution.getPresentableName()));
+            ocamlBinary = distribution.getWslPath(ocamlBinary);
+            if (ocamlBinary == null) ocamlBinary = "";
+            ocamlCompilerBinary = distribution.getWslPath(ocamlCompilerBinary);
+            if (ocamlCompilerBinary == null) ocamlCompilerBinary = "";
+            ocamlSourcesFolder = distribution.getWslPath(ocamlSourcesFolder);
+            if (ocamlSourcesFolder == null) ocamlSourcesFolder = "";
 
-            // assuming that we are in /bin/ocaml
-            // the root is / so the parent of our parent
-            homePath = file.getParentFile().getParent();
-        } catch (Exception e) {
-            throw new ConfigurationException(e.getMessage());
+            System.out.println("now with1:"+ocamlBinary);
+            System.out.println("now with2:"+ocamlCompilerBinary);
+            System.out.println("now with3:"+ocamlSourcesFolder);
         }
 
-        return createSdk(homePath, version, ocamlBinary, ocamlCompilerBinary, ocamlSourcesFolder);
+        // Check paths valid
+        if (!OCamlPathUtils.fileEndsWith(ocamlBinary, "/bin/ocaml", ".exe"))
+            throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.binary.invalid"));
+        if (!OCamlPathUtils.folderEndsWith(ocamlSourcesFolder,"/lib/ocaml")) // folder, can end with a /
+            throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.sources.folder.invalid"));
+
+        // Check file exists
+        int exitCode = -4;
+        if (distribution != null) {
+            try {
+                GeneralCommandLine cli = new GeneralCommandLine("true");
+                WSLCommandLineOptions wslCommandLineOptions = new WSLCommandLineOptions();
+                wslCommandLineOptions.addInitCommand(
+                        "(if [ -f "+ocamlBinary+" ]; then" +
+                        " if [ -f "+ocamlCompilerBinary+" ]; then" +
+                        " if [ -d "+ocamlSourcesFolder+" ]; then echo 0; else echo -3; fi;" +
+                        " else echo -2; fi;" +
+                        " else echo -1; fi;)"
+                );
+                cli = distribution.patchCommandLine(cli, null, wslCommandLineOptions);
+                Process process = cli.createProcess();
+                process.waitFor();
+                exitCode = Integer.parseInt(
+                        new String(process.getInputStream().readAllBytes()).replace("\n", "")
+                );
+            } catch (ExecutionException | InterruptedException | IOException e) {
+                throw new ConfigurationException("Unexpected error:"+e.getMessage());
+            }
+        } else {
+            try {
+                File file = Path.of(ocamlBinary).toFile();
+                if (!file.exists() || !file.isFile()) exitCode = -1;
+                else {
+                    file = Path.of(ocamlCompilerBinary).toFile();
+                    if (!file.exists() || !file.isFile()) {
+                        // try again with opt
+                        ocamlCompilerBinary = ocamlCompilerBinary.replace("ocamlc.exe", "ocamlopt");
+                        ocamlCompilerBinary = ocamlCompilerBinary.replace("ocamlc", "ocamlopt");
+                        file = Path.of(ocamlCompilerBinary).toFile();
+                        if (!file.exists()) { // issue: no extension = not a file?
+                            // try again with opt.exe
+                            ocamlCompilerBinary = ocamlCompilerBinary.replace("ocamlopt", "ocamlopt.exe");
+                            file = Path.of(ocamlCompilerBinary).toFile();
+                            if (!file.exists() || !file.isFile()) exitCode = -2;
+                        }
+                    }
+
+                    if (exitCode == -4) {
+                        file = Path.of(ocamlSourcesFolder).toFile();
+                        if (!file.exists() || !file.isDirectory()) exitCode = -3;
+                        else {
+                            exitCode = 0; // OK
+                        }
+                    }
+                }
+            } catch (InvalidPathException e) {
+                throw new ConfigurationException("Unexpected error:"+e.getMessage());
+            }
+        }
+
+        switch (exitCode) {
+            case -1:
+                throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.binary.not.found"));
+            case -2:
+                throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.compiler.not.found"));
+            case -3:
+                throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.sources.not.found"));
+            case -4:
+                throw new IllegalStateException("Couldn't check if the path exists. Please report this error.");
+        }
+
+        return null;
     }
 
     private static Sdk createSdk(String homePath, String version, String ocamlBinary,

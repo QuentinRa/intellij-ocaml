@@ -63,6 +63,7 @@ import java.awt.*;
  *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
  *     <li><b>KO</b>: add a label "an opam-like SDK will be created in ~/.jdks"
+ *     <li><b>KO</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml
  * </ul>
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
