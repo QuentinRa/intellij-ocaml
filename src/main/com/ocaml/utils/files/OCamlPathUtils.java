@@ -3,6 +3,8 @@ package com.ocaml.utils.files;
 import com.intellij.util.*;
 import org.jetbrains.annotations.*;
 
+import java.nio.file.*;
+
 public final class OCamlPathUtils {
 
     /**
@@ -36,5 +38,16 @@ public final class OCamlPathUtils {
     public static boolean fileEndsWith(String path, String end, @Nullable String extension) {
         return PathUtil.toSystemIndependentName(path).endsWith(end)
                 || (extension != null && PathUtil.toSystemIndependentName(path).endsWith(end+extension));
+    }
+
+    public static boolean createSymbolicLink(String src, String dest, String ... args) {
+        try {
+            Path link = Path.of(dest, args);
+            Path target = Path.of(src);
+            Files.createSymbolicLink(link, target);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 }

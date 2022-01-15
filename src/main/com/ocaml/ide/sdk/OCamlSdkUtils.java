@@ -3,8 +3,10 @@ package com.ocaml.ide.sdk;
 import com.intellij.execution.*;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.wsl.*;
+import com.intellij.openapi.application.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.util.io.*;
 import com.ocaml.*;
 import com.ocaml.utils.files.*;
 import org.jetbrains.annotations.*;
@@ -12,14 +14,9 @@ import org.jetbrains.annotations.*;
 import java.io.*;
 import java.nio.file.*;
 
-//else {
-//    // handle Windows, WSL not found, and Linux
-//    throw new ConfigurationException("Not supported yet.");
-//}
-// todo: improve error message if "\\" instead of "/"
-// todo: ocamlopt (fallback)
-// todo: .exe allowed
 public final class OCamlSdkUtils {
+
+    public static final String JDK_FOLDER = "~/.jdks/ocaml";
 
     /**
      * Create an SDK or raise an exception with some information
@@ -32,15 +29,10 @@ public final class OCamlSdkUtils {
      * @return an SDK, null if there is no data to create an SDK
      * @throws ConfigurationException if the data is invalid
      */
-    public static @Nullable Sdk createSdk(@NotNull String ocamlBinary,
-                                @NotNull String version,
-                                @NotNull String ocamlCompilerBinary,
-                                @NotNull String ocamlSourcesFolder) throws ConfigurationException {
-        System.out.println("here with1:"+ocamlBinary);
-        System.out.println("here with2:"+version);
-        System.out.println("here with3:"+ocamlCompilerBinary);
-        System.out.println("here with4:"+ocamlSourcesFolder);
-
+    public static @NotNull Sdk createSdk(@NotNull String ocamlBinary,
+                                         @NotNull String version,
+                                         @NotNull String ocamlCompilerBinary,
+                                         @NotNull String ocamlSourcesFolder) throws ConfigurationException {
         if (version.isEmpty())
             throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.version.empty"));
 
@@ -56,10 +48,6 @@ public final class OCamlSdkUtils {
             if (ocamlCompilerBinary == null) ocamlCompilerBinary = "";
             ocamlSourcesFolder = distribution.getWslPath(ocamlSourcesFolder);
             if (ocamlSourcesFolder == null) ocamlSourcesFolder = "";
-
-            System.out.println("now with1:"+ocamlBinary);
-            System.out.println("now with2:"+ocamlCompilerBinary);
-            System.out.println("now with3:"+ocamlSourcesFolder);
         }
 
         // Check paths valid
@@ -97,15 +85,13 @@ public final class OCamlSdkUtils {
                 else {
                     file = Path.of(ocamlCompilerBinary).toFile();
                     if (!file.exists() || !file.isFile()) {
-                        // try again with opt
-                        ocamlCompilerBinary = ocamlCompilerBinary.replace("ocamlc.exe", "ocamlopt");
-                        ocamlCompilerBinary = ocamlCompilerBinary.replace("ocamlc", "ocamlopt");
-                        file = Path.of(ocamlCompilerBinary).toFile();
-                        if (!file.exists()) { // issue: no extension = not a file?
-                            // try again with opt.exe
-                            ocamlCompilerBinary = ocamlCompilerBinary.replace("ocamlopt", "ocamlopt.exe");
+                        if (ocamlCompilerBinary.endsWith(".exe")) {
+                            // try again without .exe
+                            ocamlCompilerBinary = ocamlCompilerBinary.replace("ocamlc.exe", "ocamlc");
                             file = Path.of(ocamlCompilerBinary).toFile();
-                            if (!file.exists() || !file.isFile()) exitCode = -2;
+                            if (!file.exists()) { // issue: no extension = not a file?
+                                exitCode = -2;
+                            }
                         }
                     }
 
@@ -130,64 +116,69 @@ public final class OCamlSdkUtils {
             case -3:
                 throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.sources.not.found"));
             case -4:
-                throw new IllegalStateException("Couldn't check if the path exists. Please report this error.");
+                throw new IllegalStateException("Couldn't check that files exist. Please report this error.");
         }
 
-        return null;
-    }
+        File jdksFolder = new File(FileUtil.expandUserHome(JDK_FOLDER));
+        String homePath = null;
 
-    private static Sdk createSdk(String homePath, String version, String ocamlBinary,
-                                 String ocamlCompilerBinary, String ocamlSourcesFolder) {
-        //String sdkName = OCamlSdkType.suggestSdkName(version);
-        //File file = new File(FileUtil.expandUserHome("~/.jdks"));
-        //File sdkHome = FileUtil.findSequentNonexistentFile(file, sdkName.toLowerCase(), "");
-        //System.out.println("sdkHome exists?"+sdkHome.exists());
-        //System.out.println("sdkHome exists?"+sdkHome.getAbsolutePath());
-        //WslPath p = WslPath.parseWindowsUncPath(ocamlBinary);
-        //if (p != null) {
-        //    try {
-        //        String binFolder = "~/.jdks/"+sdkHome.getName()+"/bin";
-        //        String libFolder = "~/.jdks/"+sdkHome.getName()+"/lib";
-        //
-        //        WSLDistribution distribution = p.getDistribution();
-        //        homePath = distribution.getWslPath(sdkHome.getAbsolutePath());
-        //        String ocamlBinaryWSL = distribution.getWslPath(ocamlBinary);
-        //        String ocamlCompilerWSL = distribution.getWslPath(ocamlCompilerBinary);
-        //        String ocamlSourcesFolderWSL = distribution.getWslPath(ocamlSourcesFolder);
-        //
-        //        WSLCommandLineOptions wslCommandLineOptions = new WSLCommandLineOptions();
-        //        // the order will be reversed, so we need to put the last commands first
-        //        wslCommandLineOptions.addInitCommand("ln -s "+ocamlSourcesFolderWSL+" "+libFolder+"/ocaml/");
-        //        wslCommandLineOptions.addInitCommand("ln -s "+ocamlCompilerWSL+" "+binFolder+"/ocamlc");
-        //        wslCommandLineOptions.addInitCommand("ln -s "+ocamlBinaryWSL+" "+binFolder+"/ocaml");
-        //        wslCommandLineOptions.addInitCommand("mkdir -p "+libFolder+"/ocaml");
-        //        wslCommandLineOptions.addInitCommand("mkdir -p "+binFolder);
-        //
-        //        GeneralCommandLine generalCommandLine = distribution.patchCommandLine(
-        //                new GeneralCommandLine("true"),
-        //                null,
-        //                wslCommandLineOptions
-        //        );
-        //        Process process = generalCommandLine.createProcess();
-        //        process.waitFor();
-        //    } catch (ExecutionException | InterruptedException e) {
-        //        throw new ConfigurationException(e.getMessage());
-        //    }
-        //}
-        //
-        ////Sdk sdk = ProjectJdkTable.getInstance().createSdk(
-        ////        OCamlSdkType.suggestSdkName(version),
-        ////        OCamlSdkType.getInstance()
-        ////);
-        ////SdkModificator sdkModificator = sdk.getSdkModificator();
-        ////sdkModificator.setHomePath(homePath);
-        ////sdkModificator.setVersionString(version);
-        //// todo: add sources
-        //// todo: commit changes
-        //System.out.println("homePath:"+homePath);
-        //System.out.println("version:"+version);
-        //return null;
-        return null;
+        // create the "opam-like" SDK
+        if (distribution != null) {
+            String sdkFolder = JDK_FOLDER+"/"+version;
+            try {
+                WSLCommandLineOptions wslCommandLineOptions = new WSLCommandLineOptions();
+                // the order will be reversed, so we need to put the last commands first
+                wslCommandLineOptions.addInitCommand("echo -n "+sdkFolder+"-v$i");
+                wslCommandLineOptions.addInitCommand("ln -s "+ocamlSourcesFolder+" "+sdkFolder+"-v$i/lib/");
+                wslCommandLineOptions.addInitCommand("ln -s "+ocamlCompilerBinary+" "+sdkFolder+"-v$i/bin/ocamlc");
+                wslCommandLineOptions.addInitCommand("ln -s "+ocamlBinary+" "+sdkFolder+"-v$i/bin/ocaml");
+                wslCommandLineOptions.addInitCommand("mkdir -p "+sdkFolder+"-v$i/lib/");
+                wslCommandLineOptions.addInitCommand("mkdir -p "+sdkFolder+"-v$i/bin");
+                wslCommandLineOptions.addInitCommand("i=0; while true; do if [ ! -d "+sdkFolder+"-v$i ]; then break; else i=$((i+1)); fi done");
+                GeneralCommandLine cli = distribution.patchCommandLine(new GeneralCommandLine("true"), null, wslCommandLineOptions);
+                Process process = cli.createProcess();
+                // wait, then parse the result of "echo", or fail
+                if (process.waitFor() == 0) {
+                    String out = new String(process.getInputStream().readAllBytes());
+                    if (!out.isEmpty() && distribution.getUserHome() != null) {
+                        homePath = out.replace("~", distribution.getUserHome());
+                        homePath = distribution.getWindowsPath(homePath).trim();
+                    } else
+                        throw new ExecutionException("Invalid home path.");
+                } else {
+                    throw new ExecutionException(new String(process.getErrorStream().readAllBytes()));
+                }
+            } catch (ExecutionException | InterruptedException | IOException e) {
+                throw new ConfigurationException("Unknown error (create SDK):"+e.getMessage());
+            }
+        } else {
+            File sdkFolder = FileUtil.findSequentNonexistentFile(jdksFolder, version+"-v", "");
+            boolean ok = sdkFolder.mkdir();
+            ok = ok && new File(sdkFolder, "bin").mkdir();
+            ok = ok && new File(sdkFolder, "lib").mkdir();
+            ok = ok && OCamlPathUtils.createSymbolicLink(ocamlBinary, sdkFolder.getPath(), "bin", "ocaml");
+            ok = ok && OCamlPathUtils.createSymbolicLink(ocamlCompilerBinary, sdkFolder.getPath(), "bin", "ocamlc");
+            ok = ok && OCamlPathUtils.createSymbolicLink(ocamlSourcesFolder, sdkFolder.getPath(), "lib", "ocaml");
+            if (ok) homePath = sdkFolder.getAbsolutePath();
+        }
+
+        if (homePath == null)
+            throw new ConfigurationException(OCamlBundle.message("sdk.create.failed", JDK_FOLDER));
+
+        // Finally, we are creating the SDK
+        ProjectJdkTable projectJdkTable = ProjectJdkTable.getInstance();
+        Sdk sdk = projectJdkTable.createSdk(
+                OCamlSdkType.suggestSdkName(version),
+                OCamlSdkType.getInstance()
+        );
+        SdkModificator sdkModificator = sdk.getSdkModificator();
+        sdkModificator.setHomePath(homePath);
+        sdkModificator.setVersionString(version);
+        ApplicationManager.getApplication().invokeAndWait(() -> {
+            sdkModificator.commitChanges();
+            projectJdkTable.addJdk(sdk);
+        });
+        return sdk;
     }
 
 }

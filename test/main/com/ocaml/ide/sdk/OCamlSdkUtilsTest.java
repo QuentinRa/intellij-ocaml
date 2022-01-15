@@ -236,4 +236,18 @@ public class OCamlSdkUtilsTest extends OCamlBaseTest {
         params.ocamlCompiler = V_OCAML_COMPILER_WIN;
         assertConfigurationFailed(OCamlBundle.message("sdk.ocaml.sources.not.found"), params);
     }
+
+    //
+    // Folders were created, the SDK is valid
+    //
+    @Test
+    public void testCreationWindows() {
+        CreateSdkParams params = CreateSdkParams.validWin();
+        assertConfigurationOK(params);
+    }
+    @Test
+    public void testCreationWSL() {
+        CreateSdkParams params = CreateSdkParams.validWSL();
+        assertConfigurationOK(params);
+    }
 }

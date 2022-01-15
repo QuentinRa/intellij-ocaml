@@ -64,6 +64,8 @@ import java.awt.*;
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
  *     <li><b>KO</b>: add a label "an opam-like SDK will be created in ~/.jdks"
  *     <li><b>KO</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml
+ *     <li><b>KO</b>: allow the user of ocaml.exe
+ *     <li><b>KO</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)
  * </ul>
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
