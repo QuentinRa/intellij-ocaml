@@ -174,10 +174,7 @@ public final class OCamlSdkUtils {
         SdkModificator sdkModificator = sdk.getSdkModificator();
         sdkModificator.setHomePath(homePath);
         sdkModificator.setVersionString(version);
-        ApplicationManager.getApplication().invokeAndWait(() -> {
-            sdkModificator.commitChanges();
-            projectJdkTable.addJdk(sdk);
-        });
+        ApplicationManager.getApplication().invokeAndWait(sdkModificator::commitChanges);
         return sdk;
     }
 

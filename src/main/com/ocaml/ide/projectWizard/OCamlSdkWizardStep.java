@@ -2,6 +2,7 @@ package com.ocaml.ide.projectWizard;
 
 import com.intellij.ide.*;
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.openapi.application.*;
 import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.project.*;
@@ -48,7 +49,8 @@ import java.awt.*;
  *
  * Features of the class
  * <ul>
- *     <li><b>KO</b>: can add/use an SDK using the JdkComboBox</li>
+ *     <li><b>OK</b>: can add/use an SDK using the JdkComboBox</li>
+ *     <li><b>KO</b>: the JDKComboBox must be loaded with the existing JDKs</li>
  *     <li><b>OK</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
  *     <li><b>OK</b>: prefill the ocaml binary location</li>
@@ -90,6 +92,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     private TextFieldWithBrowseButton myOCamlLocation;
     private JLabel myOCamlCompilerLocation;
     private JLabel myOpamWarning;
+    private JLabel myWizardTitle;
     private Sdk createSDK;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
@@ -99,7 +102,9 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
         // are we inside a project?
         boolean isProject = myWizardContext.getProject() == null;
-        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", isProject ? "Project" : "Module"));
+        String word = OCamlBundle.message(isProject ? "project.up.first" : "module.up.first");
+        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", word));
+        myWizardTitle.setText(OCamlBundle.message("project.wizard.title", word));
         myLabelSdk.setLabelFor(myJdkChooser);
 
         // Disable create
@@ -178,9 +183,19 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
     @Override public void updateDataModel() {
         Sdk sdk = getSdk();
+        // ensure name if "valid"
+        if (!sdk.getName().equals(OCamlSdkType.suggestSdkName(sdk.getVersionString()))) {
+            SdkModificator sdkModificator = sdk.getSdkModificator();
+            sdkModificator.setName(OCamlSdkType.suggestSdkName(sdk.getVersionString()));
+            ApplicationManager.getApplication().invokeAndWait(sdkModificator::commitChanges);
+        }
 
         // are we inside a project?
         boolean isProject = myWizardContext.getProject() == null;
+
+        // Add to the table
+        ProjectJdkTable projectJdkTable = ProjectJdkTable.getInstance();
+        ApplicationManager.getApplication().invokeAndWait(() -> projectJdkTable.addJdk(sdk));
 
         if (isProject) {
             myWizardContext.setProjectJdk(sdk);

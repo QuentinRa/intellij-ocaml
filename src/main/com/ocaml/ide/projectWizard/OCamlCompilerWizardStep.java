@@ -50,7 +50,12 @@ public class OCamlCompilerWizardStep extends ProjectJdkForModuleStep {
         // was: "Project SDK:"
         c = component.getComponent(1);
         if (c instanceof JLabel)
-            ((JLabel) c).setText(OCamlBundle.message("module.prompt.sdk", isProject ? "Project" : "Module"));
+            ((JLabel) c).setText(OCamlBundle.message(
+                    "module.prompt.sdk",
+                    isProject ?
+                            OCamlBundle.message("project.up.first") :
+                            OCamlBundle.message("module.up.first")
+            ));
     }
 
     @Override public void updateDataModel() {
