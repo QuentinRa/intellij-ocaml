@@ -1,0 +1,11 @@
+_notes_
+.gradle/
+!.idea/
+.idea/*
+!.idea/codeStyles/
+!.idea/google-java-format.xml
+out/
+bin/
+build/
+gen/
+*.iml
