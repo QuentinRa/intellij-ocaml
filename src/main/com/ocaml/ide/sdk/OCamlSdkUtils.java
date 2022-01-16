@@ -3,6 +3,7 @@ package com.ocaml.ide.sdk;
 import com.intellij.execution.*;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.wsl.*;
+import com.intellij.openapi.application.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
@@ -26,14 +27,13 @@ public final class OCamlSdkUtils {
      * @param ocamlCompilerBinary must ends with <code>/bin/ocamlc</code> (.exe allowed)
      * @param ocamlSourcesFolder ex: <code>/usr/lib/ocaml</code> or <code>/lib/ocaml</code> for opam.
      *                           Must ends with <code>/lib/ocaml</code>
-     * @return an SDK, null if there is no data to create an SDK
+     * @return the data that will be used to create an SDK, null if there is no data to create an SDK
      * @throws ConfigurationException if the data is invalid
      */
-    public static @NotNull Sdk createSdk(@NotNull String ocamlBinary,
+    public static @NotNull CustomCamlSdkData createSdk(@NotNull String ocamlBinary,
                                          @NotNull String version,
                                          @NotNull String ocamlCompilerBinary,
-                                         @NotNull String ocamlSourcesFolder,
-                                         @NotNull ProjectSdksModel sdksModel) throws ConfigurationException {
+                                         @NotNull String ocamlSourcesFolder) throws ConfigurationException {
         if (version.isEmpty())
             throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.version.empty"));
 
@@ -166,8 +166,19 @@ public final class OCamlSdkUtils {
         if (homePath == null)
             throw new ConfigurationException(OCamlBundle.message("sdk.create.failed", JDK_FOLDER));
 
-        // Finally, we are creating the SDK
-        return sdksModel.createSdk(OCamlSdkType.getInstance(), OCamlSdkType.suggestSdkName(version), homePath);
+        return new CustomCamlSdkData(OCamlSdkType.suggestSdkName(version), homePath);
+    }
+
+    public static final class CustomCamlSdkData {
+        public final String name;
+        public final String homePath;
+        public final OCamlSdkType type;
+
+        public CustomCamlSdkData(String name, String homePath) {
+            this.name = name;
+            this.homePath = homePath;
+            this.type = OCamlSdkType.getInstance();
+        }
     }
 
 }

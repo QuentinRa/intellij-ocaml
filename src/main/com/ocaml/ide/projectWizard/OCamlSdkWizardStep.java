@@ -3,7 +3,6 @@ package com.ocaml.ide.projectWizard;
 import com.intellij.*;
 import com.intellij.ide.*;
 import com.intellij.ide.util.projectWizard.*;
-import com.intellij.openapi.application.*;
 import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.project.*;
@@ -95,6 +94,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     private JLabel myWizardTitle;
     private Sdk createSDK;
     private ProjectSdksModel mySdksModel;
+    private OCamlSdkUtils.CustomCamlSdkData myCustomSdkData;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
                               @NotNull OCamlModuleBuilder moduleBuilder) {
@@ -158,9 +158,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOCamlCompilerLocation.setText(path.replace("\\bin\\ocaml", "\\bin\\ocamlc"));
         // we are waiting for a version
         myOcamlVersion.setText("");
-        OCamlUtils.ocamlCompilerVersion(myOCamlCompilerLocation.getText(), v -> {
-            myOcamlVersion.setText(v);
-        });
+        OCamlUtils.ocamlCompilerVersion(myOCamlCompilerLocation.getText(), v -> myOcamlVersion.setText(v));
         // opam warning
         showWarning();
     }
@@ -208,35 +206,33 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
      * @see ProjectJdkForModuleStep
      */
     @Override public boolean validate() throws ConfigurationException {
-        final Sdk sdk;
-        if (isUseSelected) sdk = myJdkChooser.getSelectedJdk();
+        //final Sdk sdk;
+        boolean sdkSelected = true;
+        if (isUseSelected) sdkSelected = myJdkChooser.getSelectedJdk() != null;
         else {
-            sdk = OCamlSdkUtils.createSdk(
+            myCustomSdkData = OCamlSdkUtils.createSdk(
                     myOCamlLocation.getText(),
                     myOcamlVersion.getText(),
                     myOCamlCompilerLocation.getText(),
-                    mySdkSources.getText(),
-                    mySdksModel
+                    mySdkSources.getText()
             );
-            createSDK = sdk;
         }
 
-        if (sdk == null) {
+        if (!sdkSelected) {
             int result = Messages.showOkCancelDialog(JavaUiBundle.message("prompt.confirm.project.no.jdk"),
                             JavaUiBundle.message("title.no.jdk.specified"),
                             Messages.getOkButton(),
                             Messages.getCancelButton(),
                             Messages.getWarningIcon());
             return result == Messages.OK;
-        } // change name
-        else if (!sdk.getName().equals(OCamlSdkType.suggestSdkName(sdk.getVersionString()))) {
-            SdkModificator sdkModificator = sdk.getSdkModificator();
-            sdkModificator.setName(OCamlSdkType.suggestSdkName(sdk.getVersionString()));
-            ApplicationManager.getApplication().invokeAndWait(sdkModificator::commitChanges);
         }
-
-        // add it to the model
-        if (!isUseSelected) mySdksModel.addSdk(createSDK);
+        if (!isUseSelected) {
+            mySdksModel.addSdk(
+                    myCustomSdkData.type,
+                    myCustomSdkData.homePath,
+                    sdk -> createSDK = sdk // save
+            );
+        }
 
         try {
             mySdksModel.apply(null, true);
