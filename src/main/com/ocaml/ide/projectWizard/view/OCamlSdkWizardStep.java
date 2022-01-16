@@ -1,4 +1,4 @@
-package com.ocaml.ide.projectWizard;
+package com.ocaml.ide.projectWizard.view;
 
 import com.intellij.*;
 import com.intellij.ide.*;
@@ -16,6 +16,7 @@ import com.intellij.ui.*;
 import com.ocaml.*;
 import com.ocaml.compiler.*;
 import com.ocaml.compiler.opam.*;
+import com.ocaml.ide.projectWizard.*;
 import com.ocaml.ide.sdk.*;
 import com.ocaml.utils.listener.*;
 import org.jetbrains.annotations.*;
@@ -78,23 +79,22 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @SuppressWarnings("unused") private PanelWithText myInstructionsLabel;
     private JLabel myLabelSdk; // to prompt "Project" or "Module"
 
-    // choice
-    private ButtonGroup myUseSdkChoice;
-    private boolean isUseSelected;
-    // use
-    @NotNull private JdkComboBox myJdkChooser;
-    // create
-    private JPanel myUseComponents;
-    private JPanel myCreateComponents;
-    private JLabel myOcamlVersion;
-    private TextFieldWithBrowseButton mySdkSources;
-    private TextFieldWithBrowseButton myOCamlLocation;
-    private JLabel myOCamlCompilerLocation;
-    private JLabel myOpamWarning;
-    private JLabel myWizardTitle;
-    private Sdk createSDK;
+    @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
+    private boolean isUseSelected; // true if the first menu is selected, false else
+    @NotNull private JdkComboBox myJdkChooser; // 1# select JDK
+    @NotNull private JPanel myUseComponents; // 2# to disable every component in the second menu
+    @NotNull private JPanel myCreateComponents; // 1# to disable every component in the second menu
+    @NotNull private JLabel myOcamlVersion; // 2# show ocaml version, fetched from myOCamlLocation
+    @NotNull private TextFieldWithBrowseButton mySdkSources; // 2# submit sources
+    @NotNull private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
+    @NotNull private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
+    @NotNull private JLabel myOpamWarning; // 2# show a warning if using opam in 2#, should be in 1#
+    @NotNull private JLabel myWizardTitle; // title of the wizard
+    @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
+    @Nullable private Sdk createSDK; // 2# the sdk that we created
     private ProjectSdksModel mySdksModel;
-    private OCamlSdkUtils.CustomCamlSdkData myCustomSdkData;
+    private OCamlSdkUtils.CustomCamlSdkData myCustomSdkData; // 2# data of the SDK we are about to create
+    boolean shouldValidateAgain = true;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
                               @NotNull OCamlModuleBuilder moduleBuilder) {
@@ -147,10 +147,17 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
         // Set the foreground using a JBColor
         myOpamWarning.setForeground(JBColor.RED);
+
+        // set the text + color
+        myCreateLocationLabel.setText(OCamlBundle.message("project.wizard.create.location", OCamlSdkUtils.JDK_FOLDER));
+        myCreateLocationLabel.setForeground(JBColor.GRAY);
     }
 
     // update the two other labels once the ocaml location was set
     private void onOCamlLocationChange() {
+        // must validate again as the path changed
+        shouldValidateAgain = true;
+
         String path = myOCamlLocation.getText();
         // Linux
         myOCamlCompilerLocation.setText(path.replace("/bin/ocaml", "/bin/ocamlc"));
@@ -195,9 +202,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
     private Sdk getSdk() { return isUseSelected ? myJdkChooser.getSelectedJdk() : createSDK; }
 
-    @Override public void updateStep() {
-    }
-
     @Override public @Nullable Icon getIcon() {
         return myWizardContext.getStepIcon();
     }
@@ -206,16 +210,17 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
      * @see ProjectJdkForModuleStep
      */
     @Override public boolean validate() throws ConfigurationException {
-        //final Sdk sdk;
         boolean sdkSelected = true;
         if (isUseSelected) sdkSelected = myJdkChooser.getSelectedJdk() != null;
         else {
+            if (!shouldValidateAgain) return true;
             myCustomSdkData = OCamlSdkUtils.createSdk(
                     myOCamlLocation.getText(),
                     myOcamlVersion.getText(),
                     myOCamlCompilerLocation.getText(),
                     mySdkSources.getText()
             );
+            shouldValidateAgain = false;
         }
 
         if (!sdkSelected) {

@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.*;
 import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
 import com.ocaml.ide.module.*;
+import com.ocaml.ide.projectWizard.view.*;
 import com.ocaml.ide.sdk.*;
 import org.jetbrains.annotations.*;
 
