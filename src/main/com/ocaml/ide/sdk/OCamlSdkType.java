@@ -11,10 +11,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
 
-/**
- * @see JavaSdk
- */
-public class OCamlSdkType extends SdkType implements SdkDownload {
+public class OCamlSdkType extends LocalSdkType implements SdkDownload {
 
     private static final String OCAML_SDK = "OCaml SDK";
     private static final Pattern VERSION_REGEXP = Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?)/?.*");
@@ -56,8 +53,16 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     // Name
     //
 
-    @NotNull @Override public String suggestSdkName(String currentSdkName, @NotNull String sdkHome) {
-        return "OCaml-" + getVersionString(sdkHome);
+    @NotNull @Override public final String suggestSdkName(String currentSdkName, @NotNull String sdkHome) {
+        return suggestSdkName(getVersionString(sdkHome));
+    }
+
+    /**
+     * Suggest a name for an SDK given its version. This method is the same
+     * used for any OCaml SDK, uniformizing any names.
+     */
+    public static String suggestSdkName(String version) {
+        return "OCaml-" + version;
     }
 
     //
