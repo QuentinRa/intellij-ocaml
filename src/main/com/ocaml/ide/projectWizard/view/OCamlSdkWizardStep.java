@@ -123,12 +123,13 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         });
 
         // Detect and prefill fields
-        OCamlDetector.detectBinaries(output -> {
+        OCamlDetector.DetectionResult output = OCamlDetector.detectBinaries();
+        if (output != null) {
             myOCamlLocation.setText(output.ocaml);
             myOCamlCompilerLocation.setText(output.ocamlCompiler);
             mySdkSources.setText(output.sources);
             myOcamlVersion.setText(output.version);
-        });
+        }
 
         // On Field Updated (manually)
         DeferredDocumentListener.addDeferredDocumentListener(

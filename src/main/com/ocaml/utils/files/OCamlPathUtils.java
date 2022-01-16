@@ -1,8 +1,11 @@
 package com.ocaml.utils.files;
 
+import com.intellij.execution.configurations.*;
+import com.intellij.openapi.util.*;
 import com.intellij.util.*;
 import org.jetbrains.annotations.*;
 
+import java.io.*;
 import java.nio.file.*;
 
 public final class OCamlPathUtils {
@@ -40,6 +43,12 @@ public final class OCamlPathUtils {
                 || (extension != null && PathUtil.toSystemIndependentName(path).endsWith(end+extension));
     }
 
+    /**
+     * Create a symbolicLink
+     * @param src the link that will be created
+     * @param dest the destination of the link
+     * @param args parts of the path leading to the destination
+     */
     public static boolean createSymbolicLink(String src, String dest, String ... args) {
         try {
             Path link = Path.of(dest, args);
@@ -49,5 +58,29 @@ public final class OCamlPathUtils {
         } catch (Exception e){
             return false;
         }
+    }
+
+    /**
+     * Find an executable in the PATH. On Windows, both
+     * name and name.exe are checked.
+     * @param name the name of the executable
+     * @return null or the absolute path to the executable
+     */
+    public static String findExecutableInPath(String name) {
+        File f = findExecutableInPathAsFile(name);
+        return f == null ? null : f.getAbsolutePath();
+    }
+
+    /**
+     * Find an executable in the PATH. On Windows, both
+     * name and name.exe are checked.
+     * @param name the name of the executable
+     * @return null or the file leading to the executable
+     */
+    public static File findExecutableInPathAsFile(String name) {
+        File f = PathEnvironmentVariableUtil.findInPath(name);
+        if (f == null && SystemInfo.isWindows)
+            f = PathEnvironmentVariableUtil.findInPath(name+".exe");
+        return f;
     }
 }
