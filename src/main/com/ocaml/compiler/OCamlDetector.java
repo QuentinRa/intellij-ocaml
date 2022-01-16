@@ -3,7 +3,6 @@ package com.ocaml.compiler;
 import com.intellij.execution.*;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.wsl.*;
-import com.intellij.openapi.application.*;
 import com.ocaml.*;
 import com.ocaml.compiler.cygwin.*;
 import com.ocaml.utils.*;
@@ -92,6 +91,14 @@ public final class OCamlDetector {
             this.version = version;
             this.sources = sources;
         }
+
+        @Override public String toString() {
+            return "AssociatedBinaries{" +
+                    "ocamlCompiler='" + ocamlCompiler + '\'' +
+                    ", version='" + version + '\'' +
+                    ", sources='" + sources + '\'' +
+                    '}';
+        }
     }
 
     /**
@@ -99,12 +106,10 @@ public final class OCamlDetector {
      */
     public static void findAssociatedBinaries(String ocamlBinary,
                                               Callback<AssociatedBinaries> callback) {
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            WslPath path = WslPath.parseWindowsUncPath(ocamlBinary);
-            callback.call(path == null ?
-                    findAssociatedBinariesWindows(ocamlBinary) :
-                    findAssociatedBinariesWSL(ocamlBinary, path));
-        });
+        WslPath path = WslPath.parseWindowsUncPath(ocamlBinary);
+        callback.call(path == null ?
+                findAssociatedBinariesWindows(ocamlBinary) :
+                findAssociatedBinariesWSL(ocamlBinary, path));
     }
 
     /**
@@ -164,6 +169,8 @@ public final class OCamlDetector {
     private static AssociatedBinaries findAssociatedBinariesWindows(String ocamlBinary) {
         // assuming that ocaml exists, is in the bin folder, then we also have ocamlc in
         // the folder.
+        if (!ocamlBinary.endsWith("ocaml") && !ocamlBinary.endsWith("ocaml.exe"))
+            return NO_ASSOCIATED_BINARIES;
         File ocaml = new File(ocamlBinary);
         if (!ocaml.exists()) return NO_ASSOCIATED_BINARIES;
         File bin = ocaml.getParentFile();

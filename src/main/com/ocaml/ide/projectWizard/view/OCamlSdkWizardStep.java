@@ -54,10 +54,10 @@ import java.awt.*;
  *     <li><b>OK</b>: the JDKComboBox must be loaded with the existing JDKs</li>
  *     <li><b>OK</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
- *     <li><b>OK</b>: prefill the ocaml binary location ({@link OCamlDetector#detectBinaries})</li>
- *     <li><b>OK</b>: prefill the ocamlc binary location ({@link OCamlDetector#detectBinaries})</li>
- *     <li><b>OK</b>: prefill the ocaml version ({@link OCamlDetector#detectBinaries})</li>
- *     <li><b>OK</b>: prefill the sources location ({@link OCamlDetector#detectBinaries})</li>
+ *     <li><b>OK</b>: prefill the ocaml binary location ({@link OCamlDetector#detectBinaries()})</li>
+ *     <li><b>OK</b>: prefill the ocamlc binary location ({@link OCamlDetector#detectBinaries()})</li>
+ *     <li><b>OK</b>: prefill the ocaml version ({@link OCamlDetector#detectBinaries()})</li>
+ *     <li><b>OK</b>: prefill the sources location ({@link OCamlDetector#detectBinaries()})</li>
  *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlDetector#findAssociatedBinaries})</li>
  *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlDetector#findAssociatedBinaries})</li>
  *     <li><b>KO</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
