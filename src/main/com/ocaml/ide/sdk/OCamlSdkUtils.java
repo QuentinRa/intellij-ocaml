@@ -3,9 +3,9 @@ package com.ocaml.ide.sdk;
 import com.intellij.execution.*;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.wsl.*;
-import com.intellij.openapi.application.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
 import com.intellij.openapi.util.io.*;
 import com.ocaml.*;
 import com.ocaml.utils.files.*;
@@ -32,7 +32,8 @@ public final class OCamlSdkUtils {
     public static @NotNull Sdk createSdk(@NotNull String ocamlBinary,
                                          @NotNull String version,
                                          @NotNull String ocamlCompilerBinary,
-                                         @NotNull String ocamlSourcesFolder) throws ConfigurationException {
+                                         @NotNull String ocamlSourcesFolder,
+                                         @NotNull ProjectSdksModel sdksModel) throws ConfigurationException {
         if (version.isEmpty())
             throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.version.empty"));
 
@@ -153,7 +154,7 @@ public final class OCamlSdkUtils {
             }
         } else {
             File sdkFolder = FileUtil.findSequentNonexistentFile(jdksFolder, version+"-v", "");
-            boolean ok = sdkFolder.mkdir();
+            boolean ok = sdkFolder.mkdirs();
             ok = ok && new File(sdkFolder, "bin").mkdir();
             ok = ok && new File(sdkFolder, "lib").mkdir();
             ok = ok && OCamlPathUtils.createSymbolicLink(ocamlBinary, sdkFolder.getPath(), "bin", "ocaml");
@@ -166,16 +167,7 @@ public final class OCamlSdkUtils {
             throw new ConfigurationException(OCamlBundle.message("sdk.create.failed", JDK_FOLDER));
 
         // Finally, we are creating the SDK
-        ProjectJdkTable projectJdkTable = ProjectJdkTable.getInstance();
-        Sdk sdk = projectJdkTable.createSdk(
-                OCamlSdkType.suggestSdkName(version),
-                OCamlSdkType.getInstance()
-        );
-        SdkModificator sdkModificator = sdk.getSdkModificator();
-        sdkModificator.setHomePath(homePath);
-        sdkModificator.setVersionString(version);
-        ApplicationManager.getApplication().invokeAndWait(sdkModificator::commitChanges);
-        return sdk;
+        return sdksModel.createSdk(OCamlSdkType.getInstance(), OCamlSdkType.suggestSdkName(version), homePath);
     }
 
 }

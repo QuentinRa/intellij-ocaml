@@ -215,7 +215,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                     myOCamlLocation.getText(),
                     myOcamlVersion.getText(),
                     myOCamlCompilerLocation.getText(),
-                    mySdkSources.getText()
+                    mySdkSources.getText(),
+                    mySdksModel
             );
             createSDK = sdk;
         }
@@ -234,20 +235,19 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             ApplicationManager.getApplication().invokeAndWait(sdkModificator::commitChanges);
         }
 
-        if (isUseSelected) {
-            try {
-                mySdksModel.apply(null, true);
-            } catch (ConfigurationException e) {
-                // We should allow Next step if user has wrong SDK
-                if (Messages.showDialog(JavaUiBundle.message("dialog.message.0.do.you.want.to.proceed", e.getMessage()),
-                        e.getTitle(),
-                        new String[]{CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()},
-                        1, Messages.getWarningIcon()) != Messages.YES) {
-                    return false;
-                }
+        // add it to the model
+        if (!isUseSelected) mySdksModel.addSdk(createSDK);
+
+        try {
+            mySdksModel.apply(null, true);
+        } catch (ConfigurationException e) {
+            // We should allow Next step if user has wrong SDK
+            if (Messages.showDialog(JavaUiBundle.message("dialog.message.0.do.you.want.to.proceed", e.getMessage()),
+                    e.getTitle(),
+                    new String[]{CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()},
+                    1, Messages.getWarningIcon()) != Messages.YES) {
+                return false;
             }
-        } else {
-            // todo: handle created SDK
         }
 
         return true;

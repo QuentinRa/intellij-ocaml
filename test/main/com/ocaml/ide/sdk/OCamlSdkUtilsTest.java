@@ -2,12 +2,13 @@ package com.ocaml.ide.sdk;
 
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
 import com.ocaml.*;
 import org.junit.*;
 
 /**
  * This class is testing a lot of values for the method
- * {{@link OCamlSdkUtils#createSdk(String, String, String, String)}}.
+ * {{@link OCamlSdkUtils#createSdk(String, String, String, String, ProjectSdksModel)}}.
  * We need to handle every kind of data properly.
  * <ul>
  *     <li><b>KO</b>: WSL paths</li>
@@ -82,12 +83,17 @@ public class OCamlSdkUtilsTest extends OCamlBaseTest {
         }
     }
 
+    // if we want to do some tests on the model
+    private static class SdksModel extends ProjectSdksModel {
+    }
+
     public void assertConfigurationFailed(String expectedMessage, CreateSdkParams params) {
         assertThrows(ConfigurationException.class, expectedMessage, () -> OCamlSdkUtils.createSdk(
                 params.ocamlBinary,
                 params.version,
                 params.ocamlCompiler,
-                params.ocamlSources
+                params.ocamlSources,
+                new SdksModel()
         ));
     }
     public void assertConfigurationOK(CreateSdkParams params) {
@@ -96,10 +102,10 @@ public class OCamlSdkUtilsTest extends OCamlBaseTest {
                     params.ocamlBinary,
                     params.version,
                     params.ocamlCompiler,
-                    params.ocamlSources
+                    params.ocamlSources,
+                    new SdksModel()
             );
-            // todo: check SDK != null
-            assertTrue(true);
+            assertNotNull(sdk);
         } catch (ConfigurationException e) {
             fail(e.getMessage());
         }
