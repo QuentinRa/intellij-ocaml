@@ -1,5 +1,6 @@
 package com.ocaml.ide.projectWizard;
 
+import com.intellij.*;
 import com.intellij.ide.*;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.application.*;
@@ -50,7 +51,7 @@ import java.awt.*;
  * Features of the class
  * <ul>
  *     <li><b>OK</b>: can add/use an SDK using the JdkComboBox</li>
- *     <li><b>KO</b>: the JDKComboBox must be loaded with the existing JDKs</li>
+ *     <li><b>O</b>K: the JDKComboBox must be loaded with the existing JDKs</li>
  *     <li><b>OK</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
  *     <li><b>OK</b>: prefill the ocaml binary location</li>
@@ -59,8 +60,7 @@ import java.awt.*;
  *     <li><b>OK</b>: prefill the sources location</li>
  *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined</li>
  *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined</li>
- *     <li><b>KO</b>: add a loading icon</li>
- *     <li><b>KO</b>: add a check (valid/invalid) icon, as we have in CLion</li>
+ *     <li><b>KO</b>: add a loading icon</li> and a check (valid/invalid) icon, as we have in CLion</li>
  *     <li><b>OK</b>: check that everything is valid</li>
  *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
@@ -94,6 +94,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     private JLabel myOpamWarning;
     private JLabel myWizardTitle;
     private Sdk createSDK;
+    private ProjectSdksModel mySdksModel;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
                               @NotNull OCamlModuleBuilder moduleBuilder) {
@@ -183,20 +184,9 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
     @Override public void updateDataModel() {
         Sdk sdk = getSdk();
-        // ensure name if "valid"
-        // todo: Write access is allowed inside write-action
-        if (!sdk.getName().equals(OCamlSdkType.suggestSdkName(sdk.getVersionString()))) {
-            SdkModificator sdkModificator = sdk.getSdkModificator();
-            sdkModificator.setName(OCamlSdkType.suggestSdkName(sdk.getVersionString()));
-            ApplicationManager.getApplication().invokeAndWait(sdkModificator::commitChanges);
-        }
 
         // are we inside a project?
         boolean isProject = myWizardContext.getProject() == null;
-
-        // Add to the table
-        ProjectJdkTable projectJdkTable = ProjectJdkTable.getInstance();
-        ApplicationManager.getApplication().invokeAndWait(() -> projectJdkTable.addJdk(sdk));
 
         if (isProject) {
             myWizardContext.setProjectJdk(sdk);
@@ -214,6 +204,9 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         return myWizardContext.getStepIcon();
     }
 
+    /**
+     * @see ProjectJdkForModuleStep
+     */
     @Override public boolean validate() throws ConfigurationException {
         final Sdk sdk;
         if (isUseSelected) sdk = myJdkChooser.getSelectedJdk();
@@ -234,7 +227,29 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                             Messages.getCancelButton(),
                             Messages.getWarningIcon());
             return result == Messages.OK;
+        } // change name
+        else if (!sdk.getName().equals(OCamlSdkType.suggestSdkName(sdk.getVersionString()))) {
+            SdkModificator sdkModificator = sdk.getSdkModificator();
+            sdkModificator.setName(OCamlSdkType.suggestSdkName(sdk.getVersionString()));
+            ApplicationManager.getApplication().invokeAndWait(sdkModificator::commitChanges);
         }
+
+        if (isUseSelected) {
+            try {
+                mySdksModel.apply(null, true);
+            } catch (ConfigurationException e) {
+                // We should allow Next step if user has wrong SDK
+                if (Messages.showDialog(JavaUiBundle.message("dialog.message.0.do.you.want.to.proceed", e.getMessage()),
+                        e.getTitle(),
+                        new String[]{CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()},
+                        1, Messages.getWarningIcon()) != Messages.YES) {
+                    return false;
+                }
+            }
+        } else {
+            // todo: handle created SDK
+        }
+
         return true;
     }
 
@@ -247,13 +262,14 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myProject = myProject != null ? myProject : ProjectManager.getInstance().getDefaultProject();
 
         final ProjectStructureConfigurable projectConfig = ProjectStructureConfigurable.getInstance(myProject);
-        ProjectSdksModel sdksModel = projectConfig.getProjectJdksModel();
+        mySdksModel = projectConfig.getProjectJdksModel();
+        mySdksModel.reset(myProject);
 
         SdkType type = OCamlSdkType.getInstance();
         Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof SdkType && (type == null || type.equals(sdk));
 
         myJdkChooser = new JdkComboBox(myProject,
-                sdksModel,
+                mySdksModel,
                 sdkTypeFilter,
                 null,
                 null,
