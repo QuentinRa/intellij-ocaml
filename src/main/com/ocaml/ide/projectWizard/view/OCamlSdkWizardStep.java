@@ -51,23 +51,23 @@ import java.awt.*;
  * Features of the class
  * <ul>
  *     <li><b>OK</b>: can add/use an SDK using the JdkComboBox</li>
- *     <li><b>O</b>K: the JDKComboBox must be loaded with the existing JDKs</li>
+ *     <li><b>OK</b>: the JDKComboBox must be loaded with the existing JDKs</li>
  *     <li><b>OK</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
- *     <li><b>OK</b>: prefill the ocaml binary location</li>
- *     <li><b>OK</b>: prefill the ocamlc binary location</li>
- *     <li><b>OK</b>: prefill the ocaml version</li>
- *     <li><b>OK</b>: prefill the sources location</li>
- *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined</li>
- *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined</li>
- *     <li><b>KO</b>: add a loading icon</li> and a check (valid/invalid) icon, as we have in CLion</li>
+ *     <li><b>OK</b>: prefill the ocaml binary location ({@link OCamlDetector#detectBinaries})</li>
+ *     <li><b>OK</b>: prefill the ocamlc binary location ({@link OCamlDetector#detectBinaries})</li>
+ *     <li><b>OK</b>: prefill the ocaml version ({@link OCamlDetector#detectBinaries})</li>
+ *     <li><b>OK</b>: prefill the sources location ({@link OCamlDetector#detectBinaries})</li>
+ *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlDetector#findAssociatedBinaries})</li>
+ *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlDetector#findAssociatedBinaries})</li>
+ *     <li><b>KO</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
  *     <li><b>OK</b>: check that everything is valid</li>
  *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
- *     <li><b>KO</b>: add a label "an opam-like SDK will be created in ~/.jdks"
- *     <li><b>KO</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml
- *     <li><b>KO</b>: allow the user of ocaml.exe
- *     <li><b>KO</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)
+ *     <li><b>OK</b>: add a label "an opam-like SDK will be created in ~/.jdks"</li>
+ *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlDetector#findAssociatedBinaries})</li>
+ *     <li><b>OK</b>: allow the user of ocaml.exe</li>
+ *     <li><b>OK</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)</li>
  * </ul>
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
@@ -157,17 +157,18 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     private void onOCamlLocationChange() {
         // must validate again as the path changed
         shouldValidateAgain = true;
-
+        // get the ocaml binary path
         String path = myOCamlLocation.getText();
-        // Linux
-        myOCamlCompilerLocation.setText(path.replace("/bin/ocaml", "/bin/ocamlc"));
-        // Windows
-        myOCamlCompilerLocation.setText(path.replace("\\bin\\ocaml", "\\bin\\ocamlc"));
         // we are waiting for a version
         myOcamlVersion.setText("");
-        OCamlUtils.ocamlCompilerVersion(myOCamlCompilerLocation.getText(), v -> myOcamlVersion.setText(v));
-        // opam warning
-        showWarning();
+        // Ask for the values
+        OCamlDetector.findAssociatedBinaries(path, arg -> {
+            myOCamlCompilerLocation.setText(arg.ocamlCompiler);
+            myOcamlVersion.setText(arg.version);
+            mySdkSources.setText(arg.sources);
+            // opam warning
+            showWarning();
+        });
     }
 
     // show the warning "opam ..." if needed
@@ -237,6 +238,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                     myCustomSdkData.homePath,
                     sdk -> createSDK = sdk // save
             );
+            // reload when a new Sdk is added
+            myJdkChooser.reloadModel();
         }
 
         try {
