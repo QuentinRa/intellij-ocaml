@@ -2,6 +2,7 @@ package com.ocaml.ide.sdk;
 
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
+import com.ocaml.compiler.*;
 import com.ocaml.icons.*;
 import org.jdom.*;
 import org.jetbrains.annotations.*;
@@ -13,9 +14,8 @@ import java.util.regex.*;
 
 public class OCamlSdkType extends LocalSdkType implements SdkDownload {
 
-    private static final String OCAML_SDK = "OCaml SDK";
-    private static final Pattern VERSION_REGEXP = Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?)/?.*");
     private static final String UNKNOWN_VERSION = "unknown version";
+    private static final String OCAML_SDK = "OCaml SDK";
 
     public OCamlSdkType() {
         super(OCAML_SDK);
@@ -72,7 +72,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     @NotNull @Override public String getVersionString(@NotNull String sdkHome) {
         // read the version in the name
         String serialized = sdkHome.replace("\\", "/");
-        Matcher m1 = VERSION_REGEXP.matcher(serialized);
+        Matcher m1 = OCamlConstants.VERSION_PATH_REGEXP.matcher(serialized);
         if (m1.matches()) {
             return m1.group(1);
         }

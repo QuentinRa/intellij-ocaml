@@ -22,10 +22,7 @@ public final class DeferredDocumentListener implements DocumentListener {
         DeferredDocumentListener deferredDocumentListener = new DeferredDocumentListener(delay, actionListener);
         document.addDocumentListener(deferredDocumentListener);
         textComponent.addFocusListener(new FocusListener() {
-            @Override public void focusGained(FocusEvent e) {
-                deferredDocumentListener.startTimer();
-            }
-
+            @Override public void focusGained(FocusEvent e) {}
             @Override public void focusLost(FocusEvent e) {
                 deferredDocumentListener.stopTimer();
             }
@@ -34,12 +31,15 @@ public final class DeferredDocumentListener implements DocumentListener {
 
     private final Timer myTimer;
     private DeferredDocumentListener(int delay, ActionListener actionListener) {
-        myTimer = new Timer(delay, actionListener);
+        myTimer = new Timer(delay, e -> {
+            stopTimer(); // stop until restarted
+            actionListener.actionPerformed(e);
+        });
         myTimer.setRepeats(true);
     }
 
-    private void startTimer() { myTimer.start(); }
     private void stopTimer() { myTimer.stop(); }
+
     // reset on every event
     @Override public void insertUpdate(DocumentEvent e) { myTimer.restart(); }
     @Override public void removeUpdate(DocumentEvent e) { myTimer.restart(); }
