@@ -184,6 +184,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @Override public void updateDataModel() {
         Sdk sdk = getSdk();
         // ensure name if "valid"
+        // todo: Write access is allowed inside write-action
         if (!sdk.getName().equals(OCamlSdkType.suggestSdkName(sdk.getVersionString()))) {
             SdkModificator sdkModificator = sdk.getSdkModificator();
             sdkModificator.setName(OCamlSdkType.suggestSdkName(sdk.getVersionString()));
