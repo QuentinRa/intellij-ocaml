@@ -129,10 +129,13 @@ public final class OCamlDetector {
         WSLDistribution distribution = path.getDistribution();
         String ocamlc = distribution.getWslPath(ocamlBinary+"c");
         if ( ocamlc == null ) return NO_ASSOCIATED_BINARIES;
+        String root = ocamlc.replace("bin/"+OCamlConstants.OCAML_COMPILER_EXECUTABLE, "");
+        String libFolder = root+OCamlConstants.LIB_FOLDER_LOCATION_R;
+        String usrLibFolder = root+OCamlConstants.USR_LIB_FOLDER_LOCATION_R;
         WSLCommandLineOptions options = new WSLCommandLineOptions();
         // they are called in the reverse order
-        options.addInitCommand("find "+OCamlConstants.LIB_FOLDER_LOCATION+" -maxdepth 0 2>&1 || true");
-        options.addInitCommand("find "+OCamlConstants.USR_LIB_FOLDER_LOCATION+" -maxdepth 0 2>&1 || true");
+        options.addInitCommand("find "+usrLibFolder+" -maxdepth 0 2>&1 || true");
+        options.addInitCommand("find "+libFolder+" -maxdepth 0 2>&1 || true");
         options.addInitCommand(ocamlc+" "+OCamlConstants.OCAMLC_VERSION+" 2>&1");
         try {
             GeneralCommandLine cli = new GeneralCommandLine("true");
@@ -145,17 +148,17 @@ public final class OCamlDetector {
             if (version == null || !OCamlConstants.VERSION_REGEXP.matcher(version).matches())
                 return NO_ASSOCIATED_BINARIES;
             // Check the two known lib folders
-            String usrDir = bufferedReader.readLine();
+            String libDir = bufferedReader.readLine();
             String source;
-            if (usrDir == null || !usrDir.equals(OCamlConstants.USR_LIB_FOLDER_LOCATION)) {
-                String libDir = bufferedReader.readLine();
-                if (libDir == null || !libDir.equals(OCamlConstants.LIB_FOLDER_LOCATION)) {
+            if (libDir == null || !libDir.equals(libFolder)) {
+                String usrDir = bufferedReader.readLine();
+                if (usrDir == null || !usrDir.endsWith(usrLibFolder)) {
                     return NO_ASSOCIATED_BINARIES;
                 } else {
-                    source = OCamlConstants.LIB_FOLDER_LOCATION;
+                    source = usrLibFolder;
                 }
             } else {
-                source = OCamlConstants.USR_LIB_FOLDER_LOCATION;
+                source = libFolder;
             }
             return new AssociatedBinaries(ocamlBinary+"c", version, distribution.getWindowsPath(source));
         } catch (ExecutionException | InterruptedException | IOException e) {
