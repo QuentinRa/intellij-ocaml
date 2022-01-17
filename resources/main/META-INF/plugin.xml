@@ -7,6 +7,8 @@
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
      on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <actions>
         <!-- Add your actions here -->
@@ -14,5 +16,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <!-- MODULE -->
+        <moduleBuilder builderClass="com.ocaml.ide.projectWizard.OCamlModuleBuilder" order="first"/>
+        <moduleType id="OCAML_MODULE" implementationClass="com.ocaml.ide.module.OCamlModuleType"/>
+        <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
+
+        <!-- SDK -->
+        <sdkType implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
+        <sdkDownload implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
     </extensions>
 </idea-plugin>
