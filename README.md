@@ -80,8 +80,9 @@ You may not use `apt-get`, please use your distribution package manager if this 
 | ❌ We are suggesting locations for opam SDKs      |
 | ✅ We are suggesting a location for non-opam SDKs |
 | ❌ The SDK is verified                            |
-| ❌ The sources are indexed (autocompletion)       |
+| ✅ The sources are detected                       |
 | ❌ The user can add/remove sources                |
+| ❌ The sources are indexed (autocompletion)       |
 | ❌ You can download OCaml                         |
 | ❌ You can add/remove libraries for a module      |
 

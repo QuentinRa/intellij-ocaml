@@ -1,13 +1,17 @@
 package com.ocaml.ide.sdk;
 
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
+import com.intellij.openapi.vfs.*;
 import com.ocaml.compiler.*;
 import com.ocaml.icons.*;
+import com.ocaml.ide.sdk.roots.*;
 import org.jdom.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.regex.*;
@@ -99,6 +103,30 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     }
 
     @Override public void setupSdkPaths(@NotNull Sdk sdk) {
+        String homePath = sdk.getHomePath();
+        assert homePath != null : sdk;
+        SdkModificator sdkModificator = sdk.getSdkModificator();
+        sdkModificator.removeRoots(OrderRootType.CLASSES);
+        addSources(new File(homePath), sdkModificator);
+        sdkModificator.commitChanges();
+    }
+
+    public static void addSources(@NotNull File sdkHomeFile, @NotNull SdkModificator sdkModificator) {
+        System.out.println("SDKHome:"+sdkHomeFile.getAbsolutePath());
+        File ocamlRootFolder = new File(sdkHomeFile, OCamlConstants.LIB_FOLDER_LOCATION_R);
+
+        System.out.println("OCL:"+sdkHomeFile.getAbsolutePath());
+        if (!ocamlRootFolder.exists()) return;
+
+        VirtualFile rootCandidate = LocalFileSystem.getInstance().findFileByIoFile(ocamlRootFolder);
+        System.out.println("Root:"+rootCandidate);
+        if (rootCandidate == null) return;
+
+        Collection<VirtualFile> files = OCamlRootsDetector.suggestOCamlRoots(rootCandidate);
+        System.out.println("list:"+files.size());
+        for (VirtualFile file : files) {
+            sdkModificator.addRoot(file, OrderRootType.CLASSES);
+        }
     }
 
     //
