@@ -18,6 +18,7 @@ import com.ocaml.compiler.*;
 import com.ocaml.compiler.opam.*;
 import com.ocaml.ide.projectWizard.*;
 import com.ocaml.ide.sdk.*;
+import com.ocaml.utils.adaptor.ui.*;
 import com.ocaml.utils.listener.*;
 import org.jetbrains.annotations.*;
 
@@ -81,7 +82,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
     @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
     private boolean isUseSelected; // true if the first menu is selected, false else
-    @NotNull private JdkComboBox myJdkChooser; // 1# select JDK
+    @NotNull private JdkComboBoxAdaptor myJdkChooser; // 1# select JDK
     @NotNull private JPanel myUseComponents; // 2# to disable every component in the second menu
     @NotNull private JPanel myCreateComponents; // 1# to disable every component in the second menu
     @NotNull private JLabel myOcamlVersion; // 2# show ocaml version, fetched from myOCamlLocation
@@ -276,7 +277,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         SdkType type = OCamlSdkType.getInstance();
         Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof SdkType && (type == null || type.equals(sdk));
 
-        myJdkChooser = new JdkComboBox(myProject,
+        myJdkChooser = new JdkComboBoxAdaptor(myProject,
                 mySdksModel,
                 sdkTypeFilter,
                 null,

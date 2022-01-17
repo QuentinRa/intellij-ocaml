@@ -42,7 +42,7 @@
                   <text resource-bundle="messages/OCamlBundle" key="module.prompt.sdk"/>
                 </properties>
               </component>
-              <component id="e2024" class="com.intellij.openapi.roots.ui.configuration.JdkComboBox" binding="myJdkChooser" custom-create="true">
+              <component id="e2024" class="com.ocaml.utils.adaptor.ui.JdkComboBoxAdaptor" binding="myJdkChooser" custom-create="true">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
