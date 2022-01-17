@@ -38,8 +38,6 @@ public final class OCamlSdkUtils {
         WSLDistribution distribution = null;
         if (wslPath != null) {
             distribution = wslPath.getDistribution();
-            if (distribution.getVersion() == -1) // todo: invalid in 211
-                throw new ConfigurationException(OCamlBundle.message("sdk.path.binary.wsl.invalid", distribution.getPresentableName()));
             ocamlBinary = distribution.getWslPath(ocamlBinary);
             if (ocamlBinary == null) ocamlBinary = "";
             ocamlCompilerBinary = distribution.getWslPath(ocamlCompilerBinary);
@@ -73,8 +71,11 @@ public final class OCamlSdkUtils {
                 exitCode = Integer.parseInt(
                         new String(process.getInputStream().readAllBytes()).replace("\n", "")
                 );
-            } catch (ExecutionException | InterruptedException | IOException e) {
-                throw new ConfigurationException("Unexpected error:"+e.getMessage());
+            } catch (Throwable e) {
+                throw new ConfigurationException(
+                        OCamlBundle.message("sdk.path.binary.wsl.invalid", distribution.getPresentableName())
+                        + "\n Unexpected error: "+e.getMessage()
+                );
             }
         } else {
             try {
@@ -126,7 +127,7 @@ public final class OCamlSdkUtils {
             try {
                 WSLCommandLineOptions wslCommandLineOptions = new WSLCommandLineOptions();
                 // the order will be reversed, so we need to put the last commands first
-                wslCommandLineOptions.addInitCommand("echo -n "+sdkFolder+"-v$i");
+                wslCommandLineOptions.addInitCommand("find "+sdkFolder+"-v$i -maxdepth 0 2>/dev/null");
                 wslCommandLineOptions.addInitCommand("ln -s "+ocamlSourcesFolder+" "+sdkFolder+"-v$i/lib/");
                 wslCommandLineOptions.addInitCommand("ln -s "+ocamlCompilerBinary+" "+sdkFolder+"-v$i/bin/ocamlc");
                 wslCommandLineOptions.addInitCommand("ln -s "+ocamlBinary+" "+sdkFolder+"-v$i/bin/ocaml");
@@ -138,9 +139,9 @@ public final class OCamlSdkUtils {
                 // wait, then parse the result of "echo", or fail
                 if (process.waitFor() == 0) {
                     String out = new String(process.getInputStream().readAllBytes());
-                    if (!out.isEmpty() && distribution.getUserHome() != null) {
-                        homePath = out.replace("~", distribution.getUserHome());
-                        homePath = distribution.getWindowsPath(homePath).trim();
+                    out = out.replace("\n", "");
+                    if (!out.isEmpty()) {
+                        homePath = distribution.getWindowsPath(out).trim();
                     } else
                         throw new ExecutionException("Invalid home path.");
                 } else {

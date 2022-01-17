@@ -214,7 +214,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @Override public boolean validate() throws ConfigurationException {
         boolean sdkSelected = true;
         if (isUseSelected) {
-            if (myJdkChooser.isProjectJdkSelected()) return true;
+            if (myJdkChooser.isProjectJdkSelected()) return true; // todo: invalid in 211
             sdkSelected = myJdkChooser.getSelectedJdk() != null;
         }
         else {
