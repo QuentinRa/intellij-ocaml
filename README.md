@@ -60,8 +60,11 @@ Download [cygwin](https://cygwin.com/install.html). In the installer, you will h
 * `make`
 * `wget`
 * `curl`
+* `tar`
 * `libclang`
 * `mingw[...]clang` (pick the one according to your OS)
+
+To install new versions of OCaml, run `Cygwin.bat` (you can't in a PowerShell), then call `òpam switch create 4.12.0`.
 
 Ensure that `C:/cygwin64/bin` is in the path. If you open a PowerShell, and write `ocaml` and the command is working, then you are good.
 </details>

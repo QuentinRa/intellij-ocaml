@@ -3,10 +3,11 @@ package com.ocaml.ide.sdk;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
+import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
 import com.ocaml.compiler.*;
+import com.ocaml.compiler.opam.*;
 import com.ocaml.icons.*;
-import com.ocaml.ide.sdk.roots.*;
 import org.jdom.*;
 import org.jetbrains.annotations.*;
 
@@ -112,20 +113,21 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     }
 
     public static void addSources(@NotNull File sdkHomeFile, @NotNull SdkModificator sdkModificator) {
-        System.out.println("SDKHome:"+sdkHomeFile.getAbsolutePath());
-        File ocamlRootFolder = new File(sdkHomeFile, OCamlConstants.LIB_FOLDER_LOCATION_R);
+        addSources(OCamlConstants.LIB_FOLDER_LOCATION_R, sdkHomeFile, sdkModificator, true);
+        addSources(OpamConstants.SOURCES_FOLDER, sdkHomeFile, sdkModificator, false);
+    }
 
-        System.out.println("OCL:"+sdkHomeFile.getAbsolutePath());
-        if (!ocamlRootFolder.exists()) return;
+    private static void addSources(String sourceName, File sdkHomeFile, SdkModificator sdkModificator, boolean allowCandidateAsRoot) {
+        File rootFolder = new File(sdkHomeFile, sourceName);
+        if (!rootFolder.exists()) return;
 
-        VirtualFile rootCandidate = LocalFileSystem.getInstance().findFileByIoFile(ocamlRootFolder);
-        System.out.println("Root:"+rootCandidate);
-        if (rootCandidate == null) return;
-
-        Collection<VirtualFile> files = OCamlRootsDetector.suggestOCamlRoots(rootCandidate);
-        System.out.println("list:"+files.size());
-        for (VirtualFile file : files) {
-            sdkModificator.addRoot(file, OrderRootType.CLASSES);
+        File[] files = allowCandidateAsRoot ? new File[]{rootFolder} : rootFolder.listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            VirtualFile rootCandidate = LocalFileSystem.getInstance()
+                    .findFileByPath(FileUtil.toSystemIndependentName(file.getAbsolutePath()));
+            if (rootCandidate == null) continue;
+            sdkModificator.addRoot(rootCandidate, OrderRootType.CLASSES);
         }
     }
 
