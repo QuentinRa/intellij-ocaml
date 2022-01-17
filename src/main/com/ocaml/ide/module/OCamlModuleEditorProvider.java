@@ -32,6 +32,7 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
         // creating the tabs
         List<ModuleConfigurationEditor> editors = new ArrayList<>();
         editors.add(new OCamlOutputEditor(state));
+        editors.add(new ClasspathEditor(state));
 
         return editors.toArray(ModuleConfigurationEditor.EMPTY);
     }

@@ -3,10 +3,7 @@ package com.ocaml.ide.sdk;
 import com.intellij.execution.*;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.wsl.*;
-import com.intellij.openapi.application.*;
 import com.intellij.openapi.options.*;
-import com.intellij.openapi.projectRoots.*;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
 import com.intellij.openapi.util.io.*;
 import com.ocaml.*;
 import com.ocaml.utils.files.*;
@@ -41,7 +38,7 @@ public final class OCamlSdkUtils {
         WSLDistribution distribution = null;
         if (wslPath != null) {
             distribution = wslPath.getDistribution();
-            if (distribution.getVersion() == -1)
+            if (distribution.getVersion() == -1) // todo: invalid in 211
                 throw new ConfigurationException(OCamlBundle.message("sdk.path.binary.wsl.invalid", distribution.getPresentableName()));
             ocamlBinary = distribution.getWslPath(ocamlBinary);
             if (ocamlBinary == null) ocamlBinary = "";

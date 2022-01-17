@@ -213,7 +213,10 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
      */
     @Override public boolean validate() throws ConfigurationException {
         boolean sdkSelected = true;
-        if (isUseSelected) sdkSelected = myJdkChooser.getSelectedJdk() != null;
+        if (isUseSelected) {
+            if (myJdkChooser.isProjectJdkSelected()) return true;
+            sdkSelected = myJdkChooser.getSelectedJdk() != null;
+        }
         else {
             if (!shouldValidateAgain) return true;
             myCustomSdkData = OCamlSdkUtils.createSdk(
@@ -279,6 +282,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                 null,
                 null,
                 null);
+        // show if we are inside a module
+        if (myProject != null) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
         myInstructionsLabel = new PanelWithText(OCamlBundle.message("project.wizard.instruction"));

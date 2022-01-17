@@ -36,8 +36,8 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ You got some instructions to install what you need     |
 | ✅ You can create a non-opam SDK                          |
 | ✅ You can create/add/use an opam SDK                     |
-| ❌ Set/Update the project SDK, you can use it in a module |
-| ❌ Set/Update the SDK for a module                        |
+| ✅ Set/Update the project SDK, you can use it in a module |
+| ✅ Set/Update the SDK for a module                        |
 | ✅ Set the output folder for the project                  |
 | ✅ Set the output folder for the module                   |
 | ❌ The project is created from a template with src...     |
@@ -46,14 +46,14 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 Once basics are done, you will be able to create an OCaml Project with a default project. You may later use "Project Structure" to set things like the output folder if needed, either for the project or each module.
 
-| SDK                                             |
-|-------------------------------------------------|
-| ❌ We are suggesting locations for opam SDKs     |
-| ✅ We are suggesting locations for non-opam SDKs |
-| ❌ The SDK is verified                           |
-| ❌ The sources are indexed (autocompletion)      |
-| ❌ The user can add/remove sources               |
-| 😬 You can download OCaml                       |
+| SDK                                              |
+|--------------------------------------------------|
+| ❌ We are suggesting locations for opam SDKs      |
+| ✅ We are suggesting a location for non-opam SDKs |
+| ❌ The SDK is verified                            |
+| ❌ The sources are indexed (autocompletion)       |
+| ❌ The user can add/remove sources                |
+| 😬 You can download OCaml                        |
 
 An SDK is a folder in which you got a folder "bin" with ocaml, ... and a folder libs with the sources. You got such a folder using opam (ex: `sudo apt-get install opam && opam switch create 4.12.0`). In the project wizard, you have a form to create an SDK for non-opam users.
 
