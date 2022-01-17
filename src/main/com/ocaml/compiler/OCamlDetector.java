@@ -122,7 +122,7 @@ public final class OCamlDetector {
     );
 
     /**
-     * Find the version, the compiler, and the sources folders for a WSL Sdk.
+     * Find the version, the compiler, and the sources folders for a WSL SDK.
      */
     private static AssociatedBinaries findAssociatedBinariesWSL(String ocamlBinary, WslPath path) {
         if (!ocamlBinary.endsWith("\\bin\\ocaml")) return NO_ASSOCIATED_BINARIES;
@@ -164,7 +164,7 @@ public final class OCamlDetector {
     }
 
     /**
-     * Find the version, the compiler, and the sources folders for a Windows Sdk.
+     * Find the version, the compiler, and the sources folders for a Windows SDK.
      */
     private static AssociatedBinaries findAssociatedBinariesWindows(String ocamlBinary) {
         // assuming that ocaml exists, is in the bin folder, then we also have ocamlc in

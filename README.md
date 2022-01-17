@@ -42,9 +42,38 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Set the output folder for the module                   |
 | ❌ The project is created from a template with src...     |
 | ❌ The project is created with a default runConfiguration |
-| 😬 You can add libraries for a module (wizard+editor)    |
 
-Once basics are done, you will be able to create an OCaml Project with a default project. You may later use "Project Structure" to set things like the output folder if needed, either for the project or each module.
+You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.).
+
+<details>
+<summary>Windows (with WSL)</summary>
+
+On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
+</details>
+
+<details>
+<summary>Windows (with cygwin)</summary>
+
+Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml**, or **opam** (recommended)
+
+* `opam`
+* `make`
+* `wget`
+* `curl`
+* `libclang`
+* `mingw[...]clang` (pick the one according to your OS)
+
+Ensure that `C:/cygwin64/bin` is in the path. If you open a PowerShell, and write `ocaml` and the command is working, then you are good.
+</details>
+
+<details>
+<summary>Linux</summary>
+
+You may not use `apt-get`, please use your distribution package manager if this is not working.
+
+* **ocaml**: `sudo apt-get install ocaml`
+* **opam** (recommended): `sudo apt-get install opam` then, you may use `òpam switch create 4.12.0` to install `ocaml 4.12.0`
+</details>
 
 | SDK                                              |
 |--------------------------------------------------|
@@ -53,9 +82,10 @@ Once basics are done, you will be able to create an OCaml Project with a default
 | ❌ The SDK is verified                            |
 | ❌ The sources are indexed (autocompletion)       |
 | ❌ The user can add/remove sources                |
-| 😬 You can download OCaml                        |
+| ❌ You can download OCaml                         |
+| ❌ You can add/remove libraries for a module      |
 
-An SDK is a folder in which you got a folder "bin" with ocaml, ... and a folder libs with the sources. You got such a folder using opam (ex: `sudo apt-get install opam && opam switch create 4.12.0`). In the project wizard, you have a form to create an SDK for non-opam users.
+An SDK is a folder in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. Only sources in `lib/ocaml/` are indexed as sources. Others are assumed to be the sources for libraries and should be added using "Project Structure > Module > Dependencies", then "Add > OCaml Library".
 
 ## 📄 License
 
