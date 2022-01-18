@@ -18,7 +18,7 @@ import org.junit.*;
  * is OK, we need to ensure that the SDK was created properly.
  */
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class OCamlSdkUtilsTest extends OCamlBaseTest {
+public final class OCamlSdkUtilsTest extends OCamlBaseTest {
 
     private static final class CreateSdkParams {
         public String ocamlBinary;

@@ -78,17 +78,17 @@ You may not use `apt-get`, please use your distribution package manager if this 
 * **opam** (recommended): `sudo apt-get install opam` then, you may use `òpam switch create 4.12.0` to install `ocaml 4.12.0`
 </details>
 
-| SDK                                              |
-|--------------------------------------------------|
-| ❌ We are suggesting locations for opam SDKs      |
-| ✅ We are suggesting a location for non-opam SDKs |
-| ❌ The SDK is verified                            |
-| ✅ The sources are detected                       |
-| ✅ The user can add/remove sources                |
-| ❌ The user can download sources                  |
-| ❌ The sources are indexed (autocompletion)       |
-| ❌ You can download OCaml                         |
-| ❌ You can add/remove libraries for a module      |
+| SDK                                                   |
+|-------------------------------------------------------|
+| ❌ We are suggesting locations for opam SDKs           |
+| ✅ We are suggesting a location for non-opam SDKs      |
+| ✅ The SDK is verified                                 |
+| ❌ The sources are detected (✅ Cygwin, ✅ WSL, ❌ .jdks) |
+| ✅ The user can add/remove sources                     |
+| ❌ The user can download sources                       |
+| ❌ The sources are indexed (autocompletion)            |
+| ❌ You can download OCaml                              |
+| ❌ You can add/remove libraries for a module           |
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. On opam, the folder `.opam-switch/sources/` will also be checked.
 

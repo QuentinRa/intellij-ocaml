@@ -1,5 +1,7 @@
 package com.ocaml.compiler;
 
+import com.intellij.openapi.util.*;
+import com.ocaml.compiler.finder.*;
 import org.jetbrains.annotations.*;
 
 import java.nio.file.*;
@@ -39,8 +41,14 @@ public final class OCamlUtils {
         public static final class Finder {
             /** Tries to find existing OCaml SDKs on this computer. */
             public static @NotNull List<String> suggestHomePaths() {
-                Set<String> existingSdks = new HashSet<>();
-                // ...
+                Set<String> existingSdks;
+
+                if (SystemInfo.isWindows) {
+                    existingSdks = new OCamlHomeFinderWindows().findExistingSdks();
+                } else {
+                    existingSdks = new BaseOCamlHomeFinder().findExistingSdks();
+                }
+
                 return new ArrayList<>(existingSdks);
             }
 
