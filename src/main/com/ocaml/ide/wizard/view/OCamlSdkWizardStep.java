@@ -199,7 +199,11 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         if (isProject) {
             myWizardContext.setProjectJdk(sdk);
         } else {
-            myModuleBuilder.setModuleJdk(sdk);
+            // use project SDK
+            if (isUseSelected && myJdkChooser.isProjectJdkSelected())
+                myModuleBuilder.setModuleJdk(null);
+            else // use another SDK
+                myModuleBuilder.setModuleJdk(sdk);
         }
     }
 
