@@ -2,6 +2,7 @@ package com.ocaml.ide.projectWizard;
 
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.*;
+import com.intellij.openapi.application.*;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
@@ -59,6 +60,7 @@ public class OCamlModuleBuilder extends ModuleBuilder {
                 instructions = (TemplateBuildInstructions) myTemplate;
             else instructions = OCamlTemplateProvider.getDefaultInstructions();
 
+            // create the source folder
             final String sourcePath = getContentEntryPath() + File.separator + instructions.getSourceFolderName();
             //noinspection ResultOfMethodCallIgnored
             new File(sourcePath).mkdirs();
@@ -66,6 +68,8 @@ public class OCamlModuleBuilder extends ModuleBuilder {
                     .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(sourcePath));
             if (sourceRoot != null) {
                 contentEntry.addSourceFolder(sourceRoot, false, "");
+                instructions.createFiles(rootModel, sourceRoot);
+                ApplicationManager.getApplication().runWriteAction(() -> sourceRoot.refresh(true, true));
             }
         }
     }

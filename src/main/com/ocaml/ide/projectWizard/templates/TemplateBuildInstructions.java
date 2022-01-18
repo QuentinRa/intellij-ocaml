@@ -1,5 +1,7 @@
 package com.ocaml.ide.projectWizard.templates;
 
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.vfs.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,4 +13,14 @@ public interface TemplateBuildInstructions {
     default @NotNull String getSourceFolderName() {
         return "src";
     }
+
+    /**
+     * Create files used by the template
+     *
+     * @param rootModel see setupRootModel
+     * @param sourceRoot the folder that was created using {@link #getSourceFolderName}
+     *
+     * @see com.intellij.ide.util.projectWizard.ModuleBuilder#setupRootModel
+     **/
+    void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot);
 }

@@ -1,8 +1,10 @@
 package com.ocaml.ide.projectWizard.templates;
 
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
+import com.intellij.openapi.vfs.*;
 import com.intellij.platform.*;
 import com.ocaml.*;
 import com.ocaml.icons.*;
@@ -39,5 +41,9 @@ class OCamlMakefileTemplate implements ProjectTemplate, TemplateBuildInstruction
     @SuppressWarnings({"deprecation", "RedundantSuppression"})
     @Override public @Nullable ValidationInfo validateSettings() {
         return null;
+    }
+
+    @Override public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
+
     }
 }

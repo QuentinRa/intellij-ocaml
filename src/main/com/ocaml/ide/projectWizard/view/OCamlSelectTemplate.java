@@ -35,7 +35,7 @@ public class OCamlSelectTemplate extends ModuleWizardStep {
 
     @Override
     public boolean isStepVisible() {
-        return myWizardContext.isCreatingNewProject() && !myAvailableTemplates.isEmpty();
+        return !myAvailableTemplates.isEmpty();
     }
 
     @Override
