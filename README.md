@@ -90,7 +90,7 @@ You may not use `apt-get`, please use your distribution package manager if this 
 | ❌ You can download OCaml                         |
 | ❌ You can add/remove libraries for a module      |
 
-An SDK is a folder in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. On opam, the folder `.opam-switch/sources/` will also be checked.
+An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. On opam, the folder `.opam-switch/sources/` will also be checked.
 
 ## 📄 License
 

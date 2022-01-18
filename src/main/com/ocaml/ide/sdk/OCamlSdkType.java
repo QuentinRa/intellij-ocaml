@@ -15,11 +15,9 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.regex.*;
 
 public class OCamlSdkType extends LocalSdkType implements SdkDownload {
 
-    private static final String UNKNOWN_VERSION = "unknown version";
     private static final String OCAML_SDK = "OCaml SDK";
 
     public OCamlSdkType() {
@@ -47,11 +45,11 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @Override public @NotNull Collection<String> suggestHomePaths() {
-        return Collections.emptyList();
+        return OCamlUtils.Home.Finder.suggestHomePaths();
     }
 
     @Nullable @Override public String suggestHomePath() {
-        return null;
+        return OCamlUtils.Home.Finder.defaultJavaLocation();
     }
 
     //
@@ -75,13 +73,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @NotNull @Override public String getVersionString(@NotNull String sdkHome) {
-        // read the version in the name
-        String serialized = sdkHome.replace("\\", "/");
-        Matcher m1 = OCamlConstants.VERSION_PATH_REGEXP.matcher(serialized);
-        if (m1.matches()) {
-            return m1.group(1);
-        }
-        return UNKNOWN_VERSION;
+        return OCamlUtils.Version.parse(sdkHome);
     }
 
     //
@@ -89,7 +81,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @Override public boolean isValidSdkHome(@NotNull String sdkHome) {
-        return !getVersionString(sdkHome).equals(UNKNOWN_VERSION);
+        return OCamlUtils.Home.isValid(sdkHome);
     }
 
     //
