@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>intellij-ocaml</id>
     <name>OCaml</name>
-    <vendor email="admin@lgs-games.com" url="https://github.com/memorize-code/ocaml-plugin-intellij">QuentinRa</vendor>
+    <vendor email="admin@lgs-games.com" url="https://github.com/QuentinRa/intellij-ocaml-plugin">QuentinRa</vendor>
     <description><![CDATA[This plugin is providing support for OCaml with opam. It is based on both ReasonML, and intellij-rust.]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html

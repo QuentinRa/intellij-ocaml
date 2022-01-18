@@ -68,6 +68,10 @@ sourceSets {
     test.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:deprecation']
+}
+
 dependencies {
     testImplementation 'junit:junit:4.13.2'
 }

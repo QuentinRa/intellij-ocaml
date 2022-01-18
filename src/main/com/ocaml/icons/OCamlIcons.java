@@ -31,4 +31,8 @@ public class OCamlIcons {
         public static final Icon OCAML_SDK = loadIcon("/icons/ocamlSdk.svg");
     }
 
+    public static final class External {
+        public static final Icon Markdown = loadIcon("/icons/makefile.svg");
+    }
+
 }

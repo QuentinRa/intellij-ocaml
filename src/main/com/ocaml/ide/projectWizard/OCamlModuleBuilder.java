@@ -5,15 +5,17 @@ import com.intellij.openapi.*;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
+import com.intellij.platform.*;
 import com.ocaml.ide.module.*;
+import com.ocaml.ide.projectWizard.templates.*;
 import com.ocaml.ide.projectWizard.view.*;
 import com.ocaml.ide.sdk.*;
 import org.jetbrains.annotations.*;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * Set up an OCaml module/project.
@@ -27,6 +29,8 @@ import java.util.*;
  */
 public class OCamlModuleBuilder extends ModuleBuilder {
 
+    private ProjectTemplate myTemplate;
+
     @Override public ModuleType<OCamlModuleBuilder> getModuleType() {
         return new OCamlModuleType();
     }
@@ -35,10 +39,8 @@ public class OCamlModuleBuilder extends ModuleBuilder {
         return sdkType instanceof OCamlSdkType;
     }
 
-    public List<String> getSourcePaths() {
-        final List<String> paths = new ArrayList<>();
-        paths.add(getContentEntryPath() + File.separator + "src");
-        return paths;
+    public void setProjectTemplate(ProjectTemplate template) {
+        myTemplate = template;
     }
 
     @Override public void setupRootModel(@NotNull ModifiableRootModel rootModel) {
@@ -51,23 +53,36 @@ public class OCamlModuleBuilder extends ModuleBuilder {
 
         ContentEntry contentEntry = doAddContentEntry(rootModel);
         if (contentEntry != null) {
-            final List<String> sourcePaths = getSourcePaths();
+            // Get instructions
+            TemplateBuildInstructions instructions;
+            if (myTemplate instanceof TemplateBuildInstructions)
+                instructions = (TemplateBuildInstructions) myTemplate;
+            else instructions = OCamlTemplateProvider.getDefaultInstructions();
 
-            if (sourcePaths != null) {
-                for (final String sourcePath : sourcePaths) {
-                    //noinspection ResultOfMethodCallIgnored
-                    new File(sourcePath).mkdirs();
-                    final VirtualFile sourceRoot = LocalFileSystem.getInstance()
-                            .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(sourcePath));
-                    if (sourceRoot != null) {
-                        contentEntry.addSourceFolder(sourceRoot, false, "");
-                    }
-                }
+            final String sourcePath = getContentEntryPath() + File.separator + instructions.getSourceFolderName();
+            //noinspection ResultOfMethodCallIgnored
+            new File(sourcePath).mkdirs();
+            final VirtualFile sourceRoot = LocalFileSystem.getInstance()
+                    .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(sourcePath));
+            if (sourceRoot != null) {
+                contentEntry.addSourceFolder(sourceRoot, false, "");
             }
         }
     }
 
     @Nullable @Override public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
         return new OCamlSdkWizardStep(context, this);
+    }
+
+    /**
+     * Show steps after the custom option steps
+     * and before the project step
+     */
+    @Override public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
+        return new ModuleWizardStep[] { new OCamlSelectTemplate(wizardContext, OCamlTemplateProvider.getAvailableTemplates()) };
+    }
+
+    @Override public ModuleWizardStep modifyProjectTypeStep(@NotNull SettingsStep settingsStep) {
+        return super.modifyProjectTypeStep(settingsStep);
     }
 }
