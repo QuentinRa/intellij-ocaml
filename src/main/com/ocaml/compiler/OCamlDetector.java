@@ -52,7 +52,7 @@ public final class OCamlDetector {
 
     private static @Nullable DetectionResult detectBinaries(File ocaml, String ocamlc) {
         // issue on cygwin, ocamlc.exe is not valid
-        if (ocamlc.contains(CygwinConstants.CYGWIN_FOLDER)) ocamlc += CygwinConstants.CYGWIN_OCAMLC_SUFFIX;
+        if (ocamlc.contains(CygwinConstants.CYGWIN_FOLDER)) ocamlc += CygwinConstants.OCAMLC_OPT;
         // sources
         File sourcesFolder = ocaml.getParentFile();
         if (sourcesFolder == null) { return null; }

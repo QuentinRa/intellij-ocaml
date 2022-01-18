@@ -4,6 +4,11 @@ import com.intellij.testFramework.fixtures.*;
 
 public class OCamlBaseTest extends BasePlatformTestCase {
 
+    protected static final String V_OCAML_HOME_WSL = "\\\\wsl$\\Debian\\home\\calistro\\.opam\\4.07.0";
+    protected static final String I_OCAML_HOME_WSL = "\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0";
+    protected static final String V_OCAML_HOME_WIN = "C:\\cygwin64\\home\\quent\\.opam\\4.08.0";
+    protected static final String I_OCAML_HOME_WIN = "C:\\cygwin64\\home\\quent\\.opam\\0.00.0";
+
     // assuming that ocaml IS installed on this path
     protected static final String V_OCAML_BINARY_WSL = "\\\\wsl$\\Debian\\bin\\ocaml";
     protected static final String V_OCAML_COMPILER_WSL = "\\\\wsl$\\Debian\\bin\\ocamlc";

@@ -30,7 +30,7 @@ public final class OCamlUtils {
 
         /** Return true if a version is a valid SDK version */
         public static boolean isValid(String version) {
-            return OCamlConstants.VERSION_PATH_REGEXP.matcher(version).matches();
+            return OCamlConstants.VERSION_REGEXP.matcher(version).matches();
         }
     }
 
@@ -54,12 +54,18 @@ public final class OCamlUtils {
         }
 
         public static boolean isValid(@NotNull Path homePath) {
-            return OCamlUtils.Version.isValid(homePath.toFile().getName()) &&
-                    (Files.exists(homePath.resolve("bin/ocaml")) ||
-                            Files.exists(homePath.resolve("bin/ocaml.exe"))) &&
-                    (Files.exists(homePath.resolve("bin/ocamlc")) ||
-                            Files.exists(homePath.resolve("bin/ocamlc.exe"))) &&
-                    Files.exists(homePath.resolve("lib/ocaml"));
+            // version
+            boolean ok = OCamlUtils.Version.isValid(homePath.toFile().getName());
+            // interactive toplevel
+            ok = ok && (Files.exists(homePath.resolve("bin/ocaml")) || Files.exists(homePath.resolve("bin/ocaml.exe")));
+            // compiler
+            ok = ok && (
+                    Files.exists(homePath.resolve("bin/ocamlc")) || Files.exists(homePath.resolve("bin/ocamlc.exe"))
+                    || Files.exists(homePath.resolve("bin/ocamlc.opt")) || Files.exists(homePath.resolve("bin/ocamlc.opt.exe"))
+            );
+            // sources
+            ok = ok && (Files.exists(homePath.resolve("lib/ocaml"))); // not usr/lib/ocaml
+            return ok;
         }
     }
 }

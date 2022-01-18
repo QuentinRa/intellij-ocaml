@@ -16,7 +16,7 @@ public class OCamlBundle extends DynamicBundle {
     }
 
     @NotNull public static @Nls String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key,
-                                      Object @NotNull ... params) {
+                                               Object @NotNull ... params) {
         return INSTANCE.getMessage(key, params);
     }
 }
