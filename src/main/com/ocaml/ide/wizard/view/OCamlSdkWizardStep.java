@@ -3,6 +3,7 @@ package com.ocaml.ide.wizard.view;
 import com.intellij.*;
 import com.intellij.ide.*;
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.openapi.*;
 import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.project.*;
@@ -104,6 +105,12 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myWizardContext = wizardContext;
         myModuleBuilder = moduleBuilder;
 
+        Disposable disposable = myWizardContext.getDisposable();
+        if (disposable != null) {
+            Disposable stepDisposable = () -> mySdksModel.disposeUIResources();
+            Disposer.register(disposable, stepDisposable);
+        }
+
         // are we inside a project?
         String word = OCamlBundle.message(wizardContext.isCreatingNewProject() ? "project.up.first" : "module.up.first");
         myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", word));
@@ -200,10 +207,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             myWizardContext.setProjectJdk(sdk);
         } else {
             // use project SDK
-            if (isUseSelected && myJdkChooser.isProjectJdkSelected())
-                myModuleBuilder.setModuleJdk(null);
-            else // use another SDK
-                myModuleBuilder.setModuleJdk(sdk);
+            myModuleBuilder.setModuleJdk(sdk);
         }
     }
 
@@ -216,7 +220,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @Override public boolean validate() throws ConfigurationException {
         boolean sdkSelected = true;
         if (isUseSelected) {
-            if (myJdkChooser.isProjectJdkSelected()) return true;
+            if (myJdkChooser.isProjectJdkSelected()) return applyModel();
             sdkSelected = myJdkChooser.getSelectedJdk() != null;
         }
         else {
@@ -248,6 +252,10 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             myJdkChooser.reloadModel();
         }
 
+        return applyModel();
+    }
+
+    private boolean applyModel() {
         try {
             mySdksModel.apply(null, true);
         } catch (ConfigurationException e) {
@@ -259,7 +267,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                 return false;
             }
         }
-
         return true;
     }
 
