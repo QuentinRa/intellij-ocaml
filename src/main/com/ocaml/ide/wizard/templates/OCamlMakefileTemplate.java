@@ -1,4 +1,4 @@
-package com.ocaml.ide.projectWizard.templates;
+package com.ocaml.ide.wizard.templates;
 
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.roots.*;

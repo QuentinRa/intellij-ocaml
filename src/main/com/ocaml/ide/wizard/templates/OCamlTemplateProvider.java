@@ -1,4 +1,4 @@
-package com.ocaml.ide.projectWizard.templates;
+package com.ocaml.ide.wizard.templates;
 
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.vfs.*;
@@ -7,7 +7,6 @@ import com.ocaml.utils.files.*;
 import com.ocaml.utils.psi.*;
 
 import java.io.*;
-import java.nio.file.*;
 import java.util.*;
 
 public final class OCamlTemplateProvider {

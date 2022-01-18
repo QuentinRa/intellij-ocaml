@@ -1,4 +1,4 @@
-package com.ocaml.ide.projectWizard.view;
+package com.ocaml.ide.wizard.view;
 
 import com.intellij.*;
 import com.intellij.ide.*;
@@ -16,7 +16,7 @@ import com.intellij.ui.*;
 import com.ocaml.*;
 import com.ocaml.compiler.*;
 import com.ocaml.compiler.opam.*;
-import com.ocaml.ide.projectWizard.*;
+import com.ocaml.ide.wizard.*;
 import com.ocaml.ide.sdk.*;
 import com.ocaml.utils.adaptor.ui.*;
 import com.ocaml.utils.listener.*;
@@ -105,8 +105,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myModuleBuilder = moduleBuilder;
 
         // are we inside a project?
-        boolean isProject = myWizardContext.getProject() == null;
-        String word = OCamlBundle.message(isProject ? "project.up.first" : "module.up.first");
+        String word = OCamlBundle.message(wizardContext.isCreatingNewProject() ? "project.up.first" : "module.up.first");
         myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", word));
         myWizardTitle.setText(OCamlBundle.message("project.wizard.title", word));
         myLabelSdk.setLabelFor(myJdkChooser);
@@ -195,8 +194,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @Override public void updateDataModel() {
         Sdk sdk = getSdk();
 
-        // are we inside a project?
-        boolean isProject = myWizardContext.getProject() == null;
+        boolean isProject = myWizardContext.isCreatingNewProject();
 
         if (isProject) {
             myWizardContext.setProjectJdk(sdk);

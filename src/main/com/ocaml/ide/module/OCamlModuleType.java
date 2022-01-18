@@ -5,7 +5,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.*;
 import com.ocaml.*;
 import com.ocaml.icons.*;
-import com.ocaml.ide.projectWizard.*;
+import com.ocaml.ide.wizard.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;

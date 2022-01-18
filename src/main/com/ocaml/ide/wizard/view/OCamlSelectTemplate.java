@@ -1,11 +1,12 @@
-package com.ocaml.ide.projectWizard.view;
+package com.ocaml.ide.wizard.view;
 
 import com.intellij.ide.projectWizard.*;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.wm.*;
 import com.intellij.platform.*;
 import com.intellij.ui.components.*;
-import com.ocaml.ide.projectWizard.*;
+import com.ocaml.*;
+import com.ocaml.ide.wizard.*;
 
 import javax.swing.*;
 import java.util.*;
@@ -31,6 +32,14 @@ public class OCamlSelectTemplate extends ModuleWizardStep {
             }
         });
         myTemplateList.setEnabled(false);
+        // show "project" or "module" according to what we are creating
+        myCreateFromTemplateCheckBox.setText(OCamlBundle.message(
+                "project.wizard.create.from.template",
+                wizardContext.isCreatingNewProject() ?
+                        OCamlBundle.message("project.low.first") :
+                        OCamlBundle.message("module.low.first")
+                )
+        );
     }
 
     @Override

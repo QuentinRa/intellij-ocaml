@@ -17,7 +17,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <!-- MODULE -->
-        <moduleBuilder builderClass="com.ocaml.ide.projectWizard.OCamlModuleBuilder" order="first"/>
+        <moduleBuilder builderClass="com.ocaml.ide.wizard.OCamlModuleBuilder" order="first"/>
         <moduleType id="OCAML_MODULE" implementationClass="com.ocaml.ide.module.OCamlModuleType"/>
         <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
 

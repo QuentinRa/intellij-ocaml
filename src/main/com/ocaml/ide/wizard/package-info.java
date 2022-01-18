@@ -4,4 +4,4 @@
  * - when creating a new project
  * - when creating a new module
  */
-package com.ocaml.ide.projectWizard;
+package com.ocaml.ide.wizard;

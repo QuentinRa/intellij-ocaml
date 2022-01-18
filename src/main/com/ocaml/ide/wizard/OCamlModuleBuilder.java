@@ -1,4 +1,4 @@
-package com.ocaml.ide.projectWizard;
+package com.ocaml.ide.wizard;
 
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.*;
@@ -11,8 +11,8 @@ import com.intellij.openapi.util.io.*;
 import com.intellij.openapi.vfs.*;
 import com.intellij.platform.*;
 import com.ocaml.ide.module.*;
-import com.ocaml.ide.projectWizard.templates.*;
-import com.ocaml.ide.projectWizard.view.*;
+import com.ocaml.ide.wizard.templates.*;
+import com.ocaml.ide.wizard.view.*;
 import com.ocaml.ide.sdk.*;
 import org.jetbrains.annotations.*;
 
