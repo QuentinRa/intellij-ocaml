@@ -88,7 +88,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private JPanel myUseComponents; // 2# to disable every component in the second menu
     @NotNull private JPanel myCreateComponents; // 1# to disable every component in the second menu
     @NotNull private JLabel myOcamlVersion; // 2# show ocaml version, fetched from myOCamlLocation
-    @NotNull private TextFieldWithBrowseButton mySdkSources; // 2# submit sources
+    @NotNull private JLabel mySdkSources; // 2# submit sources
     @NotNull private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
     @NotNull private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
     @NotNull private JLabel myOpamWarning; // 2# show a warning if using opam in 2#, should be in 1#

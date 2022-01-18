@@ -40,10 +40,10 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Set/Update the SDK for a module                        |
 | ✅ Set the output folder for the project                  |
 | ✅ Set the output folder for the module                   |
-| ❌ The project is created from a template with src...     |
+| ✅ The project is created from a template with src...     |
 | ❌ The project is created with a default runConfiguration |
 
-You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.).
+You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.). You may use a template, the only one available is an application using a <b>Makefile</b>.
 
 <details>
 <summary>Windows (with WSL)</summary>
@@ -84,12 +84,13 @@ You may not use `apt-get`, please use your distribution package manager if this 
 | ✅ We are suggesting a location for non-opam SDKs |
 | ❌ The SDK is verified                            |
 | ✅ The sources are detected                       |
-| ❌ The user can add/remove sources                |
+| ✅ The user can add/remove sources                |
+| ❌ The user can download sources                  |
 | ❌ The sources are indexed (autocompletion)       |
 | ❌ You can download OCaml                         |
 | ❌ You can add/remove libraries for a module      |
 
-An SDK is a folder in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. Only sources in `lib/ocaml/` are indexed as sources. Others are assumed to be the sources for libraries and should be added using "Project Structure > Module > Dependencies", then "Add > OCaml Library".
+An SDK is a folder in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. On opam, the folder `.opam-switch/sources/` will also be checked.
 
 ## 📄 License
 
