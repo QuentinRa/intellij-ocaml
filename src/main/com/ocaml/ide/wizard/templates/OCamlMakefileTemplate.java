@@ -53,10 +53,6 @@ class OCamlMakefileTemplate implements ProjectTemplate, TemplateBuildInstruction
         OCamlFileUtils.createFile(sourceRootFile, "test_hello_world.mli","open Hello_world\n\nlet _ = hello_world ()");
 
         String makefileContent = OCamlFileUtils.loadFileContent("/templates/Makefile/Makefile");
-        File Makefile = OCamlFileUtils.createFile(sourceRootFile.getParentFile(), "Makefile", makefileContent);
-
-        if (Makefile != null) {
-            PsiUtils.openFile(rootModel.getProject(), Makefile, true);
-        }
+        OCamlFileUtils.createFile(sourceRootFile.getParentFile(), "Makefile", makefileContent);
     }
 }

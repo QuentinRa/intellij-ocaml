@@ -34,8 +34,7 @@ public final class OCamlTemplateProvider {
 
         @Override public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
             File sourceRootFile = VfsUtilCore.virtualToIoFile(sourceRoot);
-            File mainFile = OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let _ = Format.printf \"Hello, World!\"");
-            if (mainFile != null) PsiUtils.openFile(rootModel.getProject(), mainFile, true);
+            OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let _ = Format.printf \"Hello, World!\"");
         }
     }
 }

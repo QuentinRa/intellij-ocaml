@@ -271,8 +271,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         mySdksModel = projectConfig.getProjectJdksModel();
         mySdksModel.reset(myProject);
 
-        SdkType type = OCamlSdkType.getInstance();
-        Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof SdkType && (type == null || type.equals(sdk));
+        Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof OCamlSdkType;
 
         myJdkChooser = new JdkComboBoxAdaptor(myProject,
                 mySdksModel,
@@ -281,7 +280,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                 null,
                 null);
         // show if we are inside a module
-        if (myProject != null) myJdkChooser.showProjectSdkItem();
+        if (!myWizardContext.isCreatingNewProject()) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
         myInstructionsLabel = new PanelWithText(OCamlBundle.message("project.wizard.instruction"));

@@ -51,14 +51,13 @@ public final class OCamlFileUtils {
     }
 
     /** Create a file with some text. */
-    @Nullable public static File createFile(@NotNull File sourceRootFile,
-                                            @NotNull String fileName, @NotNull String text) {
+    public static void createFile(@NotNull File sourceRootFile,
+                                  @NotNull String fileName, @NotNull String text) {
         try {
             File mainFile = new File(sourceRootFile, fileName);
             Files.write(mainFile.toPath(), new ArrayList<>(Arrays.asList(text.split("\n"))));
-            return mainFile;
         } catch (IOException e) {
-            return null;
+            // log: log this exception?
         }
     }
 }
