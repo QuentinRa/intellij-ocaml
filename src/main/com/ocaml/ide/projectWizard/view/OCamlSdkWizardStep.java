@@ -70,6 +70,8 @@ import java.awt.*;
  *     <li><b>OK</b>: allow the user of ocaml.exe</li>
  *     <li><b>OK</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)</li>
  * </ul>
+ *
+ * @see ProjectJdkForModuleStep
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;
@@ -209,13 +211,10 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         return myWizardContext.getStepIcon();
     }
 
-    /**
-     * @see ProjectJdkForModuleStep
-     */
     @Override public boolean validate() throws ConfigurationException {
         boolean sdkSelected = true;
         if (isUseSelected) {
-            if (myJdkChooser.isProjectJdkSelected()) return true; // todo: invalid in 211
+            if (myJdkChooser.isProjectJdkSelected()) return true;
             sdkSelected = myJdkChooser.getSelectedJdk() != null;
         }
         else {

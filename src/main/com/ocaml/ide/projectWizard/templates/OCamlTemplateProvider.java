@@ -29,11 +29,6 @@ public final class OCamlTemplateProvider {
      * Default instructions.
      * - create src
      * - create src/hello_world.ml
-     * @see com.intellij.ide.util.projectWizard.WebProjectTemplate
-     * @see com.intellij.openapi.module.WebModuleBuilder
-     * @see DirectoryProjectConfigurator
-     * @see ProjectTemplate
-     * Files.createDirectories(dir);
      */
     private static class OCamlDefaultTemplateInstructions implements TemplateBuildInstructions {
 
@@ -46,7 +41,7 @@ public final class OCamlTemplateProvider {
                 Files.write(mainFile.toPath(), lines);
                 PsiUtils.openFile(rootModel.getProject(), mainFile, true);
             } catch (IOException e) {
-                System.out.println("error:"+e.getMessage());
+                // log: log this exception
             }
         }
     }

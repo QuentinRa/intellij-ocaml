@@ -56,6 +56,7 @@ public final class OCamlPathUtils {
             Files.createSymbolicLink(link, target);
             return true;
         } catch (Exception e){
+            // log: log this exception
             return false;
         }
     }

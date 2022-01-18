@@ -77,6 +77,7 @@ public final class OCamlDetector {
                     ocamlc, version,
                     sourcesFolderPath);
         } catch (ExecutionException | IOException e) {
+            // log: log this exception
             return null;
         }
     }
@@ -162,6 +163,7 @@ public final class OCamlDetector {
             }
             return new AssociatedBinaries(ocamlBinary+"c", version, distribution.getWindowsPath(source));
         } catch (ExecutionException | InterruptedException | IOException e) {
+            // log: log this exception
             return NO_ASSOCIATED_BINARIES;
         }
     }
