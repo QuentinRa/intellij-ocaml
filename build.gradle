@@ -42,7 +42,11 @@ intellij {
         sinceBuild = pluginSinceBuild
         untilBuild = pluginUntilBuild
         changeNotes = """
-                Add changes notes here.
+                <ul>
+                    <li>Can create modules, and edit their properties (SDK, output folder)</li>
+                    <li>Can create a project with an opam or an opam-like SDK
+                    on Windows using either a WSL or cygwin</li>
+                <ul>
             """.stripIndent()
     }
 }
@@ -62,6 +66,10 @@ sourceSets {
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
     test.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:deprecation']
 }
 
 dependencies {

@@ -52,7 +52,7 @@ public final class OCamlDetector {
 
     private static @Nullable DetectionResult detectBinaries(File ocaml, String ocamlc) {
         // issue on cygwin, ocamlc.exe is not valid
-        if (ocamlc.contains(CygwinConstants.CYGWIN_FOLDER)) ocamlc += CygwinConstants.CYGWIN_OCAMLC_SUFFIX;
+        if (ocamlc.contains(CygwinConstants.CYGWIN_FOLDER)) ocamlc += CygwinConstants.OCAMLC_OPT;
         // sources
         File sourcesFolder = ocaml.getParentFile();
         if (sourcesFolder == null) { return null; }
@@ -77,6 +77,7 @@ public final class OCamlDetector {
                     ocamlc, version,
                     sourcesFolderPath);
         } catch (ExecutionException | IOException e) {
+            // todo: log this exception
             return null;
         }
     }
@@ -85,11 +86,16 @@ public final class OCamlDetector {
         public final String ocamlCompiler;
         public final String version;
         public final String sources;
+        public final boolean isError;
 
         AssociatedBinaries(String ocamlCompiler, String version, String sources) {
+            this(ocamlCompiler, version, sources, false);
+        }
+        AssociatedBinaries(String ocamlCompiler, String version, String sources, boolean isError) {
             this.ocamlCompiler = ocamlCompiler;
             this.version = version;
             this.sources = sources;
+            this.isError = isError;
         }
 
         @Override public String toString() {
@@ -118,7 +124,8 @@ public final class OCamlDetector {
     public static final AssociatedBinaries NO_ASSOCIATED_BINARIES = new AssociatedBinaries(
             OCamlBundle.message("sdk.ocaml.binary.invalid.short"),
             OCamlBundle.message("sdk.version.unknown"),
-            OCamlBundle.message("sdk.ocaml.binary.invalid.short")
+            OCamlBundle.message("sdk.ocaml.binary.invalid.short"),
+            true
     );
 
     /**
@@ -129,10 +136,13 @@ public final class OCamlDetector {
         WSLDistribution distribution = path.getDistribution();
         String ocamlc = distribution.getWslPath(ocamlBinary+"c");
         if ( ocamlc == null ) return NO_ASSOCIATED_BINARIES;
+        String root = ocamlc.replace("bin/"+OCamlConstants.OCAML_COMPILER_EXECUTABLE, "");
+        String libFolder = root+OCamlConstants.LIB_FOLDER_LOCATION_R;
+        String usrLibFolder = root+OCamlConstants.USR_LIB_FOLDER_LOCATION_R;
         WSLCommandLineOptions options = new WSLCommandLineOptions();
         // they are called in the reverse order
-        options.addInitCommand("find "+OCamlConstants.LIB_FOLDER_LOCATION+" -maxdepth 0 2>&1 || true");
-        options.addInitCommand("find "+OCamlConstants.USR_LIB_FOLDER_LOCATION+" -maxdepth 0 2>&1 || true");
+        options.addInitCommand("find "+usrLibFolder+" -maxdepth 0 2>&1 || true");
+        options.addInitCommand("find "+libFolder+" -maxdepth 0 2>&1 || true");
         options.addInitCommand(ocamlc+" "+OCamlConstants.OCAMLC_VERSION+" 2>&1");
         try {
             GeneralCommandLine cli = new GeneralCommandLine("true");
@@ -145,20 +155,21 @@ public final class OCamlDetector {
             if (version == null || !OCamlConstants.VERSION_REGEXP.matcher(version).matches())
                 return NO_ASSOCIATED_BINARIES;
             // Check the two known lib folders
-            String usrDir = bufferedReader.readLine();
+            String libDir = bufferedReader.readLine();
             String source;
-            if (usrDir == null || !usrDir.equals(OCamlConstants.USR_LIB_FOLDER_LOCATION)) {
-                String libDir = bufferedReader.readLine();
-                if (libDir == null || !libDir.equals(OCamlConstants.LIB_FOLDER_LOCATION)) {
+            if (libDir == null || !libDir.equals(libFolder)) {
+                String usrDir = bufferedReader.readLine();
+                if (usrDir == null || !usrDir.endsWith(usrLibFolder)) {
                     return NO_ASSOCIATED_BINARIES;
                 } else {
-                    source = OCamlConstants.LIB_FOLDER_LOCATION;
+                    source = usrLibFolder;
                 }
             } else {
-                source = OCamlConstants.USR_LIB_FOLDER_LOCATION;
+                source = libFolder;
             }
             return new AssociatedBinaries(ocamlBinary+"c", version, distribution.getWindowsPath(source));
         } catch (ExecutionException | InterruptedException | IOException e) {
+            // todo: log this exception
             return NO_ASSOCIATED_BINARIES;
         }
     }

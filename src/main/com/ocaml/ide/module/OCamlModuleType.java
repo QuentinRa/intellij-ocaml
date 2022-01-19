@@ -1,11 +1,9 @@
 package com.ocaml.ide.module;
 
 import com.intellij.openapi.module.*;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.projectRoots.*;
 import com.ocaml.*;
 import com.ocaml.icons.*;
-import com.ocaml.ide.projectWizard.*;
+import com.ocaml.ide.wizard.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;
@@ -43,13 +41,5 @@ public class OCamlModuleType extends ModuleType<OCamlModuleBuilder> {
 
     @Override public @NotNull Icon getNodeIcon(boolean isOpened) {
         return OCamlIcons.Nodes.OCAML_MODULE;
-    }
-
-    //
-    // Check if the SDK is valid
-    // todo: may do something a bit more
-    //
-    @Override public boolean isValidSdk(@NotNull Module module, @Nullable Sdk projectSdk) {
-        return true;
     }
 }

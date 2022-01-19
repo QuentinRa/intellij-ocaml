@@ -1,6 +1,7 @@
 package com.ocaml.utils.files;
 
 import com.intellij.execution.configurations.*;
+import com.intellij.openapi.diagnostic.*;
 import com.intellij.openapi.util.*;
 import com.intellij.util.*;
 import org.jetbrains.annotations.*;
@@ -25,16 +26,6 @@ public final class OCamlPathUtils {
      * Check if a path ends with another path
      * @param path can be a Linux or a Windows Path
      * @param end must be a Linux Path
-     * @return true if ends with value, false else
-     */
-    public static boolean fileEndsWith(@NotNull String path, String end) {
-        return fileEndsWith(path, end, null);
-    }
-
-    /**
-     * Check if a path ends with another path
-     * @param path can be a Linux or a Windows Path
-     * @param end must be a Linux Path
      * @param extension an extension that may be added to end
      * @return true if ends with value, false else
      */
@@ -47,15 +38,18 @@ public final class OCamlPathUtils {
      * Create a symbolicLink
      * @param src the link that will be created
      * @param dest the destination of the link
+     * @param logger log an error that occurred when creating a symbolic link
      * @param args parts of the path leading to the destination
      */
-    public static boolean createSymbolicLink(String src, String dest, String ... args) {
+    public static boolean createSymbolicLink(String src, String dest, @Nullable Logger logger, String ... args) {
         try {
             Path link = Path.of(dest, args);
             Path target = Path.of(src);
             Files.createSymbolicLink(link, target);
             return true;
         } catch (Exception e){
+            if (logger != null)
+                logger.error("Could not create link from '"+src+"' to '"+dest+"'.", e);
             return false;
         }
     }

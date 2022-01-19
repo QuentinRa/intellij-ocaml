@@ -1,8 +1,9 @@
-package com.ocaml.ide.projectWizard.view;
+package com.ocaml.ide.wizard.view;
 
 import com.intellij.*;
 import com.intellij.ide.*;
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.openapi.*;
 import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.project.*;
@@ -13,10 +14,12 @@ import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
 import com.intellij.openapi.vfs.*;
 import com.intellij.ui.*;
+import com.intellij.ui.components.*;
 import com.ocaml.*;
 import com.ocaml.compiler.*;
 import com.ocaml.compiler.opam.*;
-import com.ocaml.ide.projectWizard.*;
+import com.ocaml.icons.*;
+import com.ocaml.ide.wizard.*;
 import com.ocaml.ide.sdk.*;
 import com.ocaml.utils.adaptor.ui.*;
 import com.ocaml.utils.listener.*;
@@ -36,18 +39,7 @@ import java.awt.*;
  * There is an option to create an "opam-like" SDK. The only thing we
  * need for now, is to know where are the sources, and where is the ocaml
  * binary.<br>
- * We will create a folder in ~/.jdk called "ocaml-{version}" with two folders
- * <ul>
- *     <li>bin
- *         <ul>
- *             <li>ocaml -> shortcut to the specified ocaml</li>
- *             <li>ocamlc -> shortcut to ocaml, in the folder of the ocaml</li>
- *         </ul>
- *     </li>
- *     <li>lib
- *         <ul><li>ocaml -> shortcut to the specified folder</li></ul>
- *     </li>
- * </ul>
+ * @see OCamlSdkUtils for the creation of an opam-lie SDK
  *
  * Features of the class
  * <ul>
@@ -69,7 +61,10 @@ import java.awt.*;
  *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlDetector#findAssociatedBinaries})</li>
  *     <li><b>OK</b>: allow the user of ocaml.exe</li>
  *     <li><b>OK</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)</li>
+ *     <li><b>KO</b>: add "?" with a message</li>
  * </ul>
+ *
+ * @see ProjectJdkForModuleStep
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;
@@ -77,7 +72,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private JPanel myPanel;
     private Project myProject;
 
-    @SuppressWarnings("unused") private PanelWithText myInstructionsLabel;
     private JLabel myLabelSdk; // to prompt "Project" or "Module"
 
     @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
@@ -86,15 +80,16 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private JPanel myUseComponents; // 2# to disable every component in the second menu
     @NotNull private JPanel myCreateComponents; // 1# to disable every component in the second menu
     @NotNull private JLabel myOcamlVersion; // 2# show ocaml version, fetched from myOCamlLocation
-    @NotNull private TextFieldWithBrowseButton mySdkSources; // 2# submit sources
+    @NotNull private JLabel mySdkSources; // 2# submit sources
     @NotNull private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
     @NotNull private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
     @NotNull private JLabel myOpamWarning; // 2# show a warning if using opam in 2#, should be in 1#
     @NotNull private JLabel myWizardTitle; // title of the wizard
     @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
+    private ActionLink myActionLink;
     @Nullable private Sdk createSDK; // 2# the sdk that we created
-    private ProjectSdksModel mySdksModel;
-    private OCamlSdkUtils.CustomCamlSdkData myCustomSdkData; // 2# data of the SDK we are about to create
+    private ProjectSdksModel mySdksModel; // project SDK, add/create SDKs, ...
+    private OCamlSdkUtils.CustomOCamlSdkData myCustomSdkData; // 2# data of the SDK we are about to create
     boolean shouldValidateAgain = true;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
@@ -102,11 +97,16 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myWizardContext = wizardContext;
         myModuleBuilder = moduleBuilder;
 
+        Disposable disposable = myWizardContext.getDisposable();
+        if (disposable != null) {
+            Disposable stepDisposable = () -> mySdksModel.disposeUIResources();
+            Disposer.register(disposable, stepDisposable);
+        }
+
         // are we inside a project?
-        boolean isProject = myWizardContext.getProject() == null;
-        String word = OCamlBundle.message(isProject ? "project.up.first" : "module.up.first");
-        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", word));
-        myWizardTitle.setText(OCamlBundle.message("project.wizard.title", word));
+        int choice = wizardContext.isCreatingNewProject() ? 0 : 1;
+        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", choice));
+        myWizardTitle.setText(OCamlBundle.message("project.wizard.title", choice));
         myLabelSdk.setLabelFor(myJdkChooser);
 
         // Disable create
@@ -120,7 +120,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             isUseSelected = !isUseSelected;
             setEnabledPanel(myCreateComponents, !isUseSelected);
             setEnabledPanel(myUseComponents, isUseSelected);
-            showWarning();
+            showOpamWarning();
         });
 
         // Detect and prefill fields
@@ -131,11 +131,20 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             mySdkSources.setText(output.sources);
             myOcamlVersion.setText(output.version);
         }
+        showIconForCreateFields(output == null);
 
         // On Field Updated (manually)
         DeferredDocumentListener.addDeferredDocumentListener(
                 myOCamlLocation.getTextField(),
-                e -> onOCamlLocationChange(), 1000);
+                e -> onOCamlLocationChange(),
+                () -> {
+                    myOCamlCompilerLocation.setText("");
+                    myOcamlVersion.setText("");
+                    mySdkSources.setText("");
+                    showIconForCreateFields(null);
+                },
+                1000
+        );
         // On File selected
         myOCamlLocation.addBrowseFolderListener(
                 new TextBrowseFolderListener(FileChooserDescriptorFactory.createSingleFileDescriptor(), myProject) {
@@ -155,6 +164,16 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myCreateLocationLabel.setForeground(JBColor.GRAY);
     }
 
+    private void showIconForCreateFields(@Nullable Boolean error) {
+        Icon icon;
+        if (error == null) icon = OCamlIcons.UI.LOADING;
+        else icon = error ? OCamlIcons.UI.FIELD_INVALID : OCamlIcons.UI.FIELD_VALID;
+
+        myOCamlCompilerLocation.setIcon(icon);
+        myOcamlVersion.setIcon(icon);
+        mySdkSources.setIcon(icon);
+    }
+
     // update the two other labels once the ocaml location was set
     private void onOCamlLocationChange() {
         // must validate again as the path changed
@@ -165,16 +184,17 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOcamlVersion.setText("");
         // Ask for the values
         OCamlDetector.findAssociatedBinaries(path, arg -> {
+            showIconForCreateFields(arg.isError);
             myOCamlCompilerLocation.setText(arg.ocamlCompiler);
             myOcamlVersion.setText(arg.version);
             mySdkSources.setText(arg.sources);
             // opam warning
-            showWarning();
+            showOpamWarning();
         });
     }
 
     // show the warning "opam ..." if needed
-    private void showWarning() {
+    private void showOpamWarning() {
         boolean show = !isUseSelected && OpamUtils.isOpamBinary(myOCamlCompilerLocation.getText());
         myOpamWarning.setVisible(show);
     }
@@ -193,12 +213,12 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @Override public void updateDataModel() {
         Sdk sdk = getSdk();
 
-        // are we inside a project?
-        boolean isProject = myWizardContext.getProject() == null;
+        boolean isProject = myWizardContext.isCreatingNewProject();
 
         if (isProject) {
             myWizardContext.setProjectJdk(sdk);
         } else {
+            // use project SDK
             myModuleBuilder.setModuleJdk(sdk);
         }
     }
@@ -209,13 +229,10 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         return myWizardContext.getStepIcon();
     }
 
-    /**
-     * @see ProjectJdkForModuleStep
-     */
     @Override public boolean validate() throws ConfigurationException {
         boolean sdkSelected = true;
         if (isUseSelected) {
-            if (myJdkChooser.isProjectJdkSelected()) return true; // todo: invalid in 211
+            if (myJdkChooser.isProjectJdkSelected()) return applyModel();
             sdkSelected = myJdkChooser.getSelectedJdk() != null;
         }
         else {
@@ -247,6 +264,11 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             myJdkChooser.reloadModel();
         }
 
+        return applyModel();
+    }
+
+    // we need to apply the model everytime we are updating the model , see issue #26
+    private boolean applyModel() {
         try {
             mySdksModel.apply(null, true);
         } catch (ConfigurationException e) {
@@ -258,7 +280,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -274,8 +295,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         mySdksModel = projectConfig.getProjectJdksModel();
         mySdksModel.reset(myProject);
 
-        SdkType type = OCamlSdkType.getInstance();
-        Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof SdkType && (type == null || type.equals(sdk));
+        Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof OCamlSdkType;
 
         myJdkChooser = new JdkComboBoxAdaptor(myProject,
                 mySdksModel,
@@ -284,9 +304,12 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                 null,
                 null);
         // show if we are inside a module
-        if (myProject != null) myJdkChooser.showProjectSdkItem();
+        if (!myWizardContext.isCreatingNewProject()) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
-        myInstructionsLabel = new PanelWithText(OCamlBundle.message("project.wizard.instruction"));
+        myActionLink = new ActionLink("Instructions", event -> {
+            BrowserUtil.browse("https://github.com/QuentinRa/intellij-ocaml-plugin/blob/main/README.md#-install-ocaml-and-opam");
+        });
+        myActionLink.setExternalLinkIcon();
     }
 }

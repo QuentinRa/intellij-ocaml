@@ -31,22 +31,37 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 ## 🚀 Features
 
-| Setup                                                    |
-|----------------------------------------------------------|
-| ✅ You got some instructions to install what you need     |
-| ✅ You can create a non-opam SDK                          |
-| ✅ You can create/add/use an opam SDK                     |
-| ✅ Set/Update the project SDK, you can use it in a module |
-| ✅ Set/Update the SDK for a module                        |
-| ✅ Set the output folder for the project                  |
-| ✅ Set the output folder for the module                   |
-| ❌ The project is created from a template with src...     |
-| ❌ The project is created with a default runConfiguration |
+| Setup                                                      |
+|------------------------------------------------------------|
+| ✅ You got some instructions to install what you need       |
+| ✅ You can create a non-opam SDK                            |
+| ✅ You can create/add/use an opam SDK                       |
+| ✅ Set/Update the project SDK, you can use it in a module   |
+| ✅ Set/Update the SDK for a module                          |
+| ✅ Edit modules' properties (ex: output folder, src folder) |
+| ✅ The project is created from a template with src...       |
+| ❌ Add a "?" after each fields with some explanations       |
+| ❌ The project is created with a default runConfiguration   |
 
-You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.).
+You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.). You may use a template, the only one available is an application using a <b>Makefile</b>.
+
+| SDK                                                 |
+|-----------------------------------------------------|
+| ✅ We are suggesting SDKs (✅ Cygwin, ✅ WSL, ❌ .jdks) |
+| ✅ We are suggesting a location for non-opam SDKs    |
+| ✅ The SDK is verified                               |
+| ✅ The user can add/remove sources                   |
+| ❌ The user can download sources                     |
+| ❌ The sources are indexed (autocompletion)          |
+| ❌ You can download OCaml                            |
+| ❌ You can add/remove libraries for a module         |
+
+An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. On opam, the folder `.opam-switch/sources/` will also be checked.
+
+## 📖 Install ocaml and opam
 
 <details>
-<summary>Windows (with WSL)</summary>
+<summary>Windows (with WSL, <b>easy, but not recommended for now)</b></summary>
 
 On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
 </details>
@@ -54,38 +69,38 @@ On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the ins
 <details>
 <summary>Windows (with cygwin)</summary>
 
-Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml**, or **opam** (recommended)
+Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml** (if you don't want opam), otherwise pick
 
 * `opam`
 * `make`
-* `wget`
-* `curl`
-* `libclang`
-* `mingw[...]clang` (pick the one according to your OS)
+* `wget` and `curl`
+* `tar` and `unzip`
+* `libclang` and `mingw[...]clang` (pick the one according to your OS)
 
-Ensure that `C:/cygwin64/bin` is in the path. If you open a PowerShell, and write `ocaml` and the command is working, then you are good.
+To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `òpam switch create 4.12.0`.
+
+Ensure that `C:/cygwin64/bin` (for me) is in the path. If you open a PowerShell, and write `opam --version`, you should be good. This is pretty useless (as the command above does not work in a PowerShell), but you are now able to call commands such as `make` in a PowerShell, so you can use a `Makefile`!
 </details>
 
 <details>
 <summary>Linux</summary>
 
-You may not use `apt-get`, please use your distribution package manager if this is not working.
+In my case, on Linux or Debian, I'm using these commands (you may call `sudo apt-get update` first).
 
 * **ocaml**: `sudo apt-get install ocaml`
 * **opam** (recommended): `sudo apt-get install opam` then, you may use `òpam switch create 4.12.0` to install `ocaml 4.12.0`
 </details>
 
-| SDK                                              |
-|--------------------------------------------------|
-| ❌ We are suggesting locations for opam SDKs      |
-| ✅ We are suggesting a location for non-opam SDKs |
-| ❌ The SDK is verified                            |
-| ❌ The sources are indexed (autocompletion)       |
-| ❌ The user can add/remove sources                |
-| ❌ You can download OCaml                         |
-| ❌ You can add/remove libraries for a module      |
+<details>
+<summary>macOS</summary>
 
-An SDK is a folder in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. Only sources in `lib/ocaml/` are indexed as sources. Others are assumed to be the sources for libraries and should be added using "Project Structure > Module > Dependencies", then "Add > OCaml Library".
+I do not have a computer with a macOS, so you should submit feedback, so that I can update this section. From what I know, you may look around
+
+* `brew install ocaml`
+* `brew install opam`
+
+[Source](https://stackoverflow.com/questions/35563263/install-opam-in-mac-os).
+</details>
 
 ## 📄 License
 

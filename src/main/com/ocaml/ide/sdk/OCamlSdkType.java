@@ -1,20 +1,26 @@
 package com.ocaml.ide.sdk;
 
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
+import com.intellij.openapi.util.io.*;
+import com.intellij.openapi.vfs.*;
 import com.ocaml.compiler.*;
+import com.ocaml.compiler.opam.*;
 import com.ocaml.icons.*;
 import org.jdom.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.regex.*;
 
+/**
+ * OCaml SDK
+ */
 public class OCamlSdkType extends LocalSdkType implements SdkDownload {
 
-    private static final String UNKNOWN_VERSION = "unknown version";
     private static final String OCAML_SDK = "OCaml SDK";
 
     public OCamlSdkType() {
@@ -42,11 +48,11 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @Override public @NotNull Collection<String> suggestHomePaths() {
-        return Collections.emptyList();
+        return OCamlUtils.Home.Finder.suggestHomePaths();
     }
 
     @Nullable @Override public String suggestHomePath() {
-        return null;
+        return OCamlUtils.Home.Finder.defaultOCamlLocation();
     }
 
     //
@@ -70,13 +76,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @NotNull @Override public String getVersionString(@NotNull String sdkHome) {
-        // read the version in the name
-        String serialized = sdkHome.replace("\\", "/");
-        Matcher m1 = OCamlConstants.VERSION_PATH_REGEXP.matcher(serialized);
-        if (m1.matches()) {
-            return m1.group(1);
-        }
-        return UNKNOWN_VERSION;
+        return OCamlUtils.Version.parse(sdkHome);
     }
 
     //
@@ -84,7 +84,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @Override public boolean isValidSdkHome(@NotNull String sdkHome) {
-        return !getVersionString(sdkHome).equals(UNKNOWN_VERSION);
+        return OCamlUtils.Home.isValid(sdkHome);
     }
 
     //
@@ -99,6 +99,31 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     }
 
     @Override public void setupSdkPaths(@NotNull Sdk sdk) {
+        String homePath = sdk.getHomePath();
+        assert homePath != null : sdk;
+        SdkModificator sdkModificator = sdk.getSdkModificator();
+        sdkModificator.removeRoots(OrderRootType.CLASSES);
+        addSources(new File(homePath), sdkModificator);
+        sdkModificator.commitChanges();
+    }
+
+    public static void addSources(@NotNull File sdkHomeFile, @NotNull SdkModificator sdkModificator) {
+        addSources(OCamlConstants.LIB_FOLDER_LOCATION_R, sdkHomeFile, sdkModificator, true);
+        addSources(OpamConstants.SOURCES_FOLDER, sdkHomeFile, sdkModificator, false);
+    }
+
+    private static void addSources(String sourceName, File sdkHomeFile, SdkModificator sdkModificator, boolean allowCandidateAsRoot) {
+        File rootFolder = new File(sdkHomeFile, sourceName);
+        if (!rootFolder.exists()) return;
+
+        File[] files = allowCandidateAsRoot ? new File[]{rootFolder} : rootFolder.listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            VirtualFile rootCandidate = LocalFileSystem.getInstance()
+                    .findFileByPath(FileUtil.toSystemIndependentName(file.getAbsolutePath()));
+            if (rootCandidate == null) continue;
+            sdkModificator.addRoot(rootCandidate, OrderRootType.CLASSES);
+        }
     }
 
     //

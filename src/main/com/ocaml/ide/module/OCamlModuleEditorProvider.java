@@ -31,15 +31,15 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
 
         // creating the tabs
         List<ModuleConfigurationEditor> editors = new ArrayList<>();
-        editors.add(new OCamlOutputEditor(state));
         editors.add(new ClasspathEditor(state));
+        editors.add(new ContentEntriesEditor(module.getName(), state));
+        editors.add(new OCamlOutputEditor(state));
 
         return editors.toArray(ModuleConfigurationEditor.EMPTY);
     }
 
     /**
      * OutputEditor without Javadoc and annotations panels
-     * todo: handle "exclude output paths"
      */
     private static final class OCamlOutputEditor extends OutputEditor {
 
