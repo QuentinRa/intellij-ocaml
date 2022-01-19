@@ -1,14 +1,16 @@
 package com.ocaml.ide.module;
 
-import com.intellij.openapi.module.*;
+import com.intellij.openapi.module.GeneralModuleType;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.roots.*;
+import com.intellij.openapi.module.ModuleConfigurationEditor;
+import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.*;
-import com.intellij.util.ui.*;
+import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,9 +19,10 @@ import java.util.List;
  * in "Project Structure" > Modules, you will be able to see some tabs when you
  * are clicking on an OCaml module. These tabs are configured here.
  */
-public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvider  {
+public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvider {
 
-    @Override public ModuleConfigurationEditor[] createEditors(ModuleConfigurationState state) {
+    @Override
+    public ModuleConfigurationEditor[] createEditors(ModuleConfigurationState state) {
         Module module = state.getCurrentRootModel().getModule();
         ModuleType<?> moduleType = ModuleType.get(module);
 
@@ -47,7 +50,8 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
             super(state);
         }
 
-        @Override protected JComponent createComponentImpl() {
+        @Override
+        protected JComponent createComponentImpl() {
             JPanel panel = (JPanel) super.createComponentImpl();
             panel.getComponent(1).setVisible(false); // javadocPanel
             panel.getComponent(2).setVisible(false); // annotationsPanel
@@ -68,7 +72,8 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
             super(moduleName, state);
         }
 
-        @Override protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
+        @Override
+        protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
             // it feels empty in the north
             mainPanel.add(new JLabel(" "), BorderLayout.NORTH);
         }

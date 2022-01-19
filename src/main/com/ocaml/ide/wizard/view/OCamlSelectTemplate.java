@@ -1,20 +1,23 @@
 package com.ocaml.ide.wizard.view;
 
-import com.intellij.ide.projectWizard.*;
-import com.intellij.ide.util.projectWizard.*;
-import com.intellij.openapi.wm.*;
-import com.intellij.platform.*;
-import com.intellij.ui.components.*;
-import com.ocaml.*;
-import com.ocaml.ide.wizard.*;
+import com.intellij.ide.projectWizard.ProjectTemplateList;
+import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.ide.util.projectWizard.ProjectBuilder;
+import com.intellij.ide.util.projectWizard.WizardContext;
+import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.platform.ProjectTemplate;
+import com.intellij.ui.components.JBCheckBox;
+import com.ocaml.OCamlBundle;
+import com.ocaml.ide.wizard.OCamlModuleBuilder;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * The same interface used in ChooseTemplateStep, but we are using it
  * with different classes in the constructor/etc. as we are loading some
  * "unusual" templates.
+ *
  * @see com.intellij.ide.projectWizard.ChooseTemplateStep
  */
 public class OCamlSelectTemplate extends ModuleWizardStep {
@@ -37,8 +40,8 @@ public class OCamlSelectTemplate extends ModuleWizardStep {
         myTemplateList.setEnabled(false);
         // show "project" or "module" according to what we are creating
         myCreateFromTemplateCheckBox.setText(OCamlBundle.message(
-                "project.wizard.create.from.template",
-                wizardContext.isCreatingNewProject() ? 0 : 1
+                        "project.wizard.create.from.template",
+                        wizardContext.isCreatingNewProject() ? 0 : 1
                 )
         );
     }

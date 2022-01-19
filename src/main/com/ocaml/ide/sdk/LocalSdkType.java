@@ -1,7 +1,7 @@
 package com.ocaml.ide.sdk;
 
-import com.intellij.openapi.projectRoots.*;
-import org.jetbrains.annotations.*;
+import com.intellij.openapi.projectRoots.SdkType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * I'm still unsure of which kind of JDK we will use as a base for OCamlSdkType.

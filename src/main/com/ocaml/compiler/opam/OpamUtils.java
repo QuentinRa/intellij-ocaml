@@ -1,6 +1,6 @@
 package com.ocaml.compiler.opam;
 
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
 
 public final class OpamUtils {
 

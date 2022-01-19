@@ -1,31 +1,33 @@
 package com.ocaml.compiler.finder;
 
-import com.intellij.openapi.diagnostic.*;
-import com.intellij.openapi.util.*;
-import com.intellij.openapi.util.text.*;
-import com.intellij.util.*;
-import com.intellij.util.containers.*;
-import com.ocaml.compiler.*;
-import org.jetbrains.annotations.*;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.SystemInfoRt;
+import com.intellij.openapi.util.text.StringUtilRt;
+import com.intellij.util.EnvironmentUtil;
+import com.intellij.util.containers.ContainerUtil;
+import com.ocaml.compiler.OCamlUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.HashSet;
-import java.util.function.*;
+import java.util.function.Supplier;
 
 import static java.nio.file.Files.isDirectory;
 import static java.util.Collections.emptySet;
 
 /**
  * A cheap copy of JavaHomeFinderBasic
+ *
  * @see com.intellij.openapi.projectRoots.impl.JavaHomeFinderBasic
  */
 public class BaseOCamlHomeFinder {
     private static final Logger LOG = Logger.getInstance(BaseOCamlHomeFinder.class);
     protected final List<Supplier<Set<String>>> myFinders = new ArrayList<>();
 
-    public BaseOCamlHomeFinder(String ... paths) {
+    public BaseOCamlHomeFinder(String... paths) {
         myFinders.add(this::findInPATH);
         myFinders.add(() -> findInSpecifiedPaths(paths));
         myFinders.add(this::findJavaInstalledByOpam);
@@ -47,7 +49,8 @@ public class BaseOCamlHomeFinder {
     }
 
     // scan
-    @SuppressWarnings("SameParameterValue") protected @NotNull Set<String> scanAll(@Nullable Path file, boolean includeNestDirs) {
+    @SuppressWarnings("SameParameterValue")
+    protected @NotNull Set<String> scanAll(@Nullable Path file, boolean includeNestDirs) {
         if (file == null) {
             return emptySet();
         }
@@ -83,7 +86,8 @@ public class BaseOCamlHomeFinder {
 
     // utils
 
-    @SuppressWarnings("SameParameterValue") protected @Nullable String getEnvironmentVariable(@NotNull String name) {
+    @SuppressWarnings("SameParameterValue")
+    protected @Nullable String getEnvironmentVariable(@NotNull String name) {
         return EnvironmentUtil.getValue(name);
     }
 
@@ -123,7 +127,8 @@ public class BaseOCamlHomeFinder {
         return sdks != null && isDirectory(sdks) ? scanAll(sdks, true) : emptySet();
     }
 
-    @SuppressWarnings("SameParameterValue") protected @Nullable Path getPathInUserHome(@NotNull String relativePath) {
+    @SuppressWarnings("SameParameterValue")
+    protected @Nullable Path getPathInUserHome(@NotNull String relativePath) {
         String homePath = System.getProperty("user.home");
         return homePath != null ? Path.of(homePath, relativePath) : null;
     }

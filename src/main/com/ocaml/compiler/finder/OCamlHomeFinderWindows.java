@@ -1,15 +1,21 @@
 package com.ocaml.compiler.finder;
 
-import com.intellij.execution.wsl.*;
-import com.intellij.util.*;
-import com.ocaml.compiler.cygwin.*;
-import com.ocaml.ide.sdk.*;
-import org.jetbrains.annotations.*;
+import com.intellij.execution.wsl.WSLDistribution;
+import com.intellij.execution.wsl.WslDistributionManager;
+import com.intellij.util.ArrayUtil;
+import com.intellij.util.SystemProperties;
+import com.ocaml.compiler.cygwin.CygwinConstants;
+import com.ocaml.ide.sdk.OCamlSdkUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * - handle WSL
@@ -34,7 +40,7 @@ public class OCamlHomeFinderWindows extends BaseOCamlHomeFinder {
         var fsRoots = FileSystems.getDefault().getRootDirectories();
         if (fsRoots == null) return Collections.emptySet();
         HashSet<Path> roots = new HashSet<>();
-        for (Path root:fsRoots) {
+        for (Path root : fsRoots) {
             if (!Files.exists(root)) continue;
             // I know that my teacher gave us an "ocaml" folder
             // so why not?
@@ -67,7 +73,8 @@ public class OCamlHomeFinderWindows extends BaseOCamlHomeFinder {
 
         // utils
 
-        @Override protected @Nullable String getEnvironmentVariable(@NotNull String name) {
+        @Override
+        protected @Nullable String getEnvironmentVariable(@NotNull String name) {
             String value = myDistro.getEnvironmentVariable(name);
             if (value == null) return null;
             else if (value.indexOf(':') < 0) return myDistro.getWindowsPath(value);
@@ -80,7 +87,8 @@ public class OCamlHomeFinderWindows extends BaseOCamlHomeFinder {
             return converted.isEmpty() ? null : converted;
         }
 
-        @Override protected @Nullable Path getPathInUserHome(@NotNull String relativePath) {
+        @Override
+        protected @Nullable Path getPathInUserHome(@NotNull String relativePath) {
             String wslPath = myDistro.getUserHome();
             return wslPath == null ? null : Path.of(myDistro.getWindowsPath(wslPath), relativePath);
         }

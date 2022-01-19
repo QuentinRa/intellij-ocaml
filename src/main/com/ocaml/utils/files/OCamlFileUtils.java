@@ -1,12 +1,16 @@
 package com.ocaml.utils.files;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.vfs.*;
-import org.jetbrains.annotations.*;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public final class OCamlFileUtils {
 
@@ -18,26 +22,28 @@ public final class OCamlFileUtils {
     public static @NotNull String loadFileContent(@NotNull String filePath, @Nullable Logger logger) {
         try {
             var url = OCamlFileUtils.class.getClassLoader().getResource(filePath.replaceFirst("/", ""));
-            if (url == null) throw new IOException("Couldn't get URL for "+filePath);
+            if (url == null) throw new IOException("Couldn't get URL for " + filePath);
             VirtualFile virtualFile = VfsUtil.findFileByURL(url);
-            if (virtualFile == null) throw new IOException("Couldn't find file by URL for "+filePath);
+            if (virtualFile == null) throw new IOException("Couldn't find file by URL for " + filePath);
             String text = VfsUtil.loadText(virtualFile);
             String[] split = text.split("\r\n");
             return String.join("\n", split);
         } catch (IOException e) {
-            if (logger != null) logger.error("Error loading file "+filePath, e);
+            if (logger != null) logger.error("Error loading file " + filePath, e);
             return "";
         }
     }
 
-    /** Create a file with some text. */
+    /**
+     * Create a file with some text.
+     */
     public static void createFile(@NotNull File sourceRootFile, @NotNull String fileName,
                                   @NotNull String text, @Nullable Logger logger) {
         try {
             File mainFile = new File(sourceRootFile, fileName);
             Files.write(mainFile.toPath(), new ArrayList<>(Arrays.asList(text.split("\n"))));
         } catch (IOException e) {
-            if (logger != null) logger.error("Error creating file "+fileName, e);
+            if (logger != null) logger.error("Error creating file " + fileName, e);
         }
     }
 }

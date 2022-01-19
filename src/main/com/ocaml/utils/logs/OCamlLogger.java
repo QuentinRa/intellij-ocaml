@@ -1,7 +1,7 @@
 package com.ocaml.utils.logs;
 
-import com.intellij.openapi.diagnostic.*;
-import org.jetbrains.annotations.*;
+import com.intellij.openapi.diagnostic.Logger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Create a logger for the plugin<br>
@@ -9,17 +9,24 @@ import org.jetbrains.annotations.*;
  */
 public class OCamlLogger {
 
-    /** should not be used, create a custom group **/
+    /**
+     * should not be used, create a custom group
+     **/
     public static @NotNull Logger getInstance(String s) {
-        return Logger.getInstance("ocaml."+s);
+        return Logger.getInstance("ocaml." + s);
     }
 
-    /** Group for templates */
+    /**
+     * Group for templates
+     */
     public static @NotNull Logger getTemplateInstance(String name) {
-        return getInstance("template."+name);
+        return getInstance("template." + name);
     }
 
+    /**
+     * Group for SDK-related logs
+     */
     public static @NotNull Logger getSdkInstance(String name) {
-        return getInstance("sdk."+name);
+        return getInstance("sdk." + name);
     }
 }
