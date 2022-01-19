@@ -32,7 +32,7 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
         // creating the tabs
         List<ModuleConfigurationEditor> editors = new ArrayList<>();
         editors.add(new ClasspathEditor(state));
-        editors.add(new ContentEntriesEditor(module.getName(), state));
+        editors.add(new OCamlContentEntriesEditor(module.getName(), state));
         editors.add(new OCamlOutputEditor(state));
 
         return editors.toArray(ModuleConfigurationEditor.EMPTY);
@@ -59,6 +59,18 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
             );
             panel.add(Box.createVerticalGlue(), gc);
             return panel; // :pray:
+        }
+    }
+
+    private static final class OCamlContentEntriesEditor extends ContentEntriesEditor {
+
+        public OCamlContentEntriesEditor(String moduleName, ModuleConfigurationState state) {
+            super(moduleName, state);
+        }
+
+        @Override protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
+            // it feels empty in the north
+            mainPanel.add(new JLabel(" "), BorderLayout.NORTH);
         }
     }
 }
