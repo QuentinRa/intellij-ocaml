@@ -27,10 +27,10 @@ public final class OCamlSdkUtils {
      * @return the data that will be used to create an SDK, null if there is no data to create an SDK
      * @throws ConfigurationException if the data is invalid
      */
-    public static @NotNull CustomCamlSdkData createSdk(@NotNull String ocamlBinary,
-                                         @NotNull String version,
-                                         @NotNull String ocamlCompilerBinary,
-                                         @NotNull String ocamlSourcesFolder) throws ConfigurationException {
+    public static @NotNull CustomOCamlSdkData createSdk(@NotNull String ocamlBinary,
+                                                        @NotNull String version,
+                                                        @NotNull String ocamlCompilerBinary,
+                                                        @NotNull String ocamlSourcesFolder) throws ConfigurationException {
         if (version.isEmpty())
             throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.version.empty"));
 
@@ -164,15 +164,15 @@ public final class OCamlSdkUtils {
         if (homePath == null)
             throw new ConfigurationException(OCamlBundle.message("sdk.create.failed", JDK_FOLDER));
 
-        return new CustomCamlSdkData(OCamlSdkType.suggestSdkName(version), homePath);
+        return new CustomOCamlSdkData(OCamlSdkType.suggestSdkName(version), homePath);
     }
 
-    public static final class CustomCamlSdkData {
+    public static final class CustomOCamlSdkData {
         public final String name;
         public final String homePath;
         public final OCamlSdkType type;
 
-        public CustomCamlSdkData(String name, String homePath) {
+        public CustomOCamlSdkData(String name, String homePath) {
             this.name = name;
             this.homePath = homePath;
             this.type = OCamlSdkType.getInstance();

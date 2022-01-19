@@ -50,7 +50,7 @@ class OCamlMakefileTemplate implements ProjectTemplate, TemplateBuildInstruction
         File sourceRootFile = VfsUtilCore.virtualToIoFile(sourceRoot);
         OCamlFileUtils.createFile(sourceRootFile, "hello_world.mli", "val hello_world : unit -> unit");
         OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let hello_world () = Format.printf \"Hello, World!@.\"");
-        OCamlFileUtils.createFile(sourceRootFile, "test_hello_world.mli","open Hello_world\n\nlet _ = hello_world ()");
+        OCamlFileUtils.createFile(sourceRootFile, "test_hello_world.ml","open Hello_world\n\nlet _ = hello_world ()");
 
         String makefileContent = OCamlFileUtils.loadFileContent("/templates/Makefile/Makefile");
         OCamlFileUtils.createFile(sourceRootFile.getParentFile(), "Makefile", makefileContent);

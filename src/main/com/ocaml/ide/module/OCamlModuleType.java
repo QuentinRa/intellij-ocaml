@@ -44,12 +44,4 @@ public class OCamlModuleType extends ModuleType<OCamlModuleBuilder> {
     @Override public @NotNull Icon getNodeIcon(boolean isOpened) {
         return OCamlIcons.Nodes.OCAML_MODULE;
     }
-
-    //
-    // Check if the SDK is valid
-    // todo: may do something a bit more
-    //
-    @Override public boolean isValidSdk(@NotNull Module module, @Nullable Sdk projectSdk) {
-        return true;
-    }
 }

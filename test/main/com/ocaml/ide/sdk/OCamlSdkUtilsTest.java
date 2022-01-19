@@ -60,7 +60,7 @@ public final class OCamlSdkUtilsTest extends OCamlBaseTest {
     }
     public void assertConfigurationOK(CreateSdkParams params) {
         try {
-            OCamlSdkUtils.CustomCamlSdkData sdkData = OCamlSdkUtils.createSdk(
+            OCamlSdkUtils.CustomOCamlSdkData sdkData = OCamlSdkUtils.createSdk(
                     params.ocamlBinary,
                     params.version,
                     params.ocamlCompiler,

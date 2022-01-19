@@ -16,6 +16,9 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
+/**
+ * OCaml SDK
+ */
 public class OCamlSdkType extends LocalSdkType implements SdkDownload {
 
     private static final String OCAML_SDK = "OCaml SDK";
@@ -49,7 +52,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     }
 
     @Nullable @Override public String suggestHomePath() {
-        return OCamlUtils.Home.Finder.defaultJavaLocation();
+        return OCamlUtils.Home.Finder.defaultOCamlLocation();
     }
 
     //

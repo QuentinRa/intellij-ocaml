@@ -37,18 +37,7 @@ import java.awt.*;
  * There is an option to create an "opam-like" SDK. The only thing we
  * need for now, is to know where are the sources, and where is the ocaml
  * binary.<br>
- * We will create a folder in ~/.jdk called "ocaml-{version}" with two folders
- * <ul>
- *     <li>bin
- *         <ul>
- *             <li>ocaml -> shortcut to the specified ocaml</li>
- *             <li>ocamlc -> shortcut to ocaml, in the folder of the ocaml</li>
- *         </ul>
- *     </li>
- *     <li>lib
- *         <ul><li>ocaml -> shortcut to the specified folder</li></ul>
- *     </li>
- * </ul>
+ * @see OCamlSdkUtils for the creation of an opam-lie SDK
  *
  * Features of the class
  * <ul>
@@ -96,8 +85,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private JLabel myWizardTitle; // title of the wizard
     @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
     @Nullable private Sdk createSDK; // 2# the sdk that we created
-    private ProjectSdksModel mySdksModel;
-    private OCamlSdkUtils.CustomCamlSdkData myCustomSdkData; // 2# data of the SDK we are about to create
+    private ProjectSdksModel mySdksModel; // project SDK, add/create SDKs, ...
+    private OCamlSdkUtils.CustomOCamlSdkData myCustomSdkData; // 2# data of the SDK we are about to create
     boolean shouldValidateAgain = true;
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
@@ -255,6 +244,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         return applyModel();
     }
 
+    // we need to apply the model everytime we are updating the model , see issue #26
     private boolean applyModel() {
         try {
             mySdksModel.apply(null, true);

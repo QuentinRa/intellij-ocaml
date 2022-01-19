@@ -1,6 +1,7 @@
 package com.ocaml.compiler;
 
 import com.intellij.openapi.util.*;
+import com.intellij.openapi.util.io.*;
 import com.ocaml.compiler.finder.*;
 import org.jetbrains.annotations.*;
 
@@ -52,7 +53,10 @@ public final class OCamlUtils {
                 return new ArrayList<>(existingSdks);
             }
 
-            public static @Nullable String defaultJavaLocation() {
+            public static @Nullable String defaultOCamlLocation() {
+                if (SystemInfo.isLinux) {
+                    return FileUtil.expandUserHome("~/.opam");
+                }
                 return null;
             }
         }
