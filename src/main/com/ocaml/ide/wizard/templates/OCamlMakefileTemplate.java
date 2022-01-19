@@ -1,6 +1,7 @@
 package com.ocaml.ide.wizard.templates;
 
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.openapi.diagnostic.*;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
@@ -9,7 +10,7 @@ import com.intellij.platform.*;
 import com.ocaml.*;
 import com.ocaml.icons.*;
 import com.ocaml.utils.files.*;
-import com.ocaml.utils.psi.*;
+import com.ocaml.utils.logs.*;
 import org.jetbrains.annotations.*;
 
 import javax.swing.*;
@@ -24,6 +25,8 @@ import java.io.*;
  * - Makefile
  */
 class OCamlMakefileTemplate implements ProjectTemplate, TemplateBuildInstructions {
+
+    private static final Logger LOG = OCamlLogger.getTemplateInstance("makefile");
 
     @SuppressWarnings("UnstableApiUsage") @Override public @NotNull @NlsContexts.Label String getName() {
         return OCamlBundle.message("template.makefile.title");
@@ -48,11 +51,11 @@ class OCamlMakefileTemplate implements ProjectTemplate, TemplateBuildInstruction
 
     @Override public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
         File sourceRootFile = VfsUtilCore.virtualToIoFile(sourceRoot);
-        OCamlFileUtils.createFile(sourceRootFile, "hello_world.mli", "val hello_world : unit -> unit");
-        OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let hello_world () = Format.printf \"Hello, World!@.\"");
-        OCamlFileUtils.createFile(sourceRootFile, "test_hello_world.ml","open Hello_world\n\nlet _ = hello_world ()");
+        OCamlFileUtils.createFile(sourceRootFile, "hello_world.mli", "val hello_world : unit -> unit", LOG);
+        OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let hello_world () = Format.printf \"Hello, World!@.\"", LOG);
+        OCamlFileUtils.createFile(sourceRootFile, "test_hello_world.ml","open Hello_world\n\nlet _ = hello_world ()", LOG);
 
-        String makefileContent = OCamlFileUtils.loadFileContent("/templates/Makefile/Makefile");
-        OCamlFileUtils.createFile(sourceRootFile.getParentFile(), "Makefile", makefileContent);
+        String makefileContent = OCamlFileUtils.loadFileContent("/templates/Makefile/Makefile", LOG);
+        OCamlFileUtils.createFile(sourceRootFile.getParentFile(), "Makefile", makefileContent, LOG);
     }
 }

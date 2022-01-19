@@ -21,11 +21,11 @@ import java.io.*;
 /**
  * Set up an OCaml module/project.
  *
- * ---- getWeight
+ * <br><br>---- getWeight ----<br>
  * You may use this to move this module
  * to the top in the list, if needed (ex: 100).
  *
- * -- getGroupName / getParentGroup
+ * <br><br>---- getGroupName / getParentGroup ----<br>
  * You may use this if this module is inside a group.
  */
 public class OCamlModuleBuilder extends ModuleBuilder {

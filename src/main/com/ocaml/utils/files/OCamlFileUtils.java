@@ -1,5 +1,6 @@
 package com.ocaml.utils.files;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.*;
 import org.jetbrains.annotations.*;
 
@@ -14,7 +15,7 @@ public final class OCamlFileUtils {
      * The path must starts with a /.
      * The separators for the lines in the returned file will be \n.
      */
-    public static @NotNull String loadFileContent(@NotNull String filePath) {
+    public static @NotNull String loadFileContent(@NotNull String filePath, @Nullable Logger logger) {
         try {
             var url = OCamlFileUtils.class.getClassLoader().getResource(filePath.replaceFirst("/", ""));
             if (url == null) throw new IOException("Couldn't get URL for "+filePath);
@@ -24,19 +25,19 @@ public final class OCamlFileUtils {
             String[] split = text.split("\r\n");
             return String.join("\n", split);
         } catch (IOException e) {
-            // log: log this exception
+            if (logger != null) logger.error("Error loading file "+filePath, e);
             return "";
         }
     }
 
     /** Create a file with some text. */
-    public static void createFile(@NotNull File sourceRootFile,
-                                  @NotNull String fileName, @NotNull String text) {
+    public static void createFile(@NotNull File sourceRootFile, @NotNull String fileName,
+                                  @NotNull String text, @Nullable Logger logger) {
         try {
             File mainFile = new File(sourceRootFile, fileName);
             Files.write(mainFile.toPath(), new ArrayList<>(Arrays.asList(text.split("\n"))));
         } catch (IOException e) {
-            // log: log this exception?
+            if (logger != null) logger.error("Error creating file "+fileName, e);
         }
     }
 }

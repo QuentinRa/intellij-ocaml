@@ -1,6 +1,7 @@
 package com.ocaml.utils.files;
 
 import com.intellij.execution.configurations.*;
+import com.intellij.openapi.diagnostic.*;
 import com.intellij.openapi.util.*;
 import com.intellij.util.*;
 import org.jetbrains.annotations.*;
@@ -37,16 +38,18 @@ public final class OCamlPathUtils {
      * Create a symbolicLink
      * @param src the link that will be created
      * @param dest the destination of the link
+     * @param logger log an error that occurred when creating a symbolic link
      * @param args parts of the path leading to the destination
      */
-    public static boolean createSymbolicLink(String src, String dest, String ... args) {
+    public static boolean createSymbolicLink(String src, String dest, @Nullable Logger logger, String ... args) {
         try {
             Path link = Path.of(dest, args);
             Path target = Path.of(src);
             Files.createSymbolicLink(link, target);
             return true;
         } catch (Exception e){
-            // log: log this exception
+            if (logger != null)
+                logger.error("Could not create link from '"+src+"' to '"+dest+"'.", e);
             return false;
         }
     }

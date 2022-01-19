@@ -1,9 +1,11 @@
 package com.ocaml.ide.wizard.templates;
 
+import com.intellij.openapi.diagnostic.*;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.vfs.*;
 import com.intellij.platform.*;
 import com.ocaml.utils.files.*;
+import com.ocaml.utils.logs.*;
 import com.ocaml.utils.psi.*;
 
 import java.io.*;
@@ -32,9 +34,11 @@ public final class OCamlTemplateProvider {
      */
     private static class OCamlDefaultTemplateInstructions implements TemplateBuildInstructions {
 
+        private static final Logger LOG = OCamlLogger.getTemplateInstance("default");
+
         @Override public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
             File sourceRootFile = VfsUtilCore.virtualToIoFile(sourceRoot);
-            OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let _ = Format.printf \"Hello, World!\"");
+            OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let _ = Format.printf \"Hello, World!\"", LOG);
         }
     }
 }
