@@ -86,11 +86,16 @@ public final class OCamlDetector {
         public final String ocamlCompiler;
         public final String version;
         public final String sources;
+        public final boolean isError;
 
         AssociatedBinaries(String ocamlCompiler, String version, String sources) {
+            this(ocamlCompiler, version, sources, false);
+        }
+        AssociatedBinaries(String ocamlCompiler, String version, String sources, boolean isError) {
             this.ocamlCompiler = ocamlCompiler;
             this.version = version;
             this.sources = sources;
+            this.isError = isError;
         }
 
         @Override public String toString() {
@@ -119,7 +124,8 @@ public final class OCamlDetector {
     public static final AssociatedBinaries NO_ASSOCIATED_BINARIES = new AssociatedBinaries(
             OCamlBundle.message("sdk.ocaml.binary.invalid.short"),
             OCamlBundle.message("sdk.version.unknown"),
-            OCamlBundle.message("sdk.ocaml.binary.invalid.short")
+            OCamlBundle.message("sdk.ocaml.binary.invalid.short"),
+            true
     );
 
     /**

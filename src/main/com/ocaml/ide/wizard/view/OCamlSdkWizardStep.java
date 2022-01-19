@@ -17,6 +17,7 @@ import com.intellij.ui.*;
 import com.ocaml.*;
 import com.ocaml.compiler.*;
 import com.ocaml.compiler.opam.*;
+import com.ocaml.icons.*;
 import com.ocaml.ide.wizard.*;
 import com.ocaml.ide.sdk.*;
 import com.ocaml.utils.adaptor.ui.*;
@@ -118,7 +119,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             isUseSelected = !isUseSelected;
             setEnabledPanel(myCreateComponents, !isUseSelected);
             setEnabledPanel(myUseComponents, isUseSelected);
-            showWarning();
+            showOpamWarning();
         });
 
         // Detect and prefill fields
@@ -128,12 +129,22 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             myOCamlCompilerLocation.setText(output.ocamlCompiler);
             mySdkSources.setText(output.sources);
             myOcamlVersion.setText(output.version);
+        } else {
+            showIconForCreateFields(false);
         }
 
         // On Field Updated (manually)
         DeferredDocumentListener.addDeferredDocumentListener(
                 myOCamlLocation.getTextField(),
-                e -> onOCamlLocationChange(), 1000);
+                e -> onOCamlLocationChange(),
+                () -> {
+                    myOCamlCompilerLocation.setText("");
+                    myOcamlVersion.setText("");
+                    mySdkSources.setText("");
+                    showIconForCreateFields(null);
+                },
+                1000
+        );
         // On File selected
         myOCamlLocation.addBrowseFolderListener(
                 new TextBrowseFolderListener(FileChooserDescriptorFactory.createSingleFileDescriptor(), myProject) {
@@ -153,6 +164,16 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myCreateLocationLabel.setForeground(JBColor.GRAY);
     }
 
+    private void showIconForCreateFields(@Nullable Boolean error) {
+        Icon icon;
+        if (error == null) icon = OCamlIcons.UI.LOADING;
+        else icon = error ? OCamlIcons.UI.FIELD_INVALID : OCamlIcons.UI.FIELD_VALID;
+
+        myOCamlCompilerLocation.setIcon(icon);
+        myOcamlVersion.setIcon(icon);
+        mySdkSources.setIcon(icon);
+    }
+
     // update the two other labels once the ocaml location was set
     private void onOCamlLocationChange() {
         // must validate again as the path changed
@@ -163,16 +184,17 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOcamlVersion.setText("");
         // Ask for the values
         OCamlDetector.findAssociatedBinaries(path, arg -> {
+            showIconForCreateFields(arg.isError);
             myOCamlCompilerLocation.setText(arg.ocamlCompiler);
             myOcamlVersion.setText(arg.version);
             mySdkSources.setText(arg.sources);
             // opam warning
-            showWarning();
+            showOpamWarning();
         });
     }
 
     // show the warning "opam ..." if needed
-    private void showWarning() {
+    private void showOpamWarning() {
         boolean show = !isUseSelected && OpamUtils.isOpamBinary(myOCamlCompilerLocation.getText());
         myOpamWarning.setVisible(show);
     }

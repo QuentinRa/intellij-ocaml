@@ -37,7 +37,7 @@ class OCamlMakefileTemplate implements ProjectTemplate, TemplateBuildInstruction
     }
 
     @Override public Icon getIcon() {
-        return OCamlIcons.External.Markdown;
+        return OCamlIcons.External.MAKEFILE;
     }
 
     @Override public @NotNull AbstractModuleBuilder createModuleBuilder() {
