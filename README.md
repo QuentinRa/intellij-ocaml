@@ -45,39 +45,6 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.). You may use a template, the only one available is an application using a <b>Makefile</b>.
 
-<details>
-<summary>Windows (with WSL)</summary>
-
-On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
-</details>
-
-<details>
-<summary>Windows (with cygwin)</summary>
-
-Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml**, or **opam** (recommended)
-
-* `opam`
-* `make`
-* `wget`
-* `curl`
-* `tar`
-* `libclang`
-* `mingw[...]clang` (pick the one according to your OS)
-
-To install new versions of OCaml, run `Cygwin.bat` (you can't in a PowerShell), then call `òpam switch create 4.12.0`.
-
-Ensure that `C:/cygwin64/bin` is in the path. If you open a PowerShell, and write `ocaml` and the command is working, then you are good.
-</details>
-
-<details>
-<summary>Linux</summary>
-
-You may not use `apt-get`, please use your distribution package manager if this is not working.
-
-* **ocaml**: `sudo apt-get install ocaml`
-* **opam** (recommended): `sudo apt-get install opam` then, you may use `òpam switch create 4.12.0` to install `ocaml 4.12.0`
-</details>
-
 | SDK                                                 |
 |-----------------------------------------------------|
 | ✅ We are suggesting SDKs (✅ Cygwin, ✅ WSL, ❌ .jdks) |
@@ -90,6 +57,50 @@ You may not use `apt-get`, please use your distribution package manager if this 
 | ❌ You can add/remove libraries for a module         |
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. On opam, the folder `.opam-switch/sources/` will also be checked.
+
+## 📖 Install ocaml and opam
+
+<details>
+<summary>Windows (with WSL, <b>easy, but not recommended for now)</b></summary>
+
+On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
+</details>
+
+<details>
+<summary>Windows (with cygwin)</summary>
+
+Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml** (if you don't want opam), otherwise pick
+
+* `opam`
+* `make`
+* `wget` and `curl`
+* `tar` and `unzip`
+* `libclang` and `mingw[...]clang` (pick the one according to your OS)
+
+To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `òpam switch create 4.12.0`.
+
+Ensure that `C:/cygwin64/bin` (for me) is in the path. If you open a PowerShell, and write `opam --version`, you should be good. This is pretty useless (as the command above does not work in a PowerShell), but you are now able to call commands such as `make` in a PowerShell, so you can use a `Makefile`!
+</details>
+
+<details>
+<summary>Linux</summary>
+
+In my case, on Linux or Debian, I'm using these commands (you may call `sudo apt-get update` first).
+
+* **ocaml**: `sudo apt-get install ocaml`
+* **opam** (recommended): `sudo apt-get install opam` then, you may use `òpam switch create 4.12.0` to install `ocaml 4.12.0`
+</details>
+
+<details>
+<summary>macOS</summary>
+
+I do not have a computer with a macOS, so you should submit feedback, so that I can update this section. From what I know, you may look around
+
+* `brew install ocaml`
+* `brew install opam`
+
+[Source](https://stackoverflow.com/questions/35563263/install-opam-in-mac-os).
+</details>
 
 ## 📄 License
 

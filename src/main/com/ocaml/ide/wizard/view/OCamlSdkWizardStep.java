@@ -14,6 +14,7 @@ import com.intellij.openapi.ui.*;
 import com.intellij.openapi.util.*;
 import com.intellij.openapi.vfs.*;
 import com.intellij.ui.*;
+import com.intellij.ui.components.*;
 import com.ocaml.*;
 import com.ocaml.compiler.*;
 import com.ocaml.compiler.opam.*;
@@ -71,7 +72,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private JPanel myPanel;
     private Project myProject;
 
-    @SuppressWarnings("unused") private PanelWithText myInstructionsLabel;
     private JLabel myLabelSdk; // to prompt "Project" or "Module"
 
     @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
@@ -86,6 +86,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private JLabel myOpamWarning; // 2# show a warning if using opam in 2#, should be in 1#
     @NotNull private JLabel myWizardTitle; // title of the wizard
     @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
+    private ActionLink myActionLink;
     @Nullable private Sdk createSDK; // 2# the sdk that we created
     private ProjectSdksModel mySdksModel; // project SDK, add/create SDKs, ...
     private OCamlSdkUtils.CustomOCamlSdkData myCustomSdkData; // 2# data of the SDK we are about to create
@@ -129,9 +130,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             myOCamlCompilerLocation.setText(output.ocamlCompiler);
             mySdkSources.setText(output.sources);
             myOcamlVersion.setText(output.version);
-        } else {
-            showIconForCreateFields(false);
         }
+        showIconForCreateFields(output == null);
 
         // On Field Updated (manually)
         DeferredDocumentListener.addDeferredDocumentListener(
@@ -307,6 +307,9 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         if (!myWizardContext.isCreatingNewProject()) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
-        myInstructionsLabel = new PanelWithText(OCamlBundle.message("project.wizard.instruction"));
+        myActionLink = new ActionLink("Instructions", event -> {
+            BrowserUtil.browse("https://github.com/QuentinRa/intellij-ocaml-plugin/blob/main/README.md#-install-ocaml-and-opam");
+        });
+        myActionLink.setExternalLinkIcon();
     }
 }
