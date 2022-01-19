@@ -112,9 +112,9 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         }
 
         // are we inside a project?
-        String word = OCamlBundle.message(wizardContext.isCreatingNewProject() ? "project.up.first" : "module.up.first");
-        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", word));
-        myWizardTitle.setText(OCamlBundle.message("project.wizard.title", word));
+        int choice = wizardContext.isCreatingNewProject() ? 0 : 1;
+        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", choice));
+        myWizardTitle.setText(OCamlBundle.message("project.wizard.title", choice));
         myLabelSdk.setLabelFor(myJdkChooser);
 
         // Disable create

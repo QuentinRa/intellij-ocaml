@@ -35,9 +35,7 @@ public class OCamlSelectTemplate extends ModuleWizardStep {
         // show "project" or "module" according to what we are creating
         myCreateFromTemplateCheckBox.setText(OCamlBundle.message(
                 "project.wizard.create.from.template",
-                wizardContext.isCreatingNewProject() ?
-                        OCamlBundle.message("project.low.first") :
-                        OCamlBundle.message("module.low.first")
+                wizardContext.isCreatingNewProject() ? 0 : 1
                 )
         );
     }
