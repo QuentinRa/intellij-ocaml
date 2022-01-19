@@ -25,10 +25,10 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
 import com.ocaml.compiler.OCamlDetector;
-import com.ocaml.compiler.opam.OpamUtils;
+import com.ocaml.compiler.simple.SimpleSdkConstants;
+import com.ocaml.compiler.simple.SimpleSdkData;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.sdk.OCamlSdkType;
-import com.ocaml.ide.sdk.OCamlSdkUtils;
 import com.ocaml.ide.wizard.OCamlModuleBuilder;
 import com.ocaml.utils.adaptor.ui.JdkComboBoxAdaptor;
 import com.ocaml.utils.listener.DeferredDocumentListener;
@@ -50,7 +50,7 @@ import java.awt.*;
  * need for now, is to know where are the sources, and where is the ocaml
  * binary.<br>
  *
- * @see OCamlSdkUtils for the creation of an opam-lie SDK
+ * @see SimpleSdkData for the creation of an opam-lie SDK
  * <p>
  * Features of the class
  * <ul>
@@ -58,18 +58,18 @@ import java.awt.*;
  *     <li><b>OK</b>: the JDKComboBox must be loaded with the existing JDKs</li>
  *     <li><b>OK</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
- *     <li><b>OK</b>: prefill the ocaml binary location ({@link OCamlDetector#detectBinaries()})</li>
- *     <li><b>OK</b>: prefill the ocamlc binary location ({@link OCamlDetector#detectBinaries()})</li>
- *     <li><b>OK</b>: prefill the ocaml version ({@link OCamlDetector#detectBinaries()})</li>
- *     <li><b>OK</b>: prefill the sources location ({@link OCamlDetector#detectBinaries()})</li>
- *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlDetector#findAssociatedBinaries})</li>
- *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlDetector#findAssociatedBinaries})</li>
+ *     <li><b>OK</b>: prefill the ocaml binary location ({@link OCamlDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: prefill the ocamlc binary location ({@link OCamlDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: prefill the ocaml version ({@link OCamlDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: prefill the sources location ({@link OCamlDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlDetector#findAssociatedNativeSdk})</li>
+ *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlDetector#findAssociatedNativeSdk})</li>
  *     <li><b>KO</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
  *     <li><b>OK</b>: check that everything is valid</li>
  *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
  *     <li><b>OK</b>: add a label "an opam-like SDK will be created in ~/.jdks"</li>
- *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlDetector#findAssociatedBinaries})</li>
+ *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlDetector#findAssociatedNativeSdk})</li>
  *     <li><b>OK</b>: allow the user of ocaml.exe</li>
  *     <li><b>OK</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)</li>
  *     <li><b>KO</b>: add "?" with a message</li>
@@ -77,43 +77,32 @@ import java.awt.*;
  * @see ProjectJdkForModuleStep
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
-    @NotNull
-    private final WizardContext myWizardContext;
-    @NotNull
-    private final OCamlModuleBuilder myModuleBuilder;
-    boolean shouldValidateAgain = true;
-    @NotNull
-    private JPanel myPanel;
+    @NotNull private final WizardContext myWizardContext;
+    @NotNull private final OCamlModuleBuilder myModuleBuilder;
     private Project myProject;
-    private JLabel myLabelSdk; // to prompt "Project" or "Module"
-    @NotNull
-    private ButtonGroup myUseSdkChoice; // the group of two buttons
-    private boolean isUseSelected; // true if the first menu is selected, false else
-    @NotNull
-    private JdkComboBoxAdaptor myJdkChooser; // 1# select JDK
-    @NotNull
-    private JPanel myUseComponents; // 2# to disable every component in the second menu
-    @NotNull
-    private JPanel myCreateComponents; // 1# to disable every component in the second menu
-    @NotNull
-    private JLabel myOcamlVersion; // 2# show ocaml version, fetched from myOCamlLocation
-    @NotNull
-    private JLabel mySdkSources; // 2# submit sources
-    @NotNull
-    private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
-    @NotNull
-    private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
-    @NotNull
-    private JLabel myOpamWarning; // 2# show a warning if using opam in 2#, should be in 1#
-    @NotNull
-    private JLabel myWizardTitle; // title of the wizard
-    @NotNull
-    private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
-    private ActionLink myActionLink;
-    @Nullable
-    private Sdk createSDK; // 2# the sdk that we created
     private ProjectSdksModel mySdksModel; // project SDK, add/create SDKs, ...
-    private OCamlSdkUtils.CustomOCamlSdkData myCustomSdkData; // 2# data of the SDK we are about to create
+
+    @NotNull private JPanel myPanel; // the view
+    @NotNull private JLabel myWizardTitle; // title of the wizard
+    private ActionLink myActionLink; // link to the installation instructions
+
+    @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
+    private boolean isUseSelected; // true if the first menu is selected, false else
+
+    private JLabel myLabelSdk; // 1# to prompt "Project" or "Module"
+    @NotNull private JdkComboBoxAdaptor myJdkChooser; // 1# select JDK
+    @NotNull private JPanel myCreateComponents; // 1# to disable every component in the second menu
+
+    @NotNull private JPanel myUseComponents; // 2# to disable every component in the second menu
+    @NotNull private JLabel myOcamlVersion; // 2# show ocaml version, fetched from myOCamlLocation
+    @NotNull private JLabel mySdkSources; // 2# submit sources
+    @NotNull private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
+    @NotNull private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
+    @NotNull private JLabel myOpamWarning; // 2# show a warning if using opam in 2#, should be in 1#
+    @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
+    @Nullable private Sdk createSDK; // 2# the sdk that we created
+    boolean shouldValidateAgain = true; // selected SDK changed
+    private SimpleSdkData myCustomSdkData; // 2# data of the SDK we are about to create
 
     public OCamlSdkWizardStep(@NotNull WizardContext wizardContext,
                               @NotNull OCamlModuleBuilder moduleBuilder) {
@@ -143,11 +132,10 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             isUseSelected = !isUseSelected;
             setEnabledPanel(myCreateComponents, !isUseSelected);
             setEnabledPanel(myUseComponents, isUseSelected);
-            showOpamWarning();
         });
 
         // Detect and prefill fields
-        OCamlDetector.DetectionResult output = OCamlDetector.detectBinaries();
+        OCamlDetector.DetectionResult output = OCamlDetector.detectNativeSdk();
         if (output != null) {
             myOCamlLocation.setText(output.ocaml);
             myOCamlCompilerLocation.setText(output.ocamlCompiler);
@@ -184,7 +172,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOpamWarning.setForeground(JBColor.RED);
 
         // set the text + color
-        myCreateLocationLabel.setText(OCamlBundle.message("project.wizard.create.location", OCamlSdkUtils.JDK_FOLDER));
+        myCreateLocationLabel.setText(OCamlBundle.message("project.wizard.create.location", SimpleSdkConstants.SDK_FOLDER));
         myCreateLocationLabel.setForeground(JBColor.GRAY);
     }
 
@@ -207,19 +195,16 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         // we are waiting for a version
         myOcamlVersion.setText("");
         // Ask for the values
-        OCamlDetector.findAssociatedBinaries(path, arg -> {
+        OCamlDetector.findAssociatedNativeSdk(path, arg -> {
             showIconForCreateFields(arg.isError);
             myOCamlCompilerLocation.setText(arg.ocamlCompiler);
             myOcamlVersion.setText(arg.version);
             mySdkSources.setText(arg.sources);
-            // opam warning
-            showOpamWarning();
         });
     }
 
     // show the warning "opam ..." if needed
-    private void showOpamWarning() {
-        boolean show = !isUseSelected && OpamUtils.isOpamBinary(myOCamlCompilerLocation.getText());
+    private void showOpamWarning(boolean show) {
         myOpamWarning.setVisible(show);
     }
 
@@ -230,13 +215,11 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         }
     }
 
-    @Override
-    public JComponent getComponent() {
+    @Override public JComponent getComponent() {
         return myPanel;
     }
 
-    @Override
-    public void updateDataModel() {
+    @Override public void updateDataModel() {
         Sdk sdk = getSdk();
 
         boolean isProject = myWizardContext.isCreatingNewProject();
@@ -253,20 +236,18 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         return isUseSelected ? myJdkChooser.getSelectedJdk() : createSDK;
     }
 
-    @Override
-    public @Nullable Icon getIcon() {
+    @Override public @Nullable Icon getIcon() {
         return myWizardContext.getStepIcon();
     }
 
-    @Override
-    public boolean validate() throws ConfigurationException {
+    @Override public boolean validate() throws ConfigurationException {
         boolean sdkSelected = true;
         if (isUseSelected) {
             if (myJdkChooser.isProjectJdkSelected()) return applyModel();
             sdkSelected = myJdkChooser.getSelectedJdk() != null;
         } else {
             if (!shouldValidateAgain) return true;
-            myCustomSdkData = OCamlSdkUtils.createSdk(
+            myCustomSdkData = new SimpleSdkData(
                     myOCamlLocation.getText(),
                     myOcamlVersion.getText(),
                     myOCamlCompilerLocation.getText(),
@@ -295,6 +276,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
         return applyModel();
     }
+
+    // todo: showOpamWarning
 
     // we need to apply the model everytime we are updating the model , see issue #26
     private boolean applyModel() {
@@ -336,6 +319,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         if (!myWizardContext.isCreatingNewProject()) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
+        // todo: bundle + constant
         myActionLink = new ActionLink("Instructions", event -> {
             BrowserUtil.browse("https://github.com/QuentinRa/intellij-ocaml-plugin/blob/main/README.md#-install-ocaml-and-opam");
         });
