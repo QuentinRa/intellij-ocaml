@@ -31,17 +31,17 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 ## 🚀 Features
 
-| Setup                                                    |
-|----------------------------------------------------------|
-| ✅ You got some instructions to install what you need     |
-| ✅ You can create a non-opam SDK                          |
-| ✅ You can create/add/use an opam SDK                     |
-| ✅ Set/Update the project SDK, you can use it in a module |
-| ✅ Set/Update the SDK for a module                        |
-| ✅ Set the output folder for the project                  |
-| ✅ Set the output folder for the module                   |
-| ✅ The project is created from a template with src...     |
-| ❌ The project is created with a default runConfiguration |
+| Setup                                                      |
+|------------------------------------------------------------|
+| ✅ You got some instructions to install what you need       |
+| ✅ You can create a non-opam SDK                            |
+| ✅ You can create/add/use an opam SDK                       |
+| ✅ Set/Update the project SDK, you can use it in a module   |
+| ✅ Set/Update the SDK for a module                          |
+| ✅ Edit modules' properties (ex: output folder, src folder) |
+| ✅ The project is created from a template with src...       |
+| ❌ Add a "?" after each fields with some explanations       |
+| ❌ The project is created with a default runConfiguration   |
 
 You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.). You may use a template, the only one available is an application using a <b>Makefile</b>.
 

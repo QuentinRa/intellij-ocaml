@@ -45,13 +45,16 @@ public class OCamlModuleBuilder extends ModuleBuilder {
     }
 
     @Override public void setupRootModel(@NotNull ModifiableRootModel rootModel) {
+        // output folder
         final CompilerModuleExtension compilerModuleExtension = rootModel.getModuleExtension(CompilerModuleExtension.class);
         compilerModuleExtension.setExcludeOutput(true);
         compilerModuleExtension.inheritCompilerOutputPath(true);
 
+        // set the SDK "JDK"
         if (myJdk != null) rootModel.setSdk(myJdk);
         else rootModel.inheritSdk();
 
+        // Create the files/folders
         ContentEntry contentEntry = doAddContentEntry(rootModel);
         if (contentEntry != null) {
             // Get instructions
@@ -68,12 +71,15 @@ public class OCamlModuleBuilder extends ModuleBuilder {
                     .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(sourcePath));
             if (sourceRoot != null) {
                 contentEntry.addSourceFolder(sourceRoot, false, "");
+                // create the files
                 instructions.createFiles(rootModel, sourceRoot);
+                // refresh
                 ApplicationManager.getApplication().runWriteAction(() -> sourceRoot.refresh(true, true));
             }
         }
     }
 
+    /** the options' step is the first step, the user will select an SDK **/
     @Nullable @Override public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
         return new OCamlSdkWizardStep(context, this);
     }
@@ -86,6 +92,9 @@ public class OCamlModuleBuilder extends ModuleBuilder {
         return new ModuleWizardStep[] { new OCamlSelectTemplate(wizardContext, OCamlTemplateProvider.getAvailableTemplates()) };
     }
 
+    /**
+     * The default one is enough for us
+     */
     @Override public ModuleWizardStep modifyProjectTypeStep(@NotNull SettingsStep settingsStep) {
         return super.modifyProjectTypeStep(settingsStep);
     }

@@ -12,6 +12,9 @@ import javax.swing.*;
 import java.util.*;
 
 /**
+ * The same interface used in ChooseTemplateStep, but we are using it
+ * with different classes in the constructor/etc. as we are loading some
+ * "unusual" templates.
  * @see com.intellij.ide.projectWizard.ChooseTemplateStep
  */
 public class OCamlSelectTemplate extends ModuleWizardStep {

@@ -59,6 +59,7 @@ import java.awt.*;
  *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlDetector#findAssociatedBinaries})</li>
  *     <li><b>OK</b>: allow the user of ocaml.exe</li>
  *     <li><b>OK</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)</li>
+ *     <li><b>KO</b>: add "?" with a message</li>
  * </ul>
  *
  * @see ProjectJdkForModuleStep

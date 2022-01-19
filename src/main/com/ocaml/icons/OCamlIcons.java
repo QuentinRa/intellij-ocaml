@@ -26,6 +26,7 @@ public class OCamlIcons {
         return getIcon(path, OCamlIcons.class);
     }
 
+    /** Every icon used on a node (ex: module icon, sdk icon, library icon, console icon, etc.) */
     public static final class Nodes {
         public static final Icon OCAML_MODULE = loadIcon("/icons/ocamlModule.svg");
         public static final Icon OCAML_SDK = loadIcon("/icons/ocamlSdk.svg");
