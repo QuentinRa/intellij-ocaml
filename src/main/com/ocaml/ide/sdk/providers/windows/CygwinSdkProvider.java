@@ -3,6 +3,7 @@ package com.ocaml.ide.sdk.providers.windows;
 import com.ocaml.ide.sdk.providers.BaseOCamlSdkProvider;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,7 +33,7 @@ public class CygwinSdkProvider extends BaseOCamlSdkProvider {
         return Set.of(OCAML_EXE);
     }
 
-    @Override public @NotNull Set<String> getOCamlCompilerExecutablePathCommands() {
-        return Set.of("ocamlc.exe", "ocamlc.opt.exe");
+    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+        return List.of("ocamlc.opt.exe", "ocamlc.exe");
     }
 }

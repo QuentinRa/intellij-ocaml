@@ -12,7 +12,6 @@ public class CygwinBaseTest extends OCamlBaseTest  {
         String root = bin.getParent().toFile().getAbsolutePath();
         String ocamlc = bin.resolve(ocamlcName).toFile().getAbsolutePath();
         DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBinary);
-        System.out.println(ocamlBinary);
         assertEquals(ocamlBinary, detectionResult.ocaml);
         assertEquals(ocamlc, detectionResult.ocamlCompiler);
         assertEquals(root + "\\lib\\ocaml", detectionResult.sources);

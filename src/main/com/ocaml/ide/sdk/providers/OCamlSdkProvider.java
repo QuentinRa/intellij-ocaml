@@ -27,18 +27,25 @@ public interface OCamlSdkProvider {
     @NotNull Set<String> getOCamlExecutablePathCommands();
 
     /** A list of commands that are used to compile
-     * ocaml files, if the command is in the path
-     * ex: "ocamlc" */
-    @NotNull Set<String> getOCamlCompilerExecutablePathCommands();
+     * ocaml files, if the command is in the path.
+     * <br>
+     * Values must be sorted by what's the most likely to be a
+     * valid value.
+     * <br>
+     * Ex: "ocamlc" */
+    @NotNull List<String> getOCamlCompilerExecutablePathCommands();
 
     /**
      * The native folders in which sources may be stored.
      * The path is relative to the SDK root folder.
      * <br>
+     * Values must be sorted by what's the most likely to be a
+     * valid value.
+     * <br>
      * Ex: for /bin/ocaml, the root folder is "/" meaning that if the
      * sources are in /lib/ocaml, then you should return "lib/ocaml"
      */
-    @NotNull Set<String> getOCamlSourcesFolders();
+    @NotNull List<String> getOCamlSourcesFolders();
 
     //
     // Compiler

@@ -1,9 +1,12 @@
 package com.ocaml.ide.sdk.providers;
 
+import com.esotericsoftware.minlog.Log;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.diagnostic.Logger;
 import com.ocaml.compiler.OCamlSdkVersionManager;
 import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,15 +14,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Provide the most common values for a method. Subclasses may override
  * these if they are not valid for them.
  */
 public class BaseOCamlSdkProvider implements OCamlSdkProvider {
+
+    private static final Logger LOG = OCamlLogger.getSdkProviderInstance();
 
     public BaseOCamlSdkProvider() {
     }
@@ -39,45 +42,51 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         return Set.of("ocaml");
     }
 
-    @Override public @NotNull Set<String> getOCamlCompilerExecutablePathCommands() {
-        return Set.of("ocamlc");
+    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+        return List.of("ocamlc");
     }
 
-    @Override public @NotNull Set<String> getOCamlSourcesFolders() {
-        return Set.of("lib/ocaml", "usr/lib/ocaml", "usr/local/lib/ocaml");
+    @Override public @NotNull List<String> getOCamlSourcesFolders() {
+        return List.of("lib/ocaml", "usr/lib/ocaml", "usr/local/lib/ocaml");
     }
 
     // compiler
 
     @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {
         if (!canUseProviderForOCamlBinary(ocamlBinary)) return null;
-        // check file exists
+        // check files exists
         Path ocamlBinPath = Path.of(ocamlBinary);
-        System.out.println("ici:"+ocamlBinary);
-        if(!Files.exists(ocamlBinPath)) return null;
-        System.out.println("found1");
+        if(!Files.exists(ocamlBinPath)) {
+            LOG.debug("binary not found: "+ocamlBinary);
+            return null;
+        }
         Path binPath = ocamlBinPath.getParent();
-        if(!Files.exists(binPath)) return null;
-        System.out.println("found2");
+        if(!Files.exists(binPath)) { // useless?
+            LOG.debug("bin folder not found for "+ocamlBinary);
+            return null;
+        }
         Path root = binPath.getParent();
-        if(!Files.exists(root)) return null;
-        System.out.println("found3");
+        if(!Files.exists(root)) {  // useless?
+            LOG.debug("root folder not found for "+ocamlBinary);
+            return null;
+        }
         String sourceFolder = null;
 
         // find a valid source folder
         for (String source : getOCamlSourcesFolders()) {
             Path sourcePath = root.resolve(source);
-            System.out.println("sp:"+sourcePath);
             if (!Files.exists(sourcePath)) continue;
             sourceFolder = sourcePath.toFile().getAbsolutePath();
             break;
         }
-        System.out.println("source="+sourceFolder);
-        if (sourceFolder == null) return null;
+        if (sourceFolder == null) {
+            LOG.debug("Sources' folder not found for "+ocamlBinary);
+            return null;
+        }
 
         // testing compilers
         for (String compilerName: getOCamlCompilerExecutablePathCommands()) {
-            System.out.println("with:"+compilerName);
+            LOG.debug("testing "+compilerName);
             Path compilerPath = binPath.resolve(compilerName);
             if(!Files.exists(binPath)) continue;
             String compiler = compilerPath.toFile().getAbsolutePath();
@@ -86,22 +95,28 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
             // try to find the version using the compiler
             GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerVersionCLI(compiler);
-            System.out.println("cli1:"+cli);
-            if (cli == null) continue;
-            System.out.println("cli2:"+cli.getCommandLineString());
+            if (cli == null) {
+                LOG.debug("No cli for "+compiler);
+                continue;
+            }
+            LOG.debug("CLI for "+compiler+" is "+cli.getCommandLineString());
             try {
                 Process process = cli.createProcess();
                 InputStream inputStream = process.getInputStream();
                 version = new String(inputStream.readAllBytes()).trim();
+                LOG.info("Version of "+compiler+" is '"+version+"'.");
                 // if we got something better
                 String alt = OCamlSdkVersionManager.parse(ocamlBinary);
                 if (!OCamlSdkVersionManager.isUnknownVersion(alt)) version = alt;
             } catch (ExecutionException | IOException e) {
+                Log.debug("Command failed:"+e.getMessage());
                 continue;
             }
 
             return new AssociatedBinaries(compiler, sourceFolder, version);
         }
+
+        Log.warn("No compiler found for "+ocamlBinary);
         return null;
     }
 

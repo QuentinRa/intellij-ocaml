@@ -17,8 +17,8 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
 
     // There is no such thing on Windows
 
-    @Override public @NotNull Set<String> getOCamlCompilerExecutablePathCommands() {
-        return Set.of();
+    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+        return List.of();
     }
 
     @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {

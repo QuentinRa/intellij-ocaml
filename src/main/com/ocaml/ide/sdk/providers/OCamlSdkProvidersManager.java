@@ -47,15 +47,15 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
     // implemented
 
     @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
-        return callProvidersValues(OCamlSdkProvider::getOCamlExecutablePathCommands);
+        return callProvidersValuesS(OCamlSdkProvider::getOCamlExecutablePathCommands);
     }
 
-    @Override public @NotNull Set<String> getOCamlCompilerExecutablePathCommands() {
-        return callProvidersValues(OCamlSdkProvider::getOCamlCompilerExecutablePathCommands);
+    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+        return callProvidersValuesL(OCamlSdkProvider::getOCamlCompilerExecutablePathCommands);
     }
 
-    @Override public @NotNull Set<String> getOCamlSourcesFolders() {
-        return callProvidersValues(OCamlSdkProvider::getOCamlSourcesFolders);
+    @Override public @NotNull List<String> getOCamlSourcesFolders() {
+        return callProvidersValuesL(OCamlSdkProvider::getOCamlSourcesFolders);
     }
 
     @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {
@@ -72,8 +72,15 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
     private interface ComputeProviders<R> extends ComputeMethod<R, OCamlSdkProvider> {
     }
 
-    private <R> Set<R> callProvidersValues(ComputeProviders<Set<R>> computeValues) {
+    private <R> Set<R> callProvidersValuesS(ComputeProviders<Set<R>> computeValues) {
         HashSet<R> values = new HashSet<>();
+        for (OCamlSdkProvider p: myProviders)
+            values.addAll(computeValues.call(p));
+        return values;
+    }
+
+    private <R> List<R> callProvidersValuesL(ComputeProviders<List<R>> computeValues) {
+        List<R> values = new ArrayList<>();
         for (OCamlSdkProvider p: myProviders)
             values.addAll(computeValues.call(p));
         return values;
