@@ -1,6 +1,7 @@
 package com.ocaml.ide.sdk.providers;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +39,21 @@ public interface OCamlSdkProvider {
      * sources are in /lib/ocaml, then you should return "lib/ocaml"
      */
     @NotNull Set<String> getOCamlSourcesFolders();
+
+    //
+    // Compiler
+    //
+
+    /**
+     * The provider will try to return the associated compiler, if possible.
+     * @param ocamlBinary the path to the ocaml binary, may be invalid
+     * @return null of the path to the ocamlc binary
+     */
+    @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary);
+
+    //
+    // Commands
+    //
 
     /**
      * Return a command line that can be used to get the version

@@ -17,8 +17,19 @@ import java.util.Set;
  */
 public class CygwinSdkProvider extends BaseOCamlSdkProvider {
 
+    protected static final String OCAML_EXE = "ocaml.exe";
+
+    // Utils
+
+    @Override
+    protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
+        return path.contains("cygwin64") && path.endsWith(OCAML_EXE);
+    }
+
+    // Implementation
+
     @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
-        return Set.of("ocaml.exe");
+        return Set.of(OCAML_EXE);
     }
 
     @Override public @NotNull Set<String> getOCamlCompilerExecutablePathCommands() {

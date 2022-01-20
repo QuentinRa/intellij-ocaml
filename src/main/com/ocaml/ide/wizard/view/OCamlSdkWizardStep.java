@@ -24,8 +24,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
-import com.ocaml.compiler.OCamlBinariesManager;
-import com.ocaml.compiler.simple.SimpleSdkConstants;
+import com.ocaml.compiler.simple.DetectionResult;
+import com.ocaml.compiler.simple.OCamlNativeDetector;
 import com.ocaml.compiler.simple.SimpleSdkData;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.sdk.OCamlSdkType;
@@ -58,18 +58,18 @@ import java.awt.*;
  *     <li><b>OK</b>: the JDKComboBox must be loaded with the existing JDKs</li>
  *     <li><b>OK</b>: can create an SDK using the other fields</li>
  *     <li><b>OK</b>: warning if the "create simple" is selected but the ocaml binary location was installed using opam.</li>
- *     <li><b>OK</b>: prefill the ocaml binary location ({@link OCamlBinariesManager#detectNativeSdk()})</li>
- *     <li><b>OK</b>: prefill the ocamlc binary location ({@link OCamlBinariesManager#detectNativeSdk()})</li>
- *     <li><b>OK</b>: prefill the ocaml version ({@link OCamlBinariesManager#detectNativeSdk()})</li>
- *     <li><b>OK</b>: prefill the sources location ({@link OCamlBinariesManager#detectNativeSdk()})</li>
- *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlBinariesManager#detectNativeSdk(String)} )</li>
- *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlBinariesManager#detectNativeSdk(String)})</li>
+ *     <li><b>OK</b>: prefill the ocaml binary location ({@link OCamlNativeDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: prefill the ocamlc binary location ({@link OCamlNativeDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: prefill the ocaml version ({@link OCamlNativeDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: prefill the sources location ({@link OCamlNativeDetector#detectNativeSdk()})</li>
+ *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlNativeDetector#detectNativeSdk(String)} )</li>
+ *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlNativeDetector#detectNativeSdk(String)})</li>
  *     <li><b>KO</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
  *     <li><b>OK</b>: check that everything is valid</li>
  *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
  *     <li><b>OK</b>: add a label "an opam-like SDK will be created in ~/.jdks"</li>
- *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlBinariesManager#detectNativeSdk(String)})</li>
+ *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlNativeDetector#detectNativeSdk(String)})</li>
  *     <li><b>OK</b>: allow the user of ocaml.exe</li>
  *     <li><b>OK</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)</li>
  *     <li><b>KO</b>: add "?" with a message</li>
@@ -135,7 +135,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         });
 
         // Detect and prefill fields
-        OCamlBinariesManager.DetectionResult output = OCamlBinariesManager.detectNativeSdk();
+        DetectionResult output = OCamlNativeDetector.detectNativeSdk();
         myOCamlLocation.setText(output.ocaml);
         myOCamlCompilerLocation.setText(output.ocamlCompiler);
         mySdkSources.setText(output.sources);
@@ -171,7 +171,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOpamWarning.setForeground(JBColor.RED);
 
         // set the text + color
-        myCreateLocationLabel.setText(OCamlBundle.message("project.wizard.create.location", SimpleSdkConstants.SDK_FOLDER));
+        myCreateLocationLabel.setText(OCamlBundle.message("project.wizard.create.location", SimpleSdkData.SDK_FOLDER));
         myCreateLocationLabel.setForeground(JBColor.GRAY);
     }
 
@@ -192,7 +192,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         // get the ocaml binary path
         String path = myOCamlLocation.getText();
         // Ask for the values
-        var detection = OCamlBinariesManager.detectNativeSdk(path);
+        var detection = OCamlNativeDetector.detectNativeSdk(path);
         showIconForCreateFields(detection.isError);
         myOCamlCompilerLocation.setText(detection.ocamlCompiler);
         myOcamlVersion.setText(detection.version);
@@ -262,7 +262,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         }
         if (!isUseSelected) {
             mySdksModel.addSdk(
-                    myCustomSdkData.type,
+                    OCamlSdkType.getInstance(),
                     myCustomSdkData.homePath,
                     sdk -> createSDK = sdk // save
             );

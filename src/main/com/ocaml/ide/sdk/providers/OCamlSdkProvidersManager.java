@@ -2,6 +2,7 @@ package com.ocaml.ide.sdk.providers;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
+import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.ide.sdk.providers.windows.WindowsOCamlSdkProvider;
 import com.ocaml.utils.ComputeMethod;
 import org.jetbrains.annotations.NotNull;
@@ -55,6 +56,10 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
 
     @Override public @NotNull Set<String> getOCamlSourcesFolders() {
         return callProvidersValues(OCamlSdkProvider::getOCamlSourcesFolders);
+    }
+
+    @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {
+        return callProvidersValue(provider -> provider.getAssociatedBinaries(ocamlBinary));
     }
 
     @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {

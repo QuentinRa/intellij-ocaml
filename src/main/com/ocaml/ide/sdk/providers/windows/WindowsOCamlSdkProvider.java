@@ -2,7 +2,9 @@ package com.ocaml.ide.sdk.providers.windows;
 
 import com.ocaml.ide.sdk.providers.BaseOCamlSdkProvider;
 import com.ocaml.ide.sdk.providers.OCamlSdkProvider;
+import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -21,6 +23,10 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
 
     @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
         return Set.of();
+    }
+
+    @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {
+        return null;
     }
 
     // but, we can install these
