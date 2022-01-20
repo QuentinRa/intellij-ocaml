@@ -1,4 +1,4 @@
-package com.ocaml.ide.sdk;
+package com.ocaml.sdk;
 
 import com.intellij.openapi.projectRoots.SdkType;
 import org.jetbrains.annotations.NotNull;

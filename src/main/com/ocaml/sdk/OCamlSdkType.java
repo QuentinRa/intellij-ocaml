@@ -1,4 +1,4 @@
-package com.ocaml.ide.sdk;
+package com.ocaml.sdk;
 
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.OrderRootType;
@@ -7,9 +7,9 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownloadTask;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.ocaml.compiler.OCamlSdkHomeManager;
-import com.ocaml.compiler.OCamlSdkRootsManager;
-import com.ocaml.compiler.OCamlSdkVersionManager;
+import com.ocaml.sdk.utils.OCamlSdkHomeManager;
+import com.ocaml.sdk.utils.OCamlSdkRootsManager;
+import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.icons.OCamlIcons;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;

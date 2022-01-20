@@ -1,8 +1,8 @@
-package com.ocaml.sdk.wsl;
+package com.ocaml.sdk.providers.wsl;
 
-import com.ocaml.compiler.simple.DetectionResult;
-import com.ocaml.compiler.simple.OCamlNativeDetector;
-import com.ocaml.sdk.cygwin.CygwinBaseTest;
+import com.ocaml.sdk.providers.simple.DetectionResult;
+import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
+import com.ocaml.sdk.providers.cygwin.CygwinBaseTest;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")

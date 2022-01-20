@@ -1,8 +1,8 @@
-package com.ocaml.sdk.cygwin;
+package com.ocaml.sdk.providers.cygwin;
 
 import com.ocaml.OCamlBaseTest;
-import com.ocaml.compiler.simple.DetectionResult;
-import com.ocaml.compiler.simple.OCamlNativeDetector;
+import com.ocaml.sdk.providers.simple.DetectionResult;
+import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 
 import java.nio.file.Path;
 

@@ -22,7 +22,7 @@
         <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
 
         <!-- SDK -->
-        <sdkType implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
-        <sdkDownload implementation="com.ocaml.ide.sdk.OCamlSdkType"/>
+        <sdkType implementation="com.ocaml.sdk.OCamlSdkType"/>
+        <sdkDownload implementation="com.ocaml.sdk.OCamlSdkType"/>
     </extensions>
 </idea-plugin>

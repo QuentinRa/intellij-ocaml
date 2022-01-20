@@ -1,10 +1,10 @@
-package com.ocaml.ide.sdk.providers;
+package com.ocaml.sdk.providers;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
-import com.ocaml.compiler.OCamlSdkVersionManager;
-import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.sdk.utils.OCamlSdkVersionManager;
+import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

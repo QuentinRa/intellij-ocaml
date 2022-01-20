@@ -1,7 +1,7 @@
-package com.ocaml.ide.sdk.providers;
+package com.ocaml.sdk.providers;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

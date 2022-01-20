@@ -1,4 +1,4 @@
-package com.ocaml.ide.sdk.providers.windows;
+package com.ocaml.sdk.providers.windows;
 
 import org.jetbrains.annotations.NotNull;
 

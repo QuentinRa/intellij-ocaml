@@ -1,4 +1,4 @@
-package com.ocaml.ide.sdk.providers.utils;
+package com.ocaml.sdk.providers.utils;
 
 public final class AssociatedBinaries {
 

@@ -1,6 +1,6 @@
-package com.ocaml.ide.sdk.providers.utils;
+package com.ocaml.sdk.providers.utils;
 
-import com.ocaml.compiler.OCamlSdkHomeManager;
+import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

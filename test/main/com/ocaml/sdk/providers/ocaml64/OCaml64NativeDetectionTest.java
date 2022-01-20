@@ -1,7 +1,7 @@
-package com.ocaml.sdk.ocaml64;
+package com.ocaml.sdk.providers.ocaml64;
 
 import com.intellij.util.SystemProperties;
-import com.ocaml.sdk.cygwin.CygwinBaseTest;
+import com.ocaml.sdk.providers.cygwin.CygwinBaseTest;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")

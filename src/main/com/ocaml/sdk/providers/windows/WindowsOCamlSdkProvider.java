@@ -1,9 +1,9 @@
-package com.ocaml.ide.sdk.providers.windows;
+package com.ocaml.sdk.providers.windows;
 
-import com.ocaml.ide.sdk.providers.BaseOCamlSdkProvider;
-import com.ocaml.ide.sdk.providers.OCamlSdkProvider;
-import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
-import com.ocaml.ide.sdk.providers.utils.OCamlSdkScanner;
+import com.ocaml.sdk.providers.BaseOCamlSdkProvider;
+import com.ocaml.sdk.providers.OCamlSdkProvider;
+import com.ocaml.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

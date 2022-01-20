@@ -1,6 +1,6 @@
-package com.ocaml.ide.sdk.providers.windows;
+package com.ocaml.sdk.providers.windows;
 
-import com.ocaml.ide.sdk.providers.BaseOCamlSdkProvider;
+import com.ocaml.sdk.providers.BaseOCamlSdkProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;

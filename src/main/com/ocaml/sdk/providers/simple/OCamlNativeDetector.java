@@ -1,10 +1,10 @@
-package com.ocaml.compiler.simple;
+package com.ocaml.sdk.providers.simple;
 
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil;
 import com.intellij.openapi.diagnostic.Logger;
-import com.ocaml.ide.sdk.providers.OCamlSdkProvider;
-import com.ocaml.ide.sdk.providers.OCamlSdkProvidersManager;
-import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.sdk.providers.OCamlSdkProvider;
+import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
+import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,7 +1,7 @@
-package com.ocaml.compiler.simple;
+package com.ocaml.sdk.providers.simple;
 
 import com.ocaml.OCamlBundle;
-import com.ocaml.compiler.OCamlSdkVersionManager;
+import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 
 /**
  * The result of a detection.

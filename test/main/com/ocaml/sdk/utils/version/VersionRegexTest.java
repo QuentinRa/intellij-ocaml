@@ -1,7 +1,7 @@
-package com.ocaml.sdk.version;
+package com.ocaml.sdk.utils.version;
 
 import com.ocaml.OCamlBaseTest;
-import com.ocaml.compiler.OCamlSdkVersionManager;
+import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")

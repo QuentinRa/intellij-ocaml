@@ -1,4 +1,4 @@
-package com.ocaml.compiler;
+package com.ocaml.sdk.utils;
 
 import com.intellij.openapi.util.io.FileUtil;
 import com.ocaml.OCamlBundle;
