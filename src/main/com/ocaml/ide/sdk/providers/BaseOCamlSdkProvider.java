@@ -22,7 +22,7 @@ import java.util.*;
  */
 public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
-    private static final Logger LOG = OCamlLogger.getSdkProviderInstance();
+    protected static final Logger LOG = OCamlLogger.getSdkProviderInstance();
 
     public BaseOCamlSdkProvider() {
     }
@@ -113,7 +113,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
                 continue;
             }
 
-            return new AssociatedBinaries(compiler, sourceFolder, version);
+            return new AssociatedBinaries(ocamlBinary, compiler, sourceFolder, version);
         }
 
         Log.warn("No compiler found for "+ocamlBinary);

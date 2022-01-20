@@ -51,7 +51,7 @@ public final class OCamlNativeDetector {
         }
         LOG.debug("detectNativeSdk: found '"+associatedBinaries+"' for '"+ocamlBinary+"'");
         return new DetectionResult(
-                ocamlBinary,
+                associatedBinaries.ocamlBin,
                 associatedBinaries.compilerPath,
                 associatedBinaries.compilerVersion,
                 associatedBinaries.sourcesPath

@@ -31,10 +31,6 @@ public class DetectionResult {
         this(ocaml, ocamlCompiler, version, sources, false);
     }
 
-    DetectionResult(String ocamlCompiler, String version, String sources) {
-        this("", ocamlCompiler, version, sources, false);
-    }
-
     DetectionResult(String ocaml, String ocamlCompiler, String version,
                     String sources, boolean isError) {
         this.ocaml = ocaml;

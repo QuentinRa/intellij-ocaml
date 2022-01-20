@@ -21,11 +21,13 @@ public class CygwinBaseTest extends OCamlBaseTest  {
 
     protected void assertCygwinInvalid(String ocamlBin) {
         try {
-            OCamlNativeDetector.detectNativeSdk(ocamlBin);
-            fail("Supposed unreachable code");
+            DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
+            if (detectionResult.isError) throw new AssertionError("OK");
         } catch (AssertionError e) {
             assertTrue(true);
+            return;
         }
+        fail("Supposed unreachable code");
     }
 
 }
