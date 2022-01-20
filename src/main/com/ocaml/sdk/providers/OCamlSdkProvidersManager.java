@@ -8,6 +8,7 @@ import com.ocaml.utils.ComputeMethod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,12 +47,12 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
 
     // implemented
 
-    @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
-        return callProvidersValuesS(OCamlSdkProvider::getOCamlExecutablePathCommands);
+    @Override public @NotNull Set<String> getOCamlTopLevelCommands() {
+        return callProvidersValuesS(OCamlSdkProvider::getOCamlTopLevelCommands);
     }
 
-    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
-        return callProvidersValuesL(OCamlSdkProvider::getOCamlCompilerExecutablePathCommands);
+    @Override public @NotNull List<String> getOCamlCompilerCommands() {
+        return callProvidersValuesL(OCamlSdkProvider::getOCamlCompilerCommands);
     }
 
     @Override public @NotNull List<String> getOCamlSourcesFolders() {
@@ -72,6 +73,10 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
 
     @Override public @NotNull Set<String> suggestHomePaths() {
         return callProvidersValue(OCamlSdkProvider::suggestHomePaths);
+    }
+
+    @Override public Boolean isHomePathValid(@NotNull Path homePath) {
+        return callProvidersValue(provider -> provider.isHomePathValid(homePath));
     }
 
     // call providers

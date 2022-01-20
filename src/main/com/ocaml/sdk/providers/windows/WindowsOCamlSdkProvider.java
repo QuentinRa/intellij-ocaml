@@ -2,10 +2,8 @@ package com.ocaml.sdk.providers.windows;
 
 import com.ocaml.sdk.providers.BaseOCamlSdkProvider;
 import com.ocaml.sdk.providers.OCamlSdkProvider;
-import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -31,20 +29,24 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
 
     // There is no such thing on Windows
 
-    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+    @Override protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
+        return false;
+    }
+
+    @Override protected boolean canUseProviderForHome(@NotNull Path homePath) {
+        return false;
+    }
+
+    @Override public @NotNull List<String> getOCamlCompilerCommands() {
         return List.of();
     }
 
-    @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
+    @Override public @NotNull Set<String> getOCamlTopLevelCommands() {
         return Set.of();
     }
 
     @Override public @NotNull Set<String> getInstallationFolders() {
         return Set.of();
-    }
-
-    @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {
-        return null;
     }
 
     // but, we can install these

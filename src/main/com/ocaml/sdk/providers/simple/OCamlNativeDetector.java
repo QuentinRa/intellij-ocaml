@@ -21,12 +21,12 @@ public final class OCamlNativeDetector {
      * Look for the sources.<br>
      * If we found everything, then we return the DetectionResult,
      * otherwise, we return null.
-     * @see OCamlSdkProvider#getOCamlExecutablePathCommands()
-     * @see OCamlSdkProvider#getOCamlCompilerExecutablePathCommands()
+     * @see OCamlSdkProvider#getOCamlTopLevelCommands()
+     * @see OCamlSdkProvider#getOCamlCompilerCommands()
      * @see OCamlSdkProvider#getOCamlSourcesFolders()
      */
     public static @NotNull DetectionResult detectNativeSdk() {
-        Set<String> ocamlExecutablesNames = OCamlSdkProvidersManager.INSTANCE.getOCamlExecutablePathCommands();
+        Set<String> ocamlExecutablesNames = OCamlSdkProvidersManager.INSTANCE.getOCamlTopLevelCommands();
         // check every binary
         for (String executableName: ocamlExecutablesNames) {
             File f = PathEnvironmentVariableUtil.findInPath(executableName);

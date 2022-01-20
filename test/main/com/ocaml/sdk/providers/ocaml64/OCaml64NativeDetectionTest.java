@@ -18,22 +18,22 @@ public class OCaml64NativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testEmpty() {
-        assertCygwinInvalid("");
+        assertCygwinDetectionInvalid("");
     }
 
     @Test
     public void testPathInvalid() {
-        assertCygwinInvalid("C:\\OCaml64\\invalid\\bin\\ocaml.exe");
+        assertCygwinDetectionInvalid("C:\\OCaml64\\invalid\\bin\\ocaml.exe");
     }
 
     @Test
     public void testNoExe() {
-        assertCygwinInvalid("C:\\OCaml64\\invalid\\bin\\ocaml");
+        assertCygwinDetectionInvalid("C:\\OCaml64\\invalid\\bin\\ocaml");
     }
 
     @Test
     public void testNotOCaml() {
-        assertCygwinInvalid("C:\\OCaml64\\bin\\find.exe");
+        assertCygwinDetectionInvalid("C:\\OCaml64\\bin\\find.exe");
     }
 
     @Test // not installed on OCaml64
@@ -41,7 +41,7 @@ public class OCaml64NativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testOpamBinValid() {
-        assertCygwinValid(
+        assertCygwinDetectionValid(
                 "C:\\OCaml64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\4.13.1+mingw64c\\bin\\ocaml.exe",
                 "ocamlc.exe",
                 "4.13.1+mingw64c"
@@ -50,7 +50,7 @@ public class OCaml64NativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testOpamBinInvalid() {
-        assertCygwinInvalid(
+        assertCygwinDetectionInvalid(
                 "C:\\OCaml64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\0.0.0\\bin\\ocaml.exe"
         );
     }

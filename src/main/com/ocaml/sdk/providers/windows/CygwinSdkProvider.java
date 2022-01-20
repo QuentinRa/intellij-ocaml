@@ -1,7 +1,9 @@
 package com.ocaml.sdk.providers.windows;
 
+import com.intellij.openapi.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -23,16 +25,29 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
 
     @Override
     protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
-        return getInstallationFolders().contains(path) && path.endsWith(OCAML_EXE);
+        path = FileUtil.toSystemIndependentName(path);
+        if (!path.endsWith(OCAML_EXE)) return false;
+        for (String folder:getInstallationFolders()) {
+            if (path.contains(folder)) return true;
+        }
+        return false;
+    }
+
+    @Override protected boolean canUseProviderForHome(@NotNull Path homePath) {
+        String homePathString = FileUtil.toSystemIndependentName(homePath.toFile().getAbsolutePath());
+        for (String folder:getInstallationFolders()) {
+            if (homePathString.contains(folder)) return true;
+        }
+        return false;
     }
 
     // Implementation
 
-    @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
+    @Override public @NotNull Set<String> getOCamlTopLevelCommands() {
         return Set.of(OCAML_EXE);
     }
 
-    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+    @Override public @NotNull List<String> getOCamlCompilerCommands() {
         return List.of("ocamlc.opt.exe", "ocamlc.exe");
     }
 

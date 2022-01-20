@@ -27,8 +27,13 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
     }
 
     // providers
+
     protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
         return path.endsWith("ocaml");
+    }
+
+    protected boolean canUseProviderForHome(@NotNull Path homePath) {
+        return true;
     }
 
     @Override public @NotNull List<OCamlSdkProvider> getNestedProviders() {
@@ -37,11 +42,11 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     // path
 
-    @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
+    @Override public @NotNull Set<String> getOCamlTopLevelCommands() {
         return Set.of("ocaml");
     }
 
-    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+    @Override public @NotNull List<String> getOCamlCompilerCommands() {
         return List.of("ocamlc");
     }
 
@@ -84,7 +89,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         }
 
         // testing compilers
-        for (String compilerName: getOCamlCompilerExecutablePathCommands()) {
+        for (String compilerName: getOCamlCompilerCommands()) {
             LOG.debug("testing "+compilerName);
             Path compilerPath = binPath.resolve(compilerName);
             if(!Files.exists(binPath)) continue;
@@ -129,6 +134,49 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
     @Override public @NotNull Set<String> suggestHomePaths() {
         // todo: ...
         return Set.of();
+    }
+
+    @Override public @Nullable Boolean isHomePathValid(@NotNull Path homePath) {
+        System.out.println("entering with:"+homePath);
+        if (!canUseProviderForHome(homePath)) return null;
+        System.out.println("version ok");
+        // version
+        boolean ok = OCamlSdkVersionManager.isValid(homePath.toFile().getName());
+        if (!ok) {
+            System.out.println("Not a valid home name: "+homePath);
+            return false;
+        }
+        // interactive toplevel
+        boolean hasTopLevel = false;
+        System.out.println("tc:"+getOCamlTopLevelCommands());
+        System.out.println(this.getClass().getSimpleName());
+        for (String exeName: getOCamlTopLevelCommands()) {
+            hasTopLevel = Files.exists(homePath.resolve("bin/"+exeName));
+            System.out.println("exe:"+exeName);
+            if (hasTopLevel) break;
+        }
+        if (!hasTopLevel) {
+            System.out.println("Not top level found for "+homePath);
+            return false;
+        }
+        // compiler
+        boolean hasCompiler = false;
+        for (String compilerName: getOCamlCompilerCommands()) {
+            hasCompiler = Files.exists(homePath.resolve("bin/"+compilerName));
+            if (hasCompiler) break;
+        }
+        if (!hasCompiler) {
+            System.out.println("Not compiler found for "+homePath);
+            return false;
+        }
+        // sources
+        boolean hasSources = false;
+        for (String sourceFolder: getOCamlSourcesFolders()) {
+            hasSources = Files.exists(homePath.resolve(sourceFolder));
+            if (hasSources) break;
+        }
+        if (!hasSources) System.out.println("Not sources found for "+homePath);
+        return hasSources;
     }
 
     // sdk

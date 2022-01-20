@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class OCaml64SdkProvider extends CygwinSdkProvider  {
 
-    @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
+    @Override public @NotNull List<String> getOCamlCompilerCommands() {
         return List.of("ocamlc.exe", "ocamlc.opt.exe");
     }
 

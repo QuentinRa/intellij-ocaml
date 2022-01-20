@@ -27,27 +27,27 @@ public class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testEmpty() {
-        assertCygwinInvalid("");
+        assertCygwinDetectionInvalid("");
     }
 
     @Test
     public void testPathInvalid() {
-        assertCygwinInvalid("C:\\cygwin64\\invalid\\bin\\ocaml.exe");
+        assertCygwinDetectionInvalid("C:\\cygwin64\\invalid\\bin\\ocaml.exe");
     }
 
     @Test
     public void testNoExe() {
-        assertCygwinInvalid("C:\\cygwin64\\invalid\\bin\\ocaml");
+        assertCygwinDetectionInvalid("C:\\cygwin64\\invalid\\bin\\ocaml");
     }
 
     @Test
     public void testNotOCaml() {
-        assertCygwinInvalid("C:\\cygwin64\\bin\\find.exe");
+        assertCygwinDetectionInvalid("C:\\cygwin64\\bin\\find.exe");
     }
 
     @Test
     public void testBin() {
-        assertCygwinValid(
+        assertCygwinDetectionValid(
                 "C:\\cygwin64\\bin\\ocaml.exe",
                 "ocamlc.opt.exe",
                 "4.10.0"
@@ -56,7 +56,7 @@ public class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testOpamBinValid() {
-        assertCygwinValid(
+        assertCygwinDetectionValid(
                 "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\4.08.0\\bin\\ocaml.exe",
                 "ocamlc.opt.exe",
                 "4.08.0"
@@ -65,7 +65,7 @@ public class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testOpamBinInvalid() {
-        assertCygwinInvalid(
+        assertCygwinDetectionInvalid(
                 "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\0.0.0\\bin\\ocaml.exe"
         );
     }

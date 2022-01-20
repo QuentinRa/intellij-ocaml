@@ -5,6 +5,7 @@ import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -21,35 +22,27 @@ public interface OCamlSdkProvider {
     // PATH
     //
 
-    /** A list of commands that are starting the
-     * ocaml interactive toplevel, if the command is in the path
-     * ex: "ocaml" */
-    @NotNull Set<String> getOCamlExecutablePathCommands();
+    /**
+     * @return A list of commands that are starting the
+     * ocaml interactive toplevel (ex: "ocaml") */
+    @NotNull Set<String> getOCamlTopLevelCommands();
 
-    /** A list of commands that are used to compile
+    /**
+     * @return A list of commands that are used to compile
      * ocaml files, if the command is in the path.
      * <br>
      * Values must be sorted by what's the most likely to be a
      * valid value.
      * <br>
      * Ex: "ocamlc" */
-    @NotNull List<String> getOCamlCompilerExecutablePathCommands();
+    @NotNull List<String> getOCamlCompilerCommands();
 
     /**
-     * The native folders in which sources may be stored.
-     * The path is relative to the SDK root folder.
-     * <br>
+     * @return The folders in which sources may be stored.
      * Values must be sorted by what's the most likely to be a
-     * valid value.
-     * <br>
-     * Ex: for /bin/ocaml, the root folder is "/" meaning that if the
-     * sources are in /lib/ocaml, then you should return "lib/ocaml"
+     * valid value. The path is relative to the SDK root folder.
      */
     @NotNull List<String> getOCamlSourcesFolders();
-
-    //
-    // Compiler
-    //
 
     /**
      * The provider will try to return the associated compiler, if possible.
@@ -58,10 +51,6 @@ public interface OCamlSdkProvider {
      */
     @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary);
 
-    //
-    // SDK
-    //
-
     /**
      * Usual installations folders
      * @return a list of installation folder.
@@ -69,8 +58,18 @@ public interface OCamlSdkProvider {
      */
     @NotNull Set<String> getInstallationFolders();
 
-    /** Tries to find existing OCaml SDKs on this computer. */
+    /** @return tries to find existing OCaml SDKs on this computer. */
     @NotNull Set<String> suggestHomePaths();
+
+    /**
+     * Check if an homePath is valid, the method should be fast
+     * if possible, or avoid heavy operations. You should ensure that
+     * an SDK is stored inside a folder with a version ({@link com.ocaml.sdk.utils.OCamlSdkVersionManager#parse(String)})
+     * @param homePath an homePath
+     * @return true if the homePath is valid for at least one provider
+     * @see com.ocaml.sdk.utils.OCamlSdkVersionManager#parse(String)
+     */
+    @Nullable Boolean isHomePathValid(@NotNull Path homePath);
 
     //
     // Commands
