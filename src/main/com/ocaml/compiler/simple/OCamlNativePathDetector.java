@@ -5,6 +5,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.PathEnvironmentVariableUtil;
 import com.intellij.openapi.diagnostic.Logger;
+import com.ocaml.compiler.OCamlSdkVersionManager;
 import com.ocaml.ide.sdk.providers.OCamlSdkProvider;
 import com.ocaml.ide.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.utils.logs.OCamlLogger;
@@ -24,7 +25,7 @@ public final class OCamlNativePathDetector {
 
     /**
      * Look for ocaml and ocamlc in the path.<br>
-     * Check the version of ocaml using the compiler.<br>
+     * Look for the version of the SDK.<br>
      * Look for the sources.<br>
      * If we found everything, then we return the DetectionResult,
      * otherwise, we return null.
@@ -106,26 +107,31 @@ public final class OCamlNativePathDetector {
     public static DetectionResult detectNativeSdk(String ocamlBinary,
                                                   String ocamlcCompiler,
                                                   String sourcesFolder) {
-        GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerVersionCLI(ocamlcCompiler);
-        if (cli == null) {
-            Log.error("Cli was null for "+ocamlcCompiler);
-            return DetectionResult.NO_ASSOCIATED_BINARIES;
+        String version = OCamlSdkVersionManager.parse(ocamlBinary);
+
+        // try to find the version using the compiler
+        if (OCamlSdkVersionManager.isUnknownVersion(version)) {
+            GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerVersionCLI(ocamlcCompiler);
+            if (cli == null) {
+                Log.error("Cli was null for "+ocamlcCompiler);
+                return DetectionResult.NO_ASSOCIATED_BINARIES;
+            }
+
+            Log.debug("CLI:"+cli.getCommandLineString());
+
+            try {
+                Process process = cli.createProcess();
+                InputStream inputStream = process.getInputStream();
+                version = new String(inputStream.readAllBytes()).trim();
+            } catch (ExecutionException | IOException e) {
+                Log.error("Couldn't find compiler version: "+e.getMessage());
+                return DetectionResult.NO_ASSOCIATED_BINARIES;
+            }
         }
 
-        Log.debug("CLI:"+cli.getCommandLineString());
+        Log.debug("Found version: '"+version+"'");
 
-        try {
-            Process process = cli.createProcess();
-            InputStream inputStream = process.getInputStream();
-            String version = new String(inputStream.readAllBytes()).trim();
-
-            Log.debug("Found version: '"+version+"'");
-
-            return new DetectionResult(ocamlBinary, ocamlcCompiler, version, sourcesFolder);
-        } catch (ExecutionException | IOException e) {
-            Log.error("Couldn't find compiler version: "+e.getMessage());
-            return DetectionResult.NO_ASSOCIATED_BINARIES;
-        }
+        return new DetectionResult(ocamlBinary, ocamlcCompiler, version, sourcesFolder);
     }
 
 }

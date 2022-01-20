@@ -28,6 +28,7 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
     @Override public @NotNull List<OCamlSdkProvider> getNestedProviders() {
         List<OCamlSdkProvider> nestedProviders = super.getNestedProviders();
         nestedProviders.add(new CygwinSdkProvider());
+        nestedProviders.add(new OCaml64SdkProvider());
         return nestedProviders;
     }
 }
