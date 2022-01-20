@@ -47,7 +47,8 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
         }
     }
 
-    private static void addSources(String sourceName, File sdkHomeFile, SdkModificator sdkModificator, boolean allowCandidateAsRoot) {
+    private static void addSources(String sourceName, File sdkHomeFile, SdkModificator sdkModificator,
+                                   boolean allowCandidateAsRoot) {
         File rootFolder = new File(sdkHomeFile, sourceName);
         if (!rootFolder.exists()) return;
 
@@ -65,15 +66,11 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     // Name + Icon
     //
 
-    @NotNull
-    @Override
-    public String getPresentableName() {
+    @NotNull @Override public String getPresentableName() {
         return "OCaml";
     }
 
-    @NotNull
-    @Override
-    public Icon getIcon() {
+    @NotNull @Override public Icon getIcon() {
         return OCamlIcons.Nodes.OCAML_SDK;
     }
 
@@ -81,14 +78,11 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     // Home path
     //
 
-    @Override
-    public @NotNull Collection<String> suggestHomePaths() {
+    @Override public @NotNull Collection<String> suggestHomePaths() {
         return OCamlSdkHomeManager.suggestHomePaths();
     }
 
-    @Nullable
-    @Override
-    public String suggestHomePath() {
+    @Nullable @Override public String suggestHomePath() {
         return OCamlSdkHomeManager.defaultOCamlLocation();
     }
 
@@ -97,14 +91,11 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @NotNull
-    @Override
-    public final String suggestSdkName(String currentSdkName, @NotNull String sdkHome) {
+    @Override public final String suggestSdkName(String currentSdkName, @NotNull String sdkHome) {
         return "OCaml-" + getVersionString(sdkHome);
     }
 
-    @NotNull
-    @Override
-    public String getVersionString(@NotNull String sdkHome) {
+    @NotNull @Override public String getVersionString(@NotNull String sdkHome) {
         return OCamlSdkVersionManager.parse(sdkHome);
     }
 
@@ -112,8 +103,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     // Valid
     //
 
-    @Override
-    public boolean isValidSdkHome(@NotNull String sdkHome) {
+    @Override public boolean isValidSdkHome(@NotNull String sdkHome) {
         return OCamlSdkHomeManager.isValid(sdkHome);
     }
 
@@ -121,21 +111,21 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     // Data
     //
 
-    @Override
-    public @Nullable AdditionalDataConfigurable createAdditionalDataConfigurable(@NotNull SdkModel sdkModel, @NotNull SdkModificator sdkModificator) {
+    @Override @Nullable
+    public AdditionalDataConfigurable createAdditionalDataConfigurable(@NotNull SdkModel sdkModel,
+                                                                       @NotNull SdkModificator sdkModificator) {
         return null;
     }
 
-    @Override
-    public void saveAdditionalData(@NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
+    @Override public void saveAdditionalData(@NotNull SdkAdditionalData additionalData,
+                                             @NotNull Element additional) {
     }
 
     //
     // Setup
     //
 
-    @Override
-    public void setupSdkPaths(@NotNull Sdk sdk) {
+    @Override public void setupSdkPaths(@NotNull Sdk sdk) {
         String homePath = sdk.getHomePath();
         assert homePath != null : sdk;
         SdkModificator sdkModificator = sdk.getSdkModificator();
@@ -147,8 +137,8 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
     // Documentation
     //
-    @Override
-    public @Nullable String getDefaultDocumentationUrl(@NotNull Sdk sdk) {
+
+    @Override public @Nullable String getDefaultDocumentationUrl(@NotNull Sdk sdk) {
         return null; // https://www.ocaml.org/api/index.html for 4.13, but before?
     }
 
@@ -156,12 +146,12 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     // Download
     //
 
-    @Override
-    public boolean supportsDownload(@NotNull SdkTypeId sdkTypeId) {
+    @Override public boolean supportsDownload(@NotNull SdkTypeId sdkTypeId) {
         return false;
     }
 
-    @Override
-    public void showDownloadUI(@NotNull SdkTypeId sdkTypeId, @NotNull SdkModel sdkModel, @NotNull JComponent parentComponent, @Nullable Sdk selectedSdk, @NotNull Consumer<SdkDownloadTask> sdkCreatedCallback) {
+    @Override public void showDownloadUI(@NotNull SdkTypeId sdkTypeId, @NotNull SdkModel sdkModel,
+                                         @NotNull JComponent parentComponent, @Nullable Sdk selectedSdk,
+                                         @NotNull Consumer<SdkDownloadTask> sdkCreatedCallback) {
     }
 }

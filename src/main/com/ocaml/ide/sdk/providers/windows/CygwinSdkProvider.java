@@ -1,6 +1,5 @@
 package com.ocaml.ide.sdk.providers.windows;
 
-import com.ocaml.ide.sdk.providers.BaseOCamlSdkProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.Set;
  *      </li>
  * </ul>
  */
-public class CygwinSdkProvider extends BaseOCamlSdkProvider {
+public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
 
     protected static final String OCAML_EXE = "ocaml.exe";
 
@@ -24,7 +23,7 @@ public class CygwinSdkProvider extends BaseOCamlSdkProvider {
 
     @Override
     protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
-        return path.contains("cygwin64") && path.endsWith(OCAML_EXE);
+        return getInstallationFolders().contains(path) && path.endsWith(OCAML_EXE);
     }
 
     // Implementation
@@ -35,5 +34,9 @@ public class CygwinSdkProvider extends BaseOCamlSdkProvider {
 
     @Override public @NotNull List<String> getOCamlCompilerExecutablePathCommands() {
         return List.of("ocamlc.opt.exe", "ocamlc.exe");
+    }
+
+    @Override public @NotNull Set<String> getInstallationFolders() {
+        return Set.of("cygwin64");
     }
 }

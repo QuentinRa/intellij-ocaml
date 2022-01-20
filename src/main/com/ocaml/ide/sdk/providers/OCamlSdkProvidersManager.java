@@ -66,6 +66,14 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
         return callProvidersValue(provider -> provider.getCompilerVersionCLI(ocamlcCompilerPath));
     }
 
+    @Override public @NotNull Set<String> getInstallationFolders() {
+        return callProvidersValuesS(OCamlSdkProvider::getInstallationFolders);
+    }
+
+    @Override public @NotNull Set<String> suggestHomePaths() {
+        return callProvidersValue(OCamlSdkProvider::suggestHomePaths);
+    }
+
     // call providers
 
     /** arg is always a OCamlSdkProvider **/

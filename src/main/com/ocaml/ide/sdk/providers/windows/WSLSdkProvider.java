@@ -6,7 +6,6 @@ import com.intellij.execution.wsl.WSLCommandLineOptions;
 import com.intellij.execution.wsl.WSLDistribution;
 import com.intellij.execution.wsl.WslPath;
 import com.ocaml.compiler.OCamlSdkVersionManager;
-import com.ocaml.ide.sdk.providers.BaseOCamlSdkProvider;
 import com.ocaml.ide.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,11 +14,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 
-public class WSLSdkProvider extends BaseOCamlSdkProvider {
+public class WSLSdkProvider extends AbstractWindowsBaseProvider {
 
     @Override protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
-        System.out.println("Should not be called on a WSL.");
+        LOG.warn("Should not be called on a WSL.");
         return false;
     }
 
@@ -34,12 +34,12 @@ public class WSLSdkProvider extends BaseOCamlSdkProvider {
         WslPath path = WslPath.parseWindowsUncPath(ocamlBinary);
         if (path == null) return null;
         // OK let's start
-        System.out.println("Detected WSL "+path.getDistribution()+" for "+ocamlBinary);
+        LOG.debug("Detected WSL "+path.getDistribution()+" for "+ocamlBinary);
         WSLDistribution distribution = path.getDistribution();
         // get path to ocamlc
         String ocamlc = distribution.getWslPath(ocamlBinary + "c");
         if (ocamlc == null) {
-            System.out.println("ocamlc not found for "+ocamlBinary);
+            LOG.debug("ocamlc not found for "+ocamlBinary);
             return null;
         }
         // get sources
@@ -56,29 +56,38 @@ public class WSLSdkProvider extends BaseOCamlSdkProvider {
             break;
         }
         if (sourcesFolder == null) {
-            System.out.println("No sources folder");
+            LOG.debug("No sources folder");
             return null;
         }
 
         try {
             GeneralCommandLine cli = new GeneralCommandLine(ocamlc, "-version");
             cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
-            System.out.println("CLI is: "+cli.getCommandLineString());
+            LOG.debug("CLI is: "+cli.getCommandLineString());
             Process process = cli.createProcess();
             InputStream inputStream = process.getInputStream();
             String version = new String(inputStream.readAllBytes()).trim();
-            LOG.info("Version of "+ocamlc+" is '"+version+"'.");
+            LOG.debug("Version of "+ocamlc+" is '"+version+"'.");
             // if we got something better
             String alt = OCamlSdkVersionManager.parse(ocamlBinary);
             if (!OCamlSdkVersionManager.isUnknownVersion(alt)) version = alt;
             return new AssociatedBinaries(ocamlBinary, ocamlBinary + "c", sourcesFolder, version);
         } catch (ExecutionException | IOException e) {
-            System.out.println(e.getMessage());
+            LOG.debug(e.getMessage());
         }
         return null;
     }
 
     @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {
         return null;
+    }
+
+    //
+    // SDK
+    //
+
+    @Override public @NotNull Set<String> getInstallationFolders() {
+        // todo: ...
+        return Set.of();
     }
 }

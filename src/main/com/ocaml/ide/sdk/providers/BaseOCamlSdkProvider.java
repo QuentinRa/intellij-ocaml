@@ -1,6 +1,5 @@
 package com.ocaml.ide.sdk.providers;
 
-import com.esotericsoftware.minlog.Log;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
@@ -109,18 +108,30 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
                 String alt = OCamlSdkVersionManager.parse(ocamlBinary);
                 if (!OCamlSdkVersionManager.isUnknownVersion(alt)) version = alt;
             } catch (ExecutionException | IOException e) {
-                Log.debug("Command failed:"+e.getMessage());
+                LOG.debug("Command failed:"+e.getMessage());
                 continue;
             }
 
             return new AssociatedBinaries(ocamlBinary, compiler, sourceFolder, version);
         }
 
-        Log.warn("No compiler found for "+ocamlBinary);
+        LOG.warn("No compiler found for "+ocamlBinary);
         return null;
     }
 
     // commands
+
+    @Override public @NotNull Set<String> getInstallationFolders() {
+        // todo: ...
+        return Set.of();
+    }
+
+    @Override public @NotNull Set<String> suggestHomePaths() {
+        // todo: ...
+        return Set.of();
+    }
+
+    // sdk
 
     @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {
         return new GeneralCommandLine(ocamlcCompilerPath, "-version");

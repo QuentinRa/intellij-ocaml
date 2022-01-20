@@ -59,6 +59,20 @@ public interface OCamlSdkProvider {
     @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary);
 
     //
+    // SDK
+    //
+
+    /**
+     * Usual installations folders
+     * @return a list of installation folder.
+     * Paths may be relatives or absolutes.
+     */
+    @NotNull Set<String> getInstallationFolders();
+
+    /** Tries to find existing OCaml SDKs on this computer. */
+    @NotNull Set<String> suggestHomePaths();
+
+    //
     // Commands
     //
 
