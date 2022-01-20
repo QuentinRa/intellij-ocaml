@@ -1,6 +1,8 @@
 package com.ocaml.ide.sdk.providers;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,5 +35,9 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     @Override public @NotNull Set<String> getOCamlSourcesFolders() {
         return Set.of("lib/ocaml", "usr/lib/ocaml", "usr/local/lib/ocaml");
+    }
+
+    @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {
+        return new GeneralCommandLine(ocamlcCompilerPath, "-version");
     }
 }

@@ -1,6 +1,8 @@
 package com.ocaml.ide.sdk.providers;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -36,4 +38,13 @@ public interface OCamlSdkProvider {
      * sources are in /lib/ocaml, then you should return "lib/ocaml"
      */
     @NotNull Set<String> getOCamlSourcesFolders();
+
+    /**
+     * Return a command line that can be used to get the version
+     * of the compiler
+     * @param ocamlcCompilerPath path to the ocaml compiler
+     * @return "ocamlc -version"
+     *         or null if this provider cannot generate a command for this compiler
+     */
+    @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath);
 }

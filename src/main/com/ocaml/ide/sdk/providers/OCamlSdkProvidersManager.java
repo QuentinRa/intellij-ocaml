@@ -1,9 +1,11 @@
 package com.ocaml.ide.sdk.providers;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
 import com.ocaml.ide.sdk.providers.windows.WindowsOCamlSdkProvider;
 import com.ocaml.utils.ComputeMethod;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +20,8 @@ import java.util.Set;
 public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
     public static final OCamlSdkProvidersManager INSTANCE = new OCamlSdkProvidersManager();
     private final ArrayList<OCamlSdkProvider> myProviders = new ArrayList<>();
+
+    private final OCamlSdkProvider defaultProvider = new BaseOCamlSdkProvider();
 
     private OCamlSdkProvidersManager() {
         if (SystemInfo.isWindows) {
@@ -42,15 +46,19 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
     // implemented
 
     @Override public @NotNull Set<String> getOCamlExecutablePathCommands() {
-        return callProviders(OCamlSdkProvider::getOCamlExecutablePathCommands);
+        return callProvidersValues(OCamlSdkProvider::getOCamlExecutablePathCommands);
     }
 
     @Override public @NotNull Set<String> getOCamlCompilerExecutablePathCommands() {
-        return callProviders(OCamlSdkProvider::getOCamlCompilerExecutablePathCommands);
+        return callProvidersValues(OCamlSdkProvider::getOCamlCompilerExecutablePathCommands);
     }
 
     @Override public @NotNull Set<String> getOCamlSourcesFolders() {
-        return callProviders(OCamlSdkProvider::getOCamlSourcesFolders);
+        return callProvidersValues(OCamlSdkProvider::getOCamlSourcesFolders);
+    }
+
+    @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {
+        return callProvidersValue(provider -> provider.getCompilerVersionCLI(ocamlcCompilerPath));
     }
 
     // call providers
@@ -59,10 +67,18 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
     private interface ComputeProviders<R> extends ComputeMethod<R, OCamlSdkProvider> {
     }
 
-    private <R> Set<R> callProviders(ComputeProviders<Set<R>> provider) {
+    private <R> Set<R> callProvidersValues(ComputeProviders<Set<R>> computeValues) {
         HashSet<R> values = new HashSet<>();
         for (OCamlSdkProvider p: myProviders)
-            values.addAll(provider.call(p));
+            values.addAll(computeValues.call(p));
         return values;
+    }
+
+    private <R> R callProvidersValue(ComputeProviders<R> computeValues) {
+        for (OCamlSdkProvider p: myProviders) {
+            R call = computeValues.call(p);
+            if (call != null) return call;
+        }
+        return computeValues.call(defaultProvider);
     }
 }

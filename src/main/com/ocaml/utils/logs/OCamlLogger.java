@@ -20,13 +20,20 @@ public class OCamlLogger {
      * Group for templates
      */
     public static @NotNull Logger getTemplateInstance(String name) {
-        return getInstance("template." + name);
+        return getInstance("template-" + name);
     }
 
     /**
      * Group for SDK-related logs
      */
     public static @NotNull Logger getSdkInstance(String name) {
-        return getInstance("sdk." + name);
+        return getInstance("sdk-" + name);
+    }
+
+    /**
+     * Group for SDK providers
+     */
+    public static @NotNull Logger getSdkProviderInstance() {
+        return getSdkInstance("provider");
     }
 }
