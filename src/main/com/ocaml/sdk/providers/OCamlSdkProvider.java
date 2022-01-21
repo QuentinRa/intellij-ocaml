@@ -45,6 +45,12 @@ public interface OCamlSdkProvider {
     @NotNull List<String> getOCamlSourcesFolders();
 
     /**
+     * @param ocamlBinary a possible path to an opam SDK
+     * @return true if this ocamlBinary is an opam binary
+     */
+    @Nullable Boolean isOpamBinary(@NotNull String ocamlBinary);
+
+    /**
      * The provider will try to return the associated compiler, if possible.
      * @param ocamlBinary the path to the ocaml binary, may be invalid
      * @return null of the path to the ocamlc binary

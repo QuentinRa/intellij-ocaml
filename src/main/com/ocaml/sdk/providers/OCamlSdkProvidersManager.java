@@ -59,6 +59,10 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
         return callProvidersValuesL(OCamlSdkProvider::getOCamlSourcesFolders);
     }
 
+    @Override public @Nullable Boolean isOpamBinary(@NotNull String ocamlBinary) {
+        return callProvidersValue(provider -> provider.isOpamBinary(ocamlBinary));
+    }
+
     @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {
         return callProvidersValue(provider -> provider.getAssociatedBinaries(ocamlBinary));
     }

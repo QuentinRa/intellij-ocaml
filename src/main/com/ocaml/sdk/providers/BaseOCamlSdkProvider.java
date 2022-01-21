@@ -58,6 +58,10 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     // compiler
 
+    @Override public @Nullable Boolean isOpamBinary(@NotNull String ocamlBinary) {
+        return ocamlBinary.contains(".opam");
+    }
+
     @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {
         if (!canUseProviderForOCamlBinary(ocamlBinary)) return null;
         // check files exists

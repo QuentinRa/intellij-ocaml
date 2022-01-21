@@ -25,6 +25,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
 import com.ocaml.sdk.OCamlSdkType;
+import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
@@ -98,7 +99,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private JLabel mySdkSources; // 2# submit sources
     @NotNull private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
     @NotNull private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
-    @NotNull private JLabel myOpamWarning; // 2# show a warning if using opam in 2#, should be in 1#
     @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
     @Nullable private Sdk createSDK; // 2# the sdk that we created
     boolean shouldValidateAgain = true; // selected SDK changed
@@ -167,9 +167,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                 }
         );
 
-        // Set the foreground using a JBColor
-        myOpamWarning.setForeground(JBColor.RED);
-
         // set the text + color
         myCreateLocationLabel.setText(OCamlBundle.message("project.wizard.create.location", SimpleSdkData.SDK_FOLDER));
         myCreateLocationLabel.setForeground(JBColor.GRAY);
@@ -197,11 +194,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOCamlCompilerLocation.setText(detection.ocamlCompiler);
         myOcamlVersion.setText(detection.version);
         mySdkSources.setText(detection.sources);
-    }
-
-    // show the warning "opam ..." if needed
-    private void showOpamWarning(boolean show) {
-        myOpamWarning.setVisible(show);
     }
 
     // re-enable every component in a panel
@@ -243,6 +235,16 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
             sdkSelected = myJdkChooser.getSelectedJdk() != null;
         } else {
             if (!shouldValidateAgain) return true;
+
+            boolean showWarning = OCamlSdkProvidersManager.INSTANCE.isOpamBinary(myOCamlLocation.getText());
+            if (showWarning && Messages.showDialog(
+                    JavaUiBundle.message("dialog.message.0.do.you.want.to.proceed", OCamlBundle.message("project.wizard.create.opam.warning.desc")),
+                    OCamlBundle.message("project.wizard.create.opam.warning.title"),
+                    new String[]{CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()},
+                    1, Messages.getWarningIcon()) != Messages.YES) {
+                return false;
+            }
+
             myCustomSdkData = new SimpleSdkData(
                     myOCamlLocation.getText(),
                     myOcamlVersion.getText(),
@@ -272,8 +274,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
         return applyModel();
     }
-
-    // todo: showOpamWarning
 
     // we need to apply the model everytime we are updating the model , see issue #26
     private boolean applyModel() {
