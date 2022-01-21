@@ -153,4 +153,12 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
                                          @NotNull JComponent parentComponent, @Nullable Sdk selectedSdk,
                                          @NotNull Consumer<SdkDownloadTask> sdkCreatedCallback) {
     }
+
+    //
+    // WSL
+    //
+
+    @Override public boolean allowWslSdkForLocalProject() {
+        return true;
+    }
 }

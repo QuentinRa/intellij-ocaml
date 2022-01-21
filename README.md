@@ -61,7 +61,7 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 ## 📖 Install ocaml and opam
 
 <details>
-<summary>Windows (with WSL, <b>easy, but not recommended for now)</b></summary>
+<summary>Windows (with WSL)</summary>
 
 On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
 </details>
@@ -80,6 +80,12 @@ Download [cygwin](https://cygwin.com/install.html). In the installer, you will h
 To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `òpam switch create 4.12.0`.
 
 Ensure that `C:/cygwin64/bin` (for me) is in the path. If you open a PowerShell, and write `opam --version`, you should be good. This is pretty useless (as the command above does not work in a PowerShell), but you are now able to call commands such as `make` in a PowerShell, so you can use a `Makefile`!
+</details>
+
+<details>
+<summary>Windows (Cygwin, installer, mingw)</summary>
+
+Simply download the installer for [OCaml64](https://fdopen.github.io/opam-repository-mingw/installation/). Once installed, you will have your SDK in `C:\\OCam64\\home\\username\\.opam\\`. You will have opam installed, so you can add/versions if you want.
 </details>
 
 <details>
