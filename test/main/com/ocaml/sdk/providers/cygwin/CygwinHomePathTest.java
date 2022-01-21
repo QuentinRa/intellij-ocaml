@@ -4,7 +4,7 @@ import com.intellij.util.SystemProperties;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class CygwinHomePathTest extends CygwinBaseTest  {
+public final class CygwinHomePathTest extends CygwinBaseTest  {
 
     @Test
     public void testFilesOkNoVersion() {

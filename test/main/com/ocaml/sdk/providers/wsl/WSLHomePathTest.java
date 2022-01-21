@@ -1,16 +1,15 @@
 package com.ocaml.sdk.providers.wsl;
 
-import com.ocaml.OCamlBaseTest;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class WSLHomePathTest extends OCamlBaseTest {
-    protected void assertWSLHomeValid(String homePath) {
+public final class WSLHomePathTest extends WSLBaseTest {
+    private void assertWSLHomeValid(String homePath) {
         assertTrue(OCamlSdkHomeManager.isValid(homePath));
     }
 
-    protected void assertWSLHomeInvalid(String homePath) {
+    private void assertWSLHomeInvalid(String homePath) {
         assertFalse(OCamlSdkHomeManager.isValid(homePath));
     }
 

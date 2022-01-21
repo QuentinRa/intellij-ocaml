@@ -5,7 +5,7 @@ import com.ocaml.sdk.providers.cygwin.CygwinBaseTest;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class OCaml64HomePathTest extends CygwinBaseTest {
+public final class OCaml64HomePathTest extends CygwinBaseTest {
 
     @Test
     public void testFilesOkNoVersion() {

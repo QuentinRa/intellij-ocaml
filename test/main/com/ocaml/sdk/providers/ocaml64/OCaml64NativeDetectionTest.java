@@ -5,7 +5,7 @@ import com.ocaml.sdk.providers.cygwin.CygwinBaseTest;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class OCaml64NativeDetectionTest extends CygwinBaseTest {
+public final class OCaml64NativeDetectionTest extends CygwinBaseTest {
     // This test is not possible because
     // this one isn't in the PATH
 

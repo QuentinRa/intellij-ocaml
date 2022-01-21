@@ -4,7 +4,7 @@ import com.intellij.util.SystemProperties;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class CygwinSuggestHomePathsTest extends CygwinBaseTest {
+public final class CygwinSuggestHomePathsTest extends CygwinBaseTest {
 
     @Test
     public void testCygwinOpamSdksAreSuggested() {

@@ -2,10 +2,7 @@ package com.ocaml.sdk.providers.windows;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.wsl.WSLCommandLineOptions;
-import com.intellij.execution.wsl.WSLDistribution;
-import com.intellij.execution.wsl.WSLUtil;
-import com.intellij.execution.wsl.WslPath;
+import com.intellij.execution.wsl.*;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.impl.wsl.WslConstants;
@@ -18,9 +15,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A WSL can be installed easily with "Windows Store > Debian" or
+ * "Windows Store > Ubuntu". They are working like a "Linux on Windows".
+ * Everything involving WSL is complex, because the paths must be converted
+ * again and again, and we have to look for installed distributions sometimes (slow).
+ */
 public class WSLSdkProvider extends AbstractWindowsBaseProvider {
 
     @Override protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
@@ -29,8 +33,15 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     @Override public @NotNull Set<String> getInstallationFolders() {
-        LOG.warn("Should not be called on a WSL.");
-        return Set.of();
+        Set<String> homePaths = new HashSet<>();
+        // WSL
+        for (WSLDistribution distro : WslDistributionManager.getInstance().getInstalledDistributions()) {
+            String wslPath = distro.getUserHome();
+            if (wslPath == null) continue;
+            String windowsPath = distro.getWindowsPath(wslPath + "/.opam/");
+            homePaths.add(windowsPath);
+        }
+        return homePaths;
     }
 
     /**
