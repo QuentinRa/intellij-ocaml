@@ -36,6 +36,7 @@ public class OCamlIcons {
     public static final class Nodes {
         public static final Icon OCAML_MODULE = loadIcon("/icons/ocamlModule.svg");
         public static final Icon OCAML_SDK = loadIcon("/icons/ocamlSdk.svg");
+        public static final Icon DUNE = loadIcon("/icons/duneLogo.svg");
     }
 
     public static final class UI {

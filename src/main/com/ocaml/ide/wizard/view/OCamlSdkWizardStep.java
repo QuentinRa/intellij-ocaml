@@ -236,7 +236,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         } else {
             if (!shouldValidateAgain) return true;
 
-            boolean showWarning = OCamlSdkProvidersManager.INSTANCE.isOpamBinary(myOCamlLocation.getText());
+            boolean showWarning = Boolean.TRUE.equals(OCamlSdkProvidersManager.INSTANCE.isOpamBinary(myOCamlLocation.getText()));
             if (showWarning && Messages.showDialog(
                     JavaUiBundle.message("dialog.message.0.do.you.want.to.proceed", OCamlBundle.message("project.wizard.create.opam.warning.desc")),
                     OCamlBundle.message("project.wizard.create.opam.warning.title"),

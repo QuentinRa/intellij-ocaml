@@ -19,6 +19,7 @@ public final class OCamlTemplateProvider {
      */
     public static ArrayList<ProjectTemplate> getAvailableTemplates() {
         ArrayList<ProjectTemplate> availableTemplates = new ArrayList<>();
+        availableTemplates.add(new OCamlDuneTemplate());
         availableTemplates.add(new OCamlMakefileTemplate());
         return availableTemplates;
     }

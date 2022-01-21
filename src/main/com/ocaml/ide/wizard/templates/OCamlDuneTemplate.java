@@ -19,48 +19,57 @@ import javax.swing.*;
 import java.io.File;
 
 /**
- * Allow the creation of a Makefile project, which includes the following
+ * Allow the creation of a dune project, which includes the following
  * - src
  * - src/hello_world.ml
  * - src/hello_world.mli
  * - src/test_hello_world.ml
- * - Makefile
+ * - src/dune
+ * - dune-project
  */
-class OCamlMakefileTemplate implements ProjectTemplate, TemplateBuildInstructions {
+class OCamlDuneTemplate implements ProjectTemplate, TemplateBuildInstructions {
 
-    private static final Logger LOG = OCamlLogger.getTemplateInstance("dune");
+    private static final Logger LOG = OCamlLogger.getTemplateInstance("makefile");
 
-    @SuppressWarnings("UnstableApiUsage") @Override
+    @SuppressWarnings("UnstableApiUsage")
+    @Override
     public @NotNull @NlsContexts.Label String getName() {
-        return OCamlBundle.message("template.makefile.title");
+        return OCamlBundle.message("template.dune.title");
     }
 
-    @SuppressWarnings("UnstableApiUsage") @Override
+    @SuppressWarnings("UnstableApiUsage")
+    @Override
     public @Nullable @NlsContexts.DetailedDescription String getDescription() {
-        return OCamlBundle.message("template.makefile.description");
+        return OCamlBundle.message("template.dune.description");
     }
 
-    @Override public Icon getIcon() {
-        return OCamlIcons.External.MAKEFILE;
+    @Override
+    public Icon getIcon() {
+        return OCamlIcons.Nodes.DUNE;
     }
 
-    @Override public @NotNull AbstractModuleBuilder createModuleBuilder() {
-        throw new UnsupportedOperationException("OCamlMakefileTemplate#createModuleBuilder should not be called");
+    @Override
+    public @NotNull AbstractModuleBuilder createModuleBuilder() {
+        throw new UnsupportedOperationException("OCamlDuneTemplate#createModuleBuilder should not be called");
     }
 
     @SuppressWarnings({"deprecation", "RedundantSuppression"})
-    @Override public @Nullable ValidationInfo validateSettings() {
+    @Override
+    public @Nullable ValidationInfo validateSettings() {
         return null;
     }
 
     @Override
     public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
         File sourceFolder = VfsUtilCore.virtualToIoFile(sourceRoot);
+        // Files
         OCamlFileUtils.createFile(sourceFolder, "hello_world.mli", "val hello_world : unit -> unit", LOG);
         OCamlFileUtils.createFile(sourceFolder, "hello_world.ml", "let hello_world () = Format.printf \"Hello, World!@.\"", LOG);
         OCamlFileUtils.createFile(sourceFolder, "test_hello_world.ml", "open Hello_world\n\nlet _ = hello_world ()", LOG);
-
-        String makefileContent = OCamlFileUtils.loadFileContent("/templates/Makefile/Makefile", LOG);
-        OCamlFileUtils.createFile(sourceFolder.getParentFile(), "Makefile", makefileContent, LOG);
+        // Dune
+        File rootFolder = sourceFolder.getParentFile();
+        OCamlFileUtils.createFile(sourceFolder, "dune", "(executable\n (name test_hello_world))", LOG);
+        // todo: I don't think this value should be hard-coded
+        OCamlFileUtils.createFile(rootFolder, "dune-project", "(lang dune 2.9)", LOG);
     }
 }
