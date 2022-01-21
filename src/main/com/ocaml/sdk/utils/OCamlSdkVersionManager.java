@@ -62,4 +62,18 @@ public final class OCamlSdkVersionManager {
     public static boolean isValid(String version) {
         return VERSION_REGEXP.matcher(version).matches();
     }
+
+    /**
+     * Compare two paths and returns
+     * <ul>
+     *     <li><b>0</b>: they have the same version</li>
+     *     <li><b>-1</b>: the second one has a newer version</li>
+     *     <li><b>1</b>: the first one has a newer version</li>
+     * </ul>
+     */
+    public static int comparePaths(String p1, String p2) {
+        String v1 = parse(p1);
+        String v2 = parse(p2);
+        return v1.compareTo(v2);
+    }
 }

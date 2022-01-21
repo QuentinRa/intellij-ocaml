@@ -15,10 +15,14 @@ public final class OCamlSdkHomeManager {
 
     /**
      * Tries to find existing OCaml SDKs on this computer.
+     * They are sorted by version, from newest to oldest.
      */
     public static @NotNull List<String> suggestHomePaths() {
         // wrap
-        return new ArrayList<>(OCamlSdkProvidersManager.INSTANCE.suggestHomePaths());
+        ArrayList<String> homes = new ArrayList<>(OCamlSdkProvidersManager.INSTANCE.suggestHomePaths());
+        // reverse order (newer -> older)
+        homes.sort((o1, o2) -> OCamlSdkVersionManager.comparePaths(o2, o1));
+        return homes;
     }
 
     public static @Nullable String defaultOCamlLocation() {
