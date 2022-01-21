@@ -1,12 +1,12 @@
 package com.ocaml.sdk.providers.wsl;
 
+import com.ocaml.OCamlBaseTest;
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
-import com.ocaml.sdk.providers.cygwin.CygwinBaseTest;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public final class WSLNativeDetectionTest extends CygwinBaseTest {
+public final class WSLNativeDetectionTest extends OCamlBaseTest {
 
     public void assertWSLValid(String ocamlBin, String expectedVersion) {
         assertWSLValid(ocamlBin, expectedVersion, "\\lib\\ocaml");

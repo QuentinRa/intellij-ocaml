@@ -137,26 +137,21 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
     }
 
     @Override public @Nullable Boolean isHomePathValid(@NotNull Path homePath) {
-        System.out.println("entering with:"+homePath);
         if (!canUseProviderForHome(homePath)) return null;
-        System.out.println("version ok");
         // version
         boolean ok = OCamlSdkVersionManager.isValid(homePath.toFile().getName());
         if (!ok) {
-            System.out.println("Not a valid home name: "+homePath);
+            LOG.debug("Not a valid home name: "+homePath);
             return false;
         }
         // interactive toplevel
         boolean hasTopLevel = false;
-        System.out.println("tc:"+getOCamlTopLevelCommands());
-        System.out.println(this.getClass().getSimpleName());
         for (String exeName: getOCamlTopLevelCommands()) {
             hasTopLevel = Files.exists(homePath.resolve("bin/"+exeName));
-            System.out.println("exe:"+exeName);
             if (hasTopLevel) break;
         }
         if (!hasTopLevel) {
-            System.out.println("Not top level found for "+homePath);
+            LOG.debug("Not top level found for "+homePath);
             return false;
         }
         // compiler
@@ -166,7 +161,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
             if (hasCompiler) break;
         }
         if (!hasCompiler) {
-            System.out.println("Not compiler found for "+homePath);
+            LOG.debug("Not compiler found for "+homePath);
             return false;
         }
         // sources
@@ -175,7 +170,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
             hasSources = Files.exists(homePath.resolve(sourceFolder));
             if (hasSources) break;
         }
-        if (!hasSources) System.out.println("Not sources found for "+homePath);
+        if (!hasSources) LOG.debug("Not sources found for "+homePath);
         return hasSources;
     }
 

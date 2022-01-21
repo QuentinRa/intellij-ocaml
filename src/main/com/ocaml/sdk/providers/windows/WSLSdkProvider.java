@@ -4,10 +4,13 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.wsl.WSLCommandLineOptions;
 import com.intellij.execution.wsl.WSLDistribution;
+import com.intellij.execution.wsl.WSLUtil;
 import com.intellij.execution.wsl.WslPath;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.impl.wsl.WslConstants;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
-import com.ocaml.sdk.providers.BaseOCamlSdkProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,13 +18,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
 
 public class WSLSdkProvider extends AbstractWindowsBaseProvider {
 
     @Override protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
-        BaseOCamlSdkProvider.LOG.warn("Should not be called on a WSL.");
+        LOG.warn("Should not be called on a WSL.");
         return false;
+    }
+
+    @Override public @NotNull Set<String> getInstallationFolders() {
+        LOG.warn("Should not be called on a WSL.");
+        return Set.of();
     }
 
     /**
@@ -35,12 +44,12 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         WslPath path = WslPath.parseWindowsUncPath(ocamlBinary);
         if (path == null) return null;
         // OK let's start
-        BaseOCamlSdkProvider.LOG.debug("Detected WSL "+path.getDistribution()+" for "+ocamlBinary);
+        LOG.debug("Detected WSL "+path.getDistribution()+" for "+ocamlBinary);
         WSLDistribution distribution = path.getDistribution();
         // get path to ocamlc
         String ocamlc = distribution.getWslPath(ocamlBinary + "c");
         if (ocamlc == null) {
-            BaseOCamlSdkProvider.LOG.debug("ocamlc not found for "+ocamlBinary);
+            LOG.debug("ocamlc not found for "+ocamlBinary);
             return null;
         }
         // get sources
@@ -57,24 +66,24 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             break;
         }
         if (sourcesFolder == null) {
-            BaseOCamlSdkProvider.LOG.debug("No sources folder");
+            LOG.debug("No sources folder");
             return null;
         }
 
         try {
             GeneralCommandLine cli = new GeneralCommandLine(ocamlc, "-version");
             cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
-            BaseOCamlSdkProvider.LOG.debug("CLI is: "+cli.getCommandLineString());
+            LOG.debug("CLI is: "+cli.getCommandLineString());
             Process process = cli.createProcess();
             InputStream inputStream = process.getInputStream();
             String version = new String(inputStream.readAllBytes()).trim();
-            BaseOCamlSdkProvider.LOG.debug("Version of "+ocamlc+" is '"+version+"'.");
+            LOG.debug("Version of "+ocamlc+" is '"+version+"'.");
             // if we got something better
             String alt = OCamlSdkVersionManager.parse(ocamlBinary);
             if (!OCamlSdkVersionManager.isUnknownVersion(alt)) version = alt;
             return new AssociatedBinaries(ocamlBinary, ocamlBinary + "c", sourcesFolder, version);
         } catch (ExecutionException | IOException e) {
-            BaseOCamlSdkProvider.LOG.debug(e.getMessage());
+            LOG.debug(e.getMessage());
         }
         return null;
     }
@@ -87,8 +96,17 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
     // SDK
     //
 
-    @Override public @NotNull Set<String> getInstallationFolders() {
-        // todo: ...
-        return Set.of();
+    @Override public @NotNull List<String> getOCamlCompilerCommands() {
+        return List.of("ocamlc", "ocamlc.opt"); // because ocamlc is not valid on Windows
+    }
+
+    @Override protected boolean canUseProviderForHome(@NotNull Path homePath) {
+        if (!WSLUtil.isSystemCompatible()) return false;
+        String windowsUncPath = homePath.toFile().getAbsolutePath();
+        String path = FileUtil.toSystemDependentName(windowsUncPath);
+        if (!path.startsWith(WslConstants.UNC_PREFIX)) return false;
+        path = StringUtil.trimStart(path, WslConstants.UNC_PREFIX);
+        int index = path.indexOf('\\');
+        return index > 0;
     }
 }
