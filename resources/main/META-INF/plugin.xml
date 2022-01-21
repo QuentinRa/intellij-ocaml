@@ -24,5 +24,6 @@
         <!-- SDK -->
         <sdkType implementation="com.ocaml.sdk.OCamlSdkType"/>
         <sdkDownload implementation="com.ocaml.sdk.OCamlSdkType"/>
+        <projectViewNodeDecorator implementation="com.ocaml.sdk.OCamlLibraryRootsNodeDecorator"/>
     </extensions>
 </idea-plugin>
