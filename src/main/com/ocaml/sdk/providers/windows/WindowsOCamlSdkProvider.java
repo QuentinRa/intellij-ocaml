@@ -66,22 +66,24 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
         HashSet<Path> installationDirectories = new HashSet<>();
         HashSet<Path> roots = new HashSet<>();
         for (OCamlSdkProvider p: new OCamlSdkProvider[]{cygwinSdkProvider, oCaml64SdkProvider, wslSdkProvider}) {
-            for (String suggestHomePath : p.suggestHomePaths()) {
-                Path installationDirectory = Path.of(suggestHomePath);
-                boolean absolute = installationDirectory.isAbsolute() || installationDirectory.startsWith("\\\\");
-                if (absolute) roots.add(installationDirectory);
-                else installationDirectories.add(installationDirectory);
+            for (String installationDirectory : p.getInstallationFolders()) {
+                Path installationDirectoryPath = Path.of(installationDirectory);
+                boolean absolute = installationDirectoryPath.isAbsolute() || installationDirectory.startsWith("\\\\"); // UNC path
+                if (absolute) roots.add(installationDirectoryPath);
+                else installationDirectories.add(installationDirectoryPath);
             }
         }
-        System.out.println("r:"+roots);
-        System.out.println("i:"+installationDirectories);
+        LOG.debug("Roots found (1/2):"+roots);
+        LOG.debug("Installation directories to explore:"+installationDirectories);
 
         for (Path root : fsRoots) {
             if (!Files.exists(root)) continue;
             for (Path dir: installationDirectories) {
-                installationDirectories.add(root.resolve(dir));
+                roots.add(root.resolve(dir));
             }
         }
+
+        LOG.debug("Roots found (2/2):"+roots);
 
         return OCamlSdkScanner.scanAll(roots, true);
     }

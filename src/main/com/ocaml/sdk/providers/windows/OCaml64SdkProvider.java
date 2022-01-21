@@ -17,6 +17,6 @@ public class OCaml64SdkProvider extends CygwinSdkProvider  {
 
     // the installation folder is not the cygwin64 :)
     @Override public @NotNull Set<String> getInstallationFolders() {
-        return Set.of("OCaml64");
+        return Set.of("OCaml64", getCygwinOpamFolder("OCaml64"));
     }
 }

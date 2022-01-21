@@ -1,6 +1,7 @@
 package com.ocaml.sdk.providers.windows;
 
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -41,6 +42,10 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
         return false;
     }
 
+    protected @NotNull String getCygwinOpamFolder(@NotNull String baseFolderName) {
+        return baseFolderName + "\\home\\" + SystemProperties.getUserName() + "\\.opam\\";
+    }
+
     // Implementation
 
     @Override public @NotNull Set<String> getOCamlTopLevelCommands() {
@@ -52,6 +57,6 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     @Override public @NotNull Set<String> getInstallationFolders() {
-        return Set.of("cygwin64");
+        return Set.of("cygwin64", getCygwinOpamFolder("cygwin64"));
     }
 }
