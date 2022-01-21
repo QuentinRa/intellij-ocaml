@@ -63,6 +63,10 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
         return callProvidersValue(provider -> provider.getAssociatedBinaries(ocamlBinary));
     }
 
+    @Override public @NotNull Set<String> getAssociatedSourcesFolders(@NotNull String sdkHome) {
+        return callProvidersValue(provider -> provider.getAssociatedSourcesFolders(sdkHome));
+    }
+
     @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {
         return callProvidersValue(provider -> provider.getCompilerVersionCLI(ocamlcCompilerPath));
     }

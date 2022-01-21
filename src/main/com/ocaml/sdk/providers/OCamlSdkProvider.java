@@ -52,6 +52,13 @@ public interface OCamlSdkProvider {
     @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary);
 
     /**
+     * @param sdkHome a valid sdk home
+     * @return the path to the sources folders,
+     * relatives to the sdk home. Usually, sources are only stored in "lib/".
+     */
+    @NotNull Set<String> getAssociatedSourcesFolders(@NotNull String sdkHome);
+
+    /**
      * Usual installations folders
      * @return a list of installation folder.
      * Paths may be relatives or absolutes.

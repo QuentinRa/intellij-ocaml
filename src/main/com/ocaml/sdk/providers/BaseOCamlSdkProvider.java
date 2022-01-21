@@ -3,6 +3,8 @@ package com.ocaml.sdk.providers;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.SystemProperties;
+import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.utils.logs.OCamlLogger;
@@ -124,16 +126,30 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         return null;
     }
 
+    @Override public @NotNull Set<String> getAssociatedSourcesFolders(@NotNull String sdkHome) {
+        return Set.of(
+                "lib",
+                ".opam-switch/sources/" // we may have this one in opam SDKs
+        );
+    }
+
     // commands
 
     @Override public @NotNull Set<String> getInstallationFolders() {
-        // todo: ...
-        return Set.of();
+        Set<String> installationFolders = new HashSet<>();
+        // we know that we may find opam
+        installationFolders.add(SystemProperties.getUserHome()+".opam");
+        // is there any other places in which we may find ocaml SDKs?
+        // ...
+        return installationFolders;
     }
 
     @Override public @NotNull Set<String> suggestHomePaths() {
-        // todo: ...
-        return Set.of();
+        Set<Path> roots = new HashSet<>();
+        for (String folder:getInstallationFolders()) {
+            roots.add(Path.of(folder));
+        }
+        return OCamlSdkScanner.scanAll(roots, true);
     }
 
     @Override public @Nullable Boolean isHomePathValid(@NotNull Path homePath) {

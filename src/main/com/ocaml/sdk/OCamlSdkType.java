@@ -41,18 +41,17 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     public static void addSources(@NotNull File sdkHomeFile, @NotNull SdkModificator sdkModificator) {
-        List<OCamlSdkRootsManager.SourceFolderInfo> sources = OCamlSdkRootsManager.getSourcesFolders(sdkHomeFile.getPath());
-        for (OCamlSdkRootsManager.SourceFolderInfo source : sources) {
-            addSources(source.path, sdkHomeFile, sdkModificator, source.isRoot);
+        List<String> sources = OCamlSdkRootsManager.getSourcesFolders(sdkHomeFile.getPath());
+        for (String source : sources) {
+            addSources(source, sdkHomeFile, sdkModificator);
         }
     }
 
-    private static void addSources(String sourceName, File sdkHomeFile, SdkModificator sdkModificator,
-                                   boolean allowCandidateAsRoot) {
+    private static void addSources(String sourceName, File sdkHomeFile, SdkModificator sdkModificator) {
         File rootFolder = new File(sdkHomeFile, sourceName);
         if (!rootFolder.exists()) return;
 
-        File[] files = allowCandidateAsRoot ? new File[]{rootFolder} : rootFolder.listFiles();
+        File[] files = rootFolder.listFiles();
         if (files == null) return;
         for (File file : files) {
             VirtualFile rootCandidate = LocalFileSystem.getInstance()
