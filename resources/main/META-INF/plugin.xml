@@ -12,6 +12,13 @@
 
     <actions>
         <!-- Add your actions here -->
+        <!-- Create file -->
+        <action id="NewOCamlFile" class="com.ocaml.ide.actions.create.OCamlCreateFileAction">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+        </action>
+        <action id="NewOCamlInterface" class="com.ocaml.ide.actions.create.OCamlInterfaceCreateFileAction">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -30,6 +37,9 @@
         <!-- FILES -->
         <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
         <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
+        <internalFileTemplate name="OCaml File"/>
+        <internalFileTemplate name="OCaml Interface"/>
+
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OclSyntaxHighlighterFactory"/>
     </extensions>

@@ -5,6 +5,7 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.OCamlLanguage;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -38,5 +39,9 @@ public final class OCamlInterfaceFileType extends LanguageFileType {
 
     @Override public Icon getIcon() {
         return OCamlIcons.FileTypes.OCAML_INTERFACE;
+    }
+
+    @Override public @Nls @NotNull String getDisplayName() {
+        return getDescription();
     }
 }
