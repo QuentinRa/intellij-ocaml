@@ -69,7 +69,6 @@ class OCamlDuneTemplate implements ProjectTemplate, TemplateBuildInstructions {
         // Dune
         File rootFolder = sourceFolder.getParentFile();
         OCamlFileUtils.createFile(sourceFolder, "dune", "(executable\n (name test_hello_world))", LOG);
-        // todo: I don't think this value should be hard-coded
         OCamlFileUtils.createFile(rootFolder, "dune-project", "(lang dune 2.9)", LOG);
     }
 }

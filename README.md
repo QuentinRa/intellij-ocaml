@@ -15,7 +15,7 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] **Real-time type inference**
 * [ ] **Smart completion**
 * [ ] **REPL support**: we must be able to send commands from our file, to a REPL console
-* [ ] **Using a bundle** (possible support for Localization later)
+* [x] **Using a bundle** (possible support for Localization later)
 
 Originally, I was planning to make things, so that we can use this plugin outside IntelliJ, but now my goal is to at least make this plugin work in IntelliJ before targeting minor IDEs.
 
@@ -39,29 +39,26 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Set/Update the project SDK, you can use it in a module   |
 | ✅ Set/Update the SDK for a module                          |
 | ✅ Edit modules' properties (ex: output folder, src folder) |
-| ✅ The project is created from a template with src...       |
-| ❌ Add a "?" after each fields with some explanations       |
+| ✅ You can use a template (✅ Makefile, ✅ Dune)              |
+| ❌ Add an import wizard                                     |
 | ❌ The project is created with a default runConfiguration   |
 
-You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you got /bin/ocaml, etc.). You may use a template, the only one available is an application using a <b>Makefile</b>.
+You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you only have /bin/ocaml, etc.). You may use a template, two are available, one using a <b>Makefile</b>, and the other using <b>Dune</b>.
 
-| SDK                                                 |
-|-----------------------------------------------------|
-| ✅ We are suggesting SDKs (✅ Cygwin, ✅ WSL, ❌ .jdks) |
-| ✅ We are suggesting a location for non-opam SDKs    |
-| ✅ The SDK is verified                               |
-| ✅ The user can add/remove sources                   |
-| ❌ The user can download sources                     |
-| ❌ The sources are indexed (autocompletion)          |
-| ❌ You can download OCaml                            |
-| ❌ You can add/remove libraries for a module         |
+| SDK                                                         |
+|-------------------------------------------------------------|
+| ✅ We are suggesting SDKs (✅ Cygwin, ✅ WSL, ❌ .jdks, ❌ PATH) |
+| ✅ We are suggesting a location for non-opam SDKs            |
+| ✅ The SDK is verified                                       |
+| ✅ The user can add/remove sources                           |
+| ❌ The user can download OCaml                               |
 
-An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder "bin" with ocaml, ... and a folder "lib" with the sources. On opam, the folder `.opam-switch/sources/` will also be checked.
+An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
 
 ## 📖 Install ocaml and opam
 
 <details>
-<summary>Windows (with WSL)</summary>
+<summary>Windows (with WSL, version >= 2021.3)</summary>
 
 On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
 </details>
@@ -102,6 +99,7 @@ In my case, on Linux or Debian, I'm using these commands (you may call `sudo apt
 
 I do not have a computer with a macOS, so you should submit feedback, so that I can update this section. From what I know, you may look around
 
+* `brew update`
 * `brew install ocaml`
 * `brew install opam`
 

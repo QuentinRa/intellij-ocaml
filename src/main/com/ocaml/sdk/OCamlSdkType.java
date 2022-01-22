@@ -11,6 +11,7 @@ import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.utils.adaptor.SinceIdeVersion;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -158,7 +159,9 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     // WSL
     //
 
-    @Override public boolean allowWslSdkForLocalProject() {
+    @SinceIdeVersion(release = "213")
+    @SuppressWarnings("unused")
+    public boolean allowWslSdkForLocalProject() {
         return true;
     }
 }

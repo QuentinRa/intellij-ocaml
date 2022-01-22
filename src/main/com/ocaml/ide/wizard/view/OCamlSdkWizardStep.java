@@ -24,6 +24,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
+import com.ocaml.OCamlPluginConstants;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.sdk.providers.simple.DetectionResult;
@@ -315,9 +316,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         if (!myWizardContext.isCreatingNewProject()) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
-        // todo: bundle + constant
-        myActionLink = new ActionLink("Instructions", event -> {
-            BrowserUtil.browse("https://github.com/QuentinRa/intellij-ocaml-plugin/blob/main/README.md#-install-ocaml-and-opam");
+        myActionLink = new ActionLink(OCamlBundle.message("project.wizard.instruction.link"), event -> {
+            BrowserUtil.browse(OCamlPluginConstants.INSTALL_LINK);
         });
         myActionLink.setExternalLinkIcon();
     }
