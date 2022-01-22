@@ -47,7 +47,7 @@ public class SimpleSdkData {
                          @NotNull String version,
                          @NotNull String ocamlSourcesFolder) throws ConfigurationException {
         if (!OCamlSdkVersionManager.isValid(version))
-            throw new ConfigurationException(OCamlBundle.message("sdk.ocaml.version.empty"));
+            throw new ConfigurationException(OCamlBundle.message("project.wizard.sdk.ocaml.version.empty"));
 
         LOG.info(
                 "The binary is " + ocamlBinary + ", the compiler is " + ocamlCompilerBinary
@@ -61,7 +61,7 @@ public class SimpleSdkData {
         );
 
         if (homePath == null)
-            throw new ConfigurationException(OCamlBundle.message("sdk.create.failed", SDK_FOLDER));
+            throw new ConfigurationException(OCamlBundle.message("project.wizard.sdk.create.failed", SDK_FOLDER));
 
         this.homePath = homePath;
     }

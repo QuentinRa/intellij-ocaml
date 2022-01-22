@@ -26,5 +26,9 @@
         <sdkDownload implementation="com.ocaml.sdk.OCamlSdkType"/>
         <projectViewNodeDecorator implementation="com.ocaml.sdk.nodes.OCamlLibraryRootsNodeDecorator"/>
         <treeStructureProvider implementation="com.ocaml.sdk.nodes.OCamlLibraryRootsTreeStructureProvider"/>
+
+        <!-- FILES -->
+        <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
+        <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
     </extensions>
 </idea-plugin>

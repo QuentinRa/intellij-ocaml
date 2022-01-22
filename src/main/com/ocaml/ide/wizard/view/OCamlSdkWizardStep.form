@@ -39,7 +39,7 @@
                 </constraints>
                 <properties>
                   <enabled value="true"/>
-                  <text resource-bundle="messages/OCamlBundle" key="module.prompt.sdk"/>
+                  <text resource-bundle="messages/OCamlBundle" key="project.wizard.module.prompt.sdk"/>
                 </properties>
               </component>
               <component id="e2024" class="com.ocaml.utils.adaptor.ui.JdkComboBoxAdaptor" binding="myJdkChooser" custom-create="true">

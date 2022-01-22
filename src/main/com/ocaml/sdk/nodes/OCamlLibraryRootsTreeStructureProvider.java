@@ -19,10 +19,15 @@ import java.util.regex.Pattern;
  */
 public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProvider {
 
-    // This pattern is matching files ending with
-    // - ending with .ml
-    // - ending with .mli
-    // - ending with .cmt
+
+    /**
+     * This pattern is matching files ending with
+     * <ul>
+     *     <li>ending with .ml {@link com.ocaml.ide.files.OCamlFileType#DOT_DEFAULT_EXTENSION}</li>
+     *     <li>ending with .mli {@link com.ocaml.ide.files.OCamlInterfaceFileType#DOT_DEFAULT_EXTENSION}</li>
+     *     <li>ending with .cmt</li>
+     * </ul>
+     */
     private static final Pattern ALLOWED_FILES = Pattern.compile(".*[.](ml|mli|cmt)");
 
     @Override

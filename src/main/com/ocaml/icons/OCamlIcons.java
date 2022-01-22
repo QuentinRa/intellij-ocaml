@@ -40,6 +40,11 @@ public class OCamlIcons {
         public static final Icon DUNE = loadIcon("/icons/duneLogo.svg");
     }
 
+    public static final class FileTypes {
+        public static final Icon OCAML = loadIcon("/icons/mlFile.svg");
+        public static final Icon OCAML_INTERFACE = loadIcon("/icons/mliFile.svg");
+    }
+
     public static final class UI {
         public static final Icon LOADING = new AnimatedIcon.Default();
         public static final Icon FIELD_VALID = AllIcons.General.InspectionsOK; // check?

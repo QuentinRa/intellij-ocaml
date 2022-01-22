@@ -118,7 +118,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
         // are we inside a project?
         int choice = wizardContext.isCreatingNewProject() ? 0 : 1;
-        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", choice));
+        myLabelSdk.setText(OCamlBundle.message("project.wizard.module.prompt.sdk", choice));
         myWizardTitle.setText(OCamlBundle.message("project.wizard.title", choice));
         myLabelSdk.setLabelFor(myJdkChooser);
 

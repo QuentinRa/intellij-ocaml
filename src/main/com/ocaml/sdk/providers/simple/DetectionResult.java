@@ -17,8 +17,8 @@ public class DetectionResult {
 
     public static final DetectionResult NO_ASSOCIATED_BINARIES = new DetectionResult(
             "",
-            OCamlBundle.message("sdk.ocaml.binary.invalid.short"), OCamlSdkVersionManager.UNKNOWN_VERSION,
-            OCamlBundle.message("sdk.ocaml.binary.invalid.short"), true
+            OCamlBundle.message("project.wizard.sdk.ocaml.binary.invalid.short"), OCamlSdkVersionManager.UNKNOWN_VERSION,
+            OCamlBundle.message("project.wizard.sdk.ocaml.binary.invalid.short"), true
     );
 
     public final String ocaml;
