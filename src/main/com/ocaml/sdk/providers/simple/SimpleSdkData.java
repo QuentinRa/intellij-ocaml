@@ -50,7 +50,11 @@ public class SimpleSdkData {
                         + ", the sources' folder is " + ocamlSourcesFolder + ", and the version is " + version + "."
         );
 
-        String homePath = OCamlSdkProvidersManager.INSTANCE.createSdkFromBinaries(ocamlBinary, ocamlCompilerBinary, version, ocamlSourcesFolder, SDK_FOLDER);
+        String homePath = OCamlSdkProvidersManager.INSTANCE.createSdkFromBinaries(
+                ocamlBinary, ocamlCompilerBinary, version, ocamlSourcesFolder,
+                // ex: SDK_FOLDER/4.05.0+local, SDK_FOLDER/4.05.0+local1, etc.
+                SDK_FOLDER, "+local"
+        );
 
         if (homePath == null)
             throw new ConfigurationException(OCamlBundle.message("sdk.create.failed", SDK_FOLDER));

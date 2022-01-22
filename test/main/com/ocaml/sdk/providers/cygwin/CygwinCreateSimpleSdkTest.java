@@ -28,8 +28,7 @@ public class CygwinCreateSimpleSdkTest extends CygwinBaseTest {
                 fail(e.getMessage());
             }
         } finally {
-//            homes.forEach(OCamlFileUtils::deleteDirectory);
-            OCamlFileUtils.deleteDirectory(homes.get(0));
+            homes.forEach(OCamlFileUtils::deleteDirectory);
         }
     }
 

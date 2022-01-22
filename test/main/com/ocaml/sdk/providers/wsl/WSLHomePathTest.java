@@ -5,13 +5,6 @@ import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public final class WSLHomePathTest extends WSLBaseTest {
-    private void assertWSLHomeValid(String homePath) {
-        assertTrue(OCamlSdkHomeManager.isValid(homePath));
-    }
-
-    private void assertWSLHomeInvalid(String homePath) {
-        assertFalse(OCamlSdkHomeManager.isValid(homePath));
-    }
 
     @Test
     public void testFilesOkNoVersion() {

@@ -69,10 +69,10 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     @Override
     public @Nullable String createSdkFromBinaries(String ocaml, String compiler, String version,
-                                                  String sources, String sdkFolder) {
+                                                  String sources, String sdkFolder, String sdkModifier) {
         if (!canUseProviderForOCamlBinary(ocaml)) return null;
         File sdkFolderFile = new File(FileUtil.expandUserHome(sdkFolder));
-        File sdkHome = FileUtil.findSequentNonexistentFile(sdkFolderFile, version + "+local", "");
+        File sdkHome = FileUtil.findSequentNonexistentFile(sdkFolderFile, version + sdkModifier, "");
         boolean ok = sdkHome.mkdirs();
         ok = ok && new File(sdkHome, "bin").mkdir();
         if (!ok) LOG.debug("create 'bin' failed");
@@ -193,8 +193,10 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
             if (hasTopLevel) break;
         }
         if (!hasTopLevel) {
-            LOG.debug("Not top level found for "+homePath);
-            return false;
+            Boolean link = handleSymlinkHomePath(homePath);
+            if (link == null)
+                LOG.debug("Not top level found for "+homePath);
+            return link;
         }
         // compiler
         boolean hasCompiler = false;
@@ -214,6 +216,10 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         }
         if (!hasSources) LOG.debug("Not sources found for "+homePath);
         return hasSources;
+    }
+
+    protected @Nullable Boolean handleSymlinkHomePath(Path homePath) {
+        return null;
     }
 
     // sdk

@@ -57,10 +57,11 @@ public interface OCamlSdkProvider {
      * @param version version of the compiler
      * @param sources location of the sources folder
      * @param sdkFolder the folder, that may not exist, in which the SDK should be stored.
+     * @param sdkModifier the name of the SDK should be sdkFolder/version followed by sdkModifier
      * @return a path to the created SDK, or null
      */
     @Nullable String createSdkFromBinaries(String ocaml, String compiler, String version,
-                                           String sources, String sdkFolder);
+                                           String sources, String sdkFolder, String sdkModifier);
 
     /**
      * The provider will try to return the associated compiler, if possible.

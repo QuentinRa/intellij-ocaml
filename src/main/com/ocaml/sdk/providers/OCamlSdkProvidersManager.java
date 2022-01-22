@@ -65,9 +65,9 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
 
     @Override
     public @Nullable String createSdkFromBinaries(String ocaml, String compiler, String version,
-                                                  String sources, String sdkFolder) {
+                                                  String sources, String sdkFolder, String sdkModifier) {
         return callProvidersValue(provider ->
-                provider.createSdkFromBinaries(ocaml, compiler, version, sources, sdkFolder)
+                provider.createSdkFromBinaries(ocaml, compiler, version, sources, sdkFolder, sdkModifier)
         );
     }
 

@@ -24,6 +24,12 @@ import java.util.function.Consumer;
 
 /**
  * OCaml SDK
+ * <ul>
+ *     <li>.opam-switch/sources/*</li>
+ *     <li>bin/ocaml (.exe allowed)</li>
+ *     <li>bin/ocamlc (.exe allowed)</li>
+ *     <li>lib/*</li>
+ * </ul>
  */
 public class OCamlSdkType extends LocalSdkType implements SdkDownload {
 
