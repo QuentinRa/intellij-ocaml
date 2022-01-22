@@ -1,4 +1,4 @@
-package com.ocaml.lang;
+package com.ocaml;
 
 import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;

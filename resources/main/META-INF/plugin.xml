@@ -30,5 +30,7 @@
         <!-- FILES -->
         <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
         <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
+        <!-- HIGHLIGHT -->
+        <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OclSyntaxHighlighterFactory"/>
     </extensions>
 </idea-plugin>

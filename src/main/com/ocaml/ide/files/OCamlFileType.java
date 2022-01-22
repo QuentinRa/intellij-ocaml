@@ -4,7 +4,7 @@ package com.ocaml.ide.files;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
-import com.ocaml.lang.OCamlLanguage;
+import com.ocaml.OCamlLanguage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
