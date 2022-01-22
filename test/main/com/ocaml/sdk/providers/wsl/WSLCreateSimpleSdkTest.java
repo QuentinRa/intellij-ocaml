@@ -25,7 +25,6 @@ public class WSLCreateSimpleSdkTest extends WSLBaseTest {
                             "4.12.0",
                             "\\\\wsl$\\Debian\\usr\\lib\\ocaml"
                     );
-                    System.out.println("hp:"+simpleSdkData.homePath);
                     homes.add(simpleSdkData.homePath);
                     assertWSLHomeValid(simpleSdkData.homePath);
                 }

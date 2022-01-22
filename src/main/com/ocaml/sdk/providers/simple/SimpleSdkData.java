@@ -20,7 +20,11 @@ public class SimpleSdkData {
 
     private static final Logger LOG = OCamlLogger.getSdkInstance("create");
 
-    /** create simple SDKs are stored in this folder **/
+    /**
+     * create simple SDKs are stored in this folder.
+     * We are asserting that the path will always use
+     * a relative path starting from "~/", but the final location may change.
+     **/
     public static final String SDK_FOLDER = "~/.jdks/ocaml";
 
     /** the path to the created SDK **/

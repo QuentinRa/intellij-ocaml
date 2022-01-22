@@ -1,7 +1,9 @@
 package com.ocaml.sdk.providers.windows;
 
+import com.intellij.openapi.util.io.FileUtil;
 import com.ocaml.sdk.providers.BaseOCamlSdkProvider;
 import com.ocaml.sdk.providers.OCamlSdkProvider;
+import com.ocaml.sdk.providers.simple.SimpleSdkData;
 import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,6 +84,9 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
                 roots.add(root.resolve(dir));
             }
         }
+
+        // we may have created simple SDKs
+        roots.add(Path.of(FileUtil.expandUserHome(SimpleSdkData.SDK_FOLDER)));
 
         LOG.debug("Roots found (2/2):"+roots);
 

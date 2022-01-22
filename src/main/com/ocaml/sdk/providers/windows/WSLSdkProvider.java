@@ -6,6 +6,7 @@ import com.intellij.execution.wsl.*;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.impl.wsl.WslConstants;
+import com.ocaml.sdk.providers.simple.SimpleSdkData;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
@@ -39,8 +40,18 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             if (wslPath == null) continue;
             String windowsPath = distro.getWindowsPath(wslPath + "/.opam/");
             homePaths.add(windowsPath);
+            // we may have Simple SDKs
+            homePaths.add(distro.getWindowsPath(expandUserHome(distro, SimpleSdkData.SDK_FOLDER)));
         }
         return homePaths;
+    }
+
+    // move to another class?
+    public static String expandUserHome(WSLDistribution distro, String folder) {
+        if (!folder.contains("~")) return folder;
+        String userHome = distro.getUserHome();
+        if (userHome == null) return folder;
+        return folder.replace("~", userHome);
     }
 
     @Override

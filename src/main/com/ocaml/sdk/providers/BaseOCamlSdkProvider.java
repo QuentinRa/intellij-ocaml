@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.SystemProperties;
+import com.ocaml.sdk.providers.simple.SimpleSdkData;
 import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
@@ -165,6 +166,8 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         Set<String> installationFolders = new HashSet<>();
         // we know that we may find opam
         installationFolders.add(SystemProperties.getUserHome()+".opam");
+        // we may have created simple SDKs
+        installationFolders.add(FileUtil.expandUserHome(SimpleSdkData.SDK_FOLDER));
         // is there any other places in which we may find ocaml SDKs?
         // ...
         return installationFolders;

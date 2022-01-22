@@ -2,7 +2,6 @@ package com.ocaml.sdk.providers.utils;
 
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -11,17 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.util.Collections.emptySet;
-
 public class OCamlSdkScanner {
-    // scan
-    @SuppressWarnings("SameParameterValue")
-    public static @NotNull Set<String> scanAll(@Nullable Path file, boolean includeNestDirs) {
-        if (file == null) {
-            return emptySet();
-        }
-        return scanAll(Collections.singleton(file), includeNestDirs);
-    }
 
     public static @NotNull Set<String> scanAll(@NotNull Collection<? extends Path> files, boolean includeNestDirs) {
         Set<String> result = new HashSet<>();
