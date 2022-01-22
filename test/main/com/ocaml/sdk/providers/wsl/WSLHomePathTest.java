@@ -1,6 +1,5 @@
 package com.ocaml.sdk.providers.wsl;
 
-import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")

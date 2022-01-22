@@ -28,7 +28,6 @@ import java.util.Set;
 public class WSLSdkProvider extends AbstractWindowsBaseProvider {
 
     @Override protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
-        LOG.warn("Should not be called on a WSL.");
         return false;
     }
 
@@ -42,6 +41,55 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             homePaths.add(windowsPath);
         }
         return homePaths;
+    }
+
+    @Override
+    public @Nullable String createSdkFromBinaries(String ocaml, String compiler,
+                                                  String version, String sources,
+                                                  String sdkFolder, String sdkModifier) {
+        // is wsl
+        WslPath path = WslPath.parseWindowsUncPath(ocaml);
+        if (path == null) return null;
+        sdkFolder += "/"+version+sdkModifier;
+
+        WSLDistribution distribution = path.getDistribution();
+        //noinspection DuplicatedCode
+        ocaml = distribution.getWslPath(ocaml);
+        if (ocaml == null) return null;
+        compiler = distribution.getWslPath(compiler);
+        if (compiler == null) return null;
+        sources = distribution.getWslPath(sources);
+        if (sources == null) return null;
+
+        // the order will be reversed, so we need to put the last commands first
+        WSLCommandLineOptions wslCommandLineOptions = new WSLCommandLineOptions();
+        // get absolute path to the created SDK folder (with the $i)
+        wslCommandLineOptions.addInitCommand("find " + sdkFolder + "$i -maxdepth 0 2>/dev/null");
+        // link to sources
+        wslCommandLineOptions.addInitCommand("ln -s " + sources + " " + sdkFolder + "$i/lib/");
+        // link to compiler
+        wslCommandLineOptions.addInitCommand("ln -s " + compiler + " " + sdkFolder + "$i/bin/ocamlc");
+        // link to ocaml
+        wslCommandLineOptions.addInitCommand("ln -s " + ocaml + " " + sdkFolder + "$i/bin/ocaml");
+        // create lib
+        wslCommandLineOptions.addInitCommand("mkdir -p " + sdkFolder + "$i/lib/");
+        // create both SDK folder and bin
+        wslCommandLineOptions.addInitCommand("mkdir -p " + sdkFolder + "$i/bin");
+        // find $i
+        wslCommandLineOptions.addInitCommand("i=0; while true; do if [ ! -d " + sdkFolder + "$i ]; then break; else i=$((i+1)); fi done");
+
+        try {
+            GeneralCommandLine cli = distribution.patchCommandLine(new GeneralCommandLine("true"), null, wslCommandLineOptions);
+            LOG.debug("The CLI was: " + cli.getCommandLineString());
+            Process process = cli.createProcess();
+            // parse the result of find
+            String out = new String(process.getInputStream().readAllBytes());
+            out = out.replace("\n", "");
+            return distribution.getWindowsPath(out).trim();
+        } catch (ExecutionException | IOException e) {
+            LOG.error("Couldn't process command. Error:"+e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -81,6 +129,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             return null;
         }
 
+        // ocamlc -version
         try {
             GeneralCommandLine cli = new GeneralCommandLine(ocamlc, "-version");
             cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
@@ -89,7 +138,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             InputStream inputStream = process.getInputStream();
             String version = new String(inputStream.readAllBytes()).trim();
             LOG.debug("Version of "+ocamlc+" is '"+version+"'.");
-            // if we got something better
+            // if we got something better (ex: 4.05.0+mingw64, or 4.05.0+local)
             String alt = OCamlSdkVersionManager.parse(ocamlBinary);
             if (!OCamlSdkVersionManager.isUnknownVersion(alt)) version = alt;
             return new AssociatedBinaries(ocamlBinary, ocamlBinary + "c", sourcesFolder, version);
@@ -119,5 +168,51 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         path = StringUtil.trimStart(path, WslConstants.UNC_PREFIX);
         int index = path.indexOf('\\');
         return index > 0;
+    }
+
+    @Override protected @Nullable Boolean handleSymlinkHomePath(Path homePath) {
+        WslPath path = WslPath.parseWindowsUncPath(homePath.toFile().getAbsolutePath());
+        if (path == null) return null;
+        WSLDistribution distribution = path.getDistribution();
+
+        // they are the ONLY path allowed in an SDK, by definition
+        // other paths that were allowed in other places, are not directly
+        // used with SDK, they will be renamed, etc., so that they match
+        // the SDK expected file structure
+        String ocaml = homePath.resolve("bin/ocaml").toFile().getAbsolutePath();
+        String compiler = homePath.resolve("bin/ocamlc").toFile().getAbsolutePath();
+        String sources = homePath.resolve("lib/ocaml/").toFile().getAbsolutePath();
+
+        //noinspection DuplicatedCode
+        ocaml = distribution.getWslPath(ocaml);
+        if (ocaml == null) return null;
+        compiler = distribution.getWslPath(compiler);
+        if (compiler == null) return null;
+        sources = distribution.getWslPath(sources);
+        if (sources == null) return null;
+
+        GeneralCommandLine cli = new GeneralCommandLine("true");
+        WSLCommandLineOptions wslCommandLineOptions = new WSLCommandLineOptions();
+        // -L -> symlink
+        wslCommandLineOptions.addInitCommand(
+                "(if [ -L " + ocaml + " ]; then" +
+                        " if [ -L " + compiler + " ]; then" +
+                        " if [ -L " + sources + " ]; then echo 0; else echo -3; fi;" +
+                        " else echo -2; fi;" +
+                        " else echo -1; fi;)"
+        );
+        try {
+            cli = distribution.patchCommandLine(cli, null, wslCommandLineOptions);
+            LOG.debug("The CLI was: " + cli.getCommandLineString());
+            Process process = cli.createProcess();
+            process.waitFor();
+            int exitCode = Integer.parseInt(
+                    new String(process.getInputStream().readAllBytes()).replace("\n", "")
+            );
+            LOG.debug("code:"+exitCode);
+            return exitCode == 0;
+        } catch (ExecutionException | InterruptedException | IOException | NumberFormatException e) {
+            return null;
+        }
     }
 }
