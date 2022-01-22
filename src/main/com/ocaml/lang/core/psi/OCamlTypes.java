@@ -8,20 +8,21 @@ import com.ocaml.lang.core.OCamlTokenType;
 
 public interface OCamlTypes {
 
+
   IElementType AMPERSAND = new OCamlTokenType("&");
   IElementType AND = new OCamlTokenType("and");
   IElementType ANNOTATION = new OCamlTokenType("ANNOTATION");
-  IElementType ARROBASE = new OCamlTokenType("@");
-  IElementType ARROBASE_2 = new OCamlTokenType("@@");
-  IElementType ARROBASE_3 = new OCamlTokenType("@@@");
   IElementType ARROW = new OCamlTokenType("=>");
   IElementType AS = new OCamlTokenType("as");
   IElementType ASR = new OCamlTokenType("asr");
   IElementType ASSERT = new OCamlTokenType("assert");
+  IElementType AT_SIGN = new OCamlTokenType("@");
+  IElementType AT_SIGN_2 = new OCamlTokenType("@@");
+  IElementType AT_SIGN_3 = new OCamlTokenType("@@@");
   IElementType BACKTICK = new OCamlTokenType("`");
   IElementType BEGIN = new OCamlTokenType("begin");
   IElementType BOOL_VALUE = new OCamlTokenType("true");
-  IElementType CARRET = new OCamlTokenType("\\^");
+  IElementType CARET = new OCamlTokenType("\\^");
   IElementType CHAR_VALUE = new OCamlTokenType("CHAR_VALUE");
   IElementType CLASS = new OCamlTokenType("class");
   IElementType COLON = new OCamlTokenType(":");
@@ -91,6 +92,7 @@ public interface OCamlTypes {
   IElementType NEW = new OCamlTokenType("new");
   IElementType NONE = new OCamlTokenType("None");
   IElementType NONREC = new OCamlTokenType("nonrec");
+  IElementType NOT = new OCamlTokenType("not");
   IElementType NOT_EQ = new OCamlTokenType("!=");
   IElementType NOT_EQEQ = new OCamlTokenType("!==");
   IElementType OBJECT = new OCamlTokenType("object");

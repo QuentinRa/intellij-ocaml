@@ -1,5 +1,6 @@
 package com.ocaml.lang.lexer;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.ocaml.lang.core.psi.OCamlTypes;
 
@@ -112,6 +113,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "module"      { return OCamlTypes.MODULE;}
     "mutable"     { return OCamlTypes.MUTABLE; }
     "new"         { return OCamlTypes.NEW; }
+    "not"         { return OCamlTypes.NOT; }
     "nonrec"      { return OCamlTypes.NONREC; }
     "object"      { return OCamlTypes.OBJECT; }
     "of"          { return OCamlTypes.OF; }
@@ -166,7 +168,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "'"{LOWERCASE}{IDENTCHAR}*       { return OCamlTypes.TYPE_ARGUMENT; }
     "`"{UPPERCASE}{IDENTCHAR}*       { return OCamlTypes.POLY_VARIANT; }
     "`"{LOWERCASE}{IDENTCHAR}*       { return OCamlTypes.POLY_VARIANT; }
-    "[@@" .* "]"                     { return OCamlTypes.ANNOTATION; }
+    "[@" .* "]"                      { return OCamlTypes.ANNOTATION; }
 
     "\"" { if (!inComment) yybegin(IN_STRING); tokenStart(); }
     "(*" { yybegin(IN_OCAML_ML_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
@@ -178,8 +180,8 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "#end"    { return OCamlTypes.DIRECTIVE_END; }
 
     "##"  { return OCamlTypes.SHARPSHARP; }
-    "@@"  { return OCamlTypes.ARROBASE_2; }
-    "@@@" { return OCamlTypes.ARROBASE_3; }
+    "@@"  { return OCamlTypes.AT_SIGN_2; }
+    "@@@" { return OCamlTypes.AT_SIGN_3; }
 
     "::"  { return OCamlTypes.SHORTCUT; }
     "=>"  { return OCamlTypes.ARROW; }
@@ -219,7 +221,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "}"   { return OCamlTypes.RBRACE; }
     "["   { return OCamlTypes.LBRACKET; }
     "]"   { return OCamlTypes.RBRACKET; }
-    "@"   { return OCamlTypes.ARROBASE; }
+    "@"   { return OCamlTypes.AT_SIGN; }
     "#"   { return OCamlTypes.SHARP; }
     "?"   { return OCamlTypes.QUESTION_MARK; }
     "!"   { return OCamlTypes.EXCLAMATION_MARK; }
@@ -231,7 +233,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "<"  { return OCamlTypes.LT; }
     ">"  { return OCamlTypes.GT; }
 
-    "\^"  { return OCamlTypes.CARRET; }
+    "\^"  { return OCamlTypes.CARET; }
     "+."  { return OCamlTypes.PLUSDOT; }
     "-."  { return OCamlTypes.MINUSDOT; }
     "/."  { return OCamlTypes.SLASHDOT; }

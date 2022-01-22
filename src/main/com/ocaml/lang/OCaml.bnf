@@ -20,8 +20,6 @@
     psiImplPackage="com.ocaml.lang.core.psi.impl"
 
     tokens = [
-        // todo: records? double quotes?
-
         AND              =  'and'
         AS               =  'as'
         ASSERT           =  'assert'
@@ -50,6 +48,7 @@
         MODULE           =  'module'
         MUTABLE          =  'mutable'
         NEW              =  'new'
+        NOT              =  'not'
         NONREC           =  'nonrec'
         OBJECT           =  'object'
         OF               =  'of'
@@ -96,7 +95,6 @@
 
         UNDERSCORE       =  '_'
 
-        // todo: ...
         CHAR_VALUE="regexp:'(\\\\|\\'|\\n|\\t|\\b|\\r|\\\"|.)'"
         STRING_VALUE="regexp:\"(\\\\|\\'|\\n|\\t|\\b|\\r|\\\"|.)*\""
         LIDENT="regexp:[a-z_][A-Za-z_0-9']*"
@@ -109,16 +107,6 @@
         SINGLE_COMMENT= "regexp:\(\*[^\n]*\*\)"
         MULTI_COMMENT="regexp:\(\*.*\*\)"
         ANNOTATION="regexp:\[@@.*]"
-//        CHAR_VALUE
-//        STRING_VALUE
-//        LIDENT
-//        UIDENT
-//        INT_VALUE
-//        FLOAT_VALUE
-//        TYPE_ARGUMENT
-//        POLY_VARIANT
-//        SINGLE_COMMENT
-//        MULTI_COMMENT
 
         DIRECTIVE_IF     =  '#if'
         DIRECTIVE_ELSE   =  '#else'
@@ -127,8 +115,8 @@
         DIRECTIVE_END    =  '#end'
 
         SHARPSHARP       =  '##'
-        ARROBASE_2       =  '@@'
-        ARROBASE_3       =  '@@@'
+        AT_SIGN_2        =  '@@'
+        AT_SIGN_3        =  '@@@'
 
         SHORTCUT         =  '::'
         ARROW            =  '=>'
@@ -168,7 +156,7 @@
         RBRACE           =  '}'
         LBRACKET         =  '['
         RBRACKET         =  ']'
-        ARROBASE         =  '@'
+        AT_SIGN          =  '@'
         SHARP            =  '#'
         QUESTION_MARK    =  '?'
         EXCLAMATION_MARK =  '!'
@@ -180,7 +168,7 @@
         LT               =  '<'
         GT               =  '>'
 
-        CARRET           =  '\^' // todo: CARET
+        CARET            =  '\^'
         PLUSDOT          =  '+.'
         MINUSDOT         =  '-.'
         SLASHDOT         =  '/.'

@@ -4,6 +4,7 @@ import com.intellij.lexer.*;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.colors.*;
 import com.intellij.openapi.fileTypes.*;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.*;
 import com.ocaml.lang.core.psi.OCamlTypes;
 import com.ocaml.lang.lexer.OCamlLexerAdapter;
@@ -11,32 +12,29 @@ import org.jetbrains.annotations.*;
 
 import java.util.*;
 
-import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
-import static com.intellij.psi.TokenType.BAD_CHARACTER;
-
 public class OclSyntaxHighlighter implements SyntaxHighlighter {
+    /** create Text attributes **/
+    private static TextAttributesKey createTA(String name, TextAttributesKey fallbackAttributeKey) {
+        return TextAttributesKey.createTextAttributesKey("OCAML_"+name, fallbackAttributeKey);
+    }
+
     private static final TextAttributesKey TYPE_ARGUMENT_KEY = TextAttributesKey.createTextAttributesKey("TYPE_ARGUMENT");
+    public static final TextAttributesKey ANNOTATION_ = createTA("ANNOTATION", DefaultLanguageHighlighterColors.METADATA);
+    public static final TextAttributesKey BRACES_ = createTA("BRACES", DefaultLanguageHighlighterColors.BRACES);
+    public static final TextAttributesKey BRACKETS_ = createTA("BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
+    public static final TextAttributesKey KEYWORD_ = createTA("KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
+    public static final TextAttributesKey NUMBER_ = createTA("NUMBER", DefaultLanguageHighlighterColors.NUMBER);
+    public static final TextAttributesKey OPERATION_SIGN_ = createTA("OPERATION_SIGN", DefaultLanguageHighlighterColors.OPERATION_SIGN);
+    public static final TextAttributesKey OPTION_ = createTA("OPTION", DefaultLanguageHighlighterColors.STATIC_FIELD);
+    public static final TextAttributesKey PARENS_ = createTA("PARENS", DefaultLanguageHighlighterColors.PARENTHESES);
+    public static final TextAttributesKey POLY_VARIANT_ = createTA("POLY_VARIANT", DefaultLanguageHighlighterColors.STATIC_FIELD);
+    public static final TextAttributesKey RML_COMMENT_ = createTA("COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
+    public static final TextAttributesKey SEMICOLON_ = createTA("SEMICOLON", DefaultLanguageHighlighterColors.SEMICOLON);
+    public static final TextAttributesKey STRING_ = createTA("STRING", DefaultLanguageHighlighterColors.STRING);
+    public static final TextAttributesKey TYPE_ARGUMENT_ = createTA("TYPE_ARGUMENT", TYPE_ARGUMENT_KEY);
+    private static final TextAttributesKey BAD_CHAR_ = createTA("BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
-    public static final TextAttributesKey ANNOTATION_ = createTextAttributesKey("REASONML_ANNOTATION", DefaultLanguageHighlighterColors.METADATA);
-    public static final TextAttributesKey BRACES_ = createTextAttributesKey("REASONML_BRACES", DefaultLanguageHighlighterColors.BRACES);
-    public static final TextAttributesKey BRACKETS_ = createTextAttributesKey("REASONML_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
-    public static final TextAttributesKey KEYWORD_ = createTextAttributesKey("REASONML_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
-    public static final TextAttributesKey INTERPOLATED_REF_ = createTextAttributesKey("REASONML_INTERPOLATED_REF", DefaultLanguageHighlighterColors.IDENTIFIER);
-    public static final TextAttributesKey MARKUP_TAG_ = createTextAttributesKey("REASONML_MARKUP_TAG", DefaultLanguageHighlighterColors.MARKUP_TAG);
-    public static final TextAttributesKey MARKUP_ATTRIBUTE_ = createTextAttributesKey("REASONML_MARKUP_ATTRIBUTE", DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE);
-    public static final TextAttributesKey MODULE_NAME_ = createTextAttributesKey("REASONML_MODULE_NAME", DefaultLanguageHighlighterColors.CLASS_NAME);
-    public static final TextAttributesKey NUMBER_ = createTextAttributesKey("REASONML_NUMBER", DefaultLanguageHighlighterColors.NUMBER);
-    public static final TextAttributesKey OPERATION_SIGN_ = createTextAttributesKey("REASONML_OPERATION_SIGN", DefaultLanguageHighlighterColors.OPERATION_SIGN);
-    public static final TextAttributesKey OPTION_ = createTextAttributesKey("REASONML_OPTION", DefaultLanguageHighlighterColors.STATIC_FIELD);
-    public static final TextAttributesKey PARENS_ = createTextAttributesKey("REASONML_PARENS", DefaultLanguageHighlighterColors.PARENTHESES);
-    public static final TextAttributesKey POLY_VARIANT_ = createTextAttributesKey("REASONML_POLY_VARIANT", DefaultLanguageHighlighterColors.STATIC_FIELD);
-    public static final TextAttributesKey RML_COMMENT_ = createTextAttributesKey("REASONML_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
-    public static final TextAttributesKey SEMICOLON_ = createTextAttributesKey("REASONML_SEMICOLON", DefaultLanguageHighlighterColors.SEMICOLON);
-    public static final TextAttributesKey STRING_ = createTextAttributesKey("REASONML_STRING", DefaultLanguageHighlighterColors.STRING);
-    public static final TextAttributesKey TYPE_ARGUMENT_ = createTextAttributesKey("REASONML_TYPE_ARGUMENT", TYPE_ARGUMENT_KEY);
-    public static final TextAttributesKey VARIANT_NAME_ = createTextAttributesKey("REASONML_VARIANT_NAME", DefaultLanguageHighlighterColors.STATIC_FIELD);
-    private static final TextAttributesKey BAD_CHAR_ = createTextAttributesKey("REASONML_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
-
+    private static final TextAttributesKey[] ANNOTATION_KEY = new TextAttributesKey[]{ANNOTATION_};
     private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER_};
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{RML_COMMENT_};
     private static final TextAttributesKey[] STRING_KEYS = new TextAttributesKey[]{STRING_};
@@ -90,22 +88,17 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
             return OPERATION_SIGN_KEYS;
         } else if (OCL_OPTIONS_TYPES.contains(tokenType)) {
             return OPTION_KEYS;
-        } else if (BAD_CHARACTER.equals(tokenType)) {
+        }  else if (OCamlTypes.ANNOTATION.equals(tokenType)) {
+            return ANNOTATION_KEY;
+        } else if (TokenType.BAD_CHARACTER.equals(tokenType)) {
             return BAD_CHAR_KEYS;
         }
 
         return EMPTY_KEYS;
     }
 
-    @NotNull
-    private static Set<IElementType> of(IElementType... types) {
-        Set<IElementType> result = new HashSet<>();
-        Collections.addAll(result, types);
-        return result;
-    }
-
     private static final Set<IElementType> OCL_KEYWORD_TYPES =
-            of(
+            Set.of(
                     OCamlTypes.OPEN,
                     OCamlTypes.MODULE,
                     OCamlTypes.FUN,
@@ -145,7 +138,7 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
                     OCamlTypes.MOD,
                     OCamlTypes.NEW,
                     OCamlTypes.NONREC,
-//                    OCamlTypes.NOT,
+                    OCamlTypes.NOT,
                     OCamlTypes.OR,
                     OCamlTypes.PRIVATE,
                     OCamlTypes.VIRTUAL,
@@ -158,7 +151,6 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
                     OCamlTypes.WITH,
                     OCamlTypes.DO,
                     OCamlTypes.DONE,
-                    //OCamlTypes.RECORD,
                     OCamlTypes.BEGIN,
                     OCamlTypes.END,
                     OCamlTypes.LAZY,
@@ -174,7 +166,7 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
                     OCamlTypes.DIRECTIVE_END,
                     OCamlTypes.DIRECTIVE_ENDIF);
 
-    private static final Set<IElementType> OCL_OPERATION_SIGN_TYPES = of(
+    private static final Set<IElementType> OCL_OPERATION_SIGN_TYPES = Set.of(
             OCamlTypes.L_AND,
             OCamlTypes.L_OR,
             OCamlTypes.SHORTCUT,
@@ -188,8 +180,7 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
             OCamlTypes.OP_STRUCT_DIFF,
             OCamlTypes.COLON,
             OCamlTypes.SINGLE_QUOTE,
-            //OCamlTypes.DOUBLE_QUOTE,
-            OCamlTypes.CARRET,
+            OCamlTypes.CARET,
             OCamlTypes.PLUSDOT,
             OCamlTypes.MINUSDOT,
             OCamlTypes.SLASHDOT,
@@ -200,7 +191,7 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
             OCamlTypes.STAR,
             OCamlTypes.PERCENT,
             OCamlTypes.PIPE,
-            OCamlTypes.ARROBASE,
+            OCamlTypes.AT_SIGN,
             OCamlTypes.SHARP,
             OCamlTypes.SHARPSHARP,
             OCamlTypes.QUESTION_MARK,
@@ -213,14 +204,8 @@ public class OclSyntaxHighlighter implements SyntaxHighlighter {
             OCamlTypes.COLON_EQ,
             OCamlTypes.COLON_GT,
             OCamlTypes.GT,
-            //OCamlTypes.GT_BRACE,
-            //OCamlTypes.GT_BRACKET,
-            //OCamlTypes.BRACKET_GT,
-            //OCamlTypes.BRACKET_LT,
-            //OCamlTypes.BRACE_LT,
             OCamlTypes.DOTDOT
     );
 
-    private static final Set<IElementType> OCL_OPTIONS_TYPES =
-            of(OCamlTypes.NONE, OCamlTypes.SOME);
+    private static final Set<IElementType> OCL_OPTIONS_TYPES = Set.of(OCamlTypes.NONE, OCamlTypes.SOME);
 }
