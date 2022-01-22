@@ -46,4 +46,21 @@ public final class OCamlFileUtils {
             if (logger != null) logger.error("Error creating file " + fileName, e);
         }
     }
+
+    public static void deleteDirectory(String file) {
+        deleteDirectory(new File(file));
+    }
+
+    public static void deleteDirectory(File file) {
+        if(file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File subFile: files) {
+                    deleteDirectory(subFile);
+                }
+            }
+        }
+        //noinspection ResultOfMethodCallIgnored
+        file.delete();
+    }
 }

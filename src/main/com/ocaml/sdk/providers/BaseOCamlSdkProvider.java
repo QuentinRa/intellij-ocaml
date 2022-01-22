@@ -3,14 +3,17 @@ package com.ocaml.sdk.providers;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.utils.files.OCamlPathUtils;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,6 +33,8 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     // providers
 
+    // the "base" is quite easy going, this is true for most paths after all
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean canUseProviderForOCamlBinary(@NotNull String path) {
         return path.endsWith("ocaml");
     }
@@ -60,6 +65,23 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     @Override public @Nullable Boolean isOpamBinary(@NotNull String ocamlBinary) {
         return ocamlBinary.contains(".opam");
+    }
+
+    @Override
+    public @Nullable String createSdkFromBinaries(String ocaml, String compiler, String version,
+                                                  String sources, String sdkFolder) {
+        if (!canUseProviderForOCamlBinary(ocaml)) return null;
+        File sdkFolderFile = new File(FileUtil.expandUserHome(sdkFolder));
+        File sdkHome = FileUtil.findSequentNonexistentFile(sdkFolderFile, version + "+local", "");
+        boolean ok = sdkHome.mkdirs();
+        ok = ok && new File(sdkHome, "bin").mkdir();
+        if (!ok) LOG.debug("create 'bin' failed");
+        ok = ok && new File(sdkHome, "lib").mkdir();
+        if (!ok) LOG.debug("create 'lib' failed");
+        ok = ok && OCamlPathUtils.createSymbolicLink(ocaml, sdkHome.getPath(), LOG, "bin", "ocaml");
+        ok = ok && OCamlPathUtils.createSymbolicLink(compiler, sdkHome.getPath(), LOG, "bin", "ocamlc");
+        ok = ok && OCamlPathUtils.createSymbolicLink(sources, sdkHome.getPath(), LOG, "lib", "ocaml");
+        return ok ? sdkHome.getAbsolutePath() : null;
     }
 
     @Override public @Nullable AssociatedBinaries getAssociatedBinaries(@NotNull String ocamlBinary) {

@@ -248,8 +248,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
             myCustomSdkData = new SimpleSdkData(
                     myOCamlLocation.getText(),
-                    myOcamlVersion.getText(),
                     myOCamlCompilerLocation.getText(),
+                    myOcamlVersion.getText(),
                     mySdkSources.getText()
             );
             shouldValidateAgain = false;

@@ -51,6 +51,18 @@ public interface OCamlSdkProvider {
     @Nullable Boolean isOpamBinary(@NotNull String ocamlBinary);
 
     /**
+     * Create an SDK using binaries. They should be linked, not copied.
+     * @param ocaml location to the ocaml binary
+     * @param compiler location of the compiler
+     * @param version version of the compiler
+     * @param sources location of the sources folder
+     * @param sdkFolder the folder, that may not exist, in which the SDK should be stored.
+     * @return a path to the created SDK, or null
+     */
+    @Nullable String createSdkFromBinaries(String ocaml, String compiler, String version,
+                                           String sources, String sdkFolder);
+
+    /**
      * The provider will try to return the associated compiler, if possible.
      * @param ocamlBinary the path to the ocaml binary, may be invalid
      * @return null of the path to the ocamlc binary
