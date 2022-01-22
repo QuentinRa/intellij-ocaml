@@ -91,7 +91,9 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
 
         @Override
         protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
-            // it feels empty in the north
+            super.addAdditionalSettingsToPanel(mainPanel); // :( NPE if we don't call it
+            // replace the component :)
+            // glory to the hacky way
             mainPanel.add(new JLabel(" "), BorderLayout.NORTH);
         }
     }
