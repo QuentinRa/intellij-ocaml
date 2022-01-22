@@ -33,6 +33,7 @@
         <sdkDownload implementation="com.ocaml.sdk.OCamlSdkType"/>
         <projectViewNodeDecorator implementation="com.ocaml.sdk.nodes.OCamlLibraryRootsNodeDecorator"/>
         <treeStructureProvider implementation="com.ocaml.sdk.nodes.OCamlLibraryRootsTreeStructureProvider"/>
+        <projectSdkSetupValidator implementation="com.ocaml.sdk.select.OCamlSDKValidator"/>
 
         <!-- FILES -->
         <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
