@@ -1,10 +1,11 @@
 package com.ocaml.ide.module;
 
-import com.intellij.openapi.module.*;
-import com.ocaml.*;
-import com.ocaml.icons.*;
-import com.ocaml.ide.wizard.*;
-import org.jetbrains.annotations.*;
+import com.intellij.openapi.module.ModuleType;
+import com.ocaml.OCamlBundle;
+import com.ocaml.icons.OCamlIcons;
+import com.ocaml.ide.wizard.OCamlModuleBuilder;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -23,7 +24,9 @@ public class OCamlModuleType extends ModuleType<OCamlModuleBuilder> {
     // Builder
     //
 
-    @NotNull @Override public OCamlModuleBuilder createModuleBuilder() {
+    @NotNull
+    @Override
+    public OCamlModuleBuilder createModuleBuilder() {
         return new OCamlModuleBuilder();
     }
 
@@ -31,15 +34,18 @@ public class OCamlModuleType extends ModuleType<OCamlModuleBuilder> {
     // Name, description, icon
     //
 
-    @Override public @NotNull @Nls(capitalization = Nls.Capitalization.Title) String getName() {
+    @Override
+    public @NotNull @Nls(capitalization = Nls.Capitalization.Title) String getName() {
         return OCamlBundle.message("module.name");
     }
 
-    @Override public @NotNull @Nls(capitalization = Nls.Capitalization.Sentence) String getDescription() {
+    @Override
+    public @NotNull @Nls(capitalization = Nls.Capitalization.Sentence) String getDescription() {
         return OCamlBundle.message("module.description");
     }
 
-    @Override public @NotNull Icon getNodeIcon(boolean isOpened) {
+    @Override
+    public @NotNull Icon getNodeIcon(boolean isOpened) {
         return OCamlIcons.Nodes.OCAML_MODULE;
     }
 }

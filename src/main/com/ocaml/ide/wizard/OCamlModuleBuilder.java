@@ -1,22 +1,31 @@
 package com.ocaml.ide.wizard;
 
-import com.intellij.ide.util.projectWizard.*;
-import com.intellij.openapi.*;
-import com.intellij.openapi.application.*;
-import com.intellij.openapi.module.*;
-import com.intellij.openapi.projectRoots.*;
-import com.intellij.openapi.roots.*;
-import com.intellij.openapi.roots.ui.configuration.*;
-import com.intellij.openapi.util.io.*;
-import com.intellij.openapi.vfs.*;
-import com.intellij.platform.*;
-import com.ocaml.ide.module.*;
-import com.ocaml.ide.wizard.templates.*;
-import com.ocaml.ide.wizard.view.*;
-import com.ocaml.ide.sdk.*;
-import org.jetbrains.annotations.*;
+import com.intellij.ide.util.projectWizard.ModuleBuilder;
+import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.ide.util.projectWizard.SettingsStep;
+import com.intellij.ide.util.projectWizard.WizardContext;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.projectRoots.SdkTypeId;
+import com.intellij.openapi.roots.CompilerModuleExtension;
+import com.intellij.openapi.roots.ContentEntry;
+import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.platform.ProjectTemplate;
+import com.ocaml.ide.module.OCamlModuleType;
+import com.ocaml.sdk.OCamlSdkType;
+import com.ocaml.ide.wizard.templates.OCamlTemplateProvider;
+import com.ocaml.ide.wizard.templates.TemplateBuildInstructions;
+import com.ocaml.ide.wizard.view.OCamlSdkWizardStep;
+import com.ocaml.ide.wizard.view.OCamlSelectTemplate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
 
 /**
  * Set up an OCaml module/project.
@@ -32,11 +41,13 @@ public class OCamlModuleBuilder extends ModuleBuilder {
 
     private ProjectTemplate myTemplate;
 
-    @Override public ModuleType<OCamlModuleBuilder> getModuleType() {
+    @Override
+    public ModuleType<OCamlModuleBuilder> getModuleType() {
         return new OCamlModuleType();
     }
 
-    @Override public boolean isSuitableSdkType(SdkTypeId sdkType) {
+    @Override
+    public boolean isSuitableSdkType(SdkTypeId sdkType) {
         return sdkType instanceof OCamlSdkType;
     }
 
@@ -44,7 +55,8 @@ public class OCamlModuleBuilder extends ModuleBuilder {
         myTemplate = template;
     }
 
-    @Override public void setupRootModel(@NotNull ModifiableRootModel rootModel) {
+    @Override
+    public void setupRootModel(@NotNull ModifiableRootModel rootModel) {
         // output folder
         final CompilerModuleExtension compilerModuleExtension = rootModel.getModuleExtension(CompilerModuleExtension.class);
         compilerModuleExtension.setExcludeOutput(true);
@@ -79,8 +91,12 @@ public class OCamlModuleBuilder extends ModuleBuilder {
         }
     }
 
-    /** the options' step is the first step, the user will select an SDK **/
-    @Nullable @Override public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
+    /**
+     * the options' step is the first step, the user will select an SDK
+     **/
+    @Nullable
+    @Override
+    public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
         return new OCamlSdkWizardStep(context, this);
     }
 
@@ -88,14 +104,16 @@ public class OCamlModuleBuilder extends ModuleBuilder {
      * Show steps after the custom option steps
      * and before the project step
      */
-    @Override public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
-        return new ModuleWizardStep[] { new OCamlSelectTemplate(wizardContext, OCamlTemplateProvider.getAvailableTemplates()) };
+    @Override
+    public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
+        return new ModuleWizardStep[]{new OCamlSelectTemplate(wizardContext, OCamlTemplateProvider.getAvailableTemplates())};
     }
 
     /**
      * The default one is enough for us
      */
-    @Override public ModuleWizardStep modifyProjectTypeStep(@NotNull SettingsStep settingsStep) {
+    @Override
+    public ModuleWizardStep modifyProjectTypeStep(@NotNull SettingsStep settingsStep) {
         return super.modifyProjectTypeStep(settingsStep);
     }
 }

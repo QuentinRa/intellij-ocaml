@@ -1,14 +1,33 @@
+/*
+ * Copyright 2000-2009 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * See the class documentation for changes.
+ */
 package com.ocaml.ide.module;
 
-import com.intellij.openapi.module.*;
+import com.intellij.openapi.module.GeneralModuleType;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.roots.*;
+import com.intellij.openapi.module.ModuleConfigurationEditor;
+import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.*;
-import com.intellij.util.ui.*;
+import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,9 +36,10 @@ import java.util.List;
  * in "Project Structure" > Modules, you will be able to see some tabs when you
  * are clicking on an OCaml module. These tabs are configured here.
  */
-public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvider  {
+public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvider {
 
-    @Override public ModuleConfigurationEditor[] createEditors(ModuleConfigurationState state) {
+    @Override
+    public ModuleConfigurationEditor[] createEditors(ModuleConfigurationState state) {
         Module module = state.getCurrentRootModel().getModule();
         ModuleType<?> moduleType = ModuleType.get(module);
 
@@ -32,7 +52,7 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
         // creating the tabs
         List<ModuleConfigurationEditor> editors = new ArrayList<>();
         editors.add(new ClasspathEditor(state));
-        editors.add(new ContentEntriesEditor(module.getName(), state));
+        editors.add(new OCamlContentEntriesEditor(module.getName(), state));
         editors.add(new OCamlOutputEditor(state));
 
         return editors.toArray(ModuleConfigurationEditor.EMPTY);
@@ -47,7 +67,8 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
             super(state);
         }
 
-        @Override protected JComponent createComponentImpl() {
+        @Override
+        protected JComponent createComponentImpl() {
             JPanel panel = (JPanel) super.createComponentImpl();
             panel.getComponent(1).setVisible(false); // javadocPanel
             panel.getComponent(2).setVisible(false); // annotationsPanel
@@ -59,6 +80,19 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
             );
             panel.add(Box.createVerticalGlue(), gc);
             return panel; // :pray:
+        }
+    }
+
+    private static final class OCamlContentEntriesEditor extends ContentEntriesEditor {
+
+        public OCamlContentEntriesEditor(String moduleName, ModuleConfigurationState state) {
+            super(moduleName, state);
+        }
+
+        @Override
+        protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
+            // it feels empty in the north
+            mainPanel.add(new JLabel(" "), BorderLayout.NORTH);
         }
     }
 }

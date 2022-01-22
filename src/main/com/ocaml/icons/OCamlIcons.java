@@ -1,7 +1,7 @@
 package com.ocaml.icons;
 
-import com.intellij.icons.*;
-import com.intellij.ui.*;
+import com.intellij.icons.AllIcons;
+import com.intellij.ui.AnimatedIcon;
 
 import javax.swing.*;
 
@@ -12,7 +12,7 @@ import static com.intellij.openapi.util.IconLoader.getIcon;
  * https://jetbrains.design/intellij/principles/icons/
  * https://jetbrains.design/intellij/resources/icons_list/ or https://intellij-icons.jetbrains.design/
  * https://github.com/bjansen/intellij-icon-generator
- *
+ * <p>
  * Node, action, filetype : 16x16
  * Tool window            : 13x13
  * Editor gutter          : 12x12
@@ -30,10 +30,14 @@ public class OCamlIcons {
         return getIcon(path, OCamlIcons.class);
     }
 
-    /** Every icon used on a node (ex: module icon, sdk icon, library icon, console icon, etc.) */
+    /**
+     * Every icon used on a node (ex: module icon, sdk icon, library icon, console icon, etc.)
+     */
     public static final class Nodes {
         public static final Icon OCAML_MODULE = loadIcon("/icons/ocamlModule.svg");
         public static final Icon OCAML_SDK = loadIcon("/icons/ocamlSdk.svg");
+        public static final Icon OCAML_LIBRARY = loadIcon("/icons/ocamlModule.svg");
+        public static final Icon DUNE = loadIcon("/icons/duneLogo.svg");
     }
 
     public static final class UI {

@@ -1,20 +1,40 @@
+/*
+ * Copyright 2000-2017 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * See the class documentation for changes.
+ */
 package com.ocaml.ide.wizard.view;
 
-import com.intellij.ide.projectWizard.*;
-import com.intellij.ide.util.projectWizard.*;
-import com.intellij.openapi.wm.*;
-import com.intellij.platform.*;
-import com.intellij.ui.components.*;
-import com.ocaml.*;
-import com.ocaml.ide.wizard.*;
+import com.intellij.ide.projectWizard.ProjectTemplateList;
+import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.ide.util.projectWizard.ProjectBuilder;
+import com.intellij.ide.util.projectWizard.WizardContext;
+import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.platform.ProjectTemplate;
+import com.intellij.ui.components.JBCheckBox;
+import com.ocaml.OCamlBundle;
+import com.ocaml.ide.wizard.OCamlModuleBuilder;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * The same interface used in ChooseTemplateStep, but we are using it
  * with different classes in the constructor/etc. as we are loading some
  * "unusual" templates.
+ *
  * @see com.intellij.ide.projectWizard.ChooseTemplateStep
  */
 public class OCamlSelectTemplate extends ModuleWizardStep {
@@ -37,8 +57,8 @@ public class OCamlSelectTemplate extends ModuleWizardStep {
         myTemplateList.setEnabled(false);
         // show "project" or "module" according to what we are creating
         myCreateFromTemplateCheckBox.setText(OCamlBundle.message(
-                "project.wizard.create.from.template",
-                wizardContext.isCreatingNewProject() ? 0 : 1
+                        "project.wizard.create.from.template",
+                        wizardContext.isCreatingNewProject() ? 0 : 1
                 )
         );
     }

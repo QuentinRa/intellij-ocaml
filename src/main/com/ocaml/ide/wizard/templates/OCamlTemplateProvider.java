@@ -1,15 +1,15 @@
 package com.ocaml.ide.wizard.templates;
 
-import com.intellij.openapi.diagnostic.*;
-import com.intellij.openapi.roots.*;
-import com.intellij.openapi.vfs.*;
-import com.intellij.platform.*;
-import com.ocaml.utils.files.*;
-import com.ocaml.utils.logs.*;
-import com.ocaml.utils.psi.*;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.platform.ProjectTemplate;
+import com.ocaml.utils.files.OCamlFileUtils;
+import com.ocaml.utils.logs.OCamlLogger;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
 
 public final class OCamlTemplateProvider {
     /**
@@ -19,6 +19,7 @@ public final class OCamlTemplateProvider {
      */
     public static ArrayList<ProjectTemplate> getAvailableTemplates() {
         ArrayList<ProjectTemplate> availableTemplates = new ArrayList<>();
+        availableTemplates.add(new OCamlDuneTemplate());
         availableTemplates.add(new OCamlMakefileTemplate());
         return availableTemplates;
     }
@@ -36,7 +37,8 @@ public final class OCamlTemplateProvider {
 
         private static final Logger LOG = OCamlLogger.getTemplateInstance("default");
 
-        @Override public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
+        @Override
+        public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
             File sourceRootFile = VfsUtilCore.virtualToIoFile(sourceRoot);
             OCamlFileUtils.createFile(sourceRootFile, "hello_world.ml", "let _ = Format.printf \"Hello, World!\"", LOG);
         }
