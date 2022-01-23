@@ -42,6 +42,6 @@
         <internalFileTemplate name="OCaml Interface"/>
 
         <!-- HIGHLIGHT -->
-        <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OclSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
     </extensions>
 </idea-plugin>

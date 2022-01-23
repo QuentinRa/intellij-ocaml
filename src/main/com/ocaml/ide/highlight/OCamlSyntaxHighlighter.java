@@ -12,7 +12,7 @@ import org.jetbrains.annotations.*;
 
 import java.util.*;
 
-public class OclSyntaxHighlighter implements SyntaxHighlighter {
+public class OCamlSyntaxHighlighter implements SyntaxHighlighter {
     /** create Text attributes **/
     private static TextAttributesKey createTA(String name, TextAttributesKey fallbackAttributeKey) {
         return TextAttributesKey.createTextAttributesKey("OCAML_"+name, fallbackAttributeKey);

@@ -45,13 +45,14 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you only have /bin/ocaml, etc.). You may use a template, two are available, one using a <b>Makefile</b>, and the other using <b>Dune</b>.
 
-| SDK                                              |
-|--------------------------------------------------|
-| ✅ We are suggesting SDKs                         |
-| ✅ We are suggesting a location for non-opam SDKs |
-| ✅ The SDK is verified                            |
-| ✅ The user can add/remove sources                |
-| ❌ The user can download OCaml                    |
+| SDK                                                     |
+|---------------------------------------------------------|
+| ✅ We are suggesting SDKs                                |
+| ✅ We are suggesting a location for non-opam SDKs        |
+| ✅ The SDK is verified                                   |
+| ✅ The user can add/remove sources                       |
+| ✅ Suggest SDK if opening a file in a module without SDK |
+| ❌ The user can download OCaml                           |
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
 
