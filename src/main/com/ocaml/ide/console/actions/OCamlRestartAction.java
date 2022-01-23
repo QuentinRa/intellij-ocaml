@@ -9,6 +9,9 @@ import com.intellij.openapi.project.Project;
 import com.ocaml.ide.console.OCamlConsoleToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Restart the console
+ */
 public class OCamlRestartAction extends DumbAwareAction {
 
     private final Project myProject;

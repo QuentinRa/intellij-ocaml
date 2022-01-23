@@ -21,7 +21,10 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         Disposer.register(this.consoleView, () -> { if (!isProcessTerminated()) destroyProcess(); });
     }
 
+    private boolean processFirst = false;
+
     public void coloredTextAvailable(@NotNull String textOriginal, @NotNull Key attributes) {
+        if (!processFirst) { processFirst = true; return; }
         ConsoleViewContentType type;
 
         if (attributes == ProcessOutputTypes.STDERR) {
@@ -31,8 +34,7 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         } else {
             type = ConsoleViewContentType.getConsoleViewType(attributes);
         }
-
-        consoleView.print(textOriginal, type);
+        if (!textOriginal.isBlank()) consoleView.print(textOriginal, type);
     }
 
     public boolean isSilentlyDestroyOnClose() {

@@ -15,11 +15,8 @@ public class OCamlExecuteActionHandler extends ProcessBackedConsoleExecuteAction
     }
 
     @Override protected void execute(@NotNull String text, @NotNull LanguageConsoleView console) {
-        if (!text.endsWith(";;")) text += ";;";
+        // appends ";;" if needed
+        if (!text.isBlank() && !text.endsWith(";;")) text += ";;";
         super.execute(text, console);
     }
-
-    // runExecuteAction -> fetch the command
-    // -> add to history -> execute command
-    // -> call doExecute -> call execute
 }

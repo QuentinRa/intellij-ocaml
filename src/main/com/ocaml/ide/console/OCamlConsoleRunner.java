@@ -54,6 +54,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         super(project, "OCaml", null);
         myWindow = window;
 
+        // todo: fetch from SDK
         GeneralCommandLine cli = new GeneralCommandLine("ocaml");
         cli.addParameters("-noprompt", "-no-version");
         cli.withCharset(StandardCharsets.UTF_8);
@@ -65,6 +66,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
                 System.out.println("err:"+e.getMessage());
             }
         }
+
         commandLine = new PtyCommandLine(cli).withInitialColumns(PtyCommandLine.MAX_COLUMNS);
     }
 
