@@ -1,11 +1,11 @@
 package com.ocaml.icons;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.AnimatedIcon;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-
-import static com.intellij.openapi.util.IconLoader.getIcon;
 
 /**
  * https://www.jetbrains.org/intellij/sdk/docs/reference_guide/work_with_icons_and_images.html
@@ -26,8 +26,8 @@ import static com.intellij.openapi.util.IconLoader.getIcon;
  */
 public class OCamlIcons {
 
-    private static Icon loadIcon(String path) {
-        return getIcon(path, OCamlIcons.class);
+    private static @NotNull Icon loadIcon(@NotNull String path) {
+        return IconLoader.getIcon(path, OCamlIcons.class);
     }
 
     /**
@@ -36,6 +36,7 @@ public class OCamlIcons {
     public static final class Nodes {
         public static final Icon OCAML_MODULE = loadIcon("/icons/ocamlModule.svg");
         public static final Icon OCAML_SDK = loadIcon("/icons/ocamlSdk.svg");
+        public static final Icon OCAML_CONSOLE = loadIcon("/icons/ocamlTool.svg");
         public static final Icon OCAML_LIBRARY = loadIcon("/icons/ocamlModule.svg");
         public static final Icon DUNE = loadIcon("/icons/duneLogo.svg");
     }

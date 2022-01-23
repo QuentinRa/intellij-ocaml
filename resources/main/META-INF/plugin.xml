@@ -43,5 +43,9 @@
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
+
+        <!-- REPL -->
+        <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
+        <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>
     </extensions>
 </idea-plugin>
