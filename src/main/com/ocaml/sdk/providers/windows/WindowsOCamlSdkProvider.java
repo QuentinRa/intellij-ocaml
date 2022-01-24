@@ -1,11 +1,13 @@
 package com.ocaml.sdk.providers.windows;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.io.FileUtil;
 import com.ocaml.sdk.providers.BaseOCamlSdkProvider;
 import com.ocaml.sdk.providers.OCamlSdkProvider;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
 import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -49,6 +51,10 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
 
     @Override public @NotNull Set<String> getInstallationFolders() {
         return Set.of();
+    }
+
+    @Override public @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath) {
+        return null;
     }
 
     // but, we can install these

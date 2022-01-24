@@ -109,4 +109,10 @@ public interface OCamlSdkProvider {
      *         or null if this provider cannot generate a command for this compiler
      */
     @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath);
+
+    /**
+     * @param sdkHomePath path to the SDK home
+     * @return "ocaml -noprompt -no-version"
+     */
+    @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath);
 }

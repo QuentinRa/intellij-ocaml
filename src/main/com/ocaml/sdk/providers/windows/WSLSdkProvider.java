@@ -163,6 +163,20 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         return null;
     }
 
+    @Override public @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath) {
+        // is wsl
+        WslPath path = WslPath.parseWindowsUncPath(sdkHomePath);
+        if (path == null) return null;
+        try {
+            String ocaml = path.getLinuxPath()+"/bin/ocaml";
+            GeneralCommandLine cli = new GeneralCommandLine(ocaml, "-noprompt", "-no-version");
+            return path.getDistribution().patchCommandLine(cli, null, new WSLCommandLineOptions());
+        } catch (ExecutionException e) {
+            LOG.error("Error creating REPL command", e);
+            return null;
+        }
+    }
+
     //
     // SDK
     //

@@ -10,6 +10,8 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
 
+    <resource-bundle>messages.OCamlBundle</resource-bundle>
+
     <actions>
         <!-- Add your actions here -->
         <!-- Create file -->

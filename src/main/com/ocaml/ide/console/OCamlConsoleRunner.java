@@ -10,9 +10,7 @@ import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.execution.ui.RunContentDescriptor;
-import com.intellij.execution.wsl.WSLCommandLineOptions;
-import com.intellij.execution.wsl.WSLDistribution;
-import com.intellij.execution.wsl.WslPath;
+import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -27,16 +25,19 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.JBSplitter;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.intellij.util.ui.MessageCategory;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.console.actions.OCamlExecuteActionHandler;
 import com.ocaml.ide.console.actions.OCamlRestartAction;
+import com.ocaml.sdk.utils.OCamlSdkCommandsManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.nio.charset.StandardCharsets;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Handle the console. The console is made of a process,
@@ -46,28 +47,13 @@ import java.util.Objects;
  */
 public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlConsoleView> {
 
-    private final GeneralCommandLine commandLine;
+    private GeneralCommandLine commandLine;
     private Content myContent;
     final ToolWindow myWindow;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
         super(project, "OCaml", null);
         myWindow = window;
-
-        // todo: fetch from SDK
-        GeneralCommandLine cli = new GeneralCommandLine("ocaml");
-        cli.addParameters("-noprompt", "-no-version");
-        cli.withCharset(StandardCharsets.UTF_8);
-        WSLDistribution p = WslPath.getDistributionByWindowsUncPath("\\\\wsl$\\Debian\\");
-        if (p != null) {
-            try {
-                cli = p.patchCommandLine(cli, project, new WSLCommandLineOptions());
-            } catch (ExecutionException e) {
-                System.out.println("err:"+e.getMessage());
-            }
-        }
-
-        commandLine = new PtyCommandLine(cli).withInitialColumns(PtyCommandLine.MAX_COLUMNS);
     }
 
     // Console view
@@ -109,7 +95,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     public void destroy() {
         // kill process
         ProcessHandler processHandler = getProcessHandler();
-        processHandler.destroyProcess();
+        if (processHandler != null) processHandler.destroyProcess();
 
         // remove content
         myWindow.getContentManager().removeContent(myContent, true);
@@ -150,6 +136,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         executeAction.registerCustomShortcutSet(CommonShortcuts.ENTER, consoleEditor.getComponent());
 
         String actionShortcutText = KeymapUtil.getFirstKeyboardShortcutText(executeAction);
+        // todo: bundle
         consoleEditor.setPlaceholder("<"+actionShortcutText+"> to execute");
         consoleEditor.setShowPlaceholderWhenFocused(true);
 
@@ -159,6 +146,9 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     // OCaml
 
     @Override protected @Nullable Process createProcess() throws ExecutionException {
+        // create
+        GeneralCommandLine cli = OCamlSdkCommandsManager.getREPLCommand(getProject());
+        commandLine = new PtyCommandLine(cli).withInitialColumns(PtyCommandLine.MAX_COLUMNS);
         return commandLine.createProcess();
     }
 
@@ -181,9 +171,11 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     public void runSync() {
         try {
             initAndRun();
+            // todo: bundle
             ProgressManager.getInstance().run(new Task.Backgroundable(getProject(),
                     "Connecting to Console", false) {
                 @Override public void run(@NotNull ProgressIndicator indicator) {
+                    // todo: bundle
                     indicator.setText("Connecting to console...");
 
                     OCamlConsoleView consoleView = OCamlConsoleRunner.this.getConsoleView();
@@ -196,7 +188,43 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     }
 
     private void showErrorsInConsole(Exception e) {
-        System.out.println(e.getMessage());
+        var actionGroup = new DefaultActionGroup(new OCamlRestartAction(getProject()));
+
+        var actionToolbar = ActionManager.getInstance()
+                // todo: ???
+                .createActionToolbar("OCamlConsoleErrors", actionGroup, false);
+
+        // Runner creating
+        var panel = new JPanel(new BorderLayout());
+        panel.add(actionToolbar.getComponent(), BorderLayout.WEST);
+
+        var errorViewPanel = new NewErrorTreeViewPanel(getProject(), null, false, false, null);
+        actionToolbar.setTargetComponent(errorViewPanel);
+
+        ArrayList<String> messages = new ArrayList<>();
+        var message = e.getMessage();
+        if (message != null && !message.isBlank()) {
+            messages.addAll(message.lines().collect(Collectors.toList()));
+        }
+
+        errorViewPanel.addMessage(MessageCategory.ERROR, messages.toArray(new String[0]), null, -1, -1, null);
+        panel.add(errorViewPanel, BorderLayout.CENTER);
+
+        // todo: bundle
+        var descriptor = new RunContentDescriptor(null, getProcessHandler(), panel, "Error Running REPL Console");
+        Executor executor = getExecutor();
+
+        // remove
+        if (myContent != null) myWindow.getContentManager().removeContent(myContent, true);
+
+        myContent = ContentFactory.SERVICE.getInstance().createContent(
+                descriptor.getComponent(), descriptor.getDisplayName(), true
+        );
+        myContent.putUserData(ToolWindow.SHOW_CONTENT_ICON, java.lang.Boolean.TRUE);
+        myContent.setIcon(descriptor.getIcon() == null ? executor.getToolWindowIcon() : descriptor.getIcon());
+        myWindow.getContentManager().addContent(myContent);
+
+        Disposer.register(myContent, errorViewPanel);
     }
 
     @Deprecated // we are not using the console, because we are not

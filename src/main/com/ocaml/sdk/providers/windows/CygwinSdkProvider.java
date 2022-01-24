@@ -1,8 +1,11 @@
 package com.ocaml.sdk.providers.windows;
 
+import a.n.G;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -35,7 +38,11 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     @Override protected boolean canUseProviderForHome(@NotNull Path homePath) {
-        String homePathString = FileUtil.toSystemIndependentName(homePath.toFile().getAbsolutePath());
+        return canUseProviderForHome(homePath.toFile().getAbsolutePath());
+    }
+
+    protected boolean canUseProviderForHome(@NotNull String homePath) {
+        String homePathString = FileUtil.toSystemIndependentName(homePath);
         for (String folder:getInstallationFolders()) {
             if (homePathString.contains(folder)) return true;
         }
@@ -58,5 +65,14 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
 
     @Override public @NotNull Set<String> getInstallationFolders() {
         return Set.of("cygwin64", getCygwinOpamFolder("cygwin64"));
+    }
+
+    // commands
+
+    @Override public @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath) {
+        if (!canUseProviderForHome(sdkHomePath)) return null;
+        GeneralCommandLine cli = new GeneralCommandLine(sdkHomePath + "\\bin\\" + OCAML_EXE, "-noprompt", "-no-version");
+        cli.withEnvironment("OCAMLLIB", sdkHomePath+"\\lib\\ocaml");
+        return cli;
     }
 }

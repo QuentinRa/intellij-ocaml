@@ -44,6 +44,10 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         return true;
     }
 
+    protected boolean canUseProviderForHome(@NotNull String homePath) {
+        return true;
+    }
+
     @Override public @NotNull List<OCamlSdkProvider> getNestedProviders() {
         return new ArrayList<>();
     }
@@ -229,5 +233,10 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {
         return new GeneralCommandLine(ocamlcCompilerPath, "-version");
+    }
+
+    @Override public @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath) {
+        if (!canUseProviderForHome(sdkHomePath)) return null;
+        return new GeneralCommandLine(sdkHomePath+"/bin/ocaml", "-noprompt", "-no-version");
     }
 }
