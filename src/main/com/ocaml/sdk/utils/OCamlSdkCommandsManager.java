@@ -43,7 +43,6 @@ public final class OCamlSdkCommandsManager {
         if (replCommand == null)
             throw new IllegalStateException("Unable to start the console.");
 
-        System.out.println("CLI:"+replCommand.getCommandLineString());
         Log.debug("REPL command is:"+replCommand.getCommandLineString());
 
         // return PtyCommand

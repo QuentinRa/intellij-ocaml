@@ -1,27 +1,34 @@
-package com.ocaml.sdk.output;
+package com.ocaml.sdk.output.warnings;
 
+import com.ocaml.sdk.output.BaseOutputTest;
+import com.ocaml.sdk.output.CompilerOutputMessage;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
+/**
+ * <h2>unused value</h2>
+ * <code>let x = 5</code><br>
+ * <code>let x = 7</code><br>
+ *
+ * <h2>unused rec</h2>
+ * <code>let rec x = 7</code>
+ *
+ * <h2>unused variable</h2>
+ *
+ * <code>let f v = match v with</code><br>
+ * <code>| Some(v) -> 5</code><br>
+ * <code>| Some(_)-> 7</code><br>
+ * <code>| None -> 3</code>
+ *
+ * <h2>unused match case</h2>
+ *
+ * <code>let f v = match v with</code><br>
+ * <code>| Some(v) -> 5</code><br>
+ * <code>| Some(_)-> 7</code><br>
+ * <code>| None -> 3</code>
+ */
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public final class WarningMessagesTest extends BaseOutputTest {
+public final class WarningUnusedTest extends BaseOutputTest {
 
-    /*
-All of them got the same pattern
-
-File "file.ml", line 1, characters 4-5:
-Warning 32: unused value x.
-
-File "file.ml", line 5, characters 8-9:
-Warning 39: unused rec flag.
-
-File "file.ml", line 7, characters 6-9:
-Warning 27: unused variable v.
-
-File "file.ml", line 8, characters 2-9:
-Warning 11: this match case is unused.
-     */
     @Test
     public void testUnusedValue() {
         String output = "File \"file.ml\", line 8, characters 6-7:\n" +
@@ -29,6 +36,33 @@ Warning 11: this match case is unused.
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 8, 8, 6, 7);
         assertIsShortMessage(message, "unused value y");
+    }
+
+    @Test // todo: we should target the rec, not the variable, right?
+    public void testUnusedRec() {
+        String output = "File \"file.ml\", line 1, characters 8-9:\n" +
+                "Warning 39: unused rec flag.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 8, 9);
+        assertIsShortMessage(message, "unused rec flag");
+    }
+
+    @Test // todo: we should target the variable, not the braces, right?
+    public void testUnusedVariable() {
+        String output = "File \"file.ml\", line 1, characters 29-32:\n" +
+                "Warning 27: unused variable v.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 29, 32);
+        assertIsShortMessage(message, "unused variable v");
+    }
+
+    @Test // todo: we should target the whole match right?
+    public void testUnusedMatchCase() {
+        String output = "File \"file.ml\", line 1, characters 40-47:\n" +
+                "Warning 11: this match case is unused.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 40, 47);
+        assertIsShortMessage(message, "this match case is unused");
     }
 
     // /////// ////////// ///////////
@@ -47,6 +81,18 @@ Warning 11: this match case is unused.
         assertIsFile(message, "file.ml", 1, 1, 4, 5);
         assertIsShortMessage(message, "unused value x");
         assertIsContext(message, "1 | let x = 5\n" + "        ^\n");
+    }
+
+    @Test
+    public void testUnusedRecContext() {
+        String output = "File \"file.ml\", line 1, characters 8-9:\n" +
+                "1 | let rec x = 7\n" +
+                "            ^\n" +
+                "Warning 39: unused rec flag.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 8, 9);
+        assertIsShortMessage(message, "unused rec flag");
+        assertIsContext(message, "1 | let rec x = 7\n" + "            ^\n");
     }
 
     @Test
