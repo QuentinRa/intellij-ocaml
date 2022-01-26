@@ -26,8 +26,20 @@ import org.junit.Test;
  * <code>| Some(_)-> 7</code><br>
  * <code>| None -> 3</code>
  */
+/*
+File "file.ml", line 1, characters 0-18:
+1 | type t = A | B | C
+    ^^^^^^^^^^^^^^^^^^
+Warning 37: constructor A is never used to build values.
+(However, this constructor appears in patterns.)
+
+File "file.ml", line 1, characters 0-18:
+1 | type t = A | B | C
+    ^^^^^^^^^^^^^^^^^^
+Warning 37: unused constructor B.
+ */
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public final class WarningUnusedTest extends BaseOutputTest {
+public final class UnusedWarningTest extends BaseOutputTest {
 
     @Test
     public void testUnusedValue() {
