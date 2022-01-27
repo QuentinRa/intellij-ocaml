@@ -40,6 +40,7 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Set/Update the SDK for a module                          |
 | ✅ Edit modules' properties (ex: output folder, src folder) |
 | ✅ You can use a template (✅ Makefile, ✅ Dune)              |
+| ✅ Can create a file (.ml, .mli, .ml+.mli)                  |
 | ❌ Add an import wizard                                     |
 | ❌ The project is created with a default runConfiguration   |
 
@@ -51,6 +52,7 @@ You are now able to create a project using an opam SDK, or create an opam-like S
 | ✅ We are suggesting a location for non-opam SDKs        |
 | ✅ The SDK is verified                                   |
 | ✅ The user can add/remove sources                       |
+| ✅ The user see sources, only .ml/.mli files are shown   |
 | ✅ Suggest SDK if opening a file in a module without SDK |
 | ❌ The user can download OCaml                           |
 
@@ -66,12 +68,15 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 
 This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
 
-| Code highlighting                                |
-|--------------------------------------------------|
-| ✅ .ml / .mli are highlighted (based on ReasonML) |
-| ❌ we can see warnings in the file                |
-| ❌ we can see errors in the file                  |
-| ❌ we can see alerts in the file                  |
+| Code highlighting                                    |
+|------------------------------------------------------|
+| ✅ .ml / .mli are highlighted (based on ReasonML)     |
+| ✅ we can see warnings in the file                    |
+| ❌ we can see errors in the file                      |
+| ❌ we can see alerts in the file                      |
+| ❌ handle normal projects (files using other modules) |
+| ❌ handle dune projects                               |
+| ❌ handle Makefile projects                           |
 
 We are compiling the file, and parsing the output, to provide hints in the editor.
 
