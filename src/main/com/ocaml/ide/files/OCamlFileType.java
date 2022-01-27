@@ -40,7 +40,7 @@ public final class OCamlFileType extends LanguageFileType {
     }
 
     @Override public Icon getIcon() {
-        return OCamlIcons.FileTypes.OCAML;
+        return OCamlIcons.FileTypes.OCAML_SOURCE;
     }
 
     @Override public @Nls @NotNull String getDisplayName() {

@@ -21,15 +21,12 @@ import com.ocaml.ide.module.OCamlModuleType;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-
 /**
  * Create a .ml
  * Create a .mli
  * Create both a .ml and a .mli
  */
 public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
-    private static final Icon ICON = OCamlIcons.FileTypes.OCAML;
     private static final String ACTION_NAME = "OCaml";
     /*
      * ISSUE: we can define ONLY one behavior per template, but for that
@@ -39,7 +36,7 @@ public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
     private static final String DUMMY_TEMPLATE = "DummyTemplate";
 
     public OCamlCreateFileAction() {
-        super(ACTION_NAME, "", ICON);
+        super(ACTION_NAME, "", OCamlIcons.FileTypes.OCAML_SOURCE_AND_INTERFACE);
     }
 
     @Override protected boolean isAvailable(DataContext dataContext) {
@@ -69,11 +66,11 @@ public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
 
         builder.setTitle(ACTION_NAME)
                 // create .ml
-                .addKind(ml, OCamlIcons.FileTypes.OCAML, OCamlFileTemplates.OCAML_FILE_TEMPLATE)
+                .addKind(ml, OCamlIcons.FileTypes.OCAML_SOURCE, OCamlFileTemplates.OCAML_FILE_TEMPLATE)
                 // create .mli
                 .addKind(mli, OCamlIcons.FileTypes.OCAML_INTERFACE, OCamlFileTemplates.OCAML_INTERFACE_TEMPLATE)
                 // create .ml + .mli
-                .addKind(mlAndMli, OCamlIcons.FileTypes.OCAML, DUMMY_TEMPLATE)
+                .addKind(mlAndMli, OCamlIcons.FileTypes.OCAML_SOURCE_AND_INTERFACE, DUMMY_TEMPLATE)
         ;
     }
 
