@@ -177,6 +177,33 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         }
     }
 
+    @Override
+    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
+        // is wsl
+        WslPath path = WslPath.parseWindowsUncPath(sdkHomePath);
+        if (path == null) return null;
+        try {
+            WSLDistribution distribution = path.getDistribution();
+            String wslOutputDirectory = distribution.getWslPath(outputDirectory);
+            if (wslOutputDirectory == null)
+                throw new ExecutionException("Could not parse output directory:"+outputDirectory);
+
+            // create cli
+            GeneralCommandLine cli = new GeneralCommandLine(
+                    sdkHomePath+"/bin/ocamlc",
+                    "-c",
+                    "-w", "+A",
+                    "-o", wslOutputDirectory + "/" + executableName,
+                    "-I", wslOutputDirectory,
+                    "-color=never", "-bin-annot"
+            );
+            return distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
+        } catch (ExecutionException e) {
+            LOG.error("Error creating Compiler command", e);
+            return null;
+        }
+    }
+
     //
     // SDK
     //

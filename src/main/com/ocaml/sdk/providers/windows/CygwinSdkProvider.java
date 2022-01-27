@@ -1,12 +1,12 @@
 package com.ocaml.sdk.providers.windows;
 
-import a.n.G;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
@@ -74,5 +74,27 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
         GeneralCommandLine cli = new GeneralCommandLine(sdkHomePath + "\\bin\\" + OCAML_EXE, "-noprompt", "-no-version");
         cli.withEnvironment("OCAMLLIB", sdkHomePath+"\\lib\\ocaml");
         return cli;
+    }
+
+    @Override
+    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
+        if (!canUseProviderForHome(sdkHomePath)) return null;
+        Path homePath = Path.of(sdkHomePath);
+        // compiler
+        for (String compilerName: getOCamlCompilerCommands()) {
+            if (!Files.exists(homePath.resolve("bin/"+compilerName))) continue;
+
+            return new GeneralCommandLine(
+                    sdkHomePath+"\\bin\\"+compilerName,
+                    "-c",
+                    "-w", "+A",
+                    "-o", outputDirectory + "/" + executableName,
+                    "-I", outputDirectory,
+                    "-color=never", "-bin-annot"
+            );
+        }
+
+        LOG.warn("No compiler found for cygwin in "+sdkHomePath+".");
+        return null;
     }
 }

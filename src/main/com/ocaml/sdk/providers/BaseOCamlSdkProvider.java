@@ -239,4 +239,17 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         if (!canUseProviderForHome(sdkHomePath)) return null;
         return new GeneralCommandLine(sdkHomePath+"/bin/ocaml", "-noprompt", "-no-version");
     }
+
+    @Override
+    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
+        if (!canUseProviderForHome(sdkHomePath)) return null;
+        return new GeneralCommandLine(
+                sdkHomePath+"/bin/ocamlc",
+                "-c",
+                "-w", "+A",
+                "-o", outputDirectory + "/" + executableName,
+                "-I", outputDirectory,
+                "-color=never", "-bin-annot"
+        );
+    }
 }
