@@ -21,4 +21,9 @@ public class CompilerOutputMessage {
      * a caret pointing the error **/
     @SinceOCamlVersion(since = "4.08.0")
     public String context = "";
+
+    // utils
+    public boolean isError() { return kind == Kind.ERROR; }
+    public boolean isWarning() { return kind == Kind.WARNING; }
+    public boolean isAlert() { return kind == Kind.ALERT; }
 }

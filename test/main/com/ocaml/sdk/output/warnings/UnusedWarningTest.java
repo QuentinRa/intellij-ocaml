@@ -39,7 +39,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
     /*
      * unused rec
      *
-     * let rec x = 7
+     * let rec y = 7
      */
 
     @Test
@@ -66,9 +66,8 @@ public final class UnusedWarningTest extends BaseOutputTest {
     /*
      * unused variable
      *
-     * let f v = match v with
+     * let f1 v = match v with
      * | Some(v) -> 5
-     * | Some(_)-> 7
      * | None -> 3
      */
 
@@ -96,7 +95,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
     /*
      * unused match case
      *
-     * let f v = match v with
+     * let f2 v = match v with
      * | Some(_) -> 5
      * | Some(_)-> 7
      * | None -> 3

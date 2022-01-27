@@ -1,13 +1,16 @@
 package com.ocaml.ide.annotations;
 
-import com.esotericsoftware.minlog.Log;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.LogicalPosition;
+import com.intellij.openapi.editor.impl.TextRangeInterval;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.DumbAware;
@@ -57,7 +60,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         String homePath = sdk.getHomePath();
         if (homePath == null) return null;
 
-        Log.trace("CollectInformation OK");
+        LOG.trace("CollectInformation OK");
 
         return new CollectedInfo(file, editor, homePath);
     }
@@ -110,7 +113,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             ArrayList<CompilerOutputMessage> info = new ArrayList<>();
             CompilerOutputParser outputParser = new CompilerOutputParser() {
                 @Override protected void onMessageReady(@NotNull CompilerOutputMessage message) {
-                    Log.debug("added:" + message.header + " (line->" + message.filePosition.getStartLine() + ")");
+                    LOG.debug("added:" + message.header + " (line->" + message.filePosition.getStartLine() + ")");
                     info.add(message);
                 }
             };
@@ -137,8 +140,37 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
     }
 
     @Override
-    public void apply(@NotNull PsiFile file, AnnotationResult annotationResult,
+    public void apply(@NotNull PsiFile file, @NotNull AnnotationResult annotationResult,
                       @NotNull AnnotationHolder holder) {
+        Editor editor = annotationResult.myEditor;
+
+        for (CompilerOutputMessage message : annotationResult.myOutputInfo) {
+            // type
+            HighlightSeverity t;
+            if (message.isWarning()) t = HighlightSeverity.WARNING;
+            else if (message.isError()) t = HighlightSeverity.WARNING;
+            else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
+            else t = HighlightSeverity.INFORMATION;
+
+            // position
+            int colStart = message.filePosition.getStartColumn();
+            int colEnd = message.filePosition.getEndColumn();
+            int lineStart = message.filePosition.getStartLine() - 1;
+            int lineEnd = message.filePosition.getEndLine() - 1;
+
+            if (colStart == -1) colStart = 0;
+            if (colEnd == -1) colEnd = 1;
+
+            LogicalPosition start = new LogicalPosition(lineStart, colStart);
+            LogicalPosition end = new LogicalPosition(lineEnd, colEnd);
+            int startOffset = editor.isDisposed() ? 0 : editor.logicalPositionToOffset(start);
+            int endOffset = editor.isDisposed() ? 0 : editor.logicalPositionToOffset(end);
+
+            // create
+            AnnotationBuilder builder = holder.newAnnotation(t, message.header);
+            builder = builder.range(new TextRangeInterval(startOffset, endOffset));
+            builder.create();
+        }
 
     }
 }
