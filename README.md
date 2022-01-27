@@ -74,6 +74,7 @@ This is a console allowing the use of the ocaml interpreter in an easier way. Fo
 | ✅ we can see warnings in the file                    |
 | ❌ we can see errors in the file                      |
 | ❌ we can see alerts in the file                      |
+| ✅ errors are shown project-wide                      |
 | ❌ handle normal projects (files using other modules) |
 | ❌ handle dune projects                               |
 | ❌ handle Makefile projects                           |

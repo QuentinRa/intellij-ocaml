@@ -45,7 +45,8 @@
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
-        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.annotations.CompilerOutputAnnotator" />
+        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.highlight.annotations.CompilerOutputAnnotator" />
+        <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
 
         <!-- REPL -->
         <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>

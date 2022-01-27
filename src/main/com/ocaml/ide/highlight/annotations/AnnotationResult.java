@@ -1,4 +1,4 @@
-package com.ocaml.ide.annotations;
+package com.ocaml.ide.highlight.annotations;
 
 import com.intellij.openapi.editor.Editor;
 import com.ocaml.sdk.output.CompilerOutputMessage;

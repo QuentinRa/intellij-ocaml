@@ -1,12 +1,9 @@
-package com.ocaml.ide.annotations;
+package com.ocaml.ide.highlight.annotations;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
-import com.intellij.lang.annotation.AnnotationBuilder;
-import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.lang.annotation.ExternalAnnotator;
-import com.intellij.lang.annotation.HighlightSeverity;
+import com.intellij.lang.annotation.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
@@ -19,6 +16,8 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.problems.Problem;
+import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
@@ -142,13 +141,17 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
     @Override
     public void apply(@NotNull PsiFile file, @NotNull AnnotationResult annotationResult,
                       @NotNull AnnotationHolder holder) {
+        VirtualFile virtualFile = file.getVirtualFile();
         Editor editor = annotationResult.myEditor;
+
+        WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(file.getProject());
+        ArrayList<Problem> problems = new ArrayList<>();
 
         for (CompilerOutputMessage message : annotationResult.myOutputInfo) {
             // type
             HighlightSeverity t;
             if (message.isWarning()) t = HighlightSeverity.WARNING;
-            else if (message.isError()) t = HighlightSeverity.WARNING;
+            else if (message.isError()) t = HighlightSeverity.ERROR;
             else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
             else t = HighlightSeverity.INFORMATION;
 
@@ -169,8 +172,20 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // create
             AnnotationBuilder builder = holder.newAnnotation(t, message.header);
             builder = builder.range(new TextRangeInterval(startOffset, endOffset));
+            builder = builder.tooltip(message.content);
             builder.create();
+
+            if (message.isError()) {
+                problems.add(wolfTheProblemSolver.convertToProblem(
+                        virtualFile, lineStart, colStart,
+                        message.content.split("\n")
+                ));
+            }
         }
 
+        if (!problems.isEmpty())
+            wolfTheProblemSolver.reportProblems(virtualFile, problems);
+        else
+            wolfTheProblemSolver.clearProblems(virtualFile);
     }
 }

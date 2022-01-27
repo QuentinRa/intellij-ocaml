@@ -12,10 +12,17 @@ public class CompilerOutputMessage {
     enum Kind { ERROR, WARNING, ALERT, INFO }
     public @NotNull Kind kind = Kind.ERROR;
 
-    /** the header of the message. It's usually on the same
-     * line as the warning, but sometimes, it may be on multiple lines.
-     * The header is always ending with a "." **/
+    /** We are storing the header of the message shown by the compiler.
+     * It's usually on the same line as the warning, and sometimes, it may be on multiple lines.
+     * The header is always ending with a ".", unless it's an error.
+     * This field is the header, without the final ".". The first letter may be a lower case. **/
     public String header;
+
+    /**
+     * The content of the message.
+     * The header is included inside the content.
+     */
+    public String content;
 
     /** Code sample of the location of the error, with
      * a caret pointing the error **/

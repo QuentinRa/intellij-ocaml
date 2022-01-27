@@ -42,8 +42,11 @@ public abstract class CompilerOutputParser {
         message.kind = currentState.kind;
         // header
         int i = currentState.messageRaw.indexOf('.');
-        if (i == -1) throw new IllegalStateException("Unexpected content:"+currentState.messageRaw);
+        if (i == -1) i = currentState.messageRaw.length();
+        // we may have \in inside this header
         message.header = currentState.messageRaw.substring(0, i); // with the '.'
+        // the whole message
+        message.content = currentState.messageRaw;
         // file position
         message.filePosition = new FilePosition(
                 createFile(currentState.filePath),
