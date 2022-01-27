@@ -23,7 +23,7 @@ public class BaseOutputTest extends OCamlBaseTest {
     protected ArrayList<CompilerOutputMessage> parseMessages(@NotNull String text) {
         ArrayList<CompilerOutputMessage> messages = new ArrayList<>();
         CompilerOutputParser compilerOutputParser = new CompilerOutputParser() {
-            @Override protected void onMessageReady(CompilerOutputMessage message) {
+            @Override protected void onMessageReady(@NotNull CompilerOutputMessage message) {
                 messages.add(message);
             }
         };

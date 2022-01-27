@@ -97,7 +97,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
      * unused match case
      *
      * let f v = match v with
-     * | Some(v) -> 5
+     * | Some(_) -> 5
      * | Some(_)-> 7
      * | None -> 3
      */

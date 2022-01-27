@@ -65,7 +65,11 @@ public abstract class CompilerOutputParser {
         return new File(filePath);
     }
 
-    protected abstract void onMessageReady(CompilerOutputMessage message);
+    /**
+     * Callback when a message was parsed
+     * @param message parsed message
+     */
+    protected abstract void onMessageReady(@NotNull CompilerOutputMessage message);
 
     /**
      * DO NOT FORGET TO CALL {@link #inputDone()} after you submitted the
