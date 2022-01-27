@@ -28,7 +28,7 @@ public class BaseOutputTest extends OCamlBaseTest {
             }
         };
         text.lines().forEach(compilerOutputParser::parseLine);
-        compilerOutputParser.parseDone();
+        compilerOutputParser.inputDone();
         return messages;
     }
 
