@@ -65,7 +65,7 @@ sourceSets {
     main.java.srcDirs = ["src/$platformVersion", "src/main"]
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
-    test.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
+    test.resources.srcDirs = ["resources/main", "resources/$platformVersion", "test/testData"]
 }
 
 tasks.withType(JavaCompile) {
