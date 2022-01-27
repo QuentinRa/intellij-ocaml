@@ -80,18 +80,18 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
     public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
         if (!canUseProviderForHome(sdkHomePath)) return null;
         Path homePath = Path.of(sdkHomePath);
-        // compiler
+        // look for a compiler
         for (String compilerName: getOCamlCompilerCommands()) {
             if (!Files.exists(homePath.resolve("bin/"+compilerName))) continue;
-
-            return new GeneralCommandLine(
-                    sdkHomePath+"\\bin\\"+compilerName,
-                    "-c",
-                    "-w", "+A",
-                    "-o", outputDirectory + "/" + executableName,
+            // use this compiler
+            GeneralCommandLine cli = new GeneralCommandLine(
+                    sdkHomePath + "\\bin\\" + compilerName, "-c", file,
+                    "-o", outputDirectory + "\\" + executableName,
                     "-I", outputDirectory,
-                    "-color=never", "-bin-annot"
+                    "-w", "+A", "-color=never", "-bin-annot"
             );
+            cli.withEnvironment("OCAMLLIB", sdkHomePath+"\\lib\\ocaml");
+            return cli;
         }
 
         LOG.warn("No compiler found for cygwin in "+sdkHomePath+".");

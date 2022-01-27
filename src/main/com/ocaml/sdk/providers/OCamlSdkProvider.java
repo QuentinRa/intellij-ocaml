@@ -121,7 +121,7 @@ public interface OCamlSdkProvider {
      * @param file the file we are compiling
      * @param outputDirectory the output directory
      * @param executableName the name of the generated executable
-     * @return "ocamlc -c -w +A -o $outputDirectory/$executableName -I $outputDirectory -color=never -bin-annot"
+     * @return "ocamlc -c $file -o $outputDirectory/$executableName -I $outputDirectory -w +A -color=never -bin-annot"
      */
     @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath,
                                                              String file,

@@ -187,15 +187,16 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             String wslOutputDirectory = distribution.getWslPath(outputDirectory);
             if (wslOutputDirectory == null)
                 throw new ExecutionException("Could not parse output directory:"+outputDirectory);
+            String wslFile = distribution.getWslPath(file);
+            if (wslFile == null)
+                throw new ExecutionException("Could not parse file:"+file);
 
             // create cli
             GeneralCommandLine cli = new GeneralCommandLine(
-                    sdkHomePath+"/bin/ocamlc",
-                    "-c",
-                    "-w", "+A",
+                    path.getLinuxPath()+"/bin/ocamlc", "-c", wslFile,
                     "-o", wslOutputDirectory + "/" + executableName,
                     "-I", wslOutputDirectory,
-                    "-color=never", "-bin-annot"
+                    "-w", "+A", "-color=never", "-bin-annot"
             );
             return distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
         } catch (ExecutionException e) {

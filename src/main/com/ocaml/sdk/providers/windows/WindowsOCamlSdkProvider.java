@@ -39,6 +39,10 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
         return false;
     }
 
+    @Override protected boolean canUseProviderForHome(@NotNull String homePath) {
+        return false;
+    }
+
     @Override public @NotNull List<String> getOCamlCompilerCommands() {
         return List.of();
     }
