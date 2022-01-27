@@ -20,6 +20,7 @@ public abstract class CompilerOutputParser {
         public int startColumn = -1, endColumn = -1;
         public String filePath;
         public String messageRaw = "";
+        public String context = "";
         public CompilerOutputMessage.Kind kind;
 
         public CompilerState(String filePath) {
@@ -51,6 +52,8 @@ public abstract class CompilerOutputParser {
                 currentState.endLine,
                 currentState.endColumn
         );
+        // context
+        message.context = currentState.context;
 
         onMessageReady(message);
 
@@ -85,6 +88,7 @@ public abstract class CompilerOutputParser {
             else if (line.startsWith("Error")) currentState.kind = CompilerOutputMessage.Kind.ERROR;
             else if (line.startsWith("Alert")) currentState.kind = CompilerOutputMessage.Kind.ALERT;
             else {
+                currentState.context += line + "\n";
                 return;
             }
             int i = line.indexOf(':');

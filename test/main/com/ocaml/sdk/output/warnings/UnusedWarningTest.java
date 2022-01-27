@@ -1,45 +1,19 @@
 package com.ocaml.sdk.output.warnings;
 
+import com.ocaml.sdk.SinceOCamlVersion;
 import com.ocaml.sdk.output.BaseOutputTest;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import org.junit.Test;
 
-/**
- * <h2>unused value</h2>
- * <code>let x = 5</code><br>
- * <code>let x = 7</code><br>
- *
- * <h2>unused rec</h2>
- * <code>let rec x = 7</code>
- *
- * <h2>unused variable</h2>
- *
- * <code>let f v = match v with</code><br>
- * <code>| Some(v) -> 5</code><br>
- * <code>| Some(_)-> 7</code><br>
- * <code>| None -> 3</code>
- *
- * <h2>unused match case</h2>
- *
- * <code>let f v = match v with</code><br>
- * <code>| Some(v) -> 5</code><br>
- * <code>| Some(_)-> 7</code><br>
- * <code>| None -> 3</code>
- */
-/*
-File "file.ml", line 1, characters 0-18:
-1 | type t = A | B | C
-    ^^^^^^^^^^^^^^^^^^
-Warning 37: constructor A is never used to build values.
-(However, this constructor appears in patterns.)
-
-File "file.ml", line 1, characters 0-18:
-1 | type t = A | B | C
-    ^^^^^^^^^^^^^^^^^^
-Warning 37: unused constructor B.
- */
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public final class UnusedWarningTest extends BaseOutputTest {
+
+    /*
+     * unused value
+     *
+     * let x = 5
+     * let x = 7
+     */
 
     @Test
     public void testUnusedValue() {
@@ -49,39 +23,6 @@ public final class UnusedWarningTest extends BaseOutputTest {
         assertIsFile(message, "file.ml", 8, 8, 6, 7);
         assertIsShortMessage(message, "unused value y");
     }
-
-    @Test // todo: we should target the rec, not the variable, right?
-    public void testUnusedRec() {
-        String output = "File \"file.ml\", line 1, characters 8-9:\n" +
-                "Warning 39: unused rec flag.";
-        CompilerOutputMessage message = parseWarning(output);
-        assertIsFile(message, "file.ml", 1, 1, 8, 9);
-        assertIsShortMessage(message, "unused rec flag");
-    }
-
-    @Test // todo: we should target the variable, not the braces, right?
-    public void testUnusedVariable() {
-        String output = "File \"file.ml\", line 1, characters 29-32:\n" +
-                "Warning 27: unused variable v.";
-        CompilerOutputMessage message = parseWarning(output);
-        assertIsFile(message, "file.ml", 1, 1, 29, 32);
-        assertIsShortMessage(message, "unused variable v");
-    }
-
-    @Test // todo: we should target the whole match right?
-    public void testUnusedMatchCase() {
-        String output = "File \"file.ml\", line 1, characters 40-47:\n" +
-                "Warning 11: this match case is unused.";
-        CompilerOutputMessage message = parseWarning(output);
-        assertIsFile(message, "file.ml", 1, 1, 40, 47);
-        assertIsShortMessage(message, "this match case is unused");
-    }
-
-    // /////// ////////// ///////////
-    //
-    //  SINCE OCAML 4.08.0
-    //
-    // /////// ////////// ///////////
 
     @Test
     public void testUnusedValueContext() {
@@ -93,6 +34,21 @@ public final class UnusedWarningTest extends BaseOutputTest {
         assertIsFile(message, "file.ml", 1, 1, 4, 5);
         assertIsShortMessage(message, "unused value x");
         assertIsContext(message, "1 | let x = 5\n" + "        ^\n");
+    }
+
+    /*
+     * unused rec
+     *
+     * let rec x = 7
+     */
+
+    @Test
+    public void testUnusedRec() {
+        String output = "File \"file.ml\", line 1, characters 8-9:\n" +
+                "Warning 39: unused rec flag.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 8, 9);
+        assertIsShortMessage(message, "unused rec flag");
     }
 
     @Test
@@ -107,6 +63,24 @@ public final class UnusedWarningTest extends BaseOutputTest {
         assertIsContext(message, "1 | let rec x = 7\n" + "            ^\n");
     }
 
+    /*
+     * unused variable
+     *
+     * let f v = match v with
+     * | Some(v) -> 5
+     * | Some(_)-> 7
+     * | None -> 3
+     */
+
+    @Test
+    public void testUnusedVariable() {
+        String output = "File \"file.ml\", line 1, characters 29-32:\n" +
+                "Warning 27: unused variable v.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 29, 32);
+        assertIsShortMessage(message, "unused variable v");
+    }
+
     @Test
     public void testUnusedVariableContext() {
         String output = "File \"file.ml\", line 12, characters 6-9:\n" +
@@ -117,6 +91,24 @@ public final class UnusedWarningTest extends BaseOutputTest {
         assertIsFile(message, "file.ml", 12, 12, 6, 9);
         assertIsShortMessage(message, "unused variable v");
         assertIsContext(message, "12 | | Some(v) -> 5\n" + "           ^^^\n");
+    }
+
+    /*
+     * unused match case
+     *
+     * let f v = match v with
+     * | Some(v) -> 5
+     * | Some(_)-> 7
+     * | None -> 3
+     */
+
+    @Test
+    public void testUnusedMatchCase() {
+        String output = "File \"file.ml\", line 1, characters 40-47:\n" +
+                "Warning 11: this match case is unused.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 40, 47);
+        assertIsShortMessage(message, "this match case is unused");
     }
 
     @Test
@@ -131,13 +123,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
         assertIsContext(message, "13 | | Some(v)-> 7\n" + "       ^^^^^^^\n");
     }
 
-    // /////// ////////// ///////////
-    //
-    //  SINCE OCAML 4.12.0
-    //
-    // /////// ////////// ///////////
-
-    @Test
+    @Test @SinceOCamlVersion(since = "4.12.0")
     public void testUnusedMatchCaseMnemonic() {
         String output = "File \"file.ml\", line 8, characters 2-9:\n" +
                 "8 | | Some(_)-> 7\n" +
@@ -149,4 +135,34 @@ public final class UnusedWarningTest extends BaseOutputTest {
         assertIsContext(message, "8 | | Some(_)-> 7\n" + "      ^^^^^^^\n");
     }
 
+    /*
+     * Unused constructor
+     */
+    @Test
+    public void testUnusedConstructorContext() {
+        String output = "File \"file.ml\", line 1, characters 0-18:\n" +
+                "1 | type t = A | B | C\n" +
+                "    ^^^^^^^^^^^^^^^^^^\n" +
+                "Warning 37: unused constructor B.";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 0, 18);
+        assertIsShortMessage(message, "unused constructor B");
+        assertIsContext(message, "1 | type t = A | B | C\n" + "    ^^^^^^^^^^^^^^^^^^\n");
+    }
+
+    /*
+     * Unused constructor to build values
+     */
+    @Test
+    public void testUnusedConstructorBuildValuesContext() {
+        String output = "File \"file.ml\", line 1, characters 0-18:\n" +
+                "1 | type t = A | B | C\n" +
+                "    ^^^^^^^^^^^^^^^^^^\n" +
+                "Warning 37: constructor A is never used to build values.\n" +
+                "(However, this constructor appears in patterns.)";
+        CompilerOutputMessage message = parseWarning(output);
+        assertIsFile(message, "file.ml", 1, 1, 0, 18);
+        assertIsShortMessage(message, "constructor A is never used to build values");
+        assertIsContext(message, "1 | type t = A | B | C\n" + "    ^^^^^^^^^^^^^^^^^^\n");
+    }
 }
