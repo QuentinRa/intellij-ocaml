@@ -18,10 +18,7 @@
     <actions>
         <!-- Add your actions here -->
         <!-- Create file -->
-        <action id="NewOCamlFile" class="com.ocaml.ide.actions.create.OCamlCreateFileAction">
-            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
-        </action>
-        <action id="NewOCamlInterface" class="com.ocaml.ide.actions.create.OCamlInterfaceCreateFileAction">
+        <action id="NewOCamlFile" class="com.ocaml.ide.actions.OCamlCreateFileAction">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
     </actions>
