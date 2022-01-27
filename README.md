@@ -19,7 +19,7 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 
 Originally, I was planning to make things, so that we can use this plugin outside IntelliJ, but now my goal is to at least make this plugin work in IntelliJ before targeting minor IDEs.
 
-> Please note that some features are already available in ReasonML (ex: support of ODoc), so I will not code them, but "import" them.
+> Please note that some features are already available in ReasonML (ex: support of odoc, dune support, etc.), and I will "import" them.
 
 ## ✨ How will I do that?
 
@@ -55,6 +55,25 @@ You are now able to create a project using an opam SDK, or create an opam-like S
 | ❌ The user can download OCaml                           |
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
+
+| REPL Console                        |
+|-------------------------------------|
+| ✅ Can execute commands              |
+| ✅ Browse history, use arrow up/down |
+| ❌ See the values of the variables   |
+| ❌ Send commands to the console      |
+| ❌ Send a file to the console        |
+
+This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
+
+| Code highlighting                                |
+|--------------------------------------------------|
+| ✅ .ml / .mli are highlighted (based on ReasonML) |
+| ❌ we can see warnings in the file                |
+| ❌ we can see errors in the file                  |
+| ❌ we can see alerts in the file                  |
+
+We are compiling the file, and parsing the output, to provide hints in the editor.
 
 ## 📖 Install ocaml and opam
 
