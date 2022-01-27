@@ -103,7 +103,7 @@ public abstract class CompilerOutputParser {
             line = line.substring(i+1); // we got ": ", we are skipping both
         }
 
-        currentState.messageRaw += line.trim();
+        currentState.messageRaw += line.trim() + "\n";
     }
 
     public static final Pattern FILE_LOCATION = Pattern.compile("File \"([^\"]+)\", lines? ([^,]+), characters ([^-]+)-([0-9]+):(.*)");

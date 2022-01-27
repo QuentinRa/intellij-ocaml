@@ -19,6 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
+import com.intellij.xml.util.XmlStringUtil;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
@@ -116,7 +117,6 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                     info.add(message);
                 }
             };
-
             try (BufferedReader stdin = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = stdin.readLine()) != null) {
@@ -142,9 +142,10 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
     public void apply(@NotNull PsiFile file, @NotNull AnnotationResult annotationResult,
                       @NotNull AnnotationHolder holder) {
         VirtualFile virtualFile = file.getVirtualFile();
+        Project project = file.getProject();
         Editor editor = annotationResult.myEditor;
 
-        WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(file.getProject());
+        WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(project);
         ArrayList<Problem> problems = new ArrayList<>();
 
         for (CompilerOutputMessage message : annotationResult.myOutputInfo) {
@@ -172,7 +173,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // create
             AnnotationBuilder builder = holder.newAnnotation(t, message.header);
             builder = builder.range(new TextRangeInterval(startOffset, endOffset));
-            builder = builder.tooltip(message.content);
+            builder = builder.tooltip(XmlStringUtil.wrapInHtml(message.content.replace("\n", "<br/>")));
+            // builder = builder.withFix(null); // fix
             builder.create();
 
             if (message.isError()) {
