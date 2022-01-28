@@ -81,6 +81,11 @@ This is a console allowing the use of the ocaml interpreter in an easier way. Fo
 
 We are compiling the file, and parsing the output, to provide hints in the editor.
 
+| File                                                |
+|-----------------------------------------------------|
+| ✅ Can create .ml, .mli, or .ml and .mli             |
+| ✅ Editor > File and Code Templates for .ml and .mli |
+
 ## 📖 Install ocaml and opam
 
 <details>

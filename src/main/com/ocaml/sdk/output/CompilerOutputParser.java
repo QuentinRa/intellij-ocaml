@@ -26,6 +26,19 @@ public abstract class CompilerOutputParser {
         public CompilerState(String filePath) {
             this.filePath = filePath;
         }
+
+        @Override public String toString() {
+            return "CompilerState{" +
+                    "startLine=" + startLine +
+                    ", endLine=" + endLine +
+                    ", startColumn=" + startColumn +
+                    ", endColumn=" + endColumn +
+                    ", filePath='" + filePath + '\'' +
+                    ", messageRaw='" + messageRaw + '\'' +
+                    ", context='" + context + '\'' +
+                    ", kind=" + kind +
+                    '}';
+        }
     }
     /** if we are reading data, then this is not null. **/
     private @Nullable CompilerState currentState = null;
@@ -38,7 +51,7 @@ public abstract class CompilerOutputParser {
         CompilerOutputMessage message = new CompilerOutputMessage();
         // kind
         if (currentState.kind == null)
-            throw new IllegalStateException("Current state invalid, no 'kind'");
+            throw new IllegalStateException("Current state invalid, no 'kind' for "+currentState);
         message.kind = currentState.kind;
         // header
         int i = currentState.messageRaw.indexOf('.');
