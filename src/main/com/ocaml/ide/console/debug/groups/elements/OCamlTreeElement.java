@@ -4,7 +4,6 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -14,13 +13,13 @@ import javax.swing.*;
  */
 public abstract class OCamlTreeElement implements StructureViewTreeElement {
 
-    private final String name;
-    private final String value;
-    protected final String type;
-    private final Icon icon;
+    @NotNull private final String name;
+    @NotNull private final String value;
+    @NotNull private final String type;
+    @NotNull private final Icon icon;
 
     public OCamlTreeElement(@NotNull String name, @NotNull String value,
-                            @Nullable String type, @NotNull Icon icon) {
+                            @NotNull String type, @NotNull Icon icon) {
         this.name = name;
         this.value = value;
         this.icon = icon;
@@ -28,13 +27,14 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
     }
 
     @Override public Object getValue() {
-        return "something";
+        System.out.println("value:"+value);
+        return value;
     }
 
     @Override public @NotNull ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Override public String getPresentableText() {
-                return name;
+                return name + " = "+ value;
             }
 
             @Override public Icon getIcon(boolean unused) {
@@ -42,7 +42,7 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
             }
 
             @Override public String getLocationString() {
-                return value;
+                return type;
             }
         };
     }
@@ -52,15 +52,14 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
     }
 
     @Override public void navigate(boolean requestFocus) {
-
     }
 
     @Override public boolean canNavigate() {
-        return false;
+        return true;
     }
 
     @Override public boolean canNavigateToSource() {
-        return false;
+        return true;
     }
 
     // compare
