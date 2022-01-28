@@ -29,6 +29,7 @@ import com.intellij.util.ui.MessageCategory;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.console.actions.OCamlExecuteActionHandler;
 import com.ocaml.ide.console.actions.OCamlRestartAction;
+import com.ocaml.ide.console.debug.OCamlVariablesView;
 import com.ocaml.sdk.utils.OCamlSdkCommandsManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +50,8 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
     private GeneralCommandLine commandLine;
     private Content myContent;
-    final ToolWindow myWindow;
+    private final ToolWindow myWindow;
+    private OCamlVariablesView myVariablesView;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
         super(project, "OCaml", null);
@@ -76,7 +78,10 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
         JBSplitter split = new JBSplitter(false, 0.5f);
         split.setFirstComponent(consoleView.getComponent());
-        split.setSecondComponent(new OCamlVariablesView(consoleView));
+        // create "variable view"
+        myVariablesView = new OCamlVariablesView(consoleView);
+        Disposer.register(consoleView, myVariablesView);
+        split.setSecondComponent(myVariablesView);
         split.setShowDividerControls(true);
         split.setHonorComponentsMinimumSize(true);
 
@@ -154,7 +159,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
     @Override protected OSProcessHandler createProcessHandler(Process process) {
         try {
-            return new OCamlProcessHandler(commandLine, getConsoleView());
+            return new OCamlProcessHandler(commandLine, this, getConsoleView());
         } catch (ExecutionException e) {
             return null;
         }
@@ -231,5 +236,15 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     // showing the console in "run"
     @Override protected void showConsole(Executor defaultExecutor,
                                          @NotNull RunContentDescriptor contentDescriptor) {
+    }
+
+    // getters
+
+    public ToolWindow getWindow() {
+        return myWindow;
+    }
+
+    public OCamlVariablesView getVariablesView() {
+        return myVariablesView;
     }
 }

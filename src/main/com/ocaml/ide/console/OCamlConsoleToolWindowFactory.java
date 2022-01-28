@@ -38,7 +38,7 @@ public class OCamlConsoleToolWindowFactory implements ToolWindowFactory, DumbAwa
             myOCamlConsoleRunner.destroy();
             // Start again
             ApplicationManager.getApplication().invokeLater(() -> {
-                myOCamlConsoleRunner = new OCamlConsoleRunner(project, myOCamlConsoleRunner.myWindow);
+                myOCamlConsoleRunner = new OCamlConsoleRunner(project, myOCamlConsoleRunner.getWindow());
                 myOCamlConsoleRunner.runSync();
             });
         }
