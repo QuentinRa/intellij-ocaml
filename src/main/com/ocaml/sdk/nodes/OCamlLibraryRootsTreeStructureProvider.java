@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Hides files that are not ending with .ml, .mli, or .cmt
+ * Hides files that are not ending with either .ml or .mli
  */
 public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProvider {
 
@@ -25,10 +25,9 @@ public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProv
      * <ul>
      *     <li>ending with .ml {@link com.ocaml.ide.files.OCamlFileType#DOT_DEFAULT_EXTENSION}</li>
      *     <li>ending with .mli {@link com.ocaml.ide.files.OCamlInterfaceFileType#DOT_DEFAULT_EXTENSION}</li>
-     *     <li>ending with .cmt</li>
      * </ul>
      */
-    private static final Pattern ALLOWED_FILES = Pattern.compile(".*[.](ml|mli|cmt)");
+    private static final Pattern ALLOWED_FILES = Pattern.compile(".*[.](ml|mli)");
 
     @Override
     public @NotNull Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
@@ -41,7 +40,6 @@ public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProv
         // we need to remove every file that isn't
         // - ending with .ml
         // - ending with .mli
-        // - ending with .cmt
         List<AbstractTreeNode<?>> filtered = new ArrayList<>();
         for (AbstractTreeNode<?> child : children) {
             // Directories allowed
