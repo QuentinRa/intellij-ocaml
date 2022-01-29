@@ -12,11 +12,19 @@ import java.util.ArrayList;
 public class BaseOutputTest extends OCamlBaseTest {
 
     protected CompilerOutputMessage parseWarning(String output) {
+        return parse(output, CompilerOutputMessage.Kind.WARNING);
+    }
+
+    protected CompilerOutputMessage parseError(String output) {
+        return parse(output, CompilerOutputMessage.Kind.ERROR);
+    }
+
+    protected CompilerOutputMessage parse(String output, CompilerOutputMessage.Kind kind) {
         ArrayList<CompilerOutputMessage> messages = parseMessages(output);
         assertSize(1, messages);
 
         CompilerOutputMessage message = messages.get(0);
-        assertEquals(CompilerOutputMessage.Kind.WARNING, message.kind);
+        assertEquals(kind, message.kind);
         return message;
     }
 
