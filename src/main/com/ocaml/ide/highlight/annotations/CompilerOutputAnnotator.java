@@ -241,7 +241,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             AnnotationBuilder builder = holder.newAnnotation(t, message.content);
             if (startOffset != endOffset) builder = builder.range(new TextRangeInterval(startOffset, endOffset));
             else builder = builder.afterEndOfLine(); // otherwise, it does not make any sense
-            builder = builder.tooltip(XmlStringUtil.wrapInHtml(message.content.replace("\n", "<br/>")));
+            builder = builder.tooltip(message.content);
             // builder = builder.withFix(null); // fix
             builder.create();
 

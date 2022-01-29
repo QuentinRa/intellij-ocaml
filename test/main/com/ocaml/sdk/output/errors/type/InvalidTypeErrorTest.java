@@ -20,7 +20,9 @@ public class InvalidTypeErrorTest extends BaseOutputTest {
                 "       This is not a function; it cannot be applied.";
         CompilerOutputMessage message = parseError(output);
         assertIsFile(message, "expr_type.ml", 2, 2, 8, 9);
-        assertIsContent(message, "Error: This expression has type float\n" + "This is not a function; it cannot be applied.");
+        assertIsContent(message,
+                "Error: This expression has type float\n" +
+                        "       This is not a function; it cannot be applied.");
         assertIsContext(message,  "2 | let y = x 0\n" + "            ^\n");
     }
 

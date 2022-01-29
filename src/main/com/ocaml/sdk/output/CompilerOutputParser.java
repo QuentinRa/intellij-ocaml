@@ -122,7 +122,8 @@ public abstract class CompilerOutputParser {
             line = firstPart + ":" + secondPart;
         }
 
-        currentState.messageRaw += line.trim() + "\n";
+        // change: we are now keeping the indents
+        currentState.messageRaw += line + "\n";
     }
 
     public static final Pattern FILE_LOCATION = Pattern.compile("File \"([^\"]+)\", lines? ([^,]+), characters ([^-]+)-([0-9]+):(.*)");
