@@ -1,8 +1,8 @@
 package com.dune.ide.files;
 
 import com.dune.DuneBundle;
-import com.dune.icons.DuneIcons;
 import com.dune.DuneLanguage;
+import com.dune.icons.DuneIcons;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +13,7 @@ public final class DuneFileType extends LanguageFileType {
 
     // instance
     public static final DuneFileType INSTANCE = new DuneFileType();
+
     private DuneFileType() {
         super(DuneLanguage.INSTANCE);
     }

@@ -10,8 +10,8 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] Support for opam
 * [ ] Support for Makefile
 * [ ] Support for Dune (already supported in ReasonML)
-* [ ] Any installation must be simple, and effortless
-* [ ] **Real-time checks for errors/warnings**, including quick fixes
+* [x] Any installation must be simple, and effortless
+* [x] **Real-time checks for errors/warnings**, including quick fixes
 * [ ] **Real-time type inference**
 * [ ] **Smart completion**
 * [ ] **REPL support**: we must be able to send commands from our file, to a REPL console
@@ -41,7 +41,6 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Edit modules' properties (ex: output folder, src folder) |
 | ✅ You can use a template (✅ Makefile, ✅ Dune)              |
 | ✅ Can create a file (.ml, .mli, .ml+.mli)                  |
-| ❌ Add an import wizard                                     |
 | ❌ The project is created with a default runConfiguration   |
 
 You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you only have /bin/ocaml, etc.). You may use a template, two are available, one using a <b>Makefile</b>, and the other using <b>Dune</b>.
@@ -62,22 +61,23 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 |-------------------------------------|
 | ✅ Can execute commands              |
 | ✅ Browse history, use arrow up/down |
-| ❌ See the values of the variables   |
+| ✅ See the values of the variables   |
 | ❌ Send commands to the console      |
 | ❌ Send a file to the console        |
 
 This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
 
-| Code highlighting                                    |
-|------------------------------------------------------|
-| ✅ .ml / .mli are highlighted (based on ReasonML)     |
-| ✅ we can see warnings in the file                    |
-| ❌ we can see errors in the file                      |
-| ❌ we can see alerts in the file                      |
-| ✅ errors are shown project-wide                      |
-| ❌ handle normal projects (files using other modules) |
-| ❌ handle dune projects                               |
-| ❌ handle Makefile projects                           |
+| Code highlighting                                |
+|--------------------------------------------------|
+| ✅ .ml / .mli are highlighted (based on ReasonML) |
+| ✅ we can see warnings in the file                |
+| ✅ we can see errors in the file                  |
+| ✅ we can see alerts in the file                  |
+| ✅ errors are shown project-wide                  |
+| ✅ mli is compiled is present, when in a .ml      |
+| ❌ handle files using other modules               |
+| ❌ handle dune projects                           |
+| ❌ handle Makefile projects                       |
 
 We are compiling the file, and parsing the output, to provide hints in the editor.
 
@@ -85,6 +85,14 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 |-----------------------------------------------------|
 | ✅ Can create .ml, .mli, or .ml and .mli             |
 | ✅ Editor > File and Code Templates for .ml and .mli |
+| ❌ Live templates                                    |
+
+| Dune                                                          |
+|---------------------------------------------------------------|
+| ✅ Import every features in ReasonML                           |
+| ❌ Suggest installing dune if opening a dune file without Dune |
+| ❌ Show a message when updating files not targeted             |
+| ❌ Show an icon to "reload" dune, reloading runConfig, etc.    |
 
 ## 📖 Install ocaml and opam
 

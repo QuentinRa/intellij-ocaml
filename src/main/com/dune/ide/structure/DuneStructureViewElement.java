@@ -164,7 +164,7 @@ public class DuneStructureViewElement implements StructureViewTreeElement, Sorta
         }
 
         @Override public void visitElement(@NotNull PsiElement element) {
-            if (element instanceof PsiStructuredElement ) {
+            if (element instanceof PsiStructuredElement) {
                 if (((PsiStructuredElement) element).canBeDisplayed()) {
                     m_treeElements.add(new DuneStructureViewElement(element, m_elementLevel));
                 }
