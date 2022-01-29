@@ -4,6 +4,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
 import com.intellij.lang.annotation.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
@@ -13,9 +14,10 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
 import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
@@ -24,7 +26,7 @@ import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
-import com.ocaml.utils.files.OCamlTempDirUtils;
+import com.ocaml.utils.files.OCamlFileUtils;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Relies on the ocaml compiler (ocamlc) to provide warnings, errors, and alerts
@@ -55,48 +58,64 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         Module module = ModuleUtil.findModuleForFile(sourceFile, project);
         if (module == null) return null;
         // find sdk
-        Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
+        ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
+        Sdk sdk = moduleRootManager.getSdk();
         if (sdk == null || !(sdk.getSdkType() instanceof OCamlSdkType)) return null;
         // get home path
         String homePath = sdk.getHomePath();
         if (homePath == null) return null;
 
-        LOG.trace("CollectInformation OK");
+        String targetFile = null;
 
-        return new CollectedInfo(file, editor, homePath);
+        // find the file we are trying to compile
+        for (VirtualFile root : moduleRootManager.getSourceRoots()) {
+            boolean under = VfsUtil.isUnder(sourceFile, Set.of(root));
+            if (!under) continue;
+            // we are asking for the parent, because we want the root inside the relative path
+            // ex: src/errors/mismatch/missing_impl/file.ml
+            targetFile = VfsUtil.getRelativePath(sourceFile, root);
+            break;
+        }
+        if (targetFile == null) return null;
+
+        // output folder
+        CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
+        VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
+        String outputFolder = outputPointer.getPresentableUrl() + "/tmp/";
+        return new CollectedInfo(file, editor, homePath, targetFile, outputFolder);
     }
 
-    /*
-     * we need to make a copy with the REAL content of the file, and work on this copy.
-     * if we are working on the given file, we are not compiling/... the "latest" version
-     * as some changes may not have been committed.
-     */
-
     @Override public @Nullable AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo) {
-        Project project = collectedInfo.mySourcePsiFile.getProject();
+        // build/out folder
+        File myOutputFolder = new File(collectedInfo.myOutputFolder);
+        if (!myOutputFolder.exists() && !myOutputFolder.mkdirs()) {
+            LOG.warn("Couldn't create '"+myOutputFolder+"'");
+            return null;
+        }
+        // target folder
+        File targetFolder = new File(myOutputFolder, collectedInfo.myTargetFile).getParentFile();
+        if (!targetFolder.exists() && !targetFolder.mkdirs()) {
+            LOG.warn("Couldn't create '"+targetFolder+"'");
+            return null;
+        }
+
         VirtualFile sourceFile = collectedInfo.mySourcePsiFile.getVirtualFile();
 
-        // Create and clean temporary compilation directory
-        String nameWithoutExtension = sourceFile.getNameWithoutExtension();
-        File tempCompilationDirectory = OCamlTempDirUtils.getOrCreateTempDirectory(project, LOG);
-        // Annotator functions are called asynchronously and can be interrupted,
-        // leaving files on disk if operation is aborted.
-        // -> Clean current temp directory, but for the current file only:
-        // avoid erasing files when concurrent compilation happens.
-        OCamlTempDirUtils.cleanTempDirectory(tempCompilationDirectory, nameWithoutExtension);
-
         // Creates a temporary file on disk with a copy of the current document.
-        File sourceTempFile = OCamlTempDirUtils.copyToTempFile(tempCompilationDirectory,
-                collectedInfo.mySourcePsiFile, nameWithoutExtension, LOG);
+        // We need to make a copy with the REAL content of the file, and work on this copy.
+        // If we are working on the given file, we are not compiling/... the "latest" version,
+        // as some changes may not have been committed.
+        File sourceTempFile = OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG);
         if (sourceTempFile == null)  return null;
 
-        File cmtFile = new File(tempCompilationDirectory, nameWithoutExtension + ".cmt");
+        String nameWithoutExtension = sourceFile.getNameWithoutExtension();
+        File cmtFile = new File(targetFolder, nameWithoutExtension + ".cmt");
         try {
             // get compiler
             GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
                     collectedInfo.myHomePath,
                     sourceTempFile.getPath(),
-                    tempCompilationDirectory.getAbsolutePath(),
+                    targetFolder.getAbsolutePath(),
                     sourceFile.getNameWithoutExtension()
             );
             if (cli == null) {
@@ -129,11 +148,14 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // done
             outputParser.inputDone();
 
-            // cleaning
-            FileUtil.delete(sourceTempFile);
-            // File baseFile = new File(sourceTempFile.getParent(), FileUtil.getNameWithoutExtension(sourceTempFile));
-            // FileUtil.delete(new File(baseFile.getPath() + ".cmo"));
-            // FileUtil.delete(new File(baseFile.getPath() + ".cmi"));
+            // refresh if needed
+            VirtualFile root = VfsUtil.findFileByIoFile(targetFolder, true);
+            if (root != null) {
+                ApplicationManager.getApplication().runWriteAction(
+                        () -> root.refresh(true, true)
+                );
+            }
+
             return new AnnotationResult(info, collectedInfo.myEditor, cmtFile);
         } catch (Exception e) {
             LOG.error("Error while processing annotations", e);
