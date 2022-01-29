@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Relies on the ocaml compiler (ocamlc) to provide warnings, errors, and alerts
@@ -71,7 +72,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
         String targetFile = null;
 
-        System.out.println("file:"+sourceFile.getPath());
+        LOG.trace("Working on file:"+sourceFile.getPath());
 
         // find the file we are trying to compile
         for (VirtualFile root : moduleRootManager.getSourceRoots()) {
@@ -121,30 +122,31 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         File sourceTempFile = OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG);
         if (sourceTempFile == null)  return null;
 
-        File interfaceTempFile = null; // only if we are compiling a .ml
+        AtomicReference<File> interfaceTempFile = new AtomicReference<>();
+        // only if we are compiling a .ml,
         // and we got a .mli
         if (collectedInfo.myTargetMli != null) {
-            interfaceTempFile = OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.myTargetMli, collectedInfo.myTargetMli.getName(), LOG);
+            ApplicationManager.getApplication().runReadAction(
+                    () -> interfaceTempFile.set(OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.myTargetMli, collectedInfo.myTargetMli.getName(), LOG))
+            );
         }
 
         String nameWithoutExtension = sourceFile.getNameWithoutExtension();
         File cmtFile = new File(targetFolder, nameWithoutExtension + ".cmt");
         try {
             // compile .mli
-            if (interfaceTempFile != null) {
+            if (interfaceTempFile.get() != null) {
                 // get compiler
                 GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
                         collectedInfo.myHomePath,
-                        interfaceTempFile.getPath(),
+                        interfaceTempFile.get().getPath(),
                         targetFolder.getAbsolutePath(),
                         sourceFile.getNameWithoutExtension()
                 );
                 if (cli == null) {
-                    System.out.println("No cli found for "+collectedInfo.myHomePath+" (mli).");
+                    LOG.error("No cli found for "+collectedInfo.myHomePath+" (mli).");
                     return null;
                 }
-                cli.setWorkDirectory(targetFolder);
-                cli.setRedirectErrorStream(true);
                 Process process = cli.createProcess();
                 process.waitFor(); // wait
             }
@@ -157,11 +159,9 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                     sourceFile.getNameWithoutExtension()
             );
             if (cli == null) {
-                System.out.println("No cli found for "+collectedInfo.myHomePath+" (ml).");
+                LOG.error("No cli found for "+collectedInfo.myHomePath+" (ml).");
                 return null;
             }
-            cli.setWorkDirectory(targetFolder);
-            cli.setRedirectErrorStream(true);
 
             OSProcessHandler processHandler = ProcessHandlerFactory
                     .getInstance()
@@ -189,17 +189,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
             // delete
             Files.deleteIfExists(sourceTempFile.toPath());
-            if (interfaceTempFile != null) Files.deleteIfExists(interfaceTempFile.toPath());
-
-            // refresh if needed
-            ApplicationManager.getApplication().invokeLater(() -> {
-                VirtualFile root = VfsUtil.findFileByIoFile(targetFolder, true);
-                if (root != null) {
-                    ApplicationManager.getApplication().runWriteAction(
-                            () -> root.refresh(true, true)
-                    );
-                }
-            });
+            if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
 
             return new AnnotationResult(info, collectedInfo.myEditor, cmtFile);
         } catch (Exception e) {
@@ -207,7 +197,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // delete
             try {
                 Files.deleteIfExists(sourceTempFile.toPath());
-                if (interfaceTempFile != null) Files.deleteIfExists(interfaceTempFile.toPath());
+                if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
             } catch (IOException ex) {
                 LOG.error("Files were not deleted", ex);
             }
