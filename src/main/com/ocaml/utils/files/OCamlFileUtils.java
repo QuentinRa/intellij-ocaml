@@ -57,7 +57,8 @@ public final class OCamlFileUtils {
         try {
             sourceTempFile = new File(tempCompilationDirectory, name);
             boolean created = sourceTempFile.createNewFile();
-            if (!created) throw new IOException("Could not create '"+sourceTempFile+"'.");
+            // FIX avoid "deadlock" if the file already exists
+            if (!created && !sourceTempFile.exists()) throw new IOException("Could not create '"+sourceTempFile+"'.");
         } catch (IOException e) {
             logger.info("Temporary file creation failed", e); // log error but do not show it in UI
             return null;
