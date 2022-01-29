@@ -21,7 +21,10 @@ import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
 import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.xml.util.XmlStringUtil;
+import com.ocaml.ide.files.OCamlFileType;
+import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
@@ -35,6 +38,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -67,6 +71,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
         String targetFile = null;
 
+        System.out.println("file:"+sourceFile.getPath());
+
         // find the file we are trying to compile
         for (VirtualFile root : moduleRootManager.getSourceRoots()) {
             boolean under = VfsUtil.isUnder(sourceFile, Set.of(root));
@@ -78,11 +84,18 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         }
         if (targetFile == null) return null;
 
+        // look for .mli
+        PsiFile mli = null;
+        if (OCamlFileType.isFile(sourceFile.getName())) {
+            VirtualFile mliV = sourceFile.getParent().findChild(OCamlInterfaceFileType.fromSource(sourceFile.getName()));
+            if (mliV != null) mli = PsiManager.getInstance(project).findFile(mliV);
+        }
+
         // output folder
         CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
         VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
         String outputFolder = outputPointer.getPresentableUrl() + "/tmp/";
-        return new CollectedInfo(file, editor, homePath, targetFile, outputFolder);
+        return new CollectedInfo(file, editor, homePath, targetFile, mli, outputFolder);
     }
 
     @Override public @Nullable AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo) {
@@ -108,9 +121,34 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         File sourceTempFile = OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG);
         if (sourceTempFile == null)  return null;
 
+        File interfaceTempFile = null; // only if we are compiling a .ml
+        // and we got a .mli
+        if (collectedInfo.myTargetMli != null) {
+            interfaceTempFile = OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.myTargetMli, collectedInfo.myTargetMli.getName(), LOG);
+        }
+
         String nameWithoutExtension = sourceFile.getNameWithoutExtension();
         File cmtFile = new File(targetFolder, nameWithoutExtension + ".cmt");
         try {
+            // compile .mli
+            if (interfaceTempFile != null) {
+                // get compiler
+                GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
+                        collectedInfo.myHomePath,
+                        interfaceTempFile.getPath(),
+                        targetFolder.getAbsolutePath(),
+                        sourceFile.getNameWithoutExtension()
+                );
+                if (cli == null) {
+                    System.out.println("No cli found for "+collectedInfo.myHomePath+" (mli).");
+                    return null;
+                }
+                cli.setWorkDirectory(targetFolder);
+                cli.setRedirectErrorStream(true);
+                Process process = cli.createProcess();
+                process.waitFor(); // wait
+            }
+
             // get compiler
             GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
                     collectedInfo.myHomePath,
@@ -119,9 +157,10 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                     sourceFile.getNameWithoutExtension()
             );
             if (cli == null) {
-                LOG.error("No cli found for "+collectedInfo.myHomePath+".");
+                System.out.println("No cli found for "+collectedInfo.myHomePath+" (ml).");
                 return null;
             }
+            cli.setWorkDirectory(targetFolder);
             cli.setRedirectErrorStream(true);
 
             OSProcessHandler processHandler = ProcessHandlerFactory
@@ -148,17 +187,30 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // done
             outputParser.inputDone();
 
+            // delete
+            Files.deleteIfExists(sourceTempFile.toPath());
+            if (interfaceTempFile != null) Files.deleteIfExists(interfaceTempFile.toPath());
+
             // refresh if needed
-            VirtualFile root = VfsUtil.findFileByIoFile(targetFolder, true);
-            if (root != null) {
-                ApplicationManager.getApplication().runWriteAction(
-                        () -> root.refresh(true, true)
-                );
-            }
+            ApplicationManager.getApplication().invokeLater(() -> {
+                VirtualFile root = VfsUtil.findFileByIoFile(targetFolder, true);
+                if (root != null) {
+                    ApplicationManager.getApplication().runWriteAction(
+                            () -> root.refresh(true, true)
+                    );
+                }
+            });
 
             return new AnnotationResult(info, collectedInfo.myEditor, cmtFile);
         } catch (Exception e) {
             LOG.error("Error while processing annotations", e);
+            // delete
+            try {
+                Files.deleteIfExists(sourceTempFile.toPath());
+                if (interfaceTempFile != null) Files.deleteIfExists(interfaceTempFile.toPath());
+            } catch (IOException ex) {
+                LOG.error("Files were not deleted", ex);
+            }
             return null;
         }
     }
