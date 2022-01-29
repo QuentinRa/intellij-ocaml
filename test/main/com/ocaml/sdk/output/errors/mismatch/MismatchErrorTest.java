@@ -24,16 +24,16 @@ public class MismatchErrorTest extends BaseOutputTest {
                 "       At position module type Something = <here>\n" +
                 "       Illegal permutation of structure fields";
         CompilerOutputMessage message = parseError(output);
-        assertIsFile(message, "in.ml", 1, 1, -1, -1);
+        assertIsFile(message, "file.ml", 1, 1, -1, -1);
         assertIsContent(message, "Error: The implementation file.ml does not match the interface file.cmi:\n" +
-                "       Module type declarations do not match:\n" +
-                "         module type Something =\n" +
-                "           sig type t val add : int -> int val empty : int end\n" +
-                "       does not match\n" +
-                "         module type Something =\n" +
-                "           sig type t val empty : int val add : int -> int end\n" +
-                "       At position module type Something = <here>\n" +
-                "       Illegal permutation of structure fields");
+                "Module type declarations do not match:\n" +
+                "module type Something =\n" +
+                "sig type t val add : int -> int val empty : int end\n" +
+                "does not match\n" +
+                "module type Something =\n" +
+                "sig type t val empty : int val add : int -> int end\n" +
+                "At position module type Something = <here>\n" +
+                "Illegal permutation of structure fields");
     }
 
     /*
@@ -52,10 +52,10 @@ public class MismatchErrorTest extends BaseOutputTest {
         assertIsFile(message, "file.ml", 1, 1, -1, -1);
         assertIsContent(message,
                 "Error: The implementation file.ml does not match the interface file.cmi:\n" +
-                "       The module `Make' is required but not provided\n" +
-                "       File \"file.mli\", line 7, characters 0-62: Expected declaration\n" +
-                "       The module type `Something' is required but not provided\n" +
-                "       File \"file.mli\", line 1, characters 0-83: Expected declaration");
+                "The module `Make' is required but not provided\n" +
+                "File \"file.mli\", line 7, characters 0-62: Expected declaration\n" +
+                "The module type `Something' is required but not provided\n" +
+                "File \"file.mli\", line 1, characters 0-83: Expected declaration");
     }
 
     /*
@@ -76,12 +76,12 @@ public class MismatchErrorTest extends BaseOutputTest {
         assertIsFile(message, "file.ml", 7, 7, 65, 114);
         assertIsContent(message,
                 "Error: Signature mismatch:\n" +
-                        "       Modules do not match:\n" +
-                        "         sig val empty : int val add : 'a -> int end\n" +
-                        "       is not included in\n" +
-                        "         sig type t = X.t val empty : int val add : int -> int end\n" +
-                        "       The type `t' is required but not provided\n" +
-                        "       File \"file.ml\", line 7, characters 50-62: Expected declaration");
+                        "Modules do not match:\n" +
+                        "sig val empty : int val add : 'a -> int end\n" +
+                        "is not included in\n" +
+                        "sig type t = X.t val empty : int val add : int -> int end\n" +
+                        "The type `t' is required but not provided\n" +
+                        "File \"file.ml\", line 7, characters 50-62: Expected declaration");
     }
 
 }

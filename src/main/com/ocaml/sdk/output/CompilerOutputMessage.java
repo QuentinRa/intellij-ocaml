@@ -36,4 +36,14 @@ public class CompilerOutputMessage {
     public boolean isError() { return kind == Kind.ERROR; }
     public boolean isWarning() { return kind == Kind.WARNING; }
     public boolean isAlert() { return kind == Kind.ALERT; }
+
+    @Override public String toString() {
+        return "CompilerOutputMessage{" +
+                "file=" + filePosition.getFile().getName() +
+                ", at=(l:"+filePosition.getStartLine()+"-"+filePosition.getEndLine()
+                +",c:" +filePosition.getStartColumn()+"-"+filePosition.getEndColumn() + ")"+
+                ", kind=" + kind +
+                ", header='" + header() + '\'' +
+                '}';
+    }
 }

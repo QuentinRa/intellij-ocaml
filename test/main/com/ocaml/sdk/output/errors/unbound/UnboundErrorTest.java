@@ -55,4 +55,24 @@ public class UnboundErrorTest extends BaseOutputTest {
         assertIsContext(message,  "1 | open G\n" + "         ^\n");
     }
 
+    /*
+     * rec.ml
+     */
+
+    @Test
+    public void testMissingRec() {
+        String output = "File \"rec.ml\", line 1, characters 10-11:\n" +
+                "1 | let x y = x y;;\n" +
+                "              ^\n" +
+                "Error: Unbound value x\n" +
+                "Hint: If this is a recursive definition,\n" +
+                "you should add the 'rec' keyword on line 1";
+        CompilerOutputMessage message = parseError(output);
+        assertIsFile(message, "rec.ml", 1, 1, 10, 11);
+        assertIsContent(message, "Error: Unbound value x\n" +
+                "Hint: If this is a recursive definition,\n" +
+                "you should add the 'rec' keyword on line 1");
+        assertIsContext(message,  "1 | let x y = x y;;\n" + "              ^\n");
+    }
+
 }

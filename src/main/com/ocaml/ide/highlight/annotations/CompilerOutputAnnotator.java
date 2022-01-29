@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -122,6 +123,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 while ((line = stdin.readLine()) != null) {
                     outputParser.parseLine(line);
                 }
+            } catch (IOException e){
+                LOG.warn("reading "+nameWithoutExtension+" error. Messages are "+info, e);
             }
             // done
             outputParser.inputDone();
@@ -172,7 +175,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
             // create
             AnnotationBuilder builder = holder.newAnnotation(t, message.content);
-            builder = builder.range(new TextRangeInterval(startOffset, endOffset));
+            if (startOffset != endOffset) builder = builder.range(new TextRangeInterval(startOffset, endOffset));
+            else builder = builder.afterEndOfLine(); // otherwise, it does not make any sense
             builder = builder.tooltip(XmlStringUtil.wrapInHtml(message.content.replace("\n", "<br/>")));
             // builder = builder.withFix(null); // fix
             builder.create();
