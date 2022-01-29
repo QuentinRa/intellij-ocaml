@@ -10,9 +10,6 @@ public final class UnusedWarningTest extends BaseOutputTest {
 
     /*
      * unused value
-     *
-     * let x = 5
-     * let x = 7
      */
 
     @Test
@@ -21,7 +18,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 32: unused value y.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 8, 8, 6, 7);
-        assertIsShortMessage(message, "unused value y");
+        assertIsShortAndContentMessage(message, "unused value y");
     }
 
     @Test
@@ -32,14 +29,12 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 32: unused value x.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 1, 1, 4, 5);
-        assertIsShortMessage(message, "unused value x");
+        assertIsShortAndContentMessage(message, "unused value x");
         assertIsContext(message, "1 | let x = 5\n" + "        ^\n");
     }
 
     /*
      * unused rec
-     *
-     * let rec y = 7
      */
 
     @Test
@@ -48,7 +43,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 39: unused rec flag.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 1, 1, 8, 9);
-        assertIsShortMessage(message, "unused rec flag");
+        assertIsShortAndContentMessage(message, "unused rec flag");
     }
 
     @Test
@@ -59,16 +54,12 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 39: unused rec flag.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 1, 1, 8, 9);
-        assertIsShortMessage(message, "unused rec flag");
+        assertIsShortAndContentMessage(message, "unused rec flag");
         assertIsContext(message, "1 | let rec x = 7\n" + "            ^\n");
     }
 
     /*
      * unused variable
-     *
-     * let f1 v = match v with
-     * | Some(v) -> 5
-     * | None -> 3
      */
 
     @Test
@@ -77,7 +68,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 27: unused variable v.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 1, 1, 29, 32);
-        assertIsShortMessage(message, "unused variable v");
+        assertIsShortAndContentMessage(message, "unused variable v");
     }
 
     @Test
@@ -88,17 +79,12 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 27: unused variable v.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 12, 12, 6, 9);
-        assertIsShortMessage(message, "unused variable v");
+        assertIsShortAndContentMessage(message, "unused variable v");
         assertIsContext(message, "12 | | Some(v) -> 5\n" + "           ^^^\n");
     }
 
     /*
      * unused match case
-     *
-     * let f2 v = match v with
-     * | Some(_) -> 5
-     * | Some(_)-> 7
-     * | None -> 3
      */
 
     @Test
@@ -107,7 +93,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 11: this match case is unused.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 1, 1, 40, 47);
-        assertIsShortMessage(message, "this match case is unused");
+        assertIsShortAndContentMessage(message, "this match case is unused");
     }
 
     @Test
@@ -118,7 +104,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 11: this match case is unused.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 13, 13, 2, 9);
-        assertIsShortMessage(message, "this match case is unused");
+        assertIsShortAndContentMessage(message, "this match case is unused");
         assertIsContext(message, "13 | | Some(v)-> 7\n" + "       ^^^^^^^\n");
     }
 
@@ -130,7 +116,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 11 [redundant-case]: this match case is unused.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 8, 8, 2, 9);
-        assertIsShortMessage(message, "this match case is unused");
+        assertIsShortAndContentMessage(message, "this match case is unused");
         assertIsContext(message, "8 | | Some(_)-> 7\n" + "      ^^^^^^^\n");
     }
 
@@ -145,7 +131,7 @@ public final class UnusedWarningTest extends BaseOutputTest {
                 "Warning 37: unused constructor B.";
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 1, 1, 0, 18);
-        assertIsShortMessage(message, "unused constructor B");
+        assertIsShortAndContentMessage(message, "unused constructor B");
         assertIsContext(message, "1 | type t = A | B | C\n" + "    ^^^^^^^^^^^^^^^^^^\n");
     }
 
@@ -162,6 +148,8 @@ public final class UnusedWarningTest extends BaseOutputTest {
         CompilerOutputMessage message = parseWarning(output);
         assertIsFile(message, "file.ml", 1, 1, 0, 18);
         assertIsShortMessage(message, "constructor A is never used to build values");
+        assertIsContent(message, "Constructor A is never used to build values.\n" +
+                "(However, this constructor appears in patterns.)");
         assertIsContext(message, "1 | type t = A | B | C\n" + "    ^^^^^^^^^^^^^^^^^^\n");
     }
 }

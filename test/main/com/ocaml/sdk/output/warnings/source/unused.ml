@@ -16,9 +16,6 @@ let f2 v = match v with
 | Some(_)-> 7
 | None -> 0
 
-(* none *)
-type t1 = A | B | C
+(* Unused constructor *)
 
-let f3 (t: t1) = match t with
-| 0 -> A
-| _ -> A
+(* Unused constructor to build values *)

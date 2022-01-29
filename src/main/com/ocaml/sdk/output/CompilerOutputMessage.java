@@ -20,7 +20,8 @@ public class CompilerOutputMessage {
 
     /**
      * The content of the message.
-     * The header is included inside the content.
+     * The header is included inside the content. This time, the header
+     * is properly capitalized, end ending with a dot.
      */
     public String content;
 

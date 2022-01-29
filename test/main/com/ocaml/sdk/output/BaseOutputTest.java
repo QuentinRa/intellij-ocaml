@@ -1,6 +1,7 @@
 package com.ocaml.sdk.output;
 
 import com.ocaml.OCamlBaseTest;
+import com.ocaml.utils.strings.StringsUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -43,12 +44,21 @@ public class BaseOutputTest extends OCamlBaseTest {
         assertEquals(message.filePosition.getEndColumn(), endCol);
     }
 
+    protected void assertIsShortAndContentMessage(CompilerOutputMessage message, String expected) {
+        assertIsShortMessage(message, expected);
+        assertIsContent(message, StringsUtil.capitalize(expected) +".");
+    }
+
     protected void assertIsShortMessage(@NotNull CompilerOutputMessage message, String expected) {
         assertEquals(expected, message.header);
     }
 
     protected void assertIsContext(@NotNull CompilerOutputMessage message, String expected) {
         assertEquals(expected, message.context);
+    }
+
+    protected void assertIsContent(@NotNull CompilerOutputMessage message, String expected) {
+        assertEquals(expected+"\n", message.content);
     }
 
 }

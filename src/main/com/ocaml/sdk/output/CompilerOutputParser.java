@@ -1,6 +1,7 @@
 package com.ocaml.sdk.output;
 
 import com.intellij.build.FilePosition;
+import com.ocaml.utils.strings.StringsUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +60,7 @@ public abstract class CompilerOutputParser {
         // we may have \in inside this header
         message.header = currentState.messageRaw.substring(0, i); // with the '.'
         // the whole message
-        message.content = currentState.messageRaw;
+        message.content = StringsUtil.capitalize(currentState.messageRaw);
         // file position
         message.filePosition = new FilePosition(
                 createFile(currentState.filePath),
