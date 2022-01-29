@@ -113,7 +113,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             ArrayList<CompilerOutputMessage> info = new ArrayList<>();
             CompilerOutputParser outputParser = new CompilerOutputParser() {
                 @Override protected void onMessageReady(@NotNull CompilerOutputMessage message) {
-                    LOG.debug("added:" + message.header + " (line->" + message.filePosition.getStartLine() + ")");
+                    LOG.debug("added:" + message.header() + " (line->" + message.filePosition.getStartLine() + ")");
                     info.add(message);
                 }
             };
@@ -171,7 +171,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             int endOffset = editor.isDisposed() ? 0 : editor.logicalPositionToOffset(end);
 
             // create
-            AnnotationBuilder builder = holder.newAnnotation(t, message.header);
+            AnnotationBuilder builder = holder.newAnnotation(t, message.content);
             builder = builder.range(new TextRangeInterval(startOffset, endOffset));
             builder = builder.tooltip(XmlStringUtil.wrapInHtml(message.content.replace("\n", "<br/>")));
             // builder = builder.withFix(null); // fix

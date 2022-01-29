@@ -34,7 +34,7 @@ let x y = match y with
 | 0 | 1 | 2 -> A
 ```
 
-### Warning N3 : fragile (existing)
+### Warning N3 : ???
 
 Before
 

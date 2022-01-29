@@ -54,13 +54,10 @@ public abstract class CompilerOutputParser {
         if (currentState.kind == null)
             throw new IllegalStateException("Current state invalid, no 'kind' for "+currentState);
         message.kind = currentState.kind;
-        // header
-        int i = currentState.messageRaw.indexOf('.');
-        if (i == -1) i = currentState.messageRaw.length();
-        // we may have \in inside this header
-        message.header = currentState.messageRaw.substring(0, i); // with the '.'
-        // the whole message
+
+        // the message
         message.content = StringsUtil.capitalize(currentState.messageRaw);
+
         // file position
         message.filePosition = new FilePosition(
                 createFile(currentState.filePath),
@@ -112,9 +109,17 @@ public abstract class CompilerOutputParser {
                 currentState.context += line + "\n";
                 return;
             }
-            int i = line.indexOf(':');
-            assert i != -1;
-            line = line.substring(i+1); // we got ": ", we are skipping both
+            int sep = line.indexOf(':');
+            assert sep != -1;
+            String firstPart = line.substring(0, sep);
+            String secondPart = line.substring(sep+1);
+
+            int mnemonic = firstPart.indexOf('[');
+            if (mnemonic != -1)
+                firstPart = firstPart.substring(0, mnemonic-1); // " ["
+
+            // line without the mnemonic
+            line = firstPart + ":" + secondPart;
         }
 
         currentState.messageRaw += line.trim() + "\n";

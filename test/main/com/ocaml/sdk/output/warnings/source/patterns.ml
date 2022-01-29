@@ -1,12 +1,12 @@
 (* pattern-matching is not exhaustive *)
-type t = A | B | C
+type t1 = A | B | C
 
-let x (y:t) = match y with
+let x (y:t1) = match y with
 | A -> 0
 
-(* ??? *)
+(* pattern-matching is fragile *)
 type t2 = A | B | C
 
-let x (y:t2) = match y with
+let y (y:t2) = match y with
 | A -> 0
 | _ -> 0
