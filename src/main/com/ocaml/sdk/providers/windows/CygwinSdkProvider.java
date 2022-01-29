@@ -84,11 +84,10 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
         for (String compilerName: getOCamlCompilerCommands()) {
             if (!Files.exists(homePath.resolve("bin/"+compilerName))) continue;
             // use this compiler
-            GeneralCommandLine cli = new GeneralCommandLine(
-                    sdkHomePath + "\\bin\\" + compilerName, "-c", file,
-                    "-o", outputDirectory + "\\" + executableName,
-                    "-I", outputDirectory,
-                    "-w", "+A", "-color=never", "-bin-annot"
+            GeneralCommandLine cli = createAnnotatorCommand(
+                    sdkHomePath + "\\bin\\" + compilerName,
+                    file, outputDirectory + "\\" + executableName,
+                    outputDirectory, outputDirectory
             );
             cli.withEnvironment("OCAMLLIB", sdkHomePath+"\\lib\\ocaml");
             return cli;

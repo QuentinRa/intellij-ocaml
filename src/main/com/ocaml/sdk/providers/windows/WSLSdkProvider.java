@@ -192,11 +192,10 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
                 throw new ExecutionException("Could not parse file:"+file);
 
             // create cli
-            GeneralCommandLine cli = new GeneralCommandLine(
-                    path.getLinuxPath()+"/bin/ocamlc", "-c", wslFile,
-                    "-o", wslOutputDirectory + "/" + executableName,
-                    "-I", wslOutputDirectory,
-                    "-w", "+A", "-color=never", "-bin-annot"
+            GeneralCommandLine cli = createAnnotatorCommand(
+                    path.getLinuxPath()+"/bin/ocamlc",
+                    wslFile, wslOutputDirectory + "/" + executableName,
+                    wslOutputDirectory, outputDirectory /* use OS working directory */
             );
             return distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
         } catch (ExecutionException e) {

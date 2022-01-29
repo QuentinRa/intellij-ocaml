@@ -243,11 +243,28 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
     @Override
     public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
         if (!canUseProviderForHome(sdkHomePath)) return null;
-        return new GeneralCommandLine(
-                sdkHomePath + "/bin/ocamlc", "-c", file,
-                "-o", outputDirectory + "/" + executableName,
-                "-I", outputDirectory,
-                "-w", "+A", "-color=never", "-bin-annot"
+        return createAnnotatorCommand(
+                sdkHomePath + "/bin/ocamlc", file,
+                outputDirectory + "/" + executableName,
+                outputDirectory, outputDirectory
         );
+    }
+
+    protected GeneralCommandLine createAnnotatorCommand(String compiler, @NotNull String file, String outputFile,
+                                                        String outputDirectory, String workingDirectory) {
+        GeneralCommandLine cli = new GeneralCommandLine(compiler);
+        if (file.endsWith(".mli")) cli.addParameter("-c");
+        // compile everything else
+        cli.addParameters(file, "-o", outputFile,
+                "-I", outputDirectory,
+                "-w", "+A", "-color=never", "-bin-annot");
+        // fix issue -I is adding, so the current directory
+        // is included, and this may lead to problems later (ex: a file.cmi may be
+        // used instead of the one in the output directory, because we found one in the
+        // current directory)
+        cli.setWorkDirectory(workingDirectory);
+        // needed otherwise the input stream ~~may be~~~ is empty
+        cli.setRedirectErrorStream(true);
+        return cli;
     }
 }
