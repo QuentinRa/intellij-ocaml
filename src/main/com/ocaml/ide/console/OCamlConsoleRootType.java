@@ -6,7 +6,7 @@ import com.intellij.ide.scratch.RootType;
 public class OCamlConsoleRootType extends ConsoleRootType {
 
     public OCamlConsoleRootType() {
-        super("ocaml", "OCaml console");
+        super("OCAML", "OCaml console");
     }
 
     public static OCamlConsoleRootType getInstance() {

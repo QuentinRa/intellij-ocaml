@@ -3,6 +3,7 @@ package com.ocaml.ide.console.debug;
 import com.intellij.ide.util.treeView.smartTree.*;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.ui.ScrollPaneFactory;
@@ -14,9 +15,14 @@ import com.ocaml.ide.console.debug.groups.TreeElementGroup;
 import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
+import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Panel with the variables
+ */
 public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposable {
+    private static final Logger LOG = OCamlLogger.getREPLInstance("variables_view");
 
     private final StructureTreeModel<?> structureTreeModel;
     private final SmartTreeStructure treeStructure;
@@ -34,8 +40,6 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
 
         var tree = new Tree(asyncTreeModel);
         tree.setRootVisible(false);
-        // todo: bundle
-        tree.getEmptyText().setText("No variables");
 
         setContent(ScrollPaneFactory.createScrollPane(tree));
     }
@@ -47,8 +51,10 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
     public void rebuild(@NotNull String newEntry) {
         newEntry = newEntry.trim();
         // todo: log
-        if (newEntry.endsWith("<fun>")) System.out.println("adding a function:"+newEntry);
-        else System.out.println("adding a variable:"+newEntry);
+        if (newEntry.endsWith("<fun>")) LOG.debug("adding a function:"+newEntry);
+        else LOG.debug("adding a variable:"+newEntry);
+
+        // todo: const + parser
 
         // find name
         int val = newEntry.indexOf("val");
@@ -72,10 +78,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
         }
 
         // remove
-        treeModel.modules.elements.remove(element);
-        treeModel.types.elements.remove(element);
-        treeModel.functions.elements.remove(element);
-        treeModel.variables.elements.remove(element);
+        treeModel.remove(element);
         // add
         group.elements.add(element);
 

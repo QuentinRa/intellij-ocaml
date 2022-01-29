@@ -27,7 +27,6 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
     }
 
     @Override public Object getValue() {
-        System.out.println("value:"+value);
         return value;
     }
 

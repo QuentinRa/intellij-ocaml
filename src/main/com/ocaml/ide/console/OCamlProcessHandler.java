@@ -7,8 +7,13 @@ import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
 import com.intellij.util.io.BaseOutputReader.Options;
+import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This class is updating the console view. We are not printing again the user input,
+ * we are only printing the console output and updating the variables' view.
+ */
 public final class OCamlProcessHandler extends KillableColoredProcessHandler {
     private final OCamlConsoleRunner runner;
     private final OCamlConsoleView consoleView;
@@ -22,16 +27,24 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         Disposer.register(this.consoleView, () -> { if (!isProcessTerminated()) destroyProcess(); });
     }
 
-    private boolean processFirst = false;
+    // this is the command that was used to start the console
+    // we will not print it
+    private boolean firstLine = false;
 
     public void coloredTextAvailable(@NotNull String textOriginal, @NotNull Key attributes) {
-        if (!processFirst) { processFirst = true; return; }
+        if (!firstLine) { firstLine = true; return; }
+        // pass empty
         if (textOriginal.isBlank()) return;
-        if (textOriginal.trim().endsWith(";;")) { return; }
+        // pass input
+        if (textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE)) { return; }
 
+        // todo: const
         // handle "val" -> variables or functions
-        if (textOriginal.startsWith("val")) {
-            if (runner.getVariablesView() != null) runner.getVariablesView().rebuild(textOriginal);
+        boolean updateVariableView = textOriginal.startsWith("val");
+
+        // update
+        if (updateVariableView && runner.getVariablesView() != null) {
+            runner.getVariablesView().rebuild(textOriginal);
         }
 
         // print

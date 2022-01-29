@@ -14,16 +14,21 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+/**
+ * Handle how the console is rendered.
+ */
 public class OCamlConsoleView extends LanguageConsoleImpl {
 
+    public static final String CONS0LE_TITLE = "OCaml";
+    public static final String MAIN_PROMPT = ">>>";
+    public static final String INDENT_PROMPT = ".. ";
+
     public OCamlConsoleView(@NotNull Project project) {
-        super(project, "OCaml", OCamlLanguage.INSTANCE);
+        super(project, CONS0LE_TITLE, OCamlLanguage.INSTANCE);
 
         ConsolePromptDecorator consolePromptDecorator = getConsolePromptDecorator();
-        consolePromptDecorator.setMainPrompt(">>>");
-        consolePromptDecorator.setIndentPrompt(".. ");
-
-        getConsoleEditor().setFontSize(20);
+        consolePromptDecorator.setMainPrompt(MAIN_PROMPT);
+        consolePromptDecorator.setIndentPrompt(INDENT_PROMPT);
     }
 
     @Override protected @NotNull JComponent createCenterComponent() {

@@ -8,6 +8,9 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.ocaml.icons.OCamlIcons;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Should handle the creation of windows.
+ */
 public class OCamlConsoleToolWindowFactory implements ToolWindowFactory, DumbAware {
 
     private static OCamlConsoleRunner myOCamlConsoleRunner;
@@ -20,8 +23,8 @@ public class OCamlConsoleToolWindowFactory implements ToolWindowFactory, DumbAwa
     @Override
     public void init(@NotNull ToolWindow window) {
         window.setIcon(OCamlIcons.Nodes.OCAML_CONSOLE);
-        window.setTitle("Process");
-        window.setStripeTitle("OCaml");
+        window.setTitle("");
+        window.setStripeTitle(OCamlConsoleView.CONS0LE_TITLE);
     }
 
     @Override

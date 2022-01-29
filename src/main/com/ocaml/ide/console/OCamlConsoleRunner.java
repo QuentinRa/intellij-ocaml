@@ -54,7 +54,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     private OCamlVariablesView myVariablesView;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
-        super(project, "OCaml", null);
+        super(project, OCamlConsoleView.CONS0LE_TITLE, null);
         myWindow = window;
     }
 

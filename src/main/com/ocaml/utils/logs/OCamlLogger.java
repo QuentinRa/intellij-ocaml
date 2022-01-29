@@ -36,4 +36,11 @@ public class OCamlLogger {
     public static @NotNull Logger getSdkProviderInstance() {
         return getSdkInstance("provider");
     }
+
+    /**
+     * Group for logs related to the top level.
+     */
+    public static @NotNull Logger getREPLInstance(String name) {
+        return getInstance("repl-"+name);
+    }
 }
