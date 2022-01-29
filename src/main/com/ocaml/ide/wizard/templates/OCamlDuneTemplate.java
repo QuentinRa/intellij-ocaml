@@ -45,7 +45,7 @@ class OCamlDuneTemplate implements ProjectTemplate, TemplateBuildInstructions {
 
     @Override
     public Icon getIcon() {
-        return OCamlIcons.Nodes.DUNE;
+        return OCamlIcons.External.DUNE;
     }
 
     @Override

@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <id>intellij-ocaml</id>
     <name>OCaml</name>
     <vendor email="admin@lgs-games.com" url="https://github.com/QuentinRa/intellij-ocaml">QuentinRa</vendor>
@@ -12,6 +12,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
+    <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <resource-bundle>messages.OCamlBundle</resource-bundle>
 

@@ -1,5 +1,6 @@
 package com.ocaml.icons;
 
+import com.dune.icons.DuneIcons;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.AnimatedIcon;
@@ -38,7 +39,6 @@ public class OCamlIcons {
         public static final Icon OCAML_SDK = loadIcon("/icons/ocamlSdk.svg");
         public static final Icon OCAML_CONSOLE = loadIcon("/icons/ocamlTool.svg");
         public static final Icon OCAML_LIBRARY = loadIcon("/icons/ocamlModule.svg");
-        public static final Icon DUNE = loadIcon("/icons/duneLogo.svg");
     }
 
     public static final class FileTypes {
@@ -57,6 +57,8 @@ public class OCamlIcons {
         // ClionMakefileIcons.Icons.Makefile
         // MakefileIcons.Icons.Makefile
         public static final Icon MAKEFILE = loadIcon("/icons/makefile.svg");
+        // DuneIcons.Nodes.Dune
+        public static final Icon DUNE = DuneIcons.Nodes.DUNE;
     }
 
 }
