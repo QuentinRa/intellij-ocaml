@@ -22,6 +22,13 @@
         <action id="NewOCamlFile" class="com.ocaml.ide.actions.OCamlCreateFileAction">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
+        <!-- Editor - REPL -->
+        <action id="editor.repl.run.action" class="com.ocaml.ide.actions.editor.run.OCamlRunFileREPLAction" icon="AllIcons.Actions.Execute" >
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -52,5 +59,7 @@
         <!-- REPL -->
         <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
         <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>
+        <actionPromoter implementation="com.ocaml.ide.actions.editor.OCamlActionPromoter"/>
+        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlFileEditorProvider"/>
     </extensions>
 </idea-plugin>

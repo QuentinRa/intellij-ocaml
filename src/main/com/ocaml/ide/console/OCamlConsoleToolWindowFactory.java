@@ -15,6 +15,10 @@ public class OCamlConsoleToolWindowFactory implements ToolWindowFactory, DumbAwa
 
     private static OCamlConsoleRunner myOCamlConsoleRunner;
 
+    public static OCamlConsoleRunner getOCamlConsoleRunner() {
+        return myOCamlConsoleRunner;
+    }
+
     @Override
     public boolean shouldBeAvailable(@NotNull Project project) {
         return true;

@@ -1,6 +1,5 @@
 package com.ocaml.ide.console.actions;
 
-import com.intellij.execution.console.LanguageConsoleView;
 import com.intellij.execution.console.ProcessBackedConsoleExecuteActionHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
@@ -15,9 +14,9 @@ public class OCamlExecuteActionHandler extends ProcessBackedConsoleExecuteAction
         super(processHandler, preserveMarkup);
     }
 
-    @Override protected void execute(@NotNull String text, @NotNull LanguageConsoleView console) {
+    @Override public void processLine(@NotNull String line) {
         // appends ";;" if needed
-        if (!text.isBlank() && !text.endsWith(OCamlREPLConstants.END_LINE)) text += OCamlREPLConstants.END_LINE;
-        super.execute(text, console);
+        if (!line.isBlank() && !line.endsWith(OCamlREPLConstants.END_LINE)) line += OCamlREPLConstants.END_LINE;
+        super.processLine(line);
     }
 }

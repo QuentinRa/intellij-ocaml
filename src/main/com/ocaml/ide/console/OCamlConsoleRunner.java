@@ -171,6 +171,10 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         return new OCamlExecuteActionHandler(getProcessHandler(), true);
     }
 
+    @Override public OCamlExecuteActionHandler getConsoleExecuteActionHandler() {
+        return (OCamlExecuteActionHandler) super.getConsoleExecuteActionHandler();
+    }
+
     // Run
 
     public void runSync() {
@@ -246,5 +250,13 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
     public OCamlVariablesView getVariablesView() {
         return myVariablesView;
+    }
+
+    /**
+     * Process a command, but it won't be added to the history
+     * @param s may be a whole file
+     */
+    public void processCommand(String s) {
+        getConsoleExecuteActionHandler().processLine(s);
     }
 }
