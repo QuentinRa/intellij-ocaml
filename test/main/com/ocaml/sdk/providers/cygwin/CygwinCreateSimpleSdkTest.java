@@ -16,10 +16,10 @@ public class CygwinCreateSimpleSdkTest extends CygwinBaseTest {
             try {
                 for (; i > 0 ; i--) {
                     SimpleSdkData simpleSdkData = new SimpleSdkData(
-                            "C:\\cygwin64\\bin\\ocaml.exe",
-                            "C:\\cygwin64\\bin\\ocamlc.opt.exe",
-                            "4.10.0",
-                            "C:\\cygwin64\\lib\\ocaml"
+                            BIN_CREATE_SDK.toplevel,
+                            BIN_CREATE_SDK.comp,
+                            BIN_CREATE_SDK.version,
+                            BIN_CREATE_SDK.sources
                     );
                     homes.add(simpleSdkData.homePath);
                     assertCygwinHomeValid(simpleSdkData.homePath);

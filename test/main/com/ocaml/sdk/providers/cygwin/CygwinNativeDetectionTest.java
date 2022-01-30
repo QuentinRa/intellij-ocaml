@@ -1,8 +1,8 @@
 package com.ocaml.sdk.providers.cygwin;
 
-import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
@@ -11,7 +11,7 @@ public final class CygwinNativeDetectionTest extends CygwinBaseTest {
     // This test is only possible because
     // this one is in the PATH
 
-    @Test
+    @Test @Ignore // todo: test https://stefanbirkner.github.io/system-rules/
     public void testPath() {
         DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk();
         assertEquals("C:\\cygwin64\\bin\\ocaml.exe", detectionResult.ocaml);
@@ -42,31 +42,21 @@ public final class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testNotOCaml() {
-        assertCygwinDetectionInvalid("C:\\cygwin64\\bin\\find.exe");
+        assertCygwinDetectionInvalid(BIN_VALID_EXE);
     }
 
     @Test
     public void testBin() {
-        assertCygwinDetectionValid(
-                "C:\\cygwin64\\bin\\ocaml.exe",
-                "ocamlc.opt.exe",
-                "4.10.0"
-        );
+        assertCygwinDetectionValid(BIN_VALID_SDK);
     }
 
     @Test
     public void testOpamBinValid() {
-        assertCygwinDetectionValid(
-                "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\4.08.0\\bin\\ocaml.exe",
-                "ocamlc.opt.exe",
-                "4.08.0"
-        );
+        assertCygwinDetectionValid(OPAM_VALID_SDK);
     }
 
     @Test
     public void testOpamBinInvalid() {
-        assertCygwinDetectionInvalid(
-                "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\0.0.0\\bin\\ocaml.exe"
-        );
+        assertCygwinDetectionInvalid(OPAM_INVALID_BIN);
     }
 }
