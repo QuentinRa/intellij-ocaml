@@ -1,6 +1,5 @@
 package com.ocaml.sdk.providers.wsl;
 
-import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.utils.SdkInfo;
 
 public interface WSLFolders {
@@ -32,7 +31,7 @@ public interface WSLFolders {
     //
 
     /** path to the opam folder **/
-    String OPAM_HOME =  "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() +"\\.opam\\";
+    String OPAM_HOME =  "\\\\wsl$\\Debian\\home\\calistro\\.opam\\";
 
     /** everything should be valid **/
     SdkInfo OPAM_VALID_SDK = new SdkInfo(
@@ -52,6 +51,6 @@ public interface WSLFolders {
 
     /** expected: properly formatted path, non-existing SDK version **/
     String OPAM_INVALID = "\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0";
-    String OPAM_INVALID_BIN = "\"\\\\\\\\wsl$\\\\Debian\\\\home\\\\calistro\\\\.opam\\\\0.00.0\\\\bin\\\\ocaml\"";
+    String OPAM_INVALID_BIN = "\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0\\bin\\ocaml";
 
 }
