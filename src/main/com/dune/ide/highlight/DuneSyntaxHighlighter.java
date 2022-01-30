@@ -1,6 +1,6 @@
 package com.dune.ide.highlight;
 
-import com.dune.lang.core.psi.impl.DuneTypes;
+import com.dune.lang.core.psi.DuneTypes;
 import com.dune.lang.lexer.DuneLexerAdapter;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;

@@ -2,7 +2,7 @@ package com.dune.ide.highlight;
 
 import com.dune.lang.core.psi.PsiDuneField;
 import com.dune.lang.core.psi.PsiStanza;
-import com.dune.lang.core.psi.impl.DuneTypes;
+import com.dune.lang.core.psi.DuneTypes;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.colors.TextAttributesKey;

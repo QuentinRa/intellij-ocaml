@@ -1,6 +1,6 @@
 package com.dune.lang.parser;
 
-import com.dune.lang.core.psi.impl.DuneTypes;
+import com.dune.lang.core.psi.DuneTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;

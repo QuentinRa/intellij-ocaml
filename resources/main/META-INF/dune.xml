@@ -17,4 +17,8 @@
         <lang.psiStructureViewFactory language="DUNE" implementationClass="com.dune.ide.structure.DuneStructureViewFactory"/>
         <lang.foldingBuilder language="DUNE" implementationClass="com.dune.ide.folding.DuneFoldingBuilder"/>
     </extensions>
+
+    <!-- Add your extensions here -->
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
 </idea-plugin>

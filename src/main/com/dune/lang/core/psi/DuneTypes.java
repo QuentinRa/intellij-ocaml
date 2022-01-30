@@ -1,9 +1,6 @@
 // This is a "generated" file. Not intended for manual editing.
-package com.dune.lang.core.psi.impl;
+package com.dune.lang.core.psi;
 
-import com.dune.lang.core.psi.DuneElement;
-import com.dune.lang.core.psi.DuneElementType;
-import com.dune.lang.core.psi.DuneTokenType;
 import com.intellij.psi.tree.IElementType;
 
 public interface DuneTypes {

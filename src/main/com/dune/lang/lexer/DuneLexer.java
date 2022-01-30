@@ -2,7 +2,7 @@
 
 package com.dune.lang.lexer;
 
-import com.dune.lang.core.psi.impl.DuneTypes;
+import com.dune.lang.core.psi.DuneTypes;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lexer.FlexLexer;
 

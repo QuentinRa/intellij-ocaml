@@ -1,3 +1,5 @@
+// Look at
+// https://github.com/sidharthkuruvila/ocaml-ide/blob/master/parser/ocaml.bnf
 {
     parserClass="com.ocaml.lang.lexer.OCamlParser"
     parserUtilClass='com.ocaml.lang.lexer.OCamlParserUtil'

@@ -1,7 +1,6 @@
 package com.dune.lang.core.psi;
 
 import com.dune.icons.DuneIcons;
-import com.dune.lang.core.psi.impl.DuneTypes;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
