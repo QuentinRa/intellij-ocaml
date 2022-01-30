@@ -11,10 +11,10 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] Support for Makefile
 * [ ] Support for Dune (already supported in ReasonML)
 * [x] Any installation must be simple, and effortless
-* [x] **Real-time checks for errors/warnings**, including quick fixes
+* [ ] **Real-time checks for errors/warnings**, including quick fixes
 * [ ] **Real-time type inference**
 * [ ] **Smart completion**
-* [ ] **REPL support**: we must be able to send commands from our file, to a REPL console
+* [x] **REPL support**: we must be able to send commands from our file, to a REPL console
 * [x] **Using a bundle** (possible support for Localization later)
 
 Originally, I was planning to make things, so that we can use this plugin outside IntelliJ, but now my goal is to at least make this plugin work in IntelliJ before targeting minor IDEs.
@@ -54,6 +54,7 @@ You are now able to create a project using an opam SDK, or create an opam-like S
 | ✅ The user see sources, only .ml/.mli files are shown   |
 | ✅ Suggest SDK if opening a file in a module without SDK |
 | ❌ The user can download OCaml                           |
+| ❌ The user can download sources                         |
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
 
@@ -97,7 +98,7 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 ## 📖 Install ocaml and opam
 
 <details>
-<summary>Windows (with WSL, version >= 2021.3)</summary>
+<summary>Windows (with WSL, >= 2021.3 only)</summary>
 
 On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
 </details>

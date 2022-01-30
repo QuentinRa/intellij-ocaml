@@ -10,15 +10,17 @@ import java.util.regex.Pattern;
 public final class OCamlSdkVersionManager {
 
     /**
-     * - something
-     * - then a slash
-     * - 1# then the major version
-     * - 1# the two digits of the minor version
-     * - 1# an optional patch version
-     * - 1# an optional kind "+kind"
-     * - we are allowing some text, after all of this, if the text is starting with "-v"
-     * - then we got another slash
-     * - something
+     * <ul>
+     * <li>something</li>
+     * <li>then a slash</li>
+     * <li>1# then the major version</li>
+     * <li>1# the two digits of the minor version</li>
+     * <li>1# an optional patch version</li>
+     * <li>1# an optional kind "+kind"</li>
+     * <li>we are allowing some text, after all of this, if the text is starting with "-v"</li>
+     * <li>then we got another slash</li>
+     * <li>something</li>
+     * </ul>
      */
     private static final Pattern VERSION_PATH_REGEXP =
             Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?/.*");

@@ -8,9 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class OCamlSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
-
-    @Override public @NotNull SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project,
-                                                                     @Nullable VirtualFile virtualFile) {
+    @Override
+    public @NotNull SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
         return new OCamlSyntaxHighlighter();
     }
 }

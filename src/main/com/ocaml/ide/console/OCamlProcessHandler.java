@@ -38,14 +38,8 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         // pass input
         if (textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE)) { return; }
 
-        // todo: const
-        // handle "val" -> variables or functions
-        boolean updateVariableView = textOriginal.startsWith("val");
-
-        // update
-        if (updateVariableView && runner.getVariablesView() != null) {
-            runner.getVariablesView().rebuild(textOriginal);
-        }
+        // update variables view
+        runner.rebuildVariableView(textOriginal);
 
         // print
         consoleView.print(textOriginal, ConsoleViewContentType.SYSTEM_OUTPUT);

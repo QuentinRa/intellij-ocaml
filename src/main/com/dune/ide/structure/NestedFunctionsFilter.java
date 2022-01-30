@@ -1,5 +1,6 @@
 package com.dune.ide.structure;
 
+import com.dune.DuneBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.treeView.smartTree.ActionPresentation;
 import com.intellij.ide.util.treeView.smartTree.Filter;
@@ -23,15 +24,14 @@ public class NestedFunctionsFilter implements Filter {
         return true;
     }
 
-    // todo: bundle
     @Override public @NotNull ActionPresentation getPresentation() {
         return new ActionPresentation() {
             @Override public @NotNull @NlsActions.ActionText String getText() {
-                return "Show Nested Functions";
+                return DuneBundle.message("show.nested.functions");
             }
 
             @Override public @NlsActions.ActionDescription String getDescription() {
-                return "Show nested functions";
+                return DuneBundle.message("show.nested.functions.desc");
             }
 
             @Override public Icon getIcon() {

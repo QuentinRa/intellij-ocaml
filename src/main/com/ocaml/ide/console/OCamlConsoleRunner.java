@@ -26,6 +26,7 @@ import com.intellij.ui.JBSplitter;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.ui.MessageCategory;
+import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.console.actions.OCamlExecuteActionHandler;
 import com.ocaml.ide.console.actions.OCamlRestartAction;
@@ -141,8 +142,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         executeAction.registerCustomShortcutSet(CommonShortcuts.ENTER, consoleEditor.getComponent());
 
         String actionShortcutText = KeymapUtil.getFirstKeyboardShortcutText(executeAction);
-        // todo: bundle
-        consoleEditor.setPlaceholder("<"+actionShortcutText+"> to execute");
+        consoleEditor.setPlaceholder(OCamlBundle.message("repl.prompt.execute", actionShortcutText));
         consoleEditor.setShowPlaceholderWhenFocused(true);
 
         return executeAction;
@@ -180,12 +180,10 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     public void runSync() {
         try {
             initAndRun();
-            // todo: bundle
             ProgressManager.getInstance().run(new Task.Backgroundable(getProject(),
-                    "Connecting to Console", false) {
+                    OCamlBundle.message("repl.connecting"), false) {
                 @Override public void run(@NotNull ProgressIndicator indicator) {
-                    // todo: bundle
-                    indicator.setText("Connecting to console...");
+                    indicator.setText(OCamlBundle.message("repl.connecting.dots"));
 
                     OCamlConsoleView consoleView = OCamlConsoleRunner.this.getConsoleView();
                     consoleView.setup();
@@ -200,7 +198,6 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         var actionGroup = new DefaultActionGroup(new OCamlRestartAction(getProject()));
 
         var actionToolbar = ActionManager.getInstance()
-                // todo: ???
                 .createActionToolbar("OCamlConsoleErrors", actionGroup, false);
 
         // Runner creating
@@ -219,8 +216,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         errorViewPanel.addMessage(MessageCategory.ERROR, messages.toArray(new String[0]), null, -1, -1, null);
         panel.add(errorViewPanel, BorderLayout.CENTER);
 
-        // todo: bundle
-        var descriptor = new RunContentDescriptor(null, getProcessHandler(), panel, "Error Running REPL Console");
+        var descriptor = new RunContentDescriptor(null, getProcessHandler(), panel, OCamlBundle.message("repl.error.running"));
         Executor executor = getExecutor();
 
         // remove
@@ -248,15 +244,16 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         return myWindow;
     }
 
-    public OCamlVariablesView getVariablesView() {
-        return myVariablesView;
-    }
-
     /**
      * Process a command, but it won't be added to the history
      * @param s may be a whole file
      */
     public void processCommand(String s) {
         getConsoleExecuteActionHandler().processLine(s);
+    }
+
+    public void rebuildVariableView(String text) {
+        if (myVariablesView != null)
+            myVariablesView.rebuild(text);
     }
 }

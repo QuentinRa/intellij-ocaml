@@ -12,6 +12,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorNotificationPanel;
+import com.ocaml.OCamlBundle;
 import com.ocaml.ide.files.FileHelper;
 import com.ocaml.sdk.OCamlSdkType;
 import org.jetbrains.annotations.NotNull;
@@ -23,8 +24,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class OCamlSDKValidator implements ProjectSdkSetupValidator {
 
-    // todo: bundle
-    public static final String CONFIGURE_OCAMLC_SDK = "Please configure the OCaml SDK";
+    public static final String CONFIGURE_OCAMLC_SDK = OCamlBundle.message("sdk.ask.configure");
 
     @Override public boolean isApplicableFor(@NotNull Project project, @NotNull VirtualFile file) {
         FileType fileType = file.getFileType();

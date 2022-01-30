@@ -14,8 +14,6 @@ public class ParserScope {
     private final DuneElementType m_compositeElementType;
     public PsiBuilder.Marker m_mark;
     private IElementType m_scopeTokenElementType;
-    private boolean m_isComplete = true;
-    private boolean m_isDummy = false; // Always drop
     private boolean m_isStart = false;
 
     private ParserScope(@NotNull PsiBuilder builder, @NotNull PsiBuilder.Marker mark, @Nullable DuneElementType compositeElementType, @Nullable IElementType scopeTokenElementType) {
@@ -43,13 +41,7 @@ public class ParserScope {
     }
 
     public void end() {
-        if (m_isDummy) {
-            drop();
-        } else if (m_isComplete) {
-            done();
-        } else {
-            drop();
-        }
+        done();
     }
 
     private void done() {
@@ -61,30 +53,6 @@ public class ParserScope {
             }
             m_mark = null;
         }
-    }
-
-    void drop() {
-        if (m_mark != null) {
-            m_mark.drop();
-            m_mark = null;
-        }
-    }
-
-    public void complete() {
-        m_isComplete = true;
-    }
-
-    public void optional() {
-        m_isComplete = false;
-    }
-
-    public boolean isOptional() {
-        return !m_isComplete;
-    }
-
-    public void dummy() {
-        m_isComplete = false;
-        m_isDummy = true;
     }
 
     boolean isCompositeEqualTo(DuneElementType compositeType) {
@@ -107,7 +75,4 @@ public class ParserScope {
         return m_scopeTokenElementType != null;
     }
 
-    public boolean isDummy() {
-        return m_isDummy;
-    }
 }

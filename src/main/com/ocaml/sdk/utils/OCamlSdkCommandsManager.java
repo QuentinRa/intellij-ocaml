@@ -11,6 +11,7 @@ import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.ocaml.OCamlBundle;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public final class OCamlSdkCommandsManager {
             }
         }
         if (sdk == null)
-            throw new IllegalStateException("No OCaml SDK found");
+            throw new IllegalStateException(OCamlBundle.message("repl.no.sdk"));
         return sdk;
     }
 
@@ -39,7 +40,7 @@ public final class OCamlSdkCommandsManager {
         // get command
         GeneralCommandLine replCommand = OCamlSdkProvidersManager.INSTANCE.getREPLCommand(sdk.getHomePath());
 
-        // should not be null, even if everyone delegates the creation, the default provider isn't
+        // should NOT be null, even if everyone delegates the creation, the default provider isn't
         if (replCommand == null)
             throw new IllegalStateException("Unable to start the console.");
 

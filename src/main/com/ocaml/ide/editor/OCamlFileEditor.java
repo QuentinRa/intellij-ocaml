@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.ocaml.OCamlBundle;
 import com.ocaml.ide.actions.editor.run.OCamlRunFileREPLAction;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
     }
 
     @Override public @Nls(capitalization = Nls.Capitalization.Title) @NotNull String getName() {
-        return "OCaml Editor";
+        return OCamlBundle.message("editor.name");
     }
 
     private @NotNull ActionToolbar createOCamlEditorToolbar() {

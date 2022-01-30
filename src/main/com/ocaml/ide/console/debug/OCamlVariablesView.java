@@ -49,6 +49,9 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
      * @param newEntry lines of the new item (ex: val x : int = 5)
      */
     public void rebuild(@NotNull String newEntry) {
+        if (!newEntry.startsWith("val")) return; // not possible yet
+        // handle "val" -> variables or functions
+
         newEntry = newEntry.trim();
         // todo: log
         if (newEntry.endsWith("<fun>")) LOG.debug("adding a function:"+newEntry);

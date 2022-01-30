@@ -7,6 +7,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectTemplate;
 import com.ocaml.utils.files.OCamlFileUtils;
 import com.ocaml.utils.logs.OCamlLogger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,14 +19,15 @@ public final class OCamlTemplateProvider {
      * This may not be the way to do, but there is no indications for now,
      * so I will use this.
      */
-    public static ArrayList<ProjectTemplate> getAvailableTemplates() {
+    public static @NotNull ArrayList<ProjectTemplate> getAvailableTemplates() {
         ArrayList<ProjectTemplate> availableTemplates = new ArrayList<>();
         availableTemplates.add(new OCamlDuneTemplate());
         availableTemplates.add(new OCamlMakefileTemplate());
         return availableTemplates;
     }
 
-    public static TemplateBuildInstructions getDefaultInstructions() {
+    @Contract(value = " -> new", pure = true)
+    public static @NotNull TemplateBuildInstructions getDefaultInstructions() {
         return new OCamlDefaultTemplateInstructions();
     }
 
