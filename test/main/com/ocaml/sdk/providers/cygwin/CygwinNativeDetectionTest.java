@@ -42,21 +42,21 @@ public final class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testNotOCaml() {
-        assertCygwinDetectionInvalid(BIN_VALID_EXE);
+        assertCygwinDetectionInvalid(CygwinFolders.BIN_VALID_EXE);
     }
 
     @Test
     public void testBin() {
-        assertCygwinDetectionValid(BIN_VALID_SDK);
+        assertCygwinDetectionValid(CygwinFolders.BIN_VALID_SDK);
     }
 
     @Test
     public void testOpamBinValid() {
-        assertCygwinDetectionValid(OPAM_VALID_SDK);
+        assertCygwinDetectionValid(CygwinFolders.OPAM_VALID_SDK);
     }
 
     @Test
     public void testOpamBinInvalid() {
-        assertCygwinDetectionInvalid(OPAM_INVALID_BIN);
+        assertCygwinDetectionInvalid(CygwinFolders.OPAM_INVALID_BIN);
     }
 }

@@ -1,7 +1,6 @@
 package com.ocaml.sdk.providers.cygwin;
 
 import com.intellij.util.SystemProperties;
-import com.ocaml.sdk.providers.simple.SimpleSdkData;
 import com.ocaml.sdk.utils.SdkInfo;
 
 public interface CygwinFolders {
@@ -13,8 +12,8 @@ public interface CygwinFolders {
     SdkInfo BIN_VALID_SDK = new SdkInfo(
             "C:\\cygwin64\\",
             "C:\\cygwin64\\bin\\ocaml.exe",
-            "4.10.0",
-            "ocamlc.opt.exe"
+            "ocamlc.opt.exe",
+            "4.10.0"
     );
     SdkInfo BIN_CREATE_SDK = new SdkInfo(
             null,
@@ -38,8 +37,8 @@ public interface CygwinFolders {
     SdkInfo OPAM_VALID_SDK = new SdkInfo(
             "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\4.08.0\\",
             "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\4.08.0\\bin\\ocaml.exe",
-            "4.08.0",
-            "ocamlc.opt.exe"
+            "ocamlc.opt.exe",
+            "4.08.0"
     );
 
     /** expected: properly formatted path, non-existing SDK version **/

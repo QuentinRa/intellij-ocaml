@@ -16,10 +16,10 @@ public class CygwinCreateSimpleSdkTest extends CygwinBaseTest {
             try {
                 for (; i > 0 ; i--) {
                     SimpleSdkData simpleSdkData = new SimpleSdkData(
-                            BIN_CREATE_SDK.toplevel,
-                            BIN_CREATE_SDK.comp,
-                            BIN_CREATE_SDK.version,
-                            BIN_CREATE_SDK.sources
+                            CygwinFolders.BIN_CREATE_SDK.toplevel,
+                            CygwinFolders.BIN_CREATE_SDK.comp,
+                            CygwinFolders.BIN_CREATE_SDK.version,
+                            CygwinFolders.BIN_CREATE_SDK.sources
                     );
                     homes.add(simpleSdkData.homePath);
                     assertCygwinHomeValid(simpleSdkData.homePath);

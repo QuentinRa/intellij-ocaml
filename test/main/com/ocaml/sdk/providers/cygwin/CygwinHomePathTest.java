@@ -9,7 +9,7 @@ public final class CygwinHomePathTest extends CygwinBaseTest  {
     public void testFilesOkNoVersion() {
         // we got every file, but the file name do not have the
         // version of ocaml (ex: 4.05.0), so it's not a valid homePath
-        assertCygwinHomeInvalid(BIN_VALID_SDK.path);
+        assertCygwinHomeInvalid(CygwinFolders.BIN_VALID_SDK.path);
     }
 
     @Test
@@ -19,12 +19,12 @@ public final class CygwinHomePathTest extends CygwinBaseTest  {
 
     @Test
     public void testOpamValid() {
-        assertCygwinHomeValid(OPAM_VALID_SDK.path);
+        assertCygwinHomeValid(CygwinFolders.OPAM_VALID_SDK.path);
     }
 
     @Test
     public void testOpamInvalid() {
-        assertCygwinHomeInvalid(OPAM_INVALID_BIN);
+        assertCygwinHomeInvalid(CygwinFolders.OPAM_INVALID_BIN);
     }
 
 }

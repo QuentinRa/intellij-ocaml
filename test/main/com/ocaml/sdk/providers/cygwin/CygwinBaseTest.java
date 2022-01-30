@@ -10,17 +10,18 @@ import com.ocaml.sdk.utils.SdkInfo;
 import java.io.File;
 import java.nio.file.Path;
 
-public class CygwinBaseTest extends BaseSdkProviderTest implements CygwinFolders {
+public class CygwinBaseTest extends BaseSdkProviderTest {
 
-    private boolean passCygwinTest() {
-        if(!SystemInfo.isWin10OrNewer) return false;
-        boolean canPass = new File(BIN_VALID_SDK.path).exists()
-                && new File(BIN_VALID_SDK.toplevel).exists()
-                && new File(BIN_VALID_EXE).exists()
-                && new File(OPAM_HOME).exists()
-                && new File(OPAM_VALID_SDK.path).exists()
-                && new File(OPAM_VALID_SDK.toplevel).exists()
-                && !(new File(OPAM_INVALID_BIN).exists());
+    protected boolean passCygwinTest() {
+        if(!SystemInfo.isWin10OrNewer) return true;
+        // ensure cygwin is available
+        boolean canPass = new File(CygwinFolders.BIN_VALID_SDK.path).exists()
+                && new File(CygwinFolders.BIN_VALID_SDK.toplevel).exists()
+                && new File(CygwinFolders.BIN_VALID_EXE).exists()
+                && new File(CygwinFolders.OPAM_HOME).exists()
+                && new File(CygwinFolders.OPAM_VALID_SDK.path).exists()
+                && new File(CygwinFolders.OPAM_VALID_SDK.toplevel).exists()
+                && !(new File(CygwinFolders.OPAM_INVALID_BIN).exists());
         if (!canPass) System.out.println("Cygwin: test ignored");
         return !canPass;
     }

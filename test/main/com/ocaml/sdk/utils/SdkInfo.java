@@ -8,8 +8,8 @@ public class SdkInfo {
     public final String sources;
     public final String comp;
 
-    public SdkInfo(String path, String toplevel, String version, String comp) {
-        this(path, version, toplevel, comp, null);
+    public SdkInfo(String path, String toplevel, String comp, String version) {
+        this(path, toplevel, comp, version, null);
     }
 
     public SdkInfo(String path, String toplevel, String comp, String version, String sources) {
