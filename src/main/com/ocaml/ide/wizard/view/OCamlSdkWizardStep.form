@@ -148,14 +148,6 @@
                   <text resource-bundle="messages/OCamlBundle" key="project.wizard.create.location"/>
                 </properties>
               </component>
-              <component id="2fcdd" class="javax.swing.JLabel" binding="mySourcesMissingLabel">
-                <constraints>
-                  <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text resource-bundle="messages/OCamlBundle" key="project.wizard.sdk.sources.missing"/>
-                </properties>
-              </component>
             </children>
           </grid>
           <vspacer id="2b772">

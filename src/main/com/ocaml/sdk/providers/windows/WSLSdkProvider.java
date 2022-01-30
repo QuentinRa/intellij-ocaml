@@ -152,7 +152,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             // if we got something better (ex: 4.05.0+mingw64, or 4.05.0+local)
             String alt = OCamlSdkVersionManager.parse(ocamlBinary);
             if (!OCamlSdkVersionManager.isUnknownVersion(alt)) version = alt;
-            return new AssociatedBinaries(ocamlBinary, ocamlBinary + "c", sourcesFolder, version, false);
+            return new AssociatedBinaries(ocamlBinary, ocamlBinary + "c", sourcesFolder, version);
         } catch (ExecutionException | IOException e) {
             LOG.debug(e.getMessage());
         }

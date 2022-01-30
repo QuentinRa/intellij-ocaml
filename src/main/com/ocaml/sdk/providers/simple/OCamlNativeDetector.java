@@ -54,8 +54,7 @@ public final class OCamlNativeDetector {
                 associatedBinaries.ocamlBin,
                 associatedBinaries.compilerPath,
                 associatedBinaries.compilerVersion,
-                associatedBinaries.sourcesPath,
-                associatedBinaries.sourcesMissing
+                associatedBinaries.sourcesPath
         );
     }
 

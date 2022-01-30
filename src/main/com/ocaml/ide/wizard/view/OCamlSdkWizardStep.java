@@ -52,7 +52,6 @@ import java.awt.*;
  * need for now, is to know where are the sources, and where is the ocaml
  * binary.<br>
  *
- * @see SimpleSdkData for the creation of an opam-lie SDK
  * <p>
  * Features of the class
  * <ul>
@@ -66,7 +65,7 @@ import java.awt.*;
  *     <li><b>OK</b>: prefill the sources location ({@link OCamlNativeDetector#detectNativeSdk()})</li>
  *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlNativeDetector#detectNativeSdk(String)} )</li>
  *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlNativeDetector#detectNativeSdk(String)})</li>
- *     <li><b>KO</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
+ *     <li><b>OK</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
  *     <li><b>OK</b>: check that everything is valid</li>
  *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
@@ -77,6 +76,7 @@ import java.awt.*;
  *     <li><b>KO</b>: add "?" with a message</li>
  * </ul>
  * @see ProjectJdkForModuleStep
+ * @see SimpleSdkData for the creation of an opam-lie SDK
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;
@@ -101,7 +101,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
     @NotNull private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
     @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
-    private JLabel mySourcesMissingLabel;
     @Nullable private Sdk createSDK; // 2# the sdk that we created
     boolean shouldValidateAgain = true; // selected SDK changed
     private SimpleSdkData myCustomSdkData; // 2# data of the SDK we are about to create
@@ -142,7 +141,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOCamlCompilerLocation.setText(output.ocamlCompiler);
         mySdkSources.setText(output.sources);
         myOcamlVersion.setText(output.version);
-        showIconForCreateFields(output.isError, output.sourcesMissing);
+        showIconForCreateFields(output.isError);
 
         // On Field Updated (manually)
         DeferredDocumentListener.addDeferredDocumentListener(
@@ -153,7 +152,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                     // we are waiting for a version
                     myOcamlVersion.setText("");
                     mySdkSources.setText("");
-                    showIconForCreateFields(null, null);
+                    showIconForCreateFields(null);
                 },
                 1000
         );
@@ -177,9 +176,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     /**
      * Show the icons next to the labels
      * @param error null if loading, true if error, false if no errors
-     * @param sourcesMissing null if loading, true if sources missing, false if no sources missing
      */
-    private void showIconForCreateFields(@Nullable Boolean error, @Nullable Boolean sourcesMissing) {
+    private void showIconForCreateFields(@Nullable Boolean error) {
         Icon icon;
         if (error == null) icon = OCamlIcons.UI.LOADING;
         else icon = error ? OCamlIcons.UI.FIELD_INVALID : OCamlIcons.UI.FIELD_VALID;
@@ -187,15 +185,6 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myOCamlCompilerLocation.setIcon(icon);
         myOcamlVersion.setIcon(icon);
         mySdkSources.setIcon(icon);
-
-        if (sourcesMissing != null && sourcesMissing) {
-            // show warning
-            mySourcesMissingLabel.setVisible(true);
-            mySdkSources.setIcon(OCamlIcons.UI.FIELD_WARNING);
-        } else {
-            // hide warning
-            mySourcesMissingLabel.setVisible(false);
-        }
     }
 
     // update the two other labels once the ocaml location was set
@@ -206,7 +195,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         String path = myOCamlLocation.getText();
         // Ask for the values
         var detection = OCamlNativeDetector.detectNativeSdk(path);
-        showIconForCreateFields(detection.isError, detection.sourcesMissing);
+        showIconForCreateFields(detection.isError);
         myOCamlCompilerLocation.setText(detection.ocamlCompiler);
         myOcamlVersion.setText(detection.version);
         mySdkSources.setText(detection.sources);
