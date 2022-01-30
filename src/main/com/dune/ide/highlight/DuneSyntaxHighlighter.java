@@ -1,8 +1,7 @@
 package com.dune.ide.highlight;
 
 import com.dune.lang.core.psi.impl.DuneTypes;
-import com.dune.lang.lexer.DuneLexer;
-import com.intellij.lexer.FlexAdapter;
+import com.dune.lang.lexer.DuneLexerAdapter;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
@@ -38,7 +37,7 @@ public class DuneSyntaxHighlighter extends SyntaxHighlighterBase {
     }
 
     @Override public @NotNull Lexer getHighlightingLexer() {
-        return new FlexAdapter(new DuneLexer(null));
+        return new DuneLexerAdapter();
     }
 
     @Override

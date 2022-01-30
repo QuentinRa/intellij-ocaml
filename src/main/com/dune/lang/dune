@@ -1,0 +1,19 @@
+; A single line comment
+
+#| Block comments #| can be "nested" |# |#
+
+(executable
+  (names (main))
+  #; (this S-expression
+         (has been commented out)
+       )
+  (libraries (hello_world)))
+
+(install
+  (section bin)
+  (files ((main.exe as hello_world))))
+
+(rule
+  (targets (config.full)
+  (deps    (config_common.ml config))
+  (action  (run %{OCAML} %{path:real_configure.ml})))

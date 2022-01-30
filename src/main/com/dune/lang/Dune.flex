@@ -1,5 +1,6 @@
-package com.reason.lang.dune;
+package com.dune.lang.lexer;
 
+import com.dune.lang.core.psi.impl.DuneTypes;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lexer.FlexLexer;
 
@@ -25,7 +26,6 @@ import static com.intellij.psi.TokenType.*;
   }
 %}
 
-%public
 %class DuneLexer
 %implements FlexLexer
 %unicode

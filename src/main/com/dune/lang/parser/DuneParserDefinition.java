@@ -3,11 +3,10 @@ package com.dune.lang.parser;
 import com.dune.DuneLanguage;
 import com.dune.ide.files.DuneFile;
 import com.dune.lang.core.psi.impl.DuneTypes;
-import com.dune.lang.lexer.DuneLexer;
+import com.dune.lang.lexer.DuneLexerAdapter;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
-import com.intellij.lexer.FlexAdapter;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
@@ -28,7 +27,7 @@ public class DuneParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
-        return new FlexAdapter(new DuneLexer(null));
+        return new DuneLexerAdapter();
     }
 
     @NotNull

@@ -5,8 +5,7 @@
     -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- FILES -->
-        <fileType extensions="" hashBangs="dune;dune-project" name="DUNE" language="DUNE"
-                  fieldName="INSTANCE" implementationClass="com.dune.ide.files.DuneFileType"/>
+        <fileType fileNames="dune;dune-project" name="DUNE" language="DUNE" fieldName="INSTANCE" implementationClass="com.dune.ide.files.DuneFileType"/>
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="DUNE" implementationClass="com.dune.ide.highlight.DuneSyntaxHighlighterFactory"/>

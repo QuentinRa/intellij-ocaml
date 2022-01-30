@@ -9,7 +9,7 @@
     // generate the types of the element here
     elementTypeHolderClass='com.ocaml.lang.core.psi.OCamlTypes'
     // element
-    elementTypeClass="com.ocaml.lang.core.OcElementType"
+    elementTypeClass="com.ocaml.lang.core.OCamlElementType"
     // token
     tokenTypeClass="com.ocaml.lang.core.OCamlTokenType"
 

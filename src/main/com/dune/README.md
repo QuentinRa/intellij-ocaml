@@ -1,14 +1,15 @@
 # Dune plugin
 
 Add support for [Dune](https://dune.build/). Most of this code is coming straight from the
-plugin [ReasonML](https://github.com/giraud/reasonml-idea-plugin). This plugin is completely independent of the rest of
-the project.
+plugin [ReasonML](https://github.com/giraud/reasonml-idea-plugin). This plugin is **completely independent of the rest of
+the project**.
 
 ## 📄 License
 
 [MIT License](https://github.com/giraud/reasonml-idea-plugin/blob/master/LICENSE)
 
 Copyright (c) 2017 Giraud
+Copyright (c) 2021 Quentin RA
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
