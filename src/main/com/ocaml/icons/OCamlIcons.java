@@ -51,6 +51,7 @@ public class OCamlIcons {
         public static final Icon LOADING = new AnimatedIcon.Default();
         public static final Icon FIELD_VALID = AllIcons.General.InspectionsOK; // check?
         public static final Icon FIELD_INVALID = AllIcons.General.Error;
+        public static final Icon FIELD_WARNING = AllIcons.General.Warning;
     }
 
     public static final class External {

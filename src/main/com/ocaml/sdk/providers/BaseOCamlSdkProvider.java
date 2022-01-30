@@ -108,11 +108,15 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
             return null;
         }
         String sourceFolder = null;
+        boolean sourcesMissing = false;
 
         // find a valid source folder
         for (String source : getOCamlSourcesFolders()) {
             Path sourcePath = root.resolve(source);
             if (!Files.exists(sourcePath)) continue;
+            // ensure that the directory is not empty
+            String[] list = sourcePath.toFile().list();
+            sourcesMissing = list == null || list.length == 0;
             sourceFolder = sourcePath.toFile().getAbsolutePath();
             break;
         }
@@ -123,7 +127,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
         // testing compilers
         for (String compilerName: getOCamlCompilerCommands()) {
-            LOG.debug("testing "+compilerName);
+            LOG.trace("testing "+compilerName);
             Path compilerPath = binPath.resolve(compilerName);
             if(!Files.exists(binPath)) continue;
             String compiler = compilerPath.toFile().getAbsolutePath();
@@ -150,7 +154,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
                 continue;
             }
 
-            return new AssociatedBinaries(ocamlBinary, compiler, sourceFolder, version);
+            return new AssociatedBinaries(ocamlBinary, compiler, sourceFolder, version, sourcesMissing);
         }
 
         LOG.warn("No compiler found for "+ocamlBinary);
@@ -218,7 +222,13 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         // sources
         boolean hasSources = false;
         for (String sourceFolder: getOCamlSourcesFolders()) {
-            hasSources = Files.exists(homePath.resolve(sourceFolder));
+            Path path = homePath.resolve(sourceFolder);
+            hasSources = Files.exists(path);
+            if (hasSources) { // ensure that the directory is not empty
+                String[] list = path.toFile().list();
+                hasSources = list != null && list.length > 0;
+                System.out.println("check "+path+" isn't empty?"+hasSources);
+            }
             if (hasSources) break;
         }
         if (!hasSources) LOG.debug("Not sources found for "+homePath);

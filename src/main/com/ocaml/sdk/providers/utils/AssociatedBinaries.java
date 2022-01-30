@@ -1,17 +1,23 @@
 package com.ocaml.sdk.providers.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 public final class AssociatedBinaries {
 
-    public final String ocamlBin;
-    public final String compilerPath;
-    public final String sourcesPath;
-    public final String compilerVersion;
+    @NotNull public final String ocamlBin;
+    @NotNull public final String compilerPath;
+    @NotNull public final String sourcesPath;
+    @NotNull public final String compilerVersion;
+    public final boolean sourcesMissing;
 
-    public AssociatedBinaries(String ocamlBin, String compilerPath, String sourcesPath, String compilerVersion) {
+    public AssociatedBinaries(@NotNull String ocamlBin, @NotNull String compilerPath,
+                              @NotNull String sourcesPath, @NotNull String compilerVersion,
+                              boolean sourcesMissing) {
         this.ocamlBin = ocamlBin;
         this.compilerPath = compilerPath;
         this.sourcesPath = sourcesPath;
         this.compilerVersion = compilerVersion;
+        this.sourcesMissing = sourcesMissing;
     }
 
     @Override public String toString() {
@@ -20,6 +26,7 @@ public final class AssociatedBinaries {
                 ", compilerPath='" + compilerPath + '\'' +
                 ", sourcesPath='" + sourcesPath + '\'' +
                 ", compilerVersion='" + compilerVersion + '\'' +
+                ", sourcesMissing=" + sourcesMissing +
                 '}';
     }
 }
