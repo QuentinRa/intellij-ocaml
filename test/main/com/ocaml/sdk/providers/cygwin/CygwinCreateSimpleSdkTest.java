@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class CygwinCreateSimpleSdkTest extends CygwinBaseTest {
 
     private void assertCreate(int i) {
+        if (passCygwinTest()) return;
         ArrayList<String> homes = new ArrayList<>();
         try {
             try {

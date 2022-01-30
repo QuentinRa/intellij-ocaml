@@ -9,7 +9,7 @@ public final class WSLHomePathTest extends WSLBaseTest {
     public void testFilesOkNoVersion() {
         // we may find every file, but the file name do not have the
         // version of ocaml (ex: 4.05.0), so it's not a valid homePath
-        assertWSLHomeInvalid("\\\\wsl$\\Debian\\");
+        assertWSLHomeInvalid(WSLFolders.BIN_VALID_SDK.path);
     }
 
     @Test
@@ -24,40 +24,32 @@ public final class WSLHomePathTest extends WSLBaseTest {
 
     @Test
     public void testInvalidWSLDistribution() {
-        assertWSLHomeInvalid("\\\\wsl$\\Fedora\\home\\calistro\\.opam\\4.07.0");
+        assertWSLHomeInvalid(WSLFolders.OPAM_INVALID_DIST.path);
     }
 
     @Test
     public void testInvalidWSLDistributionTS() {
-        assertWSLHomeInvalid("\\\\wsl$\\Fedora\\home\\calistro\\.opam\\4.07.0\\");
+        assertWSLHomeInvalid(WSLFolders.OPAM_INVALID_DIST.path+"\\");
     }
 
     @Test
     public void testOpamValid() {
-        assertWSLHomeValid(
-                "\\\\wsl$\\Debian\\home\\calistro\\.opam\\4.07.0"
-        );
+        assertWSLHomeValid(WSLFolders.OPAM_VALID_SDK.path);
     }
 
     @Test
     public void testOpamValidTS() {
-        assertWSLHomeValid(
-                "\\\\wsl$\\Debian\\home\\calistro\\.opam\\4.07.0\\"
-        );
+        assertWSLHomeValid(WSLFolders.OPAM_VALID_SDK.path+"\\");
     }
 
     @Test
     public void testOpamInvalid() {
-        assertWSLHomeInvalid(
-                "\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0"
-        );
+        assertWSLHomeInvalid(WSLFolders.OPAM_INVALID);
     }
 
     @Test
     public void testOpamInvalidTS() {
-        assertWSLHomeInvalid(
-                "\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0\\"
-        );
+        assertWSLHomeInvalid(WSLFolders.OPAM_INVALID +"\\");
     }
 
 }

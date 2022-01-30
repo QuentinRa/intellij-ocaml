@@ -7,6 +7,7 @@ public final class WSLSuggestHomePathsTest extends WSLBaseTest {
 
     @Test
     public void testCygwinOpamSdksAreSuggested() {
+        if (passWSLTest()) return;
         assertInstallationFolderWasSuggested("\\\\wsl$\\Debian\\home\\calistro\\.opam\\");
     }
 }

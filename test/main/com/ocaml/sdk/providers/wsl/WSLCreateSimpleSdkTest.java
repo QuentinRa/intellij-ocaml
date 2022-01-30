@@ -15,15 +15,16 @@ import java.util.ArrayList;
 public class WSLCreateSimpleSdkTest extends WSLBaseTest {
 
     private void assertCreate(int i) {
+        if (passWSLTest()) return;
         ArrayList<String> homes = new ArrayList<>();
         try {
             try {
                 for (; i > 0 ; i--) {
                     SimpleSdkData simpleSdkData = new SimpleSdkData(
-                            "\\\\wsl$\\Debian\\bin\\ocaml",
-                            "\\\\wsl$\\Debian\\bin\\ocamlc",
-                            "4.12.0",
-                            "\\\\wsl$\\Debian\\usr\\lib\\ocaml"
+                            WSLFolders.BIN_CREATE_SDK.toplevel,
+                            WSLFolders.BIN_CREATE_SDK.comp,
+                            WSLFolders.BIN_CREATE_SDK.version,
+                            WSLFolders.BIN_CREATE_SDK.sources
                     );
                     homes.add(simpleSdkData.homePath);
                     assertWSLHomeValid(simpleSdkData.homePath);
@@ -32,7 +33,7 @@ public class WSLCreateSimpleSdkTest extends WSLBaseTest {
                 fail(e.getMessage());
             }
         } finally {
-            WslPath path = WslPath.parseWindowsUncPath("\\\\wsl$\\Debian\\bin\\ocaml");
+            WslPath path = WslPath.parseWindowsUncPath(WSLFolders.BIN_CREATE_SDK.toplevel);
             assert path != null; // it should have been not null
             WSLDistribution distribution = path.getDistribution();
             WSLCommandLineOptions options = new WSLCommandLineOptions();
