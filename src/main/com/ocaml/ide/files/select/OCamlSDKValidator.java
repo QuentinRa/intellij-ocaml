@@ -1,4 +1,4 @@
-package com.ocaml.sdk.select;
+package com.ocaml.ide.files.select;
 
 import com.intellij.codeInsight.daemon.ProjectSdkSetupValidator;
 import com.intellij.openapi.fileTypes.FileType;
@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class OCamlSDKValidator implements ProjectSdkSetupValidator {
 
+    // todo: bundle
     public static final String CONFIGURE_OCAMLC_SDK = "Please configure the OCaml SDK";
 
     @Override public boolean isApplicableFor(@NotNull Project project, @NotNull VirtualFile file) {
