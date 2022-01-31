@@ -61,5 +61,9 @@
         <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>
         <actionPromoter implementation="com.ocaml.ide.actions.editor.OCamlActionPromoter"/>
         <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlFileEditorProvider"/>
+
+        <!-- NOTIFICATIONS -->
+        <notificationGroup id="OCaml Plugin" displayType="BALLOON"/>
+        <notificationGroup id="OCaml Build Log" displayType="NONE"/>
     </extensions>
 </idea-plugin>
