@@ -169,7 +169,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
     @Override public @NotNull Set<String> getInstallationFolders() {
         Set<String> installationFolders = new HashSet<>();
         // we know that we may find opam
-        installationFolders.add(SystemProperties.getUserHome()+".opam");
+        installationFolders.add(SystemProperties.getUserHome()+"/.opam");
         // we may have created simple SDKs
         installationFolders.add(FileUtil.expandUserHome(SimpleSdkData.SDK_FOLDER));
         // is there any other places in which we may find ocaml SDKs?

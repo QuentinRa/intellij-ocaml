@@ -13,6 +13,7 @@ public final class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test @Ignore // todo: test https://stefanbirkner.github.io/system-rules/
     public void testPath() {
+        if (passCygwinTest()) return;
         DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk();
         assertEquals("C:\\cygwin64\\bin\\ocaml.exe", detectionResult.ocaml);
         assertEquals("C:\\cygwin64\\bin\\ocamlc.opt.exe", detectionResult.ocamlCompiler);
