@@ -3,7 +3,7 @@ package com.ocaml.ide.editor;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.actionSystem.ex.ActionUtil;
+import com.intellij.openapi.actionSystem.ex.ActionUtilsAdaptor;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.*;
@@ -73,7 +73,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
         }
 
         @Override public void actionPerformed(@NotNull AnActionEvent e) {
-            ActionUtil.performActionDumbAwareWithCallbacks(myAction, createEvent(e));
+            ActionUtilsAdaptor.performActionDumbAwareWithCallbacks(myAction, createEvent(e));
         }
 
         @Override public void update(@NotNull AnActionEvent e) {
