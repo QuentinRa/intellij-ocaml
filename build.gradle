@@ -68,6 +68,7 @@ compileJava.options.encoding = 'UTF-8'
 // and a folder such as "212" or "213"
 sourceSets {
     main.java.srcDirs = ["src/$platformVersion", "src/main"]
+    if (loadPlatform != null && !loadPlatform.isBlank()) main.java.srcDirs += ["src/$loadPlatform"]
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
     test.resources.srcDirs = ["resources/main", "resources/$platformVersion", "test/testData"]
