@@ -2,7 +2,7 @@
 
 [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
-This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin.
+This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. I'm only a student, after all.
 
 ## 🎯 What's my goal?
 
@@ -63,8 +63,9 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 | ✅ Can execute commands              |
 | ✅ Browse history, use arrow up/down |
 | ✅ See the values of the variables   |
-| ❌ Send commands to the console      |
-| ❌ Send a file to the console        |
+| ✅ Send a file to the console        |
+| ❌ Send the selection to the console |
+| ❌ Send a statement to the console   |
 
 This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
 
