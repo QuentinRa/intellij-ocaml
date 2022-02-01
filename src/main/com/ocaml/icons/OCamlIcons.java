@@ -31,6 +31,11 @@ public class OCamlIcons {
         return IconLoader.getIcon(path, OCamlIcons.class);
     }
 
+    public static final class Gutter {
+        public static final Icon IMPLEMENTED = AllIcons.Gutter.ImplementedMethod;
+        public static final Icon IMPLEMENTING = AllIcons.Gutter.ImplementingMethod;
+    }
+
     /**
      * Every icon used on a node (ex: module icon, sdk icon, library icon, console icon, etc.)
      */
@@ -39,6 +44,27 @@ public class OCamlIcons {
         public static final Icon OCAML_SDK = loadIcon("/icons/ocamlSdk.svg");
         public static final Icon OCAML_CONSOLE = loadIcon("/icons/ocamlTool.svg");
         public static final Icon OCAML_LIBRARY = loadIcon("/icons/ocamlModule.svg");
+
+        public static final Icon OCL_FILE_MODULE = loadIcon("/icons/ocamlLogo.svg");
+        public static final Icon OCL_FILE_MODULE_INTERFACE = loadIcon("/icons/ocamlBlue.png");
+        public static final Icon INNER_MODULE = loadIcon("/icons/innerModule.svg");
+        public static final Icon INNER_MODULE_INTF = loadIcon("/icons/innerModuleIntf.svg");
+        public static final Icon MODULE_TYPE = loadIcon("/icons/javaModuleType.svg");
+        public static final Icon FUNCTOR = AllIcons.Nodes.Artifact;
+        public static final Icon LET = AllIcons.Nodes.Variable;
+        public static final Icon VAL = AllIcons.Nodes.Variable;
+        public static final Icon ATTRIBUTE = AllIcons.Nodes.Property;
+        public static final Icon FUNCTION = AllIcons.Nodes.Function;
+        public static final Icon METHOD = AllIcons.Nodes.Method;
+        public static final Icon CLASS = AllIcons.Nodes.Class;
+        public static final Icon EXCEPTION = AllIcons.Nodes.ExceptionClass;
+        public static final Icon EXTERNAL = AllIcons.Nodes.Enum;
+        public static final Icon OBJECT = AllIcons.Json.Object;
+        public static final Icon VIRTUAL_NAMESPACE = AllIcons.Actions.GroupByPackage;
+        public static final Icon OPEN = AllIcons.Actions.GroupByModule;
+        public static final Icon INCLUDE = AllIcons.Actions.GroupByModule;
+        public static final Icon TYPE = loadIcon("/icons/type.svg");
+        public static final Icon VARIANT = loadIcon("/icons/variant.svg");
     }
 
     public static final class FileTypes {

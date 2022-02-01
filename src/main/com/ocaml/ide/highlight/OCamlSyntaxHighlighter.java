@@ -6,7 +6,7 @@ import com.intellij.openapi.editor.colors.*;
 import com.intellij.openapi.fileTypes.*;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.*;
-import com.ocaml.lang.core.psi.OCamlTypes;
+import com.or.lang.OCamlTypes;
 import com.ocaml.lang.lexer.OCamlLexerAdapter;
 import org.jetbrains.annotations.*;
 
@@ -33,6 +33,14 @@ public class OCamlSyntaxHighlighter implements SyntaxHighlighter {
     public static final TextAttributesKey STRING_ = createTA("STRING", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey TYPE_ARGUMENT_ = createTA("TYPE_ARGUMENT", TYPE_ARGUMENT_KEY);
     private static final TextAttributesKey BAD_CHAR_ = createTA("BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
+
+    // OR
+    public static final TextAttributesKey CODE_LENS_ = createTA("CODE_LENS", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
+    public static final TextAttributesKey INTERPOLATED_REF_ = createTA("INTERPOLATED_REF", DefaultLanguageHighlighterColors.IDENTIFIER);
+    public static final TextAttributesKey MARKUP_TAG_ = createTA("MARKUP_TAG", DefaultLanguageHighlighterColors.MARKUP_TAG);
+    public static final TextAttributesKey MARKUP_ATTRIBUTE_ = createTA("MARKUP_ATTRIBUTE", DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE);
+    public static final TextAttributesKey MODULE_NAME_ = createTA("MODULE_NAME", DefaultLanguageHighlighterColors.CLASS_NAME);
+    public static final TextAttributesKey VARIANT_NAME_ = createTA("VARIANT_NAME", DefaultLanguageHighlighterColors.STATIC_FIELD);
 
     private static final TextAttributesKey[] ANNOTATION_KEY = new TextAttributesKey[]{ANNOTATION_};
     private static final TextAttributesKey[] NUMBER_KEYS = new TextAttributesKey[]{NUMBER_};

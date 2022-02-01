@@ -1,8 +1,7 @@
 package com.ocaml.lang.lexer;
 
-import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import com.ocaml.lang.core.psi.OCamlTypes;
+import com.or.lang.OCamlTypes;
 
 import static com.intellij.psi.TokenType.*;
 
