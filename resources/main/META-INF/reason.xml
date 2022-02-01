@@ -75,7 +75,7 @@
         <lang.refactoringSupport language="OCAML" implementationClass="com.or.ide.ORRefactoringSupportProvider"/>
 
         <!-- SPELLCHECKER -->
-<!--        <spellchecker.support language="OCAML" implementationClass="com.or.ide.spellcheckers.OclSpellCheckerStrategy"/>-->
+        <spellchecker.support language="OCAML" implementationClass="com.or.ide.spellcheckers.OclSpellCheckerStrategy"/>
 
         <!-- OTHERS -->
         <typedHandler implementation="com.or.ide.handlers.ORTypedHandler" id="RmlTypedHandler"/>
