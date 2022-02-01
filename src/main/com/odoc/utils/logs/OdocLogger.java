@@ -13,7 +13,4 @@ public class OdocLogger {
         return Logger.getInstance("odoc");
     }
 
-    public static @NotNull Logger getInstance(String s) {
-        return Logger.getInstance("odoc." + s);
-    }
 }
