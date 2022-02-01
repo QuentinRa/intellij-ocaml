@@ -1,17 +1,34 @@
-<idea-plugin>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <id>intellij-ocaml</id>
     <name>OCaml</name>
-    <vendor email="admin@lgs-games.com" url="https://github.com/QuentinRa/intellij-ocaml-plugin">QuentinRa</vendor>
-    <description><![CDATA[This plugin is providing support for OCaml applications, using an opam or a native SDK. It is based on both ReasonML, and intellij-rust.]]></description>
+    <vendor email="admin@lgs-games.com" url="https://github.com/QuentinRa/intellij-ocaml">QuentinRa</vendor>
+    <description><![CDATA[
+        The OCaml plugin is providing support for the OCaml language in IntelliJ IDEA, using an opam or
+        a native SDK. It is based on both ReasonML, and intellij-rust.]]>
+    </description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
      on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
+    <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+    <resource-bundle>messages.OCamlBundle</resource-bundle>
 
     <actions>
         <!-- Add your actions here -->
+        <!-- Create file -->
+        <action id="NewOCamlFile" class="com.ocaml.ide.actions.OCamlCreateFileAction">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+        </action>
+        <!-- Editor - REPL -->
+        <action id="editor.repl.run.action" class="com.ocaml.ide.actions.editor.run.OCamlRunFileREPLAction" icon="AllIcons.Actions.Execute" >
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -24,7 +41,29 @@
         <!-- SDK -->
         <sdkType implementation="com.ocaml.sdk.OCamlSdkType"/>
         <sdkDownload implementation="com.ocaml.sdk.OCamlSdkType"/>
-        <projectViewNodeDecorator implementation="com.ocaml.sdk.nodes.OCamlLibraryRootsNodeDecorator"/>
-        <treeStructureProvider implementation="com.ocaml.sdk.nodes.OCamlLibraryRootsTreeStructureProvider"/>
+        <projectViewNodeDecorator implementation="com.ocaml.ide.files.nodes.OCamlLibraryRootsNodeDecorator"/>
+        <treeStructureProvider implementation="com.ocaml.ide.files.nodes.OCamlLibraryRootsTreeStructureProvider"/>
+        <projectSdkSetupValidator implementation="com.ocaml.ide.files.select.OCamlSDKValidator"/>
+
+        <!-- FILES -->
+        <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
+        <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
+        <internalFileTemplate name="OCaml File"/>
+        <internalFileTemplate name="OCaml Interface"/>
+
+        <!-- HIGHLIGHT -->
+        <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
+        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.highlight.annotations.CompilerOutputAnnotator" />
+        <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
+
+        <!-- REPL -->
+        <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
+        <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>
+        <actionPromoter implementation="com.ocaml.ide.actions.editor.OCamlActionPromoter"/>
+        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlFileEditorProvider"/>
+
+        <!-- NOTIFICATIONS -->
+        <notificationGroup id="OCaml Plugin" displayType="BALLOON"/>
+        <notificationGroup id="OCaml Build Log" displayType="NONE"/>
     </extensions>
 </idea-plugin>

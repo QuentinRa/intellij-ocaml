@@ -52,7 +52,6 @@ import java.awt.*;
  * need for now, is to know where are the sources, and where is the ocaml
  * binary.<br>
  *
- * @see SimpleSdkData for the creation of an opam-lie SDK
  * <p>
  * Features of the class
  * <ul>
@@ -66,7 +65,7 @@ import java.awt.*;
  *     <li><b>OK</b>: prefill the sources location ({@link OCamlNativeDetector#detectNativeSdk()})</li>
  *     <li><b>OK</b>: fill the ocamlc binary location when ocaml binary location is defined ({@link OCamlNativeDetector#detectNativeSdk(String)} )</li>
  *     <li><b>OK</b>: fill the ocaml version when the ocaml binary location is defined ({@link OCamlNativeDetector#detectNativeSdk(String)})</li>
- *     <li><b>KO</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
+ *     <li><b>OK</b>: add a loading icon and a check (valid/invalid) icon, as we have in CLion</li>
  *     <li><b>OK</b>: check that everything is valid</li>
  *     <li><b>OK</b>: add a warning if the user is trying to open the project without setting an SDK.</li>
  *     <li><b>OK</b>: handle possible bug if the user is pressing next while the async codes was not finished</li>
@@ -77,6 +76,7 @@ import java.awt.*;
  *     <li><b>KO</b>: add "?" with a message</li>
  * </ul>
  * @see ProjectJdkForModuleStep
+ * @see SimpleSdkData for the creation of an opam-lie SDK
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;
@@ -118,7 +118,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
         // are we inside a project?
         int choice = wizardContext.isCreatingNewProject() ? 0 : 1;
-        myLabelSdk.setText(OCamlBundle.message("module.prompt.sdk", choice));
+        myLabelSdk.setText(OCamlBundle.message("project.wizard.module.prompt.sdk", choice));
         myWizardTitle.setText(OCamlBundle.message("project.wizard.title", choice));
         myLabelSdk.setLabelFor(myJdkChooser);
 
@@ -173,6 +173,10 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myCreateLocationLabel.setForeground(JBColor.GRAY);
     }
 
+    /**
+     * Show the icons next to the labels
+     * @param error null if loading, true if error, false if no errors
+     */
     private void showIconForCreateFields(@Nullable Boolean error) {
         Icon icon;
         if (error == null) icon = OCamlIcons.UI.LOADING;

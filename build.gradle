@@ -43,14 +43,19 @@ intellij {
         untilBuild = pluginUntilBuild
         changeNotes = """
                 <ul>
+                    <li>Basic inspections (warnings, errors, alerts) using the compiler</li>
+                    <li>Adding highlighting for .ml / .mli</li>
+                    <li>Adding a REPL console</li>
                     <li>Can create modules, and edit their properties (SDK, output folder)</li>
-                    <li>Can create a project with an opam or an opam-like SDK
-                    on Windows using either a WSL or cygwin</li>
+                    <li>Can create a project with an opam or an opam-like SDK,
+                    hosted on our Local File System, a WSL, cygwin, or OCaml64.</li>
                 <ul>
             """.stripIndent()
     }
 }
 
+// https://plugins.jetbrains.com/plugin/6606-grammar-kit/versions
+// 203.5784+
 grammarKit {
     grammarKitRelease = '2021.1.2'
 }
@@ -65,7 +70,7 @@ sourceSets {
     main.java.srcDirs = ["src/$platformVersion", "src/main"]
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
-    test.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
+    test.resources.srcDirs = ["resources/main", "resources/$platformVersion", "test/testData"]
 }
 
 tasks.withType(JavaCompile) {

@@ -2,16 +2,20 @@ package com.ocaml.sdk.providers.wsl;
 
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
+import com.ocaml.sdk.utils.SdkInfo;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public final class WSLNativeDetectionTest extends WSLBaseTest {
 
-    public void assertWSLValid(String ocamlBin, String expectedVersion) {
-        assertWSLValid(ocamlBin, expectedVersion, "\\lib\\ocaml");
+    public void assertWSLValid(@NotNull SdkInfo info) {
+        if (passWSLTest()) return;
+        assertWSLValid(info.toplevel, info.version, info.sources);
     }
 
     public void assertWSLValid(String ocamlBin, String expectedVersion, String expectedLib) {
+        if (passWSLTest()) return;
         String root = ocamlBin.replace("\\bin\\ocaml", "");
         DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
         assertEquals(ocamlBin, detectionResult.ocaml);
@@ -22,6 +26,7 @@ public final class WSLNativeDetectionTest extends WSLBaseTest {
     }
 
     public void assertWSLInvalid(String ocamlBin) {
+        if (passWSLTest()) return;
         try {
             DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
             if (detectionResult.isError) throw new AssertionError("OK");
@@ -44,33 +49,26 @@ public final class WSLNativeDetectionTest extends WSLBaseTest {
 
     @Test
     public void testInvalidWSLDistribution() {
-        assertWSLInvalid("\\\\wsl$\\Fedora\\home\\calistro\\.opam\\4.07.0\\bin\\ocaml");
+        assertWSLInvalid(WSLFolders.OPAM_INVALID_DIST.toplevel);
     }
 
     @Test
     public void testNotOCaml() {
-        assertWSLInvalid("\\\\wsl$\\Debian\\bin\\find");
+        assertWSLInvalid(WSLFolders.BIN_VALID);
     }
 
     @Test
     public void testBin() {
-        assertWSLValid(
-                "\\\\wsl$\\Debian\\bin\\ocaml",
-                "4.12.0",
-                "\\usr\\lib\\ocaml"
-        );
+        assertWSLValid(WSLFolders.BIN_VALID_SDK);
     }
 
     @Test
     public void testOpamBinValid() {
-        assertWSLValid(
-                "\\\\wsl$\\Debian\\home\\calistro\\.opam\\4.07.0\\bin\\ocaml",
-                "4.07.0"
-        );
+        assertWSLValid(WSLFolders.OPAM_VALID_SDK);
     }
 
     @Test
     public void testOpamBinInvalid() {
-        assertWSLInvalid("\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0\\bin\\ocaml");
+        assertWSLInvalid(WSLFolders.OPAM_INVALID_BIN);
     }
 }

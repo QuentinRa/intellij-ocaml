@@ -2,6 +2,7 @@ package com.ocaml.sdk.providers.simple;
 
 import com.ocaml.OCamlBundle;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The result of a detection.
@@ -17,22 +18,22 @@ public class DetectionResult {
 
     public static final DetectionResult NO_ASSOCIATED_BINARIES = new DetectionResult(
             "",
-            OCamlBundle.message("sdk.ocaml.binary.invalid.short"), OCamlSdkVersionManager.UNKNOWN_VERSION,
-            OCamlBundle.message("sdk.ocaml.binary.invalid.short"), true
+            OCamlBundle.message("project.wizard.sdk.ocaml.binary.invalid.short"), OCamlSdkVersionManager.UNKNOWN_VERSION,
+            OCamlBundle.message("project.wizard.sdk.ocaml.binary.invalid.short"), true
     );
 
-    public final String ocaml;
-    public final String ocamlCompiler;
-    public final String version;
-    public final String sources;
+    @NotNull public final String ocaml;
+    @NotNull public final String ocamlCompiler;
+    @NotNull public final String version;
+    @NotNull public final String sources;
     public final boolean isError;
 
     DetectionResult(String ocaml, String ocamlCompiler, String version, String sources) {
         this(ocaml, ocamlCompiler, version, sources, false);
     }
 
-    DetectionResult(String ocaml, String ocamlCompiler, String version,
-                    String sources, boolean isError) {
+    DetectionResult(@NotNull String ocaml, @NotNull String ocamlCompiler, @NotNull String version,
+                    @NotNull  String sources, boolean isError) {
         this.ocaml = ocaml;
         this.ocamlCompiler = ocamlCompiler;
         this.version = version;

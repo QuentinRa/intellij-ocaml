@@ -1,4 +1,4 @@
-package com.ocaml.sdk.nodes;
+package com.ocaml.ide.files.nodes;
 
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
@@ -6,24 +6,31 @@ import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.psi.PsiFile;
+import com.ocaml.ide.files.OCamlFileType;
+import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.function.Predicate;
 
 /**
- * Hides files that are not ending with .ml, .mli, or .cmt
+ * Hides files that are not ending with either .ml or .mli
  */
 public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProvider {
 
-    // This pattern is matching files ending with
-    // - ending with .ml
-    // - ending with .mli
-    // - ending with .cmt
-    private static final Pattern ALLOWED_FILES = Pattern.compile(".*[.](ml|mli|cmt)");
+
+    /**
+     * This pattern is matching files ending with
+     * <ul>
+     *     <li>ending with .ml</li>
+     *     <li>ending with .mli</li>
+     * </ul>
+     */
+    private static final Predicate<String> ALLOWED_FILES =
+            s -> s.endsWith(OCamlFileType.DOT_DEFAULT_EXTENSION) || s.endsWith(OCamlInterfaceFileType.DOT_DEFAULT_EXTENSION);
 
     @Override
     public @NotNull Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
@@ -36,7 +43,6 @@ public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProv
         // we need to remove every file that isn't
         // - ending with .ml
         // - ending with .mli
-        // - ending with .cmt
         List<AbstractTreeNode<?>> filtered = new ArrayList<>();
         for (AbstractTreeNode<?> child : children) {
             // Directories allowed
@@ -47,7 +53,7 @@ public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProv
             // Filter files
             PsiFile psiFile = (PsiFile) child.getValue();
             String filename = psiFile.getName();
-            if (ALLOWED_FILES.matcher(filename).matches())
+            if (ALLOWED_FILES.test(filename))
                 filtered.add(child);
         }
         return filtered;

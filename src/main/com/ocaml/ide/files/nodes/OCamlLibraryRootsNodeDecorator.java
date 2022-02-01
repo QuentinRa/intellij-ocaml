@@ -1,4 +1,4 @@
-package com.ocaml.sdk.nodes;
+package com.ocaml.ide.files.nodes;
 
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;

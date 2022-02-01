@@ -11,15 +11,16 @@ import java.util.ArrayList;
 public class CygwinCreateSimpleSdkTest extends CygwinBaseTest {
 
     private void assertCreate(int i) {
+        if (passCygwinTest()) return;
         ArrayList<String> homes = new ArrayList<>();
         try {
             try {
                 for (; i > 0 ; i--) {
                     SimpleSdkData simpleSdkData = new SimpleSdkData(
-                            "C:\\cygwin64\\bin\\ocaml.exe",
-                            "C:\\cygwin64\\bin\\ocamlc.opt.exe",
-                            "4.10.0",
-                            "C:\\cygwin64\\lib\\ocaml"
+                            CygwinFolders.BIN_CREATE_SDK.toplevel,
+                            CygwinFolders.BIN_CREATE_SDK.comp,
+                            CygwinFolders.BIN_CREATE_SDK.version,
+                            CygwinFolders.BIN_CREATE_SDK.sources
                     );
                     homes.add(simpleSdkData.homePath);
                     assertCygwinHomeValid(simpleSdkData.homePath);

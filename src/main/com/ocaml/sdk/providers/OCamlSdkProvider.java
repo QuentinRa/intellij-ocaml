@@ -109,4 +109,22 @@ public interface OCamlSdkProvider {
      *         or null if this provider cannot generate a command for this compiler
      */
     @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath);
+
+    /**
+     * @param sdkHomePath path to the SDK home
+     * @return "ocaml -noprompt -no-version"
+     */
+    @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath);
+
+    /**
+     * @param sdkHomePath path to the SDK home
+     * @param file the file we are compiling
+     * @param outputDirectory the output directory
+     * @param executableName the name of the generated executable
+     * @return "ocamlc -c $file -o $outputDirectory/$executableName -I $outputDirectory -w +A -color=never -bin-annot"
+     */
+    @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath,
+                                                             String file,
+                                                             String outputDirectory,
+                                                             String executableName);
 }

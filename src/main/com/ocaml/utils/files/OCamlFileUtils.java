@@ -1,8 +1,10 @@
 package com.ocaml.utils.files;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,6 +47,32 @@ public final class OCamlFileUtils {
         } catch (IOException e) {
             if (logger != null) logger.error("Error creating file " + fileName, e);
         }
+    }
+
+    @Nullable
+    public static File copyToTempFile(@NotNull File tempCompilationDirectory, @NotNull PsiFile psiFile,
+                                      @NotNull String name, Logger logger) {
+        File sourceTempFile;
+
+        try {
+            sourceTempFile = new File(tempCompilationDirectory, name);
+            boolean created = sourceTempFile.createNewFile();
+            // FIX avoid "deadlock" if the file already exists
+            if (!created && !sourceTempFile.exists()) throw new IOException("Could not create '"+sourceTempFile+"'.");
+        } catch (IOException e) {
+            logger.info("Temporary file creation failed", e); // log error but do not show it in UI
+            return null;
+        }
+
+        try {
+            FileUtil.writeToFile(sourceTempFile, psiFile.getText().getBytes());
+        } catch (IOException e) {
+            // Sometimes, file is locked by another process, not a big deal, skip it
+            logger.trace("Write failed: " + e.getLocalizedMessage());
+            return null;
+        }
+
+        return sourceTempFile;
     }
 
     public static void deleteDirectory(String file) {

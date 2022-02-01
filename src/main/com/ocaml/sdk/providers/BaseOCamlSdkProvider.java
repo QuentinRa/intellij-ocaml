@@ -44,6 +44,10 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         return true;
     }
 
+    protected boolean canUseProviderForHome(@NotNull String homePath) {
+        return true;
+    }
+
     @Override public @NotNull List<OCamlSdkProvider> getNestedProviders() {
         return new ArrayList<>();
     }
@@ -119,7 +123,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
         // testing compilers
         for (String compilerName: getOCamlCompilerCommands()) {
-            LOG.debug("testing "+compilerName);
+            LOG.trace("testing "+compilerName);
             Path compilerPath = binPath.resolve(compilerName);
             if(!Files.exists(binPath)) continue;
             String compiler = compilerPath.toFile().getAbsolutePath();
@@ -165,7 +169,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
     @Override public @NotNull Set<String> getInstallationFolders() {
         Set<String> installationFolders = new HashSet<>();
         // we know that we may find opam
-        installationFolders.add(SystemProperties.getUserHome()+".opam");
+        installationFolders.add(SystemProperties.getUserHome()+"/.opam");
         // we may have created simple SDKs
         installationFolders.add(FileUtil.expandUserHome(SimpleSdkData.SDK_FOLDER));
         // is there any other places in which we may find ocaml SDKs?
@@ -213,11 +217,23 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         }
         // sources
         boolean hasSources = false;
+        boolean sourcesMissing = false;
         for (String sourceFolder: getOCamlSourcesFolders()) {
-            hasSources = Files.exists(homePath.resolve(sourceFolder));
-            if (hasSources) break;
+            Path path = homePath.resolve(sourceFolder);
+            hasSources = Files.exists(path);
+            if (!hasSources) continue;
+            // ensure that the directory is not empty
+            String[] list = path.toFile().list();
+            sourcesMissing = list == null || list.length > 0;
+            // System.out.println("check "+path+" isn't empty?"+hasSources);
+            break;
         }
-        if (!hasSources) LOG.debug("Not sources found for "+homePath);
+        if (!hasSources) {
+            LOG.debug("Not sources found for " + homePath);
+        }
+        if (sourcesMissing) {
+            LOG.warn("Sources are missing for "+homePath);
+        }
         return hasSources;
     }
 
@@ -229,5 +245,38 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     @Override public @Nullable GeneralCommandLine getCompilerVersionCLI(String ocamlcCompilerPath) {
         return new GeneralCommandLine(ocamlcCompilerPath, "-version");
+    }
+
+    @Override public @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath) {
+        if (!canUseProviderForHome(sdkHomePath)) return null;
+        return new GeneralCommandLine(sdkHomePath+"/bin/ocaml", "-noprompt", "-no-version");
+    }
+
+    @Override
+    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
+        if (!canUseProviderForHome(sdkHomePath)) return null;
+        return createAnnotatorCommand(
+                sdkHomePath + "/bin/ocamlc", file,
+                outputDirectory + "/" + executableName,
+                outputDirectory, outputDirectory
+        );
+    }
+
+    protected GeneralCommandLine createAnnotatorCommand(String compiler, @NotNull String file, String outputFile,
+                                                        String outputDirectory, String workingDirectory) {
+        GeneralCommandLine cli = new GeneralCommandLine(compiler);
+        if (file.endsWith(".mli")) cli.addParameter("-c");
+        // compile everything else
+        cli.addParameters(file, "-o", outputFile,
+                "-I", outputDirectory,
+                "-w", "+A", "-color=never", "-bin-annot");
+        // fix issue -I is adding, so the current directory
+        // is included, and this may lead to problems later (ex: a file.cmi may be
+        // used instead of the one in the output directory, because we found one in the
+        // current directory)
+        cli.setWorkDirectory(workingDirectory);
+        // needed otherwise the input stream ~~may be~~~ is empty
+        cli.setRedirectErrorStream(true);
+        return cli;
     }
 }

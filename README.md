@@ -2,7 +2,7 @@
 
 [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
-This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin.
+This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. I'm only a student, after all.
 
 ## 🎯 What's my goal?
 
@@ -10,16 +10,16 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] Support for opam
 * [ ] Support for Makefile
 * [ ] Support for Dune (already supported in ReasonML)
-* [ ] Any installation must be simple, and effortless
+* [x] Any installation must be simple, and effortless
 * [ ] **Real-time checks for errors/warnings**, including quick fixes
 * [ ] **Real-time type inference**
 * [ ] **Smart completion**
-* [ ] **REPL support**: we must be able to send commands from our file, to a REPL console
+* [x] **REPL support**: we must be able to send commands from our file, to a REPL console
 * [x] **Using a bundle** (possible support for Localization later)
 
 Originally, I was planning to make things, so that we can use this plugin outside IntelliJ, but now my goal is to at least make this plugin work in IntelliJ before targeting minor IDEs.
 
-> Please note that some features are already available in ReasonML (ex: support of ODoc), so I will not code them, but "import" them.
+> Please note that some features are already available in ReasonML (ex: support of odoc, dune support, etc.), and I will "import" them.
 
 ## ✨ How will I do that?
 
@@ -40,25 +40,66 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Set/Update the SDK for a module                          |
 | ✅ Edit modules' properties (ex: output folder, src folder) |
 | ✅ You can use a template (✅ Makefile, ✅ Dune)              |
-| ❌ Add an import wizard                                     |
+| ✅ Can create a file (.ml, .mli, .ml+.mli)                  |
 | ❌ The project is created with a default runConfiguration   |
 
 You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you only have /bin/ocaml, etc.). You may use a template, two are available, one using a <b>Makefile</b>, and the other using <b>Dune</b>.
 
-| SDK                                              |
-|--------------------------------------------------|
-| ✅ We are suggesting SDKs                         |
-| ✅ We are suggesting a location for non-opam SDKs |
-| ✅ The SDK is verified                            |
-| ✅ The user can add/remove sources                |
-| ❌ The user can download OCaml                    |
+| SDK                                                     |
+|---------------------------------------------------------|
+| ✅ We are suggesting SDKs                                |
+| ✅ We are suggesting a location for non-opam SDKs        |
+| ✅ The SDK is verified                                   |
+| ✅ The user can add/remove sources                       |
+| ✅ The user see sources, only .ml/.mli files are shown   |
+| ✅ Suggest SDK if opening a file in a module without SDK |
+| ❌ The user can download OCaml                           |
+| ❌ The user can download sources                         |
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
+
+| REPL Console                        |
+|-------------------------------------|
+| ✅ Can execute commands              |
+| ✅ Browse history, use arrow up/down |
+| ✅ See the values of the variables   |
+| ✅ Send a file to the console        |
+| ❌ Send the selection to the console |
+| ❌ Send a statement to the console   |
+
+This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
+
+| Code highlighting                                |
+|--------------------------------------------------|
+| ✅ .ml / .mli are highlighted (based on ReasonML) |
+| ✅ we can see warnings in the file                |
+| ✅ we can see errors in the file                  |
+| ✅ we can see alerts in the file                  |
+| ✅ errors are shown project-wide                  |
+| ✅ mli is compiled is present, when in a .ml      |
+| ❌ handle files using other modules               |
+| ❌ handle dune projects                           |
+| ❌ handle Makefile projects                       |
+
+We are compiling the file, and parsing the output, to provide hints in the editor.
+
+| File                                                |
+|-----------------------------------------------------|
+| ✅ Can create .ml, .mli, or .ml and .mli             |
+| ✅ Editor > File and Code Templates for .ml and .mli |
+| ❌ Live templates                                    |
+
+| Dune                                                          |
+|---------------------------------------------------------------|
+| ✅ Import every features in ReasonML                           |
+| ❌ Suggest installing dune if opening a dune file without Dune |
+| ❌ Show a message when updating files not targeted             |
+| ❌ Show an icon to "reload" dune, reloading runConfig, etc.    |
 
 ## 📖 Install ocaml and opam
 
 <details>
-<summary>Windows (with WSL, version >= 2021.3)</summary>
+<summary>Windows (with WSL, >= 2021.3 only)</summary>
 
 On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
 </details>
