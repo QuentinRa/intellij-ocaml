@@ -16,31 +16,6 @@ import java.util.regex.Pattern;
  */
 public abstract class CompilerOutputParser {
 
-    private static final class CompilerState {
-        public int startLine, endLine;
-        public int startColumn = -1, endColumn = -1;
-        public String filePath;
-        public String messageRaw = "";
-        public String context = "";
-        public CompilerOutputMessage.Kind kind;
-
-        public CompilerState(String filePath) {
-            this.filePath = filePath;
-        }
-
-        @Override public String toString() {
-            return "CompilerState{" +
-                    "startLine=" + startLine +
-                    ", endLine=" + endLine +
-                    ", startColumn=" + startColumn +
-                    ", endColumn=" + endColumn +
-                    ", filePath='" + filePath + '\'' +
-                    ", messageRaw='" + messageRaw + '\'' +
-                    ", context='" + context + '\'' +
-                    ", kind=" + kind +
-                    '}';
-        }
-    }
     /** if we are reading data, then this is not null. **/
     private @Nullable CompilerState currentState = null;
 
@@ -48,7 +23,11 @@ public abstract class CompilerOutputParser {
 
     protected void messageReady() {
         if (currentState == null) return;
+        onMessageReady(createMessage(currentState));
+        currentState = null;
+    }
 
+    protected @NotNull CompilerOutputMessage createMessage(@NotNull CompilerState currentState) {
         CompilerOutputMessage message = new CompilerOutputMessage();
         // kind
         if (currentState.kind == null)
@@ -68,10 +47,7 @@ public abstract class CompilerOutputParser {
         );
         // context
         message.context = currentState.context;
-
-        onMessageReady(message);
-
-        currentState = null;
+        return message;
     }
 
     @Contract("_ -> new")

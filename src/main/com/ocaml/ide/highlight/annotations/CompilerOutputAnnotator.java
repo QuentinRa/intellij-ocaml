@@ -7,7 +7,6 @@ import com.intellij.lang.annotation.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
@@ -22,7 +21,6 @@ import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.xml.util.XmlStringUtil;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.sdk.OCamlSdkType;
@@ -215,7 +213,9 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(project);
         ArrayList<Problem> problems = new ArrayList<>();
 
-        for (CompilerOutputMessage message : annotationResult.myOutputInfo) {
+        for (CompilerOutputMessage m : annotationResult.myOutputInfo) {
+            OCamlAnnotation message = OCamlMessageAdaptor.temper(m);
+
             // type
             HighlightSeverity t;
             if (message.isWarning()) t = HighlightSeverity.WARNING;
@@ -223,39 +223,24 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
             else t = HighlightSeverity.INFORMATION;
 
-            // position
-            int colStart = message.filePosition.getStartColumn();
-            int colEnd = message.filePosition.getEndColumn();
-            int lineStart = message.filePosition.getStartLine() - 1;
-            int lineEnd = message.filePosition.getEndLine() - 1;
-
-            if (colStart == -1) colStart = 0;
-            if (colEnd == -1) colEnd = 1;
-
-            LogicalPosition start = new LogicalPosition(lineStart, colStart);
-            LogicalPosition end = new LogicalPosition(lineEnd, colEnd);
-            int startOffset = editor.isDisposed() ? 0 : editor.logicalPositionToOffset(start);
-            int endOffset = editor.isDisposed() ? 0 : editor.logicalPositionToOffset(end);
+            TextRangeInterval range = message.computePosition(editor);
 
             // create
             AnnotationBuilder builder = holder.newAnnotation(t, message.content);
-            if (startOffset != endOffset) builder = builder.range(new TextRangeInterval(startOffset, endOffset));
-            else builder = builder.afterEndOfLine(); // otherwise, it does not make any sense
+            builder = range == null ? builder.afterEndOfLine() : builder.range(range);
             builder = builder.tooltip(message.content);
             // builder = builder.withFix(null); // fix
             builder.create();
 
             if (message.isError()) {
                 problems.add(wolfTheProblemSolver.convertToProblem(
-                        virtualFile, lineStart, colStart,
+                        virtualFile, message.startLine, message.startColumn,
                         message.content.split("\n")
                 ));
             }
         }
 
-        if (!problems.isEmpty())
-            wolfTheProblemSolver.reportProblems(virtualFile, problems);
-        else
-            wolfTheProblemSolver.clearProblems(virtualFile);
+        if (!problems.isEmpty()) wolfTheProblemSolver.reportProblems(virtualFile, problems);
+        else wolfTheProblemSolver.clearProblems(virtualFile);
     }
 }
