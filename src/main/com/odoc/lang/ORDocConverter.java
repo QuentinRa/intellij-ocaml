@@ -20,7 +20,7 @@ import java.util.List;
  * @see DocumentationMarkup
  * @see DocumentationManagerProtocol
  */
-public abstract class ORDocConverter {
+abstract class ORDocConverter {
     protected static final HtmlChunk SPACE_CHUNK = HtmlChunk.text(" ");
 
     protected static @NotNull List<HtmlChunk> trimEndChildren(@NotNull List<HtmlChunk> children) {

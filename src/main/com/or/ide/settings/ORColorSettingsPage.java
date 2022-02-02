@@ -20,7 +20,7 @@ public class ORColorSettingsPage implements ColorSettingsPage {
                     new AttributesDescriptor("Braces", OCamlSyntaxHighlighter.BRACES_),
                     new AttributesDescriptor("Brackets", OCamlSyntaxHighlighter.BRACKETS_),
                     new AttributesDescriptor("Code lens", OCamlSyntaxHighlighter.CODE_LENS_),
-                    new AttributesDescriptor("Comment", OCamlSyntaxHighlighter.RML_COMMENT_),
+                    new AttributesDescriptor("Comment", OCamlSyntaxHighlighter.COMMENT_),
                     new AttributesDescriptor("Keyword", OCamlSyntaxHighlighter.KEYWORD_),
                     new AttributesDescriptor("Markup attribute", OCamlSyntaxHighlighter.MARKUP_ATTRIBUTE_),
                     new AttributesDescriptor("Markup tag", OCamlSyntaxHighlighter.MARKUP_TAG_),

@@ -130,6 +130,8 @@ Download [cygwin](https://cygwin.com/install.html). In the installer, you will h
 To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `òpam switch create 4.12.0`.
 
 Ensure that `C:/cygwin64/bin` (for me) is in the path. If you open a PowerShell, and write `opam --version`, you should be good. This is pretty useless (as the command above does not work in a PowerShell), but you are now able to call commands such as `make` in a PowerShell, so you can use a `Makefile`!
+
+Note that, on Windows, there is a problem with `ocaml`/`ocamlc` ([Unbound module Stdlib](https://discuss.ocaml.org/t/unbound-module-stdllib/5133)). You can find the path where both are looking for Stdlib, with `ocamlc -config`. You can set the PATH using an environment variable called `OCAMLLIB`(ex: `Set-Item -Path Env:OCAMLLIB -Value ("C:\Users\username\Desktop\4.13.1+mingw64c\lib\ocaml")`). **NOTE THAT THIS IS DONE BY THE PLUGIN** (for Cygwin/OCaml64 if needed), so you don't have to do this unless you are not using the plugin.
 </details>
 
 <details>

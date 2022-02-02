@@ -106,6 +106,7 @@ public interface OCamlTypes {
     ORTokenElementType AMPERSAND = new ORTokenElementType("&");
     ORTokenElementType AND = new ORTokenElementType("and");
     ORTokenElementType ANNOTATION = new ORTokenElementType("ANNOTATION");
+    ORTokenElementType DOC_COMMENT = new ORTokenElementType("DOC_COMMENT");
     ORTokenElementType ARROW = new ORTokenElementType("=>");
     ORTokenElementType AS = new ORTokenElementType("as");
     ORTokenElementType ASR = new ORTokenElementType("asr");

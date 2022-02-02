@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class ORDocumentationProvider implements DocumentationProvider {
     private static final Log LOG = Log.create("doc");
 
-    public static boolean isSpecialComment(@Nullable PsiElement element) {
+    public static boolean isDocumentation(@Nullable PsiElement element) {
         if (element == null) {
             return false;
         }
@@ -47,7 +47,7 @@ public class ORDocumentationProvider implements DocumentationProvider {
 
             PsiElement nextSibling = child;
             while (nextSibling instanceof PsiComment) {
-                if (isSpecialComment(nextSibling)) {
+                if (isDocumentation(nextSibling)) {
                     text = nextSibling.getText();
                     nextSibling = null;
                 } else {
@@ -77,7 +77,7 @@ public class ORDocumentationProvider implements DocumentationProvider {
             if (element.getLanguage() == OCamlLanguage.INSTANCE) {
                 PsiElement belowComment = findBelowComment(element);
                 if (belowComment != null) {
-                    return isSpecialComment(belowComment)
+                    return isDocumentation(belowComment)
                             ? DocFormatter.format(element.getContainingFile(), element, languageProperties, belowComment.getText())
                             : belowComment.getText();
                 }
@@ -92,7 +92,7 @@ public class ORDocumentationProvider implements DocumentationProvider {
                     return text == null ? null : text.substring(1, text.length() - 1);
                 }
 
-                return isSpecialComment(aboveComment)
+                return isDocumentation(aboveComment)
                         ? DocFormatter.format(element.getContainingFile(), element, languageProperties, aboveComment.getText())
                         : aboveComment.getText();
             }

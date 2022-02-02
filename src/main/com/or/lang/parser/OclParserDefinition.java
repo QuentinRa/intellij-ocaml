@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class OclParserDefinition implements ParserDefinition {
     private static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    private static final TokenSet COMMENTS = TokenSet.create(OCamlTypes.MULTI_COMMENT);
+    private static final TokenSet COMMENTS = TokenSet.create(OCamlTypes.MULTI_COMMENT, OCamlTypes.DOC_COMMENT);
     private static final TokenSet STRINGS = TokenSet.create(OCamlTypes.STRING_VALUE);
 
     @NotNull

@@ -6,7 +6,6 @@ import com.intellij.openapi.util.text.HtmlChunk;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiNamedElement;
-import com.odoc.lang.ORDocConverter;
 import com.odoc.lang.OdocConverter;
 import com.or.ide.files.FileBase;
 import com.or.lang.core.psi.PsiQualifiedPathElement;
@@ -64,7 +63,7 @@ class DocFormatter {
                       .append(HtmlChunk.br());
             } */
 
-            ORDocConverter converter = new OdocConverter();
+            OdocConverter converter = new OdocConverter();
             contentBuilder.append(converter.convert(text));
 
             // final render

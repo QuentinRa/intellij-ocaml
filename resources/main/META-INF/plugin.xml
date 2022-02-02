@@ -13,7 +13,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
     <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <xi:include href="/META-INF/reason.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/or.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <resource-bundle>messages.OCamlBundle</resource-bundle>
 
