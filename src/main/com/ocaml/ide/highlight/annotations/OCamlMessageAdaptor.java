@@ -22,6 +22,10 @@ public class OCamlMessageAdaptor {
             if (c.startsWith("Warning 3: deprecated:")) annotation.toDeprecated();
         }
 
+        else if (annotation.isError()) {
+            if (c.startsWith("Error: Unbound")) annotation.toUnbound();
+        }
+
         return annotation;
     }
 }

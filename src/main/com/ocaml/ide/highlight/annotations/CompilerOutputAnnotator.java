@@ -180,7 +180,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                     outputParser.parseLine(line);
                 }
             } catch (IOException e){
-                LOG.warn("reading "+nameWithoutExtension+" error. Messages are "+info, e);
+                // may occur if the file was removed, because it will be compiled again?
+                LOG.warn("Reading '"+sourceFile.getName()+"' failed ("+e.getMessage()+").");
             }
             // done
             outputParser.inputDone();

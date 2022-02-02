@@ -34,4 +34,25 @@ public class OCamlMessageAdaptorTest extends OCamlBaseTest {
         assertEquals(ProblemHighlightType.LIKE_DEPRECATED, OCamlMessageAdaptor.temper(m).highlightType);
     }
 
+    @Test
+    public void testUnboundConstructor() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.ERROR);
+        m.content = "Error: Unbound constructor A";
+        assertEquals(ProblemHighlightType.ERROR, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnboundConstructorType() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.ERROR);
+        m.content = "Error: Unbound type constructor t";
+        assertEquals(ProblemHighlightType.ERROR, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnboundModule() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.ERROR);
+        m.content = "Error: Unbound module G";
+        assertEquals(ProblemHighlightType.ERROR, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
 }

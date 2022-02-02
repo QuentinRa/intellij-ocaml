@@ -63,4 +63,8 @@ public class OCamlAnnotation {
     public void toDeprecated() {
         highlightType = ProblemHighlightType.LIKE_DEPRECATED;
     }
+
+    public void toUnbound() {
+        highlightType = ProblemHighlightType.ERROR;
+    }
 }
