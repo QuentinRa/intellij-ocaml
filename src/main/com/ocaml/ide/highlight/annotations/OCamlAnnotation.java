@@ -1,6 +1,7 @@
 package com.ocaml.ide.highlight.annotations;
 
 import com.intellij.build.FilePosition;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
@@ -18,6 +19,7 @@ public class OCamlAnnotation {
     public int startColumn;
     public int endLine;
     public int endColumn;
+    public ProblemHighlightType highlightType;
 
     public OCamlAnnotation(@NotNull CompilerOutputMessage currentState) {
         kind = currentState.kind;
@@ -36,7 +38,7 @@ public class OCamlAnnotation {
         if (endColumn == -1) endColumn = 1;
     }
 
-    public TextRangeInterval computePosition(Editor editor) {
+    public TextRangeInterval computePosition(@NotNull Editor editor) {
         // position
         LogicalPosition start = new LogicalPosition(startLine, startColumn);
         LogicalPosition end = new LogicalPosition(endLine, endColumn);
@@ -52,4 +54,13 @@ public class OCamlAnnotation {
     public boolean isError() { return kind == CompilerOutputMessage.Kind.ERROR; }
     public boolean isWarning() { return kind == CompilerOutputMessage.Kind.WARNING; }
     public boolean isAlert() { return kind == CompilerOutputMessage.Kind.ALERT; }
+
+    public boolean hasCustomHighLightType() {
+        return highlightType != null;
+    }
+
+    // utils
+    public void toDeprecated() {
+        highlightType = ProblemHighlightType.LIKE_DEPRECATED;
+    }
 }
