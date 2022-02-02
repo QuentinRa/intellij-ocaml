@@ -31,17 +31,18 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 ## 🚀 Features
 
-| Features coming from ReasonML                 |
-|-----------------------------------------------|
-| File Structure menu                           |
-| Simple autocompletion                         |
-| Go to file, declaration, etc.                 |
-| Comment line/block                            |
-| Insert matching brace, quote                  |
-| Find usages                                   |
-| Preview `odoc` documentation (CTRL-Q / hover) |
-| ✅ Live templates (PR)                         |
-| ✅ Spellchecker (PR)                           |
+| Features coming from ReasonML                             |
+|-----------------------------------------------------------|
+| File Structure menu                                       |
+| Simple autocompletion                                     |
+| Go to file, declaration, etc.                             |
+| Comment line/block                                        |
+| Insert matching brace, quote                              |
+| Find usages                                               |
+| Preview `odoc` documentation (CTRL-Q / hover)             |
+| ✅ Live templates (PR)                                     |
+| ✅ Spellchecker (PR)                                       |
+| ❌ Highlight for not, strings in comments (bug), doc (PR?) |
 
 | Setup                                                      |
 |------------------------------------------------------------|

@@ -4,6 +4,7 @@ import com.intellij.lang.ASTFactory;
 import com.intellij.psi.impl.source.tree.CompositeElement;
 import com.intellij.psi.impl.source.tree.CompositePsiElement;
 import com.intellij.psi.impl.source.tree.LeafElement;
+import com.intellij.psi.impl.source.tree.PsiCommentImpl;
 import com.intellij.psi.tree.IElementType;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiDefaultValue;
@@ -228,6 +229,14 @@ public class ORASTFactory extends ASTFactory {
         }
         if (type == OCamlTypes.STRING_VALUE) {
             return new PsiLiteralExpression(type, text);
+        }
+        // may check
+        // PsiDocCommentImpl
+        // PsiComment
+        // PsiDocComment
+        // PsiDocTagImpl
+        if (type == OCamlTypes.DOC_COMMENT) {
+            return new PsiCommentImpl(type, text);
         }
 
         return super.createLeaf(type, text);
