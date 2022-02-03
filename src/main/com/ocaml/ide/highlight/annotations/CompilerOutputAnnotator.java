@@ -233,7 +233,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             TextRangeInterval range = message.computePosition();
 
             // create
-            AnnotationBuilder builder = holder.newAnnotation(t, message.content);
+            AnnotationBuilder builder = holder.newAnnotation(t, message.header);
             builder = range == null ? builder.afterEndOfLine() : builder.range(range);
             builder = message.fileLevel ? builder.fileLevel() : builder;
             builder = builder.tooltip(message.content);

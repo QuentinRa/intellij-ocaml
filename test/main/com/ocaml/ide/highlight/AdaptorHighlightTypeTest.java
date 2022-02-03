@@ -86,4 +86,53 @@ public class AdaptorHighlightTypeTest extends OCamlBaseTest {
         assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
     }
 
+    @Test
+    public void testUnusedMatchCase() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 11: this match case is unused.";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnusedValue() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 32: unused value x.";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnusedOpen() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 33: unused open T1";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnusedType() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 34: unused type t.";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnusedRec() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 39: unused rec flag.";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnusedModule() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 60: unused module X.";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    @Test
+    public void testUnusedFunctorParameter() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 67: unused functor parameter X.";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
 }

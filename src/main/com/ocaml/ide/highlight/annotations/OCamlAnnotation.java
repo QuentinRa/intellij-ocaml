@@ -17,6 +17,7 @@ public class OCamlAnnotation {
     /* see CompilerOutputMessage */
     public @NotNull CompilerOutputMessage.Kind kind;
     public String context;
+    public String header;
     public String content;
     public @Nullable PsiFile psiFile;
     public @Nullable Editor editor;
@@ -35,7 +36,7 @@ public class OCamlAnnotation {
                            @Nullable Editor e) {
         kind = currentState.kind;
         context = currentState.context;
-        content = currentState.content;
+        header = content = currentState.content;
         psiFile = psi;
         editor = e;
 
@@ -85,6 +86,12 @@ public class OCamlAnnotation {
         highlightType = ProblemHighlightType.ERROR;
     }
 
+    // bunch of errors "mismatch"
+    public void toMismatchMli() {
+        fileLevel = true;
+        header = "<html>"+header.replace("\n", "<br/>")+"</html>";
+    }
+
     // 11, 27, 32, 33, 39, ...
     public void toUnused() {
         highlightType = ProblemHighlightType.LIKE_UNUSED_SYMBOL;
@@ -93,6 +100,10 @@ public class OCamlAnnotation {
     // 27
     public void toUnusedVariable() {
         toUnused();
+        // rename variable
+        // warning: if the variable 'x' is like this Some(x),
+        // then '(x)' or '( x )' is matched by 'unused', so we can't naively
+        // replace the given position with _ (we need to find the name of the variable)
     }
 
     // 70
@@ -103,5 +114,44 @@ public class OCamlAnnotation {
     // 24
     public void toBadModuleName() {
         fileLevel = true;
+    }
+
+    // 11
+    public void toUnusedMatchCase() {
+        // we should mark the whole statement
+        // -> everything until the '|' (easy)
+        // -> or the next statement (hard?)
+        toUnused();
+    }
+
+    public void toUnusedRec() {
+        toUnused();
+        // the cursor is on the variable, not on the rec
+    }
+
+    public void toUnusedValue() {
+        toUnused();
+        // may be a value (ex: 'x') or a definition (ex: 'val t : int')
+    }
+
+    public void toUnusedType() {
+        toUnused();
+        // may be 'type t' or 'type t = ...'
+    }
+
+    public void toUnusedModule() {
+        toUnused();
+        // may be 'X' / ... a name followed by sig end
+        // or module Name = struct end
+    }
+
+    public void toUnusedFunctorParameter() {
+        toUnused();
+        // always a name?
+    }
+
+    public void toUnusedOpen() {
+        toUnused();
+        // 'open Name'
     }
 }
