@@ -2,3 +2,10 @@
 exception B [@@deprecated]
 
 let _ = B
+
+let i x = x [@inlined]
+
+module J = Set.Make [@@inlined]
+module J' = Set.Make [@@ocaml.inlined]
+
+let n x = x [@ocaml.tailcall]

@@ -4,6 +4,8 @@
 
 let 1 = 1;;
 
+let dont_warn_with_partial_match None x = x
+
 let test_match_exhaustiveness () =
     match None with
     | exception _ -> ()

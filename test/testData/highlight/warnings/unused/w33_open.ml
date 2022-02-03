@@ -1,5 +1,7 @@
-(* Warning 33: unused open Stdlib.List *)
+(* Warning 33: unused open T1 *)
+module T1 = struct
+end
 
-include (struct
-open List
-end);;
+module T3 = struct
+  open T1
+end
