@@ -16,6 +16,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.ocaml.OCamlBundle;
 import com.ocaml.ide.actions.editor.run.OCamlRunFileREPLAction;
+import com.ocaml.ide.actions.editor.run.OCamlRunSelection;
 import com.ocaml.utils.adaptor.actions.ActionUtilsAdaptor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +60,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
     private @NotNull ActionGroup createActionGroup() {
         DefaultActionGroup defaultActionGroup = new DefaultActionGroup();
         defaultActionGroup.add(new ToolbarAction(OCamlRunFileREPLAction.ACTION_ID));
+        defaultActionGroup.add(new ToolbarAction(OCamlRunSelection.ACTION_ID));
         return defaultActionGroup;
     }
 

@@ -86,6 +86,8 @@ public class OCamlIcons {
         public static final Icon MAKEFILE = loadIcon("/icons/makefile.svg");
         // DuneIcons.Nodes.Dune
         public static final Icon DUNE = DuneIcons.Nodes.DUNE;
+        // PycharmDSCustomizationIcons.Icons.ExecuteSelection
+        public static final Icon ExecuteSelection = loadIcon("/icons/executeSelection.svg");;
     }
 
 }
