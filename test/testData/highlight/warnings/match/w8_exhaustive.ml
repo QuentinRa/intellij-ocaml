@@ -2,6 +2,8 @@
    Here is an example of a case that is not matched:
    Some true *)
 
+let 1 = 1;;
+
 let test_match_exhaustiveness () =
     match None with
     | exception _ -> ()
