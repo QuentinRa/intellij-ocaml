@@ -33,7 +33,7 @@ public abstract class OCamlEditorActionBase extends DumbAwareAction implements O
      * to find a console.
      * @param e see DumbAwareAction#actionPerformed(e)
      */
-    @Override public final void actionPerformed(@NotNull AnActionEvent e) {
+    @Override public void actionPerformed(@NotNull AnActionEvent e) {
         OCamlConsoleRunner runner = OCamlConsoleToolWindowFactory.getOCamlConsoleRunner();
         if (runner == null) {
             // show notification so that the user know that he/she must add sources manually
@@ -45,5 +45,7 @@ public abstract class OCamlEditorActionBase extends DumbAwareAction implements O
         doActionPerformed(e, runner);
     }
 
-    protected abstract void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner);
+    protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
+
+    }
 }

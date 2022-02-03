@@ -37,6 +37,18 @@
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
+        <action id="editor.api.action" class="com.ocaml.ide.actions.editor.OCamlEditorApiAction"
+                icon="AllIcons.General.Information" >
+            <keyboard-shortcut keymap="$default" first-keystroke="F1" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="F1" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F1" replace-all="true"/>
+        </action>
+        <action id="editor.help.action" class="com.ocaml.ide.actions.editor.OCamlEditorHelpAction"
+                icon="AllIcons.Actions.Help" >
+            <keyboard-shortcut keymap="$default" first-keystroke="F11" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="F11" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F11" replace-all="true"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">

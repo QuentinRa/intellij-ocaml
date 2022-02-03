@@ -15,6 +15,8 @@ import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.ocaml.OCamlBundle;
+import com.ocaml.ide.actions.editor.OCamlEditorApiAction;
+import com.ocaml.ide.actions.editor.OCamlEditorHelpAction;
 import com.ocaml.ide.actions.editor.run.OCamlRunFileREPLAction;
 import com.ocaml.ide.actions.editor.run.OCamlRunSelection;
 import com.ocaml.utils.adaptor.actions.ActionUtilsAdaptor;
@@ -61,6 +63,9 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
         DefaultActionGroup defaultActionGroup = new DefaultActionGroup();
         defaultActionGroup.add(new ToolbarAction(OCamlRunFileREPLAction.ACTION_ID));
         defaultActionGroup.add(new ToolbarAction(OCamlRunSelection.ACTION_ID));
+        defaultActionGroup.add(new Separator());
+        defaultActionGroup.add(new ToolbarAction(OCamlEditorApiAction.ACTION_ID));
+        defaultActionGroup.add(new ToolbarAction(OCamlEditorHelpAction.ACTION_ID));
         return defaultActionGroup;
     }
 
