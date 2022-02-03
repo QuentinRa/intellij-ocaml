@@ -1,5 +1,6 @@
 package com.ocaml.ide.highlight.annotations;
 
+import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
@@ -14,6 +15,7 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.*;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
@@ -117,7 +119,10 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // We need to make a copy with the REAL content of the file, and work on this copy.
         // If we are working on the given file, we are not compiling/... the "latest" version,
         // as some changes may not have been committed.
-        File sourceTempFile = OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG);
+        // FIX: Read access is allowed from inside read-action (or EDT) only (see com.intellij.openapi.application.Application.runReadAction())
+        File sourceTempFile = ApplicationManager.getApplication().runReadAction( (Computable<File>)
+                () -> OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG)
+        );
         if (sourceTempFile == null)  return null;
 
         AtomicReference<File> interfaceTempFile = new AtomicReference<>();
@@ -179,16 +184,17 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 while ((line = stdin.readLine()) != null) {
                     outputParser.parseLine(line);
                 }
+                // done
+                outputParser.inputDone();
             } catch (IOException e){
                 // may occur if the file was removed, because it will be compiled again?
                 LOG.warn("Reading '"+sourceFile.getName()+"' failed ("+e.getMessage()+").");
+                return null;
+            } finally {
+                // delete
+                Files.deleteIfExists(sourceTempFile.toPath());
+                if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
             }
-            // done
-            outputParser.inputDone();
-
-            // delete
-            Files.deleteIfExists(sourceTempFile.toPath());
-            if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
 
             return new AnnotationResult(info, collectedInfo.myEditor, cmtFile);
         } catch (Exception e) {
@@ -215,7 +221,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         ArrayList<Problem> problems = new ArrayList<>();
 
         for (CompilerOutputMessage m : annotationResult.myOutputInfo) {
-            OCamlAnnotation message = OCamlMessageAdaptor.temper(m);
+            OCamlAnnotation message = OCamlMessageAdaptor.temper(m, file, editor);
 
             // type
             HighlightSeverity t;
@@ -224,14 +230,16 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
             else t = HighlightSeverity.INFORMATION;
 
-            TextRangeInterval range = message.computePosition(editor);
+            TextRangeInterval range = message.computePosition();
 
             // create
             AnnotationBuilder builder = holder.newAnnotation(t, message.content);
             builder = range == null ? builder.afterEndOfLine() : builder.range(range);
             builder = builder.tooltip(message.content);
             builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
-            // builder = builder.withFix(null); // fix
+            for (IntentionAction fix: message.fixes) {
+                builder = builder.withFix(fix); // fix
+            }
             builder.create();
 
             if (message.isError()) {
