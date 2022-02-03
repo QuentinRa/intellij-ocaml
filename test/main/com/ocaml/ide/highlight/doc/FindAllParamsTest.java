@@ -1,12 +1,18 @@
-package com.ocaml.ide.highlight;
+package com.ocaml.ide.highlight.doc;
 
 import com.ocaml.OCamlBaseTest;
+import com.ocaml.ide.highlight.OCamlDocumentationAnnotator;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class is testing that comments are properly highlighted
+ * with the annotator. The test is checking that the pattern is valid,
+ * but the highlight is quite basic, for now.
+ */
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class FindAllParamsTest extends OCamlBaseTest {
 

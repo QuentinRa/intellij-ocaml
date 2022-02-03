@@ -1,4 +1,4 @@
-package com.ocaml.sdk.output.errors.mismatch;
+package com.ocaml.sdk.output.errors;
 
 import com.ocaml.sdk.output.BaseOutputTest;
 import com.ocaml.sdk.output.CompilerOutputMessage;

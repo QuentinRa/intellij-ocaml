@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.io.File;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class OCamlMessageAdaptorTest extends OCamlBaseTest {
+public class AdaptorHighlightTypeTest extends OCamlBaseTest {
 
     private @NotNull CompilerOutputMessage createCompilerOutputMessage(CompilerOutputMessage.Kind kind) {
         CompilerOutputMessage m = new CompilerOutputMessage();
@@ -19,6 +19,8 @@ public class OCamlMessageAdaptorTest extends OCamlBaseTest {
         m.kind = kind;
         return m;
     }
+
+    // Alert/deprecated
 
     @Test
     public void testDeprecatedWarning() {
@@ -33,6 +35,8 @@ public class OCamlMessageAdaptorTest extends OCamlBaseTest {
         m.content = "Alert deprecated: t";
         assertEquals(ProblemHighlightType.LIKE_DEPRECATED, OCamlMessageAdaptor.temper(m).highlightType);
     }
+
+    // Errors/unbound
 
     @Test
     public void testUnboundConstructor() {
@@ -53,6 +57,18 @@ public class OCamlMessageAdaptorTest extends OCamlBaseTest {
         CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.ERROR);
         m.content = "Error: Unbound module G";
         assertEquals(ProblemHighlightType.ERROR, OCamlMessageAdaptor.temper(m).highlightType);
+    }
+
+    // warnings/missing MLI
+
+
+    // warnings/unused
+
+    @Test
+    public void testUnusedVariable() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 27: unused variable v.";
+        assertEquals(ProblemHighlightType.LIKE_UNUSED_SYMBOL, OCamlMessageAdaptor.temper(m).highlightType);
     }
 
 }

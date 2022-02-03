@@ -10,8 +10,20 @@ let f1 v = match v with
 | Some(v) -> 5
 | None -> 3
 
-(* unused match case *)
 let f2 v = match v with
+| Some v -> 5
+| None -> 3
+
+type me = A of int * int
+let f3 (v: me) = match v with
+| A ( v, _ ) -> 5
+
+let f4 (v) = match v with
+| Some ( v ) -> 5
+| None -> 5
+
+(* unused match case *)
+let g v = match v with
 | Some(_) -> 5
 | Some(_)-> 7
 | None -> 0
