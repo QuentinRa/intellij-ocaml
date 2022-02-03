@@ -235,6 +235,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // create
             AnnotationBuilder builder = holder.newAnnotation(t, message.content);
             builder = range == null ? builder.afterEndOfLine() : builder.range(range);
+            builder = message.fileLevel ? builder.fileLevel() : builder;
             builder = builder.tooltip(message.content);
             builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
             for (IntentionAction fix: message.fixes) {

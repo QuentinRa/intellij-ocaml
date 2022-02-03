@@ -61,6 +61,21 @@ public class AdaptorHighlightTypeTest extends OCamlBaseTest {
 
     // warnings/missing MLI
 
+    @Test
+    public void testMissingMLI() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 70: Cannot find interface file.";
+        assertTrue(OCamlMessageAdaptor.temper(m).fileLevel);
+    }
+
+    // warnings/bad source file name
+
+    @Test
+    public void testBadSourceName() {
+        CompilerOutputMessage m = createCompilerOutputMessage(CompilerOutputMessage.Kind.WARNING);
+        m.content = "Warning 24: bad source file name: \"24_module\" is not a valid module name";
+        assertTrue(OCamlMessageAdaptor.temper(m).fileLevel);
+    }
 
     // warnings/unused
 

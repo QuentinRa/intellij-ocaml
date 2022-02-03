@@ -1,18 +1,25 @@
 package com.ocaml.ide.highlight.annotations;
 
 import com.intellij.build.FilePosition;
-import com.intellij.codeInspection.ProblemHighlightType;
+import com.intellij.codeInsight.intention.IntentionAction;
+import com.intellij.codeInspection.*;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
+import com.intellij.psi.*;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 public class OCamlAnnotation {
     /* see CompilerOutputMessage */
     public @NotNull CompilerOutputMessage.Kind kind;
     public String context;
     public String content;
+    public @Nullable PsiFile psiFile;
+    public @Nullable Editor editor;
 
     public String file;
     public int startLine;
@@ -20,11 +27,17 @@ public class OCamlAnnotation {
     public int endLine;
     public int endColumn;
     public ProblemHighlightType highlightType;
+    public final ArrayList<IntentionAction> fixes = new ArrayList<>();
+    public boolean fileLevel;
 
-    public OCamlAnnotation(@NotNull CompilerOutputMessage currentState) {
+    public OCamlAnnotation(@NotNull CompilerOutputMessage currentState,
+                           @Nullable PsiFile psi,
+                           @Nullable Editor e) {
         kind = currentState.kind;
         context = currentState.context;
         content = currentState.content;
+        psiFile = psi;
+        editor = e;
 
         // easier access
         FilePosition filePosition = currentState.filePosition;
@@ -38,7 +51,8 @@ public class OCamlAnnotation {
         if (endColumn == -1) endColumn = 1;
     }
 
-    public TextRangeInterval computePosition(@NotNull Editor editor) {
+    public TextRangeInterval computePosition() {
+        if (editor == null) return null; // no editor, no job
         // position
         LogicalPosition start = new LogicalPosition(startLine, startColumn);
         LogicalPosition end = new LogicalPosition(endLine, endColumn);
@@ -60,11 +74,34 @@ public class OCamlAnnotation {
     }
 
     // utils
+
+    // alert: deprecated:
     public void toDeprecated() {
         highlightType = ProblemHighlightType.LIKE_DEPRECATED;
     }
 
+    // error
     public void toUnbound() {
         highlightType = ProblemHighlightType.ERROR;
+    }
+
+    // 11, 27, 32, 33, 39, ...
+    public void toUnused() {
+        highlightType = ProblemHighlightType.LIKE_UNUSED_SYMBOL;
+    }
+
+    // 27
+    public void toUnusedVariable() {
+        toUnused();
+    }
+
+    // 70
+    public void toMliMissing() {
+        fileLevel = true;
+    }
+
+    // 24
+    public void toBadModuleName() {
+        fileLevel = true;
     }
 }
