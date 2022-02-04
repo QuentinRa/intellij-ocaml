@@ -1,9 +1,11 @@
 val x : int = 5
 val l : int list = [5; 6; 7]
 val x : z = E
+val x : t = Foo ()
 
 val x : 'a -> 'a = <fun>
 
+type t = Foo of unit | Bar
 type t = A | C | G | T
 type g = t list
 type e
@@ -13,6 +15,17 @@ module type X = sig type x end
 
 exception T
 exception T of int
+
+class istack :
+  object
+    val mutable v : int list
+    method pop : int option
+    method push : int -> unit
+  end
+
+class c : object  end
+
+module M : sig type t = int val x : int end
 
 module S = Set.Make(Int);;
 module S = Set.Make(struct type t = int let compare = compare end);;

@@ -3,11 +3,14 @@ package com.ocaml.ide.console.debug;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.*;
 import com.intellij.navigation.ItemPresentation;
+import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.TreeElementGroup;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * We are not using the proper classes, so this is
@@ -16,10 +19,11 @@ import javax.swing.*;
  */
 public class OCamlStupidTreeModel implements TreeModel {
 
-//    public final TreeElementGroup modules = new TreeElementGroup("Modules");
-//    public final TreeElementGroup types = new TreeElementGroup("Types");
-    public final TreeElementGroup functions = new TreeElementGroup("Functions");
-    public final TreeElementGroup variables = new TreeElementGroup("Variables");
+    public final TreeElementGroup exceptions = new TreeElementGroup(TreeElementGroupKind.EXCEPTION);
+    public final TreeElementGroup types = new TreeElementGroup(TreeElementGroupKind.TYPE);
+    public final TreeElementGroup modules = new TreeElementGroup(TreeElementGroupKind.MODULE);
+    public final TreeElementGroup functions = new TreeElementGroup(TreeElementGroupKind.FUNCTIONS);
+    public final TreeElementGroup variables = new TreeElementGroup(TreeElementGroupKind.VARIABLES);
 
     /**
      * Remove an element in every group
@@ -34,7 +38,7 @@ public class OCamlStupidTreeModel implements TreeModel {
     }
 
     public TreeElement root = new StructureViewTreeElement() {
-        @Override public Object getValue() {
+        @Contract(pure = true) @Override public @Nullable Object getValue() {
             return null;
         }
 
@@ -51,10 +55,13 @@ public class OCamlStupidTreeModel implements TreeModel {
         }
 
         @Override public TreeElement @NotNull [] getChildren() {
-            return new TreeElement[]{
-                    functions,
-                    variables
-            };
+            ArrayList<TreeElement> e = new ArrayList<>();
+            if (exceptions.isVisible()) e.add(exceptions);
+            if (types.isVisible()) e.add(types);
+            if (modules.isVisible()) e.add(modules);
+            if (functions.isVisible()) e.add(functions);
+            if (variables.isVisible()) e.add(variables);
+            return e.toArray(new TreeElement[0]);
         }
 
         @Override public void navigate(boolean requestFocus) {

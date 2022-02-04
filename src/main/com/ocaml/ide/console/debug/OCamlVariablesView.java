@@ -1,7 +1,10 @@
 package com.ocaml.ide.console.debug;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.treeView.smartTree.*;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -11,12 +14,17 @@ import com.intellij.ui.tree.AsyncTreeModel;
 import com.intellij.ui.tree.StructureTreeModel;
 import com.intellij.ui.treeStructure.Tree;
 import com.ocaml.ide.console.OCamlConsoleView;
+import com.ocaml.ide.console.debug.groups.ShowElementGroupAction;
 import com.ocaml.ide.console.debug.groups.TreeElementGroup;
+import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Panel with the variables
@@ -41,7 +49,32 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
         var tree = new Tree(asyncTreeModel);
         tree.setRootVisible(false);
 
-        setContent(ScrollPaneFactory.createScrollPane(tree));
+        JPanel content = new JPanel(new BorderLayout());
+        content.add(createToolbar(tree), BorderLayout.WEST);
+        content.add(ScrollPaneFactory.createScrollPane(tree), BorderLayout.CENTER);
+        setContent(content);
+    }
+
+    private @NotNull JComponent createToolbar(Tree tree) {
+        var group = new DefaultActionGroup();
+        group.addAction(createSettingsActionGroup());
+        // create
+        ActionToolbarImpl toolbar = (ActionToolbarImpl) ActionManager.getInstance().createActionToolbar(
+                ActionPlaces.TOOLBAR, group, false
+        );
+        toolbar.setTargetComponent(tree);
+        return toolbar.getComponent();
+    }
+
+    private @NotNull AnAction createSettingsActionGroup() {
+        var group = new DefaultActionGroup("Variable View Settings", true);
+        group.getTemplatePresentation().setIcon(AllIcons.Actions.Show);
+        group.add(new ShowElementGroupAction(TreeElementGroupKind.EXCEPTION, this));
+        group.add(new ShowElementGroupAction(TreeElementGroupKind.MODULE, this));
+        group.add(new ShowElementGroupAction(TreeElementGroupKind.TYPE, this));
+        group.add(new ShowElementGroupAction(TreeElementGroupKind.FUNCTIONS, this));
+        group.add(new ShowElementGroupAction(TreeElementGroupKind.VARIABLES, this));
+        return group;
     }
 
     /**
@@ -85,6 +118,14 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
         // add
         group.elements.add(element);
 
+        invalidateTree();
+    }
+
+    public OCamlStupidTreeModel getTreeModel() {
+        return treeModel;
+    }
+
+    public void invalidateTree() {
         ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> {
             structureTreeModel.getInvoker().invokeLater(() -> {
                 treeStructure.rebuildTree();
