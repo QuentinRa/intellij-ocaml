@@ -10,18 +10,19 @@ import com.ocaml.OCamlBundle;
 import com.ocaml.ide.console.OCamlConsoleRunner;
 import com.ocaml.ide.console.OCamlConsoleToolWindowFactory;
 import com.ocaml.ide.files.OCamlFileType;
+import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.utils.notifications.OCamlNotificationData;
 import com.ocaml.utils.notifications.OCamlNotifications;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class OCamlEditorActionBase extends DumbAwareAction implements OCamlPromotedAction{
+public abstract class OCamlEditorActionBase extends DumbAwareAction implements OCamlPromotedAction {
 
     public OCamlEditorActionBase() {
     }
 
     @Override public void update(@NotNull AnActionEvent e) {
         VirtualFile data = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        boolean ok = data != null && data.getFileType() == OCamlFileType.INSTANCE;
+        boolean ok = data != null && (data.getFileType() == OCamlFileType.INSTANCE || data.getFileType() == OCamlInterfaceFileType.INSTANCE);
 
         Presentation presentation = e.getPresentation();
         presentation.setEnabled(e.isFromActionToolbar() || ok);
