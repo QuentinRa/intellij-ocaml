@@ -185,7 +185,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     }
 
     // should look for the SDK in the ROOTs
-    public @Nullable String getOrCreateURL(@NotNull Sdk sdk, ComputeMethod<String, Sdk> defaultProvider,
+    public @Nullable String getOrCreateURL(@NotNull Sdk sdk, @NotNull ComputeMethod<String, Sdk> defaultProvider,
                                            String pattern1, String pattern2) {
         return defaultProvider.call(sdk);
     }

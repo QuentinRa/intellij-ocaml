@@ -2,6 +2,7 @@ package com.ocaml.ide.console.debug.groups;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareToggleAction;
+import com.ocaml.OCamlBundle;
 import com.ocaml.ide.console.debug.OCamlStupidTreeModel;
 import com.ocaml.ide.console.debug.OCamlVariablesView;
 import org.jetbrains.annotations.NotNull;
@@ -15,8 +16,7 @@ public class ShowElementGroupAction extends DumbAwareToggleAction {
     private final OCamlVariablesView view;
 
     public ShowElementGroupAction(@NotNull TreeElementGroupKind kind, @NotNull OCamlVariablesView view) {
-        // todo: bundle
-        super("Show Category '"+kind.displayName+"'");
+        super(OCamlBundle.message("repl.variable.view.show.group", kind.displayName));
         this.view = view;
 
         OCamlStupidTreeModel treeModel = view.getTreeModel();

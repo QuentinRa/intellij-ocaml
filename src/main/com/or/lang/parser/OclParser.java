@@ -886,7 +886,7 @@ public class OclParser extends CommonParser {
             IElementType nextToken = state.getTokenType();
             if (nextToken == OCamlTypes.COMMA) {
                 // A deconstruction without parenthesis
-                // TODO
+                // ...
             } else if (nextToken != OCamlTypes.EQ && nextToken != OCamlTypes.COLON) {
                 // This is a function, we need to create the let binding now, to be in sync with reason
                 //  let |>x<| y z = ...  vs    let x = y z => ...

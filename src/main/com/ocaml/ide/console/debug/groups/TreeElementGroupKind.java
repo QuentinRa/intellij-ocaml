@@ -1,16 +1,19 @@
 package com.ocaml.ide.console.debug.groups;
 
+import com.ocaml.OCamlBundle;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.PropertyKey;
+
 public enum TreeElementGroupKind {
-    // todo: bundle
-    EXCEPTION("Exceptions"),
-    MODULE("Modules"),
-    TYPE("Types"),
-    FUNCTIONS("Functions"),
-    VARIABLES("Variables");
+    EXCEPTION("repl.variable.view.exceptions"),
+    MODULE("repl.variable.view.modules"),
+    TYPE("repl.variable.view.types"),
+    FUNCTIONS("repl.variable.view.functions"),
+    VARIABLES("repl.variable.view.variables");
 
     public final String displayName;
 
-    TreeElementGroupKind(String displayName) {
-        this.displayName = displayName;
+    TreeElementGroupKind(@NotNull @PropertyKey(resourceBundle = OCamlBundle.BUNDLE) String key) {
+        this.displayName = OCamlBundle.message(key);
     }
 }
