@@ -120,6 +120,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // If we are working on the given file, we are not compiling/... the "latest" version,
         // as some changes may not have been committed.
         // FIX: Read access is allowed from inside read-action (or EDT) only (see com.intellij.openapi.application.Application.runReadAction())
+        @SuppressWarnings("deprecation")
         File sourceTempFile = ApplicationManager.getApplication().runReadAction( (Computable<File>)
                 () -> OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG)
         );

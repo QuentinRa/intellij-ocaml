@@ -1,6 +1,6 @@
 package com.or.ide.search;
 
-import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.indexing.FileBasedIndex;
 import com.or.ide.search.index.NamespaceIndex;
@@ -16,7 +16,7 @@ public class FileModuleIndexService {
     }
 
     public static FileModuleIndexService getService() {
-        return ServiceManager.getService(FileModuleIndexService.class);
+        return ApplicationManager.getApplication().getService(FileModuleIndexService.class);
     }
 
     @NotNull
