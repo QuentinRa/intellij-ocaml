@@ -1,22 +1,14 @@
 package com.ocaml.ide.actions.editor;
 
-import com.intellij.ide.browsers.BrowserLauncher;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.ocaml.ide.actions.editor.help.OCamlBaseOpenLikeAction;
+import com.ocaml.sdk.OCamlSdkType;
 
-public class OCamlEditorApiAction extends OCamlEditorActionBase {
+public class OCamlEditorApiAction extends OCamlBaseOpenLikeAction {
 
     public static final String ACTION_ID = "editor.api.action";
 
-    @Override public void actionPerformed(@NotNull AnActionEvent e) {
-        // before 11 (included)
-        // https://ocaml.org/releases/4.11/htmlman/index.html
-        // https://ocaml.org/releases/4.11/htmlman/libref/index_modules.html
-        // after 11 (excluded)
-        // https://ocaml.org/releases/4.12/manual/index.html
-        // https://ocaml.org/releases/4.12/api/index.html
-        String url = "https://ocaml.org/releases/4.12/api/index.html";
-        BrowserLauncher.getInstance().browse(url, null);
+    @Override protected String getURL(Sdk sdk) {
+        return OCamlSdkType.getInstance().getRealAPIURL(sdk);
     }
-
 }

@@ -11,6 +11,7 @@ import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.utils.ComputeMethod;
 import com.ocaml.utils.adaptor.SinceIdeVersion;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -137,6 +138,11 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
         SdkModificator sdkModificator = sdk.getSdkModificator();
         sdkModificator.removeRoots(OrderRootType.CLASSES);
         addSources(new File(homePath), sdkModificator);
+        // 0.0.6 - added by default
+        String url = getDefaultDocumentationUrl(sdk);
+        if (url != null) sdkModificator.addRoot(url, OrderRootType.DOCUMENTATION);
+        url = getDefaultAPIUrl(sdk);
+        if (url != null) sdkModificator.addRoot(url, OrderRootType.DOCUMENTATION);
         sdkModificator.commitChanges();
     }
 
@@ -145,7 +151,43 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     //
 
     @Override public @Nullable String getDefaultDocumentationUrl(@NotNull Sdk sdk) {
-        return null; // https://www.ocaml.org/api/index.html for 4.13, but before?
+        String version = getMajorAndMinorVersion(sdk);
+        if (version == null) return null;
+        if (OCamlSdkVersionManager.isNewerThan("4.12", version))
+            return "https://ocaml.org/releases/"+version+"/manual/index.html";
+        return "https://ocaml.org/releases/"+version+"/htmlman/index.html";
+    }
+
+    public @Nullable String getDefaultAPIUrl(@NotNull Sdk sdk) {
+        String version = getMajorAndMinorVersion(sdk);
+        if (version == null) return null;
+        if (OCamlSdkVersionManager.isNewerThan("4.12", version))
+            return "https://ocaml.org/releases/"+version+"/api/index.html";
+        return "https://ocaml.org/releases/"+version+"/htmlman/libref/index_modules.html";
+    }
+
+    private @Nullable String getMajorAndMinorVersion(@NotNull Sdk sdk) {
+        String homePath = sdk.getHomePath();
+        if (homePath == null) return null;
+        String version = OCamlSdkVersionManager.parseVersionOnly(homePath);
+        int last = version.lastIndexOf('.');
+        if (last != version.indexOf('.'))
+            version = version.substring(0, last);
+        return version;
+    }
+
+    public @Nullable String getRealDocumentationURL(@NotNull Sdk sdk) {
+        return getOrCreateURL(sdk, this::getDefaultDocumentationUrl, "/manual/index.html", "/htmlman/index.html");
+    }
+
+    public @Nullable String getRealAPIURL(@NotNull Sdk sdk) {
+        return getOrCreateURL(sdk, this::getDefaultAPIUrl, "/api/index.html", "/libref/index_modules.html");
+    }
+
+    // should look for the SDK in the ROOTs
+    public @Nullable String getOrCreateURL(@NotNull Sdk sdk, ComputeMethod<String, Sdk> defaultProvider,
+                                           String pattern1, String pattern2) {
+        return defaultProvider.call(sdk);
     }
 
     //

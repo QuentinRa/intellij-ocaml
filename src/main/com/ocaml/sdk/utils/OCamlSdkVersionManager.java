@@ -25,6 +25,9 @@ public final class OCamlSdkVersionManager {
     private static final Pattern VERSION_PATH_REGEXP =
             Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?/.*");
 
+    private static final Pattern VERSION_ONLY_REGEXP =
+            Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?)([+][^/]+)?(-v[^/]*)?/.*");
+
     // This is the regex above, the part between the two slashes
     private static final Pattern VERSION_REGEXP = Pattern.compile("(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?");
 
@@ -47,15 +50,36 @@ public final class OCamlSdkVersionManager {
      * @see #UNKNOWN_VERSION
      */
     public static String parse(@NotNull String sdkHome) {
+        return parse(sdkHome, VERSION_PATH_REGEXP);
+    }
+
+    private static String parse(@NotNull String sdkHome, Pattern regexp) {
         if (sdkHome.isBlank()) return UNKNOWN_VERSION;
         // use Linux paths, as we are using these in the regex
         sdkHome = FileUtil.toSystemIndependentName(sdkHome);
         if (!sdkHome.endsWith("/")) sdkHome += "/";
         // try to find the first group
-        Matcher matcher = VERSION_PATH_REGEXP.matcher(sdkHome);
+        Matcher matcher = regexp.matcher(sdkHome);
         if (matcher.matches()) return matcher.group(1);
         // no match
         return UNKNOWN_VERSION;
+    }
+
+    /**
+     * Unlike parse, only returns the version, without any modifier (the +followed by some stuff)
+     * @param sdkHome a path (expected to be absolute, but it should work
+     *                for most relative paths as long as there is at least one /),
+     *                using \\ or / as file separator.
+     * @return the version (ex: 4.12.0, even if the real version is 4.12.0+mingw64)
+     */
+    // todo: test
+    public static String parseVersionOnly(@NotNull String sdkHome) {
+        return parse(sdkHome, VERSION_ONLY_REGEXP);
+    }
+
+    // todo: tests with folder 4.12
+    public static boolean isNewerThan(String base, String version) {
+        return version.compareTo(base) > 0;
     }
 
     /**
