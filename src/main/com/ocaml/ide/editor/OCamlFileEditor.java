@@ -3,6 +3,7 @@ package com.ocaml.ide.editor;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.*;
@@ -51,7 +52,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
     private @NotNull ActionToolbar createOCamlEditorToolbar() {
         ActionManager instance = ActionManager.getInstance();
         var toolbar = instance.createActionToolbar(
-                ActionPlaces.EDITOR_TOOLBAR,
+                "IPickBar",
                 createActionGroup(),
                 true
         );
@@ -87,7 +88,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
             myAction.update(createEvent(e));
         }
 
-        private AnActionEvent createEvent(AnActionEvent e) {
+        private @NotNull AnActionEvent createEvent(AnActionEvent e) {
             var file = FileDocumentManager.getInstance().getFile(myTextEditor.getEditor().getDocument());
             PsiFile psiFile = null;
             if (file != null) psiFile = PsiManager.getInstance(myProject).findFile(file);
