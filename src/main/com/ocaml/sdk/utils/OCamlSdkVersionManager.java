@@ -2,6 +2,7 @@ package com.ocaml.sdk.utils;
 
 import com.intellij.openapi.util.io.FileUtil;
 import com.ocaml.OCamlBundle;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -72,14 +73,16 @@ public final class OCamlSdkVersionManager {
      *                using \\ or / as file separator.
      * @return the version (ex: 4.12.0, even if the real version is 4.12.0+mingw64)
      */
-    // todo: test
-    public static String parseVersionOnly(@NotNull String sdkHome) {
+    // not tested as both regex are the same,
+    // the other one is tested. THe only difference is the group
+    // that will be recuperated
+    public static String parseWithoutModifier(@NotNull String sdkHome) {
         return parse(sdkHome, VERSION_ONLY_REGEXP);
     }
 
-    // todo: tests with folder 4.12
-    public static boolean isNewerThan(String base, String version) {
-        return version.compareTo(base) > 0;
+    @Contract(pure = true)
+    public static boolean isNewerThan(@NotNull String base, @NotNull String version) {
+        return version.compareTo(base) >= 0;
     }
 
     /**

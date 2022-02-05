@@ -169,7 +169,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     private @Nullable String getMajorAndMinorVersion(@NotNull Sdk sdk) {
         String homePath = sdk.getHomePath();
         if (homePath == null) return null;
-        String version = OCamlSdkVersionManager.parseVersionOnly(homePath);
+        String version = OCamlSdkVersionManager.parseWithoutModifier(homePath);
         int last = version.lastIndexOf('.');
         if (last != version.indexOf('.'))
             version = version.substring(0, last);

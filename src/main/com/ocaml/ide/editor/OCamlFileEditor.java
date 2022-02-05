@@ -52,7 +52,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
     private @NotNull ActionToolbar createOCamlEditorToolbar() {
         ActionManager instance = ActionManager.getInstance();
         var toolbar = instance.createActionToolbar(
-                "IPickBar",
+                ActionPlaces.EDITOR_TOOLBAR,
                 createActionGroup(),
                 true
         );
