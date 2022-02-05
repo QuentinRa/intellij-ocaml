@@ -43,10 +43,11 @@ intellij {
         untilBuild = pluginUntilBuild
         changeNotes = """
                 <ul>
-                    <li>Editor is shown for .mli, and not for excluded files (#47)</li>
-                    <li>Can send the selected code to the REPL (#41)</li>
                     <li>Proper highlight for odoc documentation, and buttons to browse the OCaml
                     Manual/API in the editor (#49).</li>
+                    <li>Editor is shown for .mli, and not for excluded files (#47)</li>
+                    <li>Relative path in warnings, errors, and alerts (#44)</li>
+                    <li>Can send the selected code to the REPL (#41)</li>
                     <li>Proper highlight for warnings, errors, and alerts (#38).</li>
                     <li>Almost every feature in ReasonML for OCaml was imported.</li>
                     <li>See <a href="https://github.com/QuentinRa/intellij-ocaml/blob/main/CHANGELOG.md">CHANGELOG.md</a></li>

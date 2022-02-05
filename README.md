@@ -72,15 +72,15 @@ You are now able to create a project using an opam SDK, or create an opam-like S
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
 
-| REPL Console                                                |
-|-------------------------------------------------------------|
-| ✅ Can execute commands                                      |
-| ✅ Browse history, use arrow up/down                         |
-| ✅ See the values of the variables                           |
-| ✅ Send a file to the console                                |
-| ✅ Send the selection to the console                         |
-| ✅ Send a statement to the console                           |
-| ❌ Send the whole line, if we are selecting a part + preview |
+| REPL Console                                                    |
+|-----------------------------------------------------------------|
+| ✅ Can execute commands                                          |
+| ✅ Browse history, use arrow up/down                             |
+| ✅ See the values of the variables                               |
+| ✅ Send a file to the console                                    |
+| ✅ Send the selection to the console                             |
+| ✅ Send a statement to the console                               |
+| ❌ Send the whole line, if we are selecting a part, with preview |
 
 This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
 

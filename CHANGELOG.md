@@ -13,11 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - 🚀🚀 Almost every feature in ReasonML for OCaml was imported
 - 🚀 Can send the selected code to the REPL (#41)
+- 🚀 We can send the selection to the console.
+- ✨ Buttons to browse the OCaml Manual/API in the editor, and a tab in the Sdk window, to change these links. (#49)
 
 ### Changed
-- 🚀 Improving editor (#41, #47): shown for .mli, not shown for excluded files. We can send the selection to the console
-- ✨ Proper highlight for odoc documentation, and buttons to browse the OCaml Manual/API in the editor (#49).
+- 🚀 Improving editor (#41, #47): shown for .mli, not shown for excluded files.
+- ✨ Proper highlight for odoc documentation (#49).
 - ✨ Proper highlight for warnings, errors, and alerts (#38).
+
+### Removed
+- We can set the sources, annotations, and documentation paths, but they were not used anyway. They may be added back later if needed.
 
 ## [0.0.5] - 2022-02-01
 ### Added
