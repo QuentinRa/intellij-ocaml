@@ -87,7 +87,7 @@ public class OCamlIcons {
         // DuneIcons.Nodes.Dune
         public static final Icon DUNE = DuneIcons.Nodes.DUNE;
         // PycharmDSCustomizationIcons.Icons.ExecuteSelection
-        public static final Icon ExecuteSelection = loadIcon("/icons/executeSelection.svg");;
+        public static final Icon ExecuteSelection = loadIcon("/icons/executeSelection.svg");
     }
 
 }

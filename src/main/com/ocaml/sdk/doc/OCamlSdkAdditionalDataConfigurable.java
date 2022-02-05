@@ -16,8 +16,8 @@ import javax.swing.*;
  * Sdk in the list. We are supposed to create a view for the additional data, for each SDK.
  */
 public class OCamlSdkAdditionalDataConfigurable implements AdditionalDataConfigurable {
-    private @Nullable Sdk mySdk = null;
     private final @NotNull OCamlDocumentationURLsForm myView = new OCamlDocumentationURLsForm();
+    private @Nullable Sdk mySdk = null;
 
     @Override public @Nullable String getTabName() {
         return "Documentation";

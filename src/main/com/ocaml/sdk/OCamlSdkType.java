@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  *     <li>lib/*</li>
  * </ul>
  */
-public class OCamlSdkType extends LocalSdkType implements SdkDownload {
+public class OCamlSdkType extends SdkType implements SdkDownload {
 
     private static final String OCAML_SDK = "OCaml SDK";
 

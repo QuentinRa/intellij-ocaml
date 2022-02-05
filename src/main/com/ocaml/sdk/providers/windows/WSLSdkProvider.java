@@ -48,7 +48,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     // move to another class?
-    public static String expandUserHome(WSLDistribution distro, String folder) {
+    public static @NotNull String expandUserHome(WSLDistribution distro, @NotNull String folder) {
         if (!folder.contains("~")) return folder;
         String userHome = distro.getUserHome();
         if (userHome == null) return folder;

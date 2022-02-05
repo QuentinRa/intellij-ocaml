@@ -58,16 +58,24 @@ public class OCamlDocumentationURLsForm {
         String apiBefore = OCamlSdkType.getApiURL("4.10");
         String apiAfter = OCamlSdkType.getApiURL("4.12");
 
-        myDocBefore = new ActionLink(docBefore, event -> { BrowserUtil.browse(docBefore); });
+        myDocBefore = new ActionLink(docBefore, event -> {
+            BrowserUtil.browse(docBefore);
+        });
         myDocBefore.setExternalLinkIcon();
 
-        myDocAfter = new ActionLink(docAfter, event -> { BrowserUtil.browse(docAfter); });
+        myDocAfter = new ActionLink(docAfter, event -> {
+            BrowserUtil.browse(docAfter);
+        });
         myDocAfter.setExternalLinkIcon();
 
-        myApiBefore = new ActionLink(apiBefore, event -> { BrowserUtil.browse(apiBefore); });
+        myApiBefore = new ActionLink(apiBefore, event -> {
+            BrowserUtil.browse(apiBefore);
+        });
         myApiBefore.setExternalLinkIcon();
 
-        myApiAfter = new ActionLink(apiAfter, event -> { BrowserUtil.browse(apiAfter); });
+        myApiAfter = new ActionLink(apiAfter, event -> {
+            BrowserUtil.browse(apiAfter);
+        });
         myApiAfter.setExternalLinkIcon();
     }
 }

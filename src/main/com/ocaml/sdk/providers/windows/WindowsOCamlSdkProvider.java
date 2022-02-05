@@ -71,7 +71,7 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
 
         HashSet<Path> installationDirectories = new HashSet<>();
         HashSet<Path> roots = new HashSet<>();
-        for (OCamlSdkProvider p: new OCamlSdkProvider[]{cygwinSdkProvider, oCaml64SdkProvider, wslSdkProvider}) {
+        for (OCamlSdkProvider p : new OCamlSdkProvider[]{cygwinSdkProvider, oCaml64SdkProvider, wslSdkProvider}) {
             for (String installationDirectory : p.getInstallationFolders()) {
                 Path installationDirectoryPath = Path.of(installationDirectory);
                 boolean absolute = installationDirectoryPath.isAbsolute() || installationDirectory.startsWith("\\\\"); // UNC path
@@ -79,12 +79,12 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
                 else installationDirectories.add(installationDirectoryPath);
             }
         }
-        LOG.debug("Roots found (1/2):"+roots);
-        LOG.debug("Installation directories to explore:"+installationDirectories);
+        LOG.debug("Roots found (1/2):" + roots);
+        LOG.debug("Installation directories to explore:" + installationDirectories);
 
         for (Path root : fsRoots) {
             if (!Files.exists(root)) continue;
-            for (Path dir: installationDirectories) {
+            for (Path dir : installationDirectories) {
                 roots.add(root.resolve(dir));
             }
         }
@@ -92,7 +92,7 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
         // we may have created simple SDKs
         roots.add(Path.of(FileUtil.expandUserHome(SimpleSdkData.SDK_FOLDER)));
 
-        LOG.debug("Roots found (2/2):"+roots);
+        LOG.debug("Roots found (2/2):" + roots);
 
         return OCamlSdkScanner.scanAll(roots, true);
     }

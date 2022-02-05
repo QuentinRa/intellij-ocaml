@@ -107,29 +107,31 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
 
     // call providers
 
-    /** arg is always a OCamlSdkProvider **/
-    private interface ComputeProviders<R> extends ComputeMethod<R, OCamlSdkProvider> {
-    }
-
     private <R> Set<R> callProvidersValuesS(ComputeProviders<Set<R>> computeValues) {
         HashSet<R> values = new HashSet<>();
-        for (OCamlSdkProvider p: myProviders)
+        for (OCamlSdkProvider p : myProviders)
             values.addAll(computeValues.call(p));
         return values;
     }
 
     private <R> List<R> callProvidersValuesL(ComputeProviders<List<R>> computeValues) {
         List<R> values = new ArrayList<>();
-        for (OCamlSdkProvider p: myProviders)
+        for (OCamlSdkProvider p : myProviders)
             values.addAll(computeValues.call(p));
         return values;
     }
 
     private <R> R callProvidersValue(ComputeProviders<R> computeValues) {
-        for (OCamlSdkProvider p: myProviders) {
+        for (OCamlSdkProvider p : myProviders) {
             R call = computeValues.call(p);
             if (call != null) return call;
         }
         return computeValues.call(defaultProvider);
+    }
+
+    /**
+     * arg is always a OCamlSdkProvider
+     **/
+    private interface ComputeProviders<R> extends ComputeMethod<R, OCamlSdkProvider> {
     }
 }

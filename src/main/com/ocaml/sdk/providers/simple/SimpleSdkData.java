@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * A simple SDK is an SDK having the same folder structure
  * than opam, while using native binaries (ex: /bin/ocaml), for those
  * that can't install opam.
- *
+ * <br>
  * Some folders are missing, and we are only creating shortcuts to the real
  * folders, we are not generating/downloading anything.
  */
@@ -27,19 +27,21 @@ public class SimpleSdkData {
      **/
     public static final String SDK_FOLDER = "~/.jdks/ocaml";
 
-    /** the path to the created SDK **/
+    /**
+     * the path to the created SDK
+     **/
     public @NotNull final String homePath;
 
     /**
      * Create the simple SDK and store the homePath in {@link #homePath}.
      * If the version is valid, then are assuming that every other value is valid.
      *
-     * @param ocamlBinary location to the ocaml binary
+     * @param ocamlBinary         location to the ocaml binary
      * @param ocamlCompilerBinary location of the compiler
-     * @param version version of the compiler
-     * @param ocamlSourcesFolder location of the sources folder
+     * @param version             version of the compiler
+     * @param ocamlSourcesFolder  location of the sources folder
      * @throws ConfigurationException sdk.ocaml.version.empty, if the version
-     * wasn't submitted, meaning that every other value is invalid
+     *                                wasn't submitted, meaning that every other value is invalid
      * @throws ConfigurationException a
      */
     public SimpleSdkData(@NotNull String ocamlBinary,

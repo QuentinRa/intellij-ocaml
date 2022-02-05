@@ -32,7 +32,7 @@ public final class OCamlSdkVersionManager {
     // This is the regex above, the part between the two slashes
     private static final Pattern VERSION_REGEXP = Pattern.compile("(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?");
 
-    /** unknown version  **/
+    /** unknown version **/
     public static final String UNKNOWN_VERSION = OCamlBundle.message("sdk.version.unknown");
 
     public static boolean isUnknownVersion(String version) {
@@ -43,6 +43,7 @@ public final class OCamlSdkVersionManager {
      * Return the version of an SDK given its home.
      * The version is, by design, always in the path,
      * so we are only extracting it.
+     *
      * @param sdkHome a path (expected to be absolute, but it should work
      *                for most relative paths as long as there is at least one /),
      *                using \\ or / as file separator.
@@ -68,6 +69,7 @@ public final class OCamlSdkVersionManager {
 
     /**
      * Unlike parse, only returns the version, without any modifier (the +followed by some stuff)
+     *
      * @param sdkHome a path (expected to be absolute, but it should work
      *                for most relative paths as long as there is at least one /),
      *                using \\ or / as file separator.

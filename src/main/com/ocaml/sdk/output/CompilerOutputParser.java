@@ -19,14 +19,15 @@ public abstract class CompilerOutputParser {
     /** if we are reading data, then this is not null. **/
     private @Nullable CompilerState currentState = null;
 
-    public CompilerOutputParser() {}
+    public CompilerOutputParser() {
+    }
 
     protected void messageReady() {
         if (currentState == null) return;
         try {
             onMessageReady(createMessage(currentState));
         } catch (IllegalStateException e) {
-            System.out.println("todo: log "+e.getMessage());
+            System.out.println("todo: log " + e.getMessage());
         }
         currentState = null;
     }
@@ -35,7 +36,7 @@ public abstract class CompilerOutputParser {
         CompilerOutputMessage message = new CompilerOutputMessage();
         // kind
         if (currentState.kind == null)
-            throw new IllegalStateException("Current state invalid, no 'kind' for "+currentState);
+            throw new IllegalStateException("Current state invalid, no 'kind' for " + currentState);
         message.kind = currentState.kind;
 
         // the message
@@ -61,6 +62,7 @@ public abstract class CompilerOutputParser {
 
     /**
      * Callback when a message was parsed
+     *
      * @param message parsed message
      */
     protected abstract void onMessageReady(@NotNull CompilerOutputMessage message);
@@ -68,6 +70,7 @@ public abstract class CompilerOutputParser {
     /**
      * DO NOT FORGET TO CALL {@link #inputDone()} after you submitted the
      * last line.
+     *
      * @param line a line of the output of the compiler
      */
     public void parseLine(@NotNull String line) {
@@ -92,11 +95,11 @@ public abstract class CompilerOutputParser {
             int sep = line.indexOf(':');
             assert sep != -1;
             String firstPart = line.substring(0, sep);
-            String secondPart = line.substring(sep+1);
+            String secondPart = line.substring(sep + 1);
 
             int mnemonic = firstPart.indexOf('[');
             if (mnemonic != -1)
-                firstPart = firstPart.substring(0, mnemonic-1); // " ["
+                firstPart = firstPart.substring(0, mnemonic - 1); // " ["
 
             // line without the mnemonic
             line = firstPart + ":" + secondPart;
@@ -112,7 +115,7 @@ public abstract class CompilerOutputParser {
     /**
      * The first line. Usually something like
      * "<code>File "file.ml", line 1, characters 0-18:</code>".<br>
-     *
+     * <p>
      * We got some special cases
      * <ul>
      *     <li>"line" may be "lines", and the "1" will becomes an interval</li>
@@ -131,7 +134,7 @@ public abstract class CompilerOutputParser {
             wholeLine = true;
         }
         if (!matcher.matches())
-            throw new IllegalStateException("Was expecting a location, got '"+line+"'.");
+            throw new IllegalStateException("Was expecting a location, got '" + line + "'.");
         currentState = new CompilerState(matcher.group(1));
 
         // line
@@ -141,7 +144,7 @@ public abstract class CompilerOutputParser {
         if (dash == -1) endLine = (startLine = Integer.parseInt(lineInterval));
         else {
             startLine = Integer.parseInt(lineInterval.substring(0, dash));
-            endLine = Integer.parseInt(lineInterval.substring(dash+1));
+            endLine = Integer.parseInt(lineInterval.substring(dash + 1));
         }
         currentState.startLine = startLine;
         currentState.endLine = endLine;
@@ -152,7 +155,9 @@ public abstract class CompilerOutputParser {
         }
     }
 
-    /** must be called after every call to parseLocation **/
+    /**
+     * must be called after every call to parseLocation
+     **/
     public void inputDone() {
         messageReady();
     }

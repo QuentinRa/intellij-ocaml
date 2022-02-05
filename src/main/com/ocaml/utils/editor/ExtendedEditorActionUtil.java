@@ -3,10 +3,8 @@ package com.ocaml.utils.editor;
 import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -18,6 +16,7 @@ public class ExtendedEditorActionUtil {
 
     /**
      * Return the selected code
+     *
      * @param editor the editor
      * @return null if we aren't in a situation in which we can find code to executed,
      * otherwise the selected code
