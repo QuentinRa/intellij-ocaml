@@ -49,7 +49,7 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     @Contract(pure = true) public static @NotNull String getApiURL(String version) {
         if (OCamlSdkVersionManager.isNewerThan("4.12", version))
             return "https://ocaml.org/releases/" + version + "/api/index.html";
-        return "https://ocaml.org/releases/" + version + "/htmlman/libref/index_modules.html";
+        return "https://ocaml.org/releases/" + version + "/htmlman/libref/index.html";
     }
 
     @Contract(pure = true) public static @NotNull String getManualURL(String version) {

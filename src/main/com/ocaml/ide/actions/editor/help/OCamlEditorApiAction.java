@@ -5,7 +5,7 @@ import com.intellij.openapi.projectRoots.SdkAdditionalData;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.doc.OCamlSdkAdditionalData;
 
-public class OCamlEditorApiAction extends OCamlBaseOpenLikeAction {
+public class OCamlEditorApiAction extends OCamlBaseOpenLinkAction {
 
     public static final String ACTION_ID = "editor.api.action";
 

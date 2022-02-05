@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.psi.PsiFile;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public abstract class OCamlBaseOpenLikeAction extends OCamlEditorActionBase {
+public abstract class OCamlBaseOpenLinkAction extends OCamlEditorActionBase {
 
     @Override public void actionPerformed(@NotNull AnActionEvent e) {
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
@@ -26,11 +27,13 @@ public abstract class OCamlBaseOpenLikeAction extends OCamlEditorActionBase {
         if (sdk == null) return;
         String url = getURL(sdk);
         if (url == null) return;
+        Project project = e.getProject();
+        if (project == null) return;
 
         // show a tooltip, the first time
         GotItTooltip tooltip = new GotItTooltip(
-                "ocaml.features.help", OCamlBundle.message("sdk.help.got.it.title"), e.getProject()
-        ).withHeader(OCamlBundle.message("sdk.help.got.it.content"));
+                "ocaml.features.help", OCamlBundle.message("sdk.help.got.it.content"), project
+        ).withHeader(OCamlBundle.message("sdk.help.got.it.title"));
         tooltip.show((JComponent) e.getInputEvent().getComponent(), GotItTooltip.TOP_MIDDLE);
 
         BrowserLauncher.getInstance().browse(url, null);
