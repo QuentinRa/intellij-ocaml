@@ -3,6 +3,7 @@ package com.ocaml.sdk.providers.windows;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.SystemProperties;
+import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,20 +78,20 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     @Override
-    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
+    public @Nullable CompileWithCmtInfo getCompileCommandWithCmt(String sdkHomePath, String rootFolderForTempering, String file, String outputDirectory, String executableName) {
         if (!canUseProviderForHome(sdkHomePath)) return null;
         Path homePath = Path.of(sdkHomePath);
         // look for a compiler
         for (String compilerName: getOCamlCompilerCommands()) {
             if (!Files.exists(homePath.resolve("bin/"+compilerName))) continue;
             // use this compiler
-            GeneralCommandLine cli = createAnnotatorCommand(
+            GeneralCommandLine cli = CompileWithCmtInfo.createAnnotatorCommand(
                     sdkHomePath + "\\bin\\" + compilerName,
                     file, outputDirectory + "\\" + executableName,
                     outputDirectory, outputDirectory
             );
             cli.withEnvironment("OCAMLLIB", sdkHomePath+"\\lib\\ocaml");
-            return cli;
+            return new CompileWithCmtInfo(cli, rootFolderForTempering);
         }
 
         LOG.warn("No compiler found for cygwin in "+sdkHomePath+".");

@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
+import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
@@ -253,30 +254,15 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
     }
 
     @Override
-    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
+    public @Nullable CompileWithCmtInfo getCompileCommandWithCmt(String sdkHomePath, String rootFolderForTempering, String file, String outputDirectory, String executableName) {
         if (!canUseProviderForHome(sdkHomePath)) return null;
-        return createAnnotatorCommand(
-                sdkHomePath + "/bin/ocamlc", file,
-                outputDirectory + "/" + executableName,
-                outputDirectory, outputDirectory
+        return new CompileWithCmtInfo(
+                CompileWithCmtInfo.createAnnotatorCommand(
+                        sdkHomePath + "/bin/ocamlc", file,
+                        outputDirectory + "/" + executableName,
+                        outputDirectory, outputDirectory
+                ), // nothing to change
+                rootFolderForTempering
         );
-    }
-
-    protected GeneralCommandLine createAnnotatorCommand(String compiler, @NotNull String file, String outputFile,
-                                                        String outputDirectory, String workingDirectory) {
-        GeneralCommandLine cli = new GeneralCommandLine(compiler);
-        if (file.endsWith(".mli")) cli.addParameter("-c");
-        // compile everything else
-        cli.addParameters(file, "-o", outputFile,
-                "-I", outputDirectory,
-                "-w", "+A", "-color=never", "-bin-annot");
-        // fix issue -I is adding, so the current directory
-        // is included, and this may lead to problems later (ex: a file.cmi may be
-        // used instead of the one in the output directory, because we found one in the
-        // current directory)
-        cli.setWorkDirectory(workingDirectory);
-        // needed otherwise the input stream ~~may be~~~ is empty
-        cli.setRedirectErrorStream(true);
-        return cli;
     }
 }

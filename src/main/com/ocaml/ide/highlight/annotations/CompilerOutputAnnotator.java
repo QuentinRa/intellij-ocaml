@@ -1,7 +1,6 @@
 package com.ocaml.ide.highlight.annotations;
 
 import com.intellij.codeInsight.intention.IntentionAction;
-import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
 import com.intellij.lang.annotation.*;
@@ -29,6 +28,7 @@ import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
+import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import com.ocaml.utils.files.OCamlFileUtils;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
@@ -142,41 +142,44 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // compile .mli
             if (interfaceTempFile.get() != null) {
                 // get compiler
-                GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
+                CompileWithCmtInfo compiler = OCamlSdkProvidersManager.INSTANCE.getCompileCommandWithCmt(
                         collectedInfo.myHomePath,
+                        myOutputFolder.getAbsolutePath(),
                         interfaceTempFile.get().getPath(),
                         targetFolder.getAbsolutePath(),
                         sourceFile.getNameWithoutExtension()
                 );
-                if (cli == null) {
+                if (compiler == null) {
                     LOG.error("No cli found for "+collectedInfo.myHomePath+" (mli).");
                     return null;
                 }
-                Process process = cli.createProcess();
+                Process process = compiler.cli.createProcess();
                 process.waitFor(); // wait
             }
 
             // get compiler
-            GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
+            CompileWithCmtInfo compiler = OCamlSdkProvidersManager.INSTANCE.getCompileCommandWithCmt(
                     collectedInfo.myHomePath,
+                    myOutputFolder.getAbsolutePath(),
                     sourceTempFile.getPath(),
                     targetFolder.getAbsolutePath(),
                     sourceFile.getNameWithoutExtension()
             );
-            if (cli == null) {
+            if (compiler == null) {
                 LOG.error("No cli found for "+collectedInfo.myHomePath+" (ml).");
                 return null;
             }
 
             OSProcessHandler processHandler = ProcessHandlerFactory
                     .getInstance()
-                    .createColoredProcessHandler(cli);
+                    .createColoredProcessHandler(compiler.cli);
             Process process = processHandler.getProcess();
             processHandler.startNotify();
 
             ArrayList<CompilerOutputMessage> info = new ArrayList<>();
             CompilerOutputParser outputParser = new CompilerOutputParser() {
                 @Override protected void onMessageReady(@NotNull CompilerOutputMessage message) {
+                    message.content = OCamlMessageAdaptor.temperPaths(message.content, compiler.rootFolderForTempering);
                     LOG.debug("added:" + message.header() + " (line->" + message.filePosition.getStartLine() + ")");
                     info.add(message);
                 }

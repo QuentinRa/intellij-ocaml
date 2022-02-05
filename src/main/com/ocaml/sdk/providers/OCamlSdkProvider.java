@@ -2,6 +2,7 @@ package com.ocaml.sdk.providers;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,13 +119,17 @@ public interface OCamlSdkProvider {
 
     /**
      * @param sdkHomePath path to the SDK home
+     * @param rootFolderForTempering Most of the time, the root is returned unchanged.
+     *                               If the paths used are tempered, then this path too, should be tempered
+     *                               (ex: WSL).
      * @param file the file we are compiling
      * @param outputDirectory the output directory
      * @param executableName the name of the generated executable
-     * @return "ocamlc -c $file -o $outputDirectory/$executableName -I $outputDirectory -w +A -color=never -bin-annot"
+     * @return the command line with the root for tempering paths, or null
      */
-    @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath,
-                                                             String file,
-                                                             String outputDirectory,
-                                                             String executableName);
+    @Nullable CompileWithCmtInfo getCompileCommandWithCmt(String sdkHomePath,
+                                                          String rootFolderForTempering,
+                                                          String file,
+                                                          String outputDirectory,
+                                                          String executableName);
 }

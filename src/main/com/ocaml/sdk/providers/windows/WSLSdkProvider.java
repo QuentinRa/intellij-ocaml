@@ -7,6 +7,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.impl.wsl.WslConstants;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
+import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
@@ -178,7 +179,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     @Override
-    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
+    public @Nullable CompileWithCmtInfo getCompileCommandWithCmt(String sdkHomePath, String rootFolderForTempering, String file, String outputDirectory, String executableName) {
         // is wsl
         WslPath path = WslPath.parseWindowsUncPath(sdkHomePath);
         if (path == null) return null;
@@ -192,12 +193,16 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
                 throw new ExecutionException("Could not parse file:"+file);
 
             // create cli
-            GeneralCommandLine cli = createAnnotatorCommand(
+            GeneralCommandLine cli = CompileWithCmtInfo.createAnnotatorCommand(
                     path.getLinuxPath()+"/bin/ocamlc",
                     wslFile, wslOutputDirectory + "/" + executableName,
                     wslOutputDirectory, outputDirectory /* use OS working directory */
             );
-            return distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
+            cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
+            String wslRootFolderForTempering = distribution.getWslPath(rootFolderForTempering);
+            if (wslRootFolderForTempering == null)
+                throw new ExecutionException("Could not parse rootFolder:"+rootFolderForTempering);
+            return new CompileWithCmtInfo(cli, wslRootFolderForTempering);
         } catch (ExecutionException e) {
             LOG.error("Error creating Compiler command", e);
             return null;

@@ -3,6 +3,7 @@ package com.ocaml.sdk.providers;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
+import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import com.ocaml.sdk.providers.windows.WindowsOCamlSdkProvider;
 import com.ocaml.utils.ComputeMethod;
 import org.jetbrains.annotations.NotNull;
@@ -88,8 +89,8 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
     }
 
     @Override
-    public @Nullable GeneralCommandLine getCompilerAnnotatorCommand(String sdkHomePath, String file, String outputDirectory, String executableName) {
-        return callProvidersValue(provider -> provider.getCompilerAnnotatorCommand(sdkHomePath, file, outputDirectory, executableName));
+    public @Nullable CompileWithCmtInfo getCompileCommandWithCmt(String sdkHomePath, String rootFolderForTempering, String file, String outputDirectory, String executableName) {
+        return callProvidersValue(provider -> provider.getCompileCommandWithCmt(sdkHomePath, rootFolderForTempering, file, outputDirectory, executableName));
     }
 
     @Override public @NotNull Set<String> getInstallationFolders() {
