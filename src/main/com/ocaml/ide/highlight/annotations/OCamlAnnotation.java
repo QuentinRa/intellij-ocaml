@@ -32,6 +32,9 @@ public class OCamlAnnotation {
     public final ArrayList<IntentionAction> fixes = new ArrayList<>();
     public ProblemHighlightType highlightType;
     public boolean fileLevel;
+    // must be true, otherwise, not shown in the console
+    // nor in the top-right icon
+    public boolean normalLevel = true;
 
     public OCamlAnnotation(@NotNull CompilerOutputMessage currentState,
                            @Nullable PsiFile psi,
@@ -118,6 +121,10 @@ public class OCamlAnnotation {
     // 70
     public void toMliMissing() {
         fileLevel = true;
+        // everyone may want to suppress this warning
+        // so, for now, as we can't suppress a warning
+        // this is disabled
+        normalLevel = false;
     }
 
     // 24

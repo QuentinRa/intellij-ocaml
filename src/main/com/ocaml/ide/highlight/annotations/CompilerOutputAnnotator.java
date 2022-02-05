@@ -252,14 +252,16 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 builder.create();
             }
 
-            AnnotationBuilder builder = holder.newAnnotation(t, message.header);
-            if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
-            builder = builder.tooltip(message.content);
-            builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
-            for (IntentionAction fix : message.fixes) {
-                builder = builder.withFix(fix); // fix
+            if (message.normalLevel) {
+                AnnotationBuilder builder = holder.newAnnotation(t, message.header);
+                if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
+                builder = builder.tooltip(message.content);
+                builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
+                for (IntentionAction fix : message.fixes) {
+                    builder = builder.withFix(fix); // fix
+                }
+                builder.create();
             }
-            builder.create();
 
             if (message.isError()) {
                 problems.add(wolfTheProblemSolver.convertToProblem(
