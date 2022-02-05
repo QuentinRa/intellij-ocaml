@@ -24,20 +24,17 @@ public class OCamlElementVisitor extends PsiElementVisitor {
     public void visitElement(@NotNull PsiElement element) {
         if (element instanceof PsiStructuredElement && !(element instanceof PsiFakeModule)) {
             if (((PsiStructuredElement) element).canBeDisplayed()) {
-                if (element instanceof PsiLet) {
-                    PsiLet let = (PsiLet) element;
-                    if (let.isScopeIdentifier()) {
-                        // it's a tuple! add each element of the tuple separately.
-                        for (PsiElement child : let.getScopeChildren()) {
-                            if (child instanceof PsiLowerIdentifier) {
-                                m_treeElements.add(child);
-                            }
+                PsiLet let = (PsiLet) element;
+                if (let.isScopeIdentifier()) {
+                    // it's a tuple! add each element of the tuple separately.
+                    for (PsiElement child : let.getScopeChildren()) {
+                        if (child instanceof PsiLowerIdentifier) {
+                            m_treeElements.add(child);
                         }
-                        return;
                     }
                 }
-                m_treeElements.add(element);
             }
+            m_treeElements.add(element);
         } else if (element instanceof PsiRecord) {
             m_treeElements.addAll(((PsiRecord) element).getFields());
         } else if (element instanceof PsiScopedExpr && m_elementLevel < 2) {
