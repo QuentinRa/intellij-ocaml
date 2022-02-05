@@ -23,7 +23,11 @@ public abstract class CompilerOutputParser {
 
     protected void messageReady() {
         if (currentState == null) return;
-        onMessageReady(createMessage(currentState));
+        try {
+            onMessageReady(createMessage(currentState));
+        } catch (IllegalStateException e) {
+            System.out.println("todo: log "+e.getMessage());
+        }
         currentState = null;
     }
 
