@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -203,7 +204,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
             return new AnnotationResult(info, collectedInfo.myEditor, cmtFile);
         } catch (Exception e) {
-            LOG.error("Error while processing annotations", e);
+            if (!(e instanceof ProcessCanceledException))
+                LOG.error("Error while processing annotations", e);
             // delete
             try {
                 Files.deleteIfExists(sourceTempFile.toPath());
