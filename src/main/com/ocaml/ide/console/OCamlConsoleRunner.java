@@ -249,7 +249,9 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
      * @param s may be a whole file
      */
     public void processCommand(String s) {
-        getConsoleExecuteActionHandler().processLine(s);
+        OCamlConsoleView consoleView = getConsoleView();
+        consoleView.setInputText(s);
+        getConsoleExecuteActionHandler().runExecuteAction(consoleView);
     }
 
     public void rebuildVariableView(String text) {

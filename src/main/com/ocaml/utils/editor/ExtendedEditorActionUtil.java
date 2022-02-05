@@ -32,8 +32,6 @@ public class ExtendedEditorActionUtil {
         if (project == null) return null;
         // find psiFile
         Document document = editor.getDocument();
-        VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-        if (virtualFile == null) return null;
         PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
         if (psiFile == null) return null;
         PsiElement elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
