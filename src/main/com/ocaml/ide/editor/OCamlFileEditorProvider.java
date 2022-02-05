@@ -27,7 +27,7 @@ public class OCamlFileEditorProvider implements DumbAware, FileEditorProvider {
         return ProjectFileIndex.getInstance(project).isInSourceContent(file)
                 && // and either .ml or .mli
                 (fileTypeRegistry.isFileOfType(file, OCamlFileType.INSTANCE)
-                || fileTypeRegistry.isFileOfType(file, OCamlInterfaceFileType.INSTANCE));
+                        || fileTypeRegistry.isFileOfType(file, OCamlInterfaceFileType.INSTANCE));
     }
 
     @Override public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {

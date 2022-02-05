@@ -4,8 +4,8 @@ package com.ocaml.ide.files;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.ocaml.OCamlBundle;
-import com.ocaml.icons.OCamlIcons;
 import com.ocaml.OCamlLanguage;
+import com.ocaml.icons.OCamlIcons;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +22,7 @@ public final class OCamlFileType extends LanguageFileType {
 
     // instance
     public static final OCamlFileType INSTANCE = new OCamlFileType();
+
     private OCamlFileType() {
         super(OCamlLanguage.INSTANCE);
     }

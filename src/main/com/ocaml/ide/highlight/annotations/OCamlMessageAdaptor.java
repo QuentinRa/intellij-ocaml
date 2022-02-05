@@ -17,7 +17,8 @@ import java.util.regex.Pattern;
  * (SOLID -> the parser is only supposed to parse the file, not tempering the result IMO).
  */
 public final class OCamlMessageAdaptor {
-    private OCamlMessageAdaptor() {}
+    private OCamlMessageAdaptor() {
+    }
 
     public static @NotNull OCamlAnnotation temper(CompilerOutputMessage currentState) {
         return temper(currentState, null, null);
@@ -32,7 +33,6 @@ public final class OCamlMessageAdaptor {
         if (annotation.isAlert()) {
             if (c.startsWith("Alert deprecated:")) annotation.toDeprecated();
         }
-
         else if (annotation.isWarning()) {
             if (c.startsWith("Warning 27: unused variable")) annotation.toUnusedVariable();
             else if (c.startsWith("Warning 70: Cannot find interface file.")) annotation.toMliMissing();
@@ -46,10 +46,10 @@ public final class OCamlMessageAdaptor {
             else if (c.startsWith("Warning 67: unused functor parameter")) annotation.toUnusedFunctorParameter();
             else if (c.startsWith("Warning 33: unused open")) annotation.toUnusedOpen();
         }
-
         else if (annotation.isError()) {
             if (c.startsWith("Error: Unbound")) annotation.toUnbound();
-            else if (c.startsWith("Error: The implementation") && c.contains("does not match the interface")) annotation.toMismatchMli();
+            else if (c.startsWith("Error: The implementation") && c.contains("does not match the interface"))
+                annotation.toMismatchMli();
         }
 
         return annotation;
@@ -58,7 +58,8 @@ public final class OCamlMessageAdaptor {
     /**
      * Convert paths such as "C:/.../out/.../file.ml", or "/mnt/c/.../out/.../file.ml",
      * to ".../file.ml" (resp. .mli)
-     * @param message a message with paths that may be tempered
+     *
+     * @param message                a message with paths that may be tempered
      * @param rootFolderForTempering the path to out ("C:/.../out/") that was used by the compiler
      * @return the message with relative paths
      */

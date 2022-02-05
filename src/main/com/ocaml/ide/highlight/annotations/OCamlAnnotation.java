@@ -2,11 +2,11 @@ package com.ocaml.ide.highlight.annotations;
 
 import com.intellij.build.FilePosition;
 import com.intellij.codeInsight.intention.IntentionAction;
-import com.intellij.codeInspection.*;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiFile;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +19,7 @@ public class OCamlAnnotation {
     public String context;
     public String header;
     public String content;
+
     public @Nullable PsiFile psiFile;
     public @Nullable Editor editor;
 
@@ -27,8 +28,9 @@ public class OCamlAnnotation {
     public int startColumn;
     public int endLine;
     public int endColumn;
-    public ProblemHighlightType highlightType;
+
     public final ArrayList<IntentionAction> fixes = new ArrayList<>();
+    public ProblemHighlightType highlightType;
     public boolean fileLevel;
 
     public OCamlAnnotation(@NotNull CompilerOutputMessage currentState,
@@ -66,9 +68,17 @@ public class OCamlAnnotation {
         return new TextRangeInterval(startOffset, endOffset);
     }
 
-    public boolean isError() { return kind == CompilerOutputMessage.Kind.ERROR; }
-    public boolean isWarning() { return kind == CompilerOutputMessage.Kind.WARNING; }
-    public boolean isAlert() { return kind == CompilerOutputMessage.Kind.ALERT; }
+    public boolean isError() {
+        return kind == CompilerOutputMessage.Kind.ERROR;
+    }
+
+    public boolean isWarning() {
+        return kind == CompilerOutputMessage.Kind.WARNING;
+    }
+
+    public boolean isAlert() {
+        return kind == CompilerOutputMessage.Kind.ALERT;
+    }
 
     public boolean hasCustomHighLightType() {
         return highlightType != null;

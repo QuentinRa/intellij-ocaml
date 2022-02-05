@@ -17,7 +17,7 @@ import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 public class OCamlLibraryRootsNodeDecorator implements ProjectViewNodeDecorator {
 
     @Override public void decorate(ProjectViewNode<?> node, PresentationData data) {
-        if(!(node instanceof PsiDirectoryNode)) return;
+        if (!(node instanceof PsiDirectoryNode)) return;
 
         // get library node
         NodeDescriptor<?> parentDescriptor = node.getParentDescriptor();

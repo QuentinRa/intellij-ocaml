@@ -3,18 +3,22 @@ package com.ocaml.ide.highlight.annotations;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
-import com.intellij.lang.annotation.*;
+import com.intellij.lang.annotation.AnnotationBuilder;
+import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.ExternalAnnotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
-import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.CompilerModuleExtension;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -73,7 +77,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
         String targetFile = null;
 
-        LOG.trace("Working on file:"+sourceFile.getPath());
+        LOG.trace("Working on file:" + sourceFile.getPath());
 
         // find the file we are trying to compile
         for (VirtualFile root : moduleRootManager.getSourceRoots()) {
@@ -104,13 +108,13 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // build/out folder
         File myOutputFolder = new File(collectedInfo.myOutputFolder);
         if (!myOutputFolder.exists() && !myOutputFolder.mkdirs()) {
-            LOG.warn("Couldn't create '"+myOutputFolder+"'");
+            LOG.warn("Couldn't create '" + myOutputFolder + "'");
             return null;
         }
         // target folder
         File targetFolder = new File(myOutputFolder, collectedInfo.myTargetFile).getParentFile();
         if (!targetFolder.exists() && !targetFolder.mkdirs()) {
-            LOG.warn("Couldn't create '"+targetFolder+"'");
+            LOG.warn("Couldn't create '" + targetFolder + "'");
             return null;
         }
 
@@ -123,10 +127,10 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // FIX: Read access is allowed from inside read-action (or EDT) only (see com.intellij.openapi.application.Application.runReadAction())
         //noinspection RedundantSuppression
         @SuppressWarnings("deprecation")
-        File sourceTempFile = ApplicationManager.getApplication().runReadAction( (Computable<File>)
+        File sourceTempFile = ApplicationManager.getApplication().runReadAction((Computable<File>)
                 () -> OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG)
         );
-        if (sourceTempFile == null)  return null;
+        if (sourceTempFile == null) return null;
 
         AtomicReference<File> interfaceTempFile = new AtomicReference<>();
         // only if we are compiling a .ml,
@@ -151,7 +155,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                         sourceFile.getNameWithoutExtension()
                 );
                 if (compiler == null) {
-                    LOG.error("No cli found for "+collectedInfo.myHomePath+" (mli).");
+                    LOG.error("No cli found for " + collectedInfo.myHomePath + " (mli).");
                     return null;
                 }
                 Process process = compiler.cli.createProcess();
@@ -167,7 +171,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                     sourceFile.getNameWithoutExtension()
             );
             if (compiler == null) {
-                LOG.error("No cli found for "+collectedInfo.myHomePath+" (ml).");
+                LOG.error("No cli found for " + collectedInfo.myHomePath + " (ml).");
                 return null;
             }
 
@@ -192,9 +196,9 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 }
                 // done
                 outputParser.inputDone();
-            } catch (IOException e){
+            } catch (IOException e) {
                 // may occur if the file was removed, because it will be compiled again?
-                LOG.warn("Reading '"+sourceFile.getName()+"' failed ("+e.getMessage()+").");
+                LOG.warn("Reading '" + sourceFile.getName() + "' failed (" + e.getMessage() + ").");
                 return null;
             } finally {
                 // delete
@@ -242,7 +246,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // create
             if (message.fileLevel) {
                 // create fileLevel
-                AnnotationBuilder builder = holder.newAnnotation(t, "<html>"+message.header.replace("\n", "<br/>")+"</html>");
+                AnnotationBuilder builder = holder.newAnnotation(t, "<html>" + message.header.replace("\n", "<br/>") + "</html>");
                 builder = builder.fileLevel();
                 builder = builder.tooltip(message.content);
                 builder.create();
@@ -252,7 +256,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
             builder = builder.tooltip(message.content);
             builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
-            for (IntentionAction fix: message.fixes) {
+            for (IntentionAction fix : message.fixes) {
                 builder = builder.withFix(fix); // fix
             }
             builder.create();

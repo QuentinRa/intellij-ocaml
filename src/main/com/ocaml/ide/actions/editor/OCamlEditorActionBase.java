@@ -32,6 +32,7 @@ public abstract class OCamlEditorActionBase extends DumbAwareAction implements O
     /**
      * Call doActionPerformed with a console, or show an error if we are not able
      * to find a console.
+     *
      * @param e see DumbAwareAction#actionPerformed(e)
      */
     @Override public void actionPerformed(@NotNull AnActionEvent e) {

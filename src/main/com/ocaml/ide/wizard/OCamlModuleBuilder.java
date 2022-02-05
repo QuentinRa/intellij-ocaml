@@ -17,11 +17,11 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectTemplate;
 import com.ocaml.ide.module.OCamlModuleType;
-import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.ide.wizard.templates.OCamlTemplateProvider;
 import com.ocaml.ide.wizard.templates.TemplateBuildInstructions;
 import com.ocaml.ide.wizard.view.OCamlSdkWizardStep;
 import com.ocaml.ide.wizard.view.OCamlSelectTemplate;
+import com.ocaml.sdk.OCamlSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -40,7 +40,7 @@ public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
     }
 
     @Override protected boolean isAvailable(DataContext dataContext) {
-        if(!super.isAvailable(dataContext)) return false;
+        if (!super.isAvailable(dataContext)) return false;
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         if (project == null) return false;
         // if we did click on a file
@@ -62,7 +62,7 @@ public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
     protected void buildDialog(@NotNull Project project, @NotNull PsiDirectory directory, CreateFileFromTemplateDialog.@NotNull Builder builder) {
         String ml = OCamlFileType.DOT_DEFAULT_EXTENSION;
         String mli = OCamlInterfaceFileType.DOT_DEFAULT_EXTENSION;
-        String mlAndMli = ml+" + "+mli;
+        String mlAndMli = ml + " + " + mli;
 
         builder.setTitle(ACTION_NAME)
                 // create .ml
@@ -82,14 +82,14 @@ public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
             String message = "";
             // try creating .mli, if needed
             try {
-                dir.checkCreateFile(name+mli);
+                dir.checkCreateFile(name + mli);
                 file = super.createFile(name, OCamlFileTemplates.OCAML_INTERFACE_TEMPLATE, dir);
             } catch (IncorrectOperationException e) {
                 message = e.getLocalizedMessage();
             }
             // try creating .ml, if needed
             try {
-                dir.checkCreateFile(name+ml);
+                dir.checkCreateFile(name + ml);
                 file = super.createFile(name, OCamlFileTemplates.OCAML_FILE_TEMPLATE, dir);
             } catch (IncorrectOperationException e) {
                 message = e.getLocalizedMessage();
