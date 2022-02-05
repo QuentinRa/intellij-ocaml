@@ -24,7 +24,9 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         super(commandLine);
         this.runner = runner;
         this.consoleView = consoleView;
-        Disposer.register(this.consoleView, () -> { if (!isProcessTerminated()) destroyProcess(); });
+        Disposer.register(this.consoleView, () -> {
+            if (!isProcessTerminated()) destroyProcess();
+        });
     }
 
     // this is the command that was used to start the console
@@ -36,7 +38,7 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         // pass empty
         if (textOriginal.isBlank()) return;
         // pass input
-        if (textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE)) { return; }
+        if (textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE)) return;
 
         // update variables view
         runner.rebuildVariableView(textOriginal);

@@ -37,8 +37,8 @@ public class CompilerOutputMessage {
     @Override public String toString() {
         return "CompilerOutputMessage{" +
                 "file=" + filePosition.getFile().getName() +
-                ", at=(l:"+filePosition.getStartLine()+"-"+filePosition.getEndLine()
-                +",c:" +filePosition.getStartColumn()+"-"+filePosition.getEndColumn() + ")"+
+                ", at=(l:" + filePosition.getStartLine() + "-" + filePosition.getEndLine()
+                + ",c:" + filePosition.getStartColumn() + "-" + filePosition.getEndColumn() + ")" +
                 ", kind=" + kind +
                 ", header='" + header() + '\'' +
                 '}';

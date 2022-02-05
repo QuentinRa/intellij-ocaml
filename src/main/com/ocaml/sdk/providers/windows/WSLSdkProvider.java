@@ -7,9 +7,9 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.impl.wsl.WslConstants;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
+import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
-import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,7 +62,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         // is wsl
         WslPath path = WslPath.parseWindowsUncPath(ocaml);
         if (path == null) return null;
-        sdkFolder += "/"+version+sdkModifier;
+        sdkFolder += "/" + version + sdkModifier;
 
         WSLDistribution distribution = path.getDistribution();
         //noinspection DuplicatedCode
@@ -99,7 +99,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             out = out.replace("\n", "");
             return distribution.getWindowsPath(out).trim();
         } catch (ExecutionException | IOException e) {
-            LOG.error("Couldn't process command. Error:"+e.getMessage());
+            LOG.error("Couldn't process command. Error:" + e.getMessage());
             return null;
         }
     }
@@ -115,18 +115,18 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         WslPath path = WslPath.parseWindowsUncPath(ocamlBinary);
         if (path == null) return null;
         // OK let's start
-        LOG.debug("Detected WSL "+path.getDistribution()+" for "+ocamlBinary);
+        LOG.debug("Detected WSL " + path.getDistribution() + " for " + ocamlBinary);
         WSLDistribution distribution = path.getDistribution();
         // get path to ocamlc
         String ocamlc = distribution.getWslPath(ocamlBinary + "c");
         if (ocamlc == null) {
-            LOG.debug("ocamlc not found for "+ocamlBinary);
+            LOG.debug("ocamlc not found for " + ocamlBinary);
             return null;
         }
         // get sources
         String root = ocamlc.replace("bin/ocamlc", "");
         String sourcesFolder = null;
-        for (String s:getOCamlSourcesFolders()) {
+        for (String s : getOCamlSourcesFolders()) {
             String sourcePath = root + s;
             // try to convert to WSL path
             String sourceCandidate = distribution.getWindowsPath(sourcePath);
@@ -145,11 +145,11 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         try {
             GeneralCommandLine cli = new GeneralCommandLine(ocamlc, "-version");
             cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
-            LOG.debug("CLI is: "+cli.getCommandLineString());
+            LOG.debug("CLI is: " + cli.getCommandLineString());
             Process process = cli.createProcess();
             InputStream inputStream = process.getInputStream();
             String version = new String(inputStream.readAllBytes()).trim();
-            LOG.debug("Version of "+ocamlc+" is '"+version+"'.");
+            LOG.debug("Version of " + ocamlc + " is '" + version + "'.");
             // if we got something better (ex: 4.05.0+mingw64, or 4.05.0+local)
             String alt = OCamlSdkVersionManager.parse(ocamlBinary);
             if (!OCamlSdkVersionManager.isUnknownVersion(alt)) version = alt;
@@ -169,7 +169,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         WslPath path = WslPath.parseWindowsUncPath(sdkHomePath);
         if (path == null) return null;
         try {
-            String ocaml = path.getLinuxPath()+"/bin/ocaml";
+            String ocaml = path.getLinuxPath() + "/bin/ocaml";
             GeneralCommandLine cli = new GeneralCommandLine(ocaml, "-noprompt", "-no-version");
             return path.getDistribution().patchCommandLine(cli, null, new WSLCommandLineOptions());
         } catch (ExecutionException e) {
@@ -187,21 +187,21 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             WSLDistribution distribution = path.getDistribution();
             String wslOutputDirectory = distribution.getWslPath(outputDirectory);
             if (wslOutputDirectory == null)
-                throw new ExecutionException("Could not parse output directory:"+outputDirectory);
+                throw new ExecutionException("Could not parse output directory:" + outputDirectory);
             String wslFile = distribution.getWslPath(file);
             if (wslFile == null)
-                throw new ExecutionException("Could not parse file:"+file);
+                throw new ExecutionException("Could not parse file:" + file);
 
             // create cli
             GeneralCommandLine cli = CompileWithCmtInfo.createAnnotatorCommand(
-                    path.getLinuxPath()+"/bin/ocamlc",
+                    path.getLinuxPath() + "/bin/ocamlc",
                     wslFile, wslOutputDirectory + "/" + executableName,
                     wslOutputDirectory, outputDirectory /* use OS working directory */
             );
             cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
             String wslRootFolderForTempering = distribution.getWslPath(rootFolderForTempering);
             if (wslRootFolderForTempering == null)
-                throw new ExecutionException("Could not parse rootFolder:"+rootFolderForTempering);
+                throw new ExecutionException("Could not parse rootFolder:" + rootFolderForTempering);
             return new CompileWithCmtInfo(cli, wslRootFolderForTempering);
         } catch (ExecutionException e) {
             LOG.error("Error creating Compiler command", e);
@@ -266,7 +266,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             int exitCode = Integer.parseInt(
                     new String(process.getInputStream().readAllBytes()).replace("\n", "")
             );
-            LOG.debug("code:"+exitCode);
+            LOG.debug("code:" + exitCode);
             return exitCode == 0;
         } catch (ExecutionException | InterruptedException | IOException | NumberFormatException e) {
             return null;

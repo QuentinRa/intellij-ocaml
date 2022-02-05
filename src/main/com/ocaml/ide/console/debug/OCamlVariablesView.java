@@ -1,9 +1,12 @@
 package com.ocaml.ide.console.debug;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.util.treeView.smartTree.*;
+import com.intellij.ide.util.treeView.smartTree.SmartTreeStructure;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.impl.ActionToolbarImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -79,6 +82,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
 
     /**
      * Add functions and variables in the tree.
+     *
      * @param newEntry lines of the new item (ex: val x : int = 5)
      */
     public void rebuild(@NotNull String newEntry) {
@@ -87,8 +91,8 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
 
         newEntry = newEntry.trim();
         // todo: log
-        if (newEntry.endsWith("<fun>")) LOG.debug("adding a function:"+newEntry);
-        else LOG.debug("adding a variable:"+newEntry);
+        if (newEntry.endsWith("<fun>")) LOG.debug("adding a function:" + newEntry);
+        else LOG.debug("adding a variable:" + newEntry);
 
         // todo: const + parser
 
@@ -96,16 +100,16 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
         int val = newEntry.indexOf("val");
         int colon = newEntry.indexOf(":");
         int equals = newEntry.indexOf("=");
-        String name = newEntry.substring(val+3+1, colon-1);
+        String name = newEntry.substring(val + 3 + 1, colon - 1);
 
         // find type
-        String type = newEntry.substring(colon+1, equals-1);
+        String type = newEntry.substring(colon + 1, equals - 1);
 
         OCamlTreeElement element;
         TreeElementGroup group;
         if (!newEntry.endsWith("<fun>")) {
             // find value
-            String value = newEntry.substring(equals+1);
+            String value = newEntry.substring(equals + 1);
             element = new OCamlVariableElement(name, value, type);
             group = treeModel.variables;
         } else {

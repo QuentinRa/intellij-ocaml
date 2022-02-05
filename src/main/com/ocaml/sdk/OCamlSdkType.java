@@ -7,12 +7,12 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownloadTask;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.ocaml.icons.OCamlIcons;
 import com.ocaml.sdk.doc.OCamlSdkAdditionalData;
 import com.ocaml.sdk.doc.OCamlSdkAdditionalDataConfigurable;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
-import com.ocaml.icons.OCamlIcons;
 import com.ocaml.utils.adaptor.SinceIdeVersion;
 import org.jdom.Element;
 import org.jetbrains.annotations.Contract;
@@ -48,14 +48,14 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
 
     @Contract(pure = true) public static @NotNull String getApiURL(String version) {
         if (OCamlSdkVersionManager.isNewerThan("4.12", version))
-            return "https://ocaml.org/releases/"+version+"/api/index.html";
-        return "https://ocaml.org/releases/"+version+"/htmlman/libref/index_modules.html";
+            return "https://ocaml.org/releases/" + version + "/api/index.html";
+        return "https://ocaml.org/releases/" + version + "/htmlman/libref/index_modules.html";
     }
 
     @Contract(pure = true) public static @NotNull String getManualURL(String version) {
         if (OCamlSdkVersionManager.isNewerThan("4.12", version))
-            return "https://ocaml.org/releases/"+version+"/manual/index.html";
-        return "https://ocaml.org/releases/"+version+"/htmlman/index.html";
+            return "https://ocaml.org/releases/" + version + "/manual/index.html";
+        return "https://ocaml.org/releases/" + version + "/htmlman/index.html";
     }
 
     //

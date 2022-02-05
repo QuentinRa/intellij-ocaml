@@ -3,8 +3,8 @@ package com.ocaml.ide.console.debug;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.*;
 import com.intellij.navigation.ItemPresentation;
-import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.TreeElementGroup;
+import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,19 +24,6 @@ public class OCamlStupidTreeModel implements TreeModel {
     public final TreeElementGroup modules = new TreeElementGroup(TreeElementGroupKind.MODULE);
     public final TreeElementGroup functions = new TreeElementGroup(TreeElementGroupKind.FUNCTIONS);
     public final TreeElementGroup variables = new TreeElementGroup(TreeElementGroupKind.VARIABLES);
-
-    /**
-     * Remove an element in every group
-     * @param o the element
-     */
-    public void remove(Object o) {
-        for (TreeElement e: root.getChildren()) {
-            if (!(e instanceof TreeElementGroup)) continue;
-            //noinspection SuspiciousMethodCalls
-            ((TreeElementGroup) e).elements.remove(o);
-        }
-    }
-
     public TreeElement root = new StructureViewTreeElement() {
         @Contract(pure = true) @Override public @Nullable Object getValue() {
             return null;
@@ -75,6 +62,19 @@ public class OCamlStupidTreeModel implements TreeModel {
             return false;
         }
     };
+
+    /**
+     * Remove an element in every group
+     *
+     * @param o the element
+     */
+    public void remove(Object o) {
+        for (TreeElement e : root.getChildren()) {
+            if (!(e instanceof TreeElementGroup)) continue;
+            //noinspection SuspiciousMethodCalls
+            ((TreeElementGroup) e).elements.remove(o);
+        }
+    }
 
     @Override public @NotNull TreeElement getRoot() {
         return root;
