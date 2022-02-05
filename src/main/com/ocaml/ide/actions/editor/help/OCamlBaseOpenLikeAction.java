@@ -8,8 +8,12 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.psi.PsiFile;
+import com.intellij.ui.GotItTooltip;
+import com.ocaml.OCamlBundle;
 import com.ocaml.ide.actions.editor.OCamlEditorActionBase;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 
 public abstract class OCamlBaseOpenLikeAction extends OCamlEditorActionBase {
 
@@ -22,6 +26,13 @@ public abstract class OCamlBaseOpenLikeAction extends OCamlEditorActionBase {
         if (sdk == null) return;
         String url = getURL(sdk);
         if (url == null) return;
+
+        // show a tooltip, the first time
+        GotItTooltip tooltip = new GotItTooltip(
+                "ocaml.features.help", OCamlBundle.message("sdk.help.got.it.title"), e.getProject()
+        ).withHeader(OCamlBundle.message("sdk.help.got.it.content"));
+        tooltip.show((JComponent) e.getInputEvent().getComponent(), GotItTooltip.TOP_MIDDLE);
+
         BrowserLauncher.getInstance().browse(url, null);
     }
 
