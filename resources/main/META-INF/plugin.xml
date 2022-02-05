@@ -30,8 +30,7 @@
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
-        <action id="editor.repl.run.selection.action" class="com.ocaml.ide.actions.editor.run.OCamlRunSelection"
-                icon="com.ocaml.icons.OCamlIcons.External.ExecuteSelection">
+        <action id="editor.repl.run.selection.action" class="com.ocaml.ide.actions.editor.run.OCamlRunSelection">
             <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
