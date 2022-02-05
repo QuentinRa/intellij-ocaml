@@ -8,12 +8,14 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.ocaml.sdk.doc.OCamlSdkAdditionalData;
+import com.ocaml.sdk.doc.OCamlSdkAdditionalDataConfigurable;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.utils.adaptor.SinceIdeVersion;
 import org.jdom.Element;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +44,18 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
 
     public static OCamlSdkType getInstance() {
         return SdkType.EP_NAME.findExtension(OCamlSdkType.class);
+    }
+
+    @Contract(pure = true) public static @NotNull String getApiURL(String version) {
+        if (OCamlSdkVersionManager.isNewerThan("4.12", version))
+            return "https://ocaml.org/releases/"+version+"/api/index.html";
+        return "https://ocaml.org/releases/"+version+"/htmlman/libref/index_modules.html";
+    }
+
+    @Contract(pure = true) public static @NotNull String getManualURL(String version) {
+        if (OCamlSdkVersionManager.isNewerThan("4.12", version))
+            return "https://ocaml.org/releases/"+version+"/manual/index.html";
+        return "https://ocaml.org/releases/"+version+"/htmlman/index.html";
     }
 
     //
@@ -125,7 +139,7 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     @Override @Nullable
     public AdditionalDataConfigurable createAdditionalDataConfigurable(@NotNull SdkModel sdkModel,
                                                                        @NotNull SdkModificator sdkModificator) {
-        return null; // no editor for now
+        return new OCamlSdkAdditionalDataConfigurable();
     }
 
     @Override
@@ -143,8 +157,8 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     @Override public void saveAdditionalData(@NotNull SdkAdditionalData additionalData,
                                              @NotNull Element additional) {
         OCamlSdkAdditionalData sdkAdditionalData = (OCamlSdkAdditionalData) additionalData;
-        sdkAdditionalData.ocamlManualURL = additional.getAttributeValue("ocamlManualURL");
-        sdkAdditionalData.ocamlApiURL = additional.getAttributeValue("ocamlApiURL");
+        additional.setAttribute("ocamlManualURL", sdkAdditionalData.ocamlManualURL);
+        additional.setAttribute("ocamlApiURL", sdkAdditionalData.ocamlApiURL);
     }
 
     //
@@ -172,17 +186,13 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     @Override public @Nullable String getDefaultDocumentationUrl(@NotNull Sdk sdk) {
         String version = getMajorAndMinorVersion(sdk);
         if (version == null) return null;
-        if (OCamlSdkVersionManager.isNewerThan("4.12", version))
-            return "https://ocaml.org/releases/"+version+"/manual/index.html";
-        return "https://ocaml.org/releases/"+version+"/htmlman/index.html";
+        return getManualURL(version);
     }
 
     public @Nullable String getDefaultAPIUrl(@NotNull Sdk sdk) {
         String version = getMajorAndMinorVersion(sdk);
         if (version == null) return null;
-        if (OCamlSdkVersionManager.isNewerThan("4.12", version))
-            return "https://ocaml.org/releases/"+version+"/api/index.html";
-        return "https://ocaml.org/releases/"+version+"/htmlman/libref/index_modules.html";
+        return getApiURL(version);
     }
 
     private @Nullable String getMajorAndMinorVersion(@NotNull Sdk sdk) {

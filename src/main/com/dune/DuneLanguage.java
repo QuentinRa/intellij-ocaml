@@ -7,6 +7,6 @@ public class DuneLanguage extends Language {
     public static final String NAME = "Dune";
 
     private DuneLanguage() {
-        super(NAME.toUpperCase());
+        super("DUNE"); // NAME.toUpperCase()
     }
 }
