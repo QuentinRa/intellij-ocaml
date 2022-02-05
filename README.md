@@ -77,7 +77,7 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 | ✅ Browse history, use arrow up/down |
 | ✅ See the values of the variables   |
 | ✅ Send a file to the console        |
-| ❌ Send the selection to the console |
+| ✅ Send the selection to the console |
 | ❌ Send a statement to the console   |
 
 This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
