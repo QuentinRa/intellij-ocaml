@@ -1,8 +1,8 @@
 package com.dune.ide.folding;
 
+import com.dune.lang.core.psi.DuneTypes;
 import com.dune.lang.core.psi.PsiDuneFields;
 import com.dune.lang.core.psi.PsiStanza;
-import com.dune.lang.core.psi.DuneTypes;
 import com.dune.utils.psi.DunePsiTreeUtil;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilderEx;

@@ -1,13 +1,15 @@
 package com.ocaml.utils.adaptor.ui;
 
-import com.intellij.openapi.project.*;
-import com.intellij.openapi.projectRoots.*;
-import com.intellij.openapi.roots.ui.configuration.*;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
-import com.intellij.openapi.util.*;
-import com.intellij.util.*;
-import com.ocaml.utils.adaptor.*;
-import org.jetbrains.annotations.*;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkTypeId;
+import com.intellij.openapi.roots.ui.configuration.JdkComboBox;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
+import com.intellij.openapi.util.Condition;
+import com.intellij.util.Consumer;
+import com.ocaml.utils.adaptor.SinceIdeVersion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @see JdkComboBox

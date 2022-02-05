@@ -33,7 +33,7 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
     @Override public @NotNull ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Override public String getPresentableText() {
-                return name + " = "+ value;
+                return name + " = " + value;
             }
 
             @Override public Icon getIcon(boolean unused) {

@@ -1,20 +1,25 @@
 package com.ocaml.ide.highlight.annotations;
 
-import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
-import com.intellij.lang.annotation.*;
+import com.intellij.lang.annotation.AnnotationBuilder;
+import com.intellij.lang.annotation.AnnotationHolder;
+import com.intellij.lang.annotation.ExternalAnnotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
-import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
+import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.CompilerModuleExtension;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
@@ -22,13 +27,13 @@ import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.xml.util.XmlStringUtil;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
+import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import com.ocaml.utils.files.OCamlFileUtils;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +77,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
         String targetFile = null;
 
-        LOG.trace("Working on file:"+sourceFile.getPath());
+        LOG.trace("Working on file:" + sourceFile.getPath());
 
         // find the file we are trying to compile
         for (VirtualFile root : moduleRootManager.getSourceRoots()) {
@@ -103,13 +108,13 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // build/out folder
         File myOutputFolder = new File(collectedInfo.myOutputFolder);
         if (!myOutputFolder.exists() && !myOutputFolder.mkdirs()) {
-            LOG.warn("Couldn't create '"+myOutputFolder+"'");
+            LOG.warn("Couldn't create '" + myOutputFolder + "'");
             return null;
         }
         // target folder
         File targetFolder = new File(myOutputFolder, collectedInfo.myTargetFile).getParentFile();
         if (!targetFolder.exists() && !targetFolder.mkdirs()) {
-            LOG.warn("Couldn't create '"+targetFolder+"'");
+            LOG.warn("Couldn't create '" + targetFolder + "'");
             return null;
         }
 
@@ -119,8 +124,13 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // We need to make a copy with the REAL content of the file, and work on this copy.
         // If we are working on the given file, we are not compiling/... the "latest" version,
         // as some changes may not have been committed.
-        File sourceTempFile = OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG);
-        if (sourceTempFile == null)  return null;
+        // FIX: Read access is allowed from inside read-action (or EDT) only (see com.intellij.openapi.application.Application.runReadAction())
+        //noinspection RedundantSuppression
+        @SuppressWarnings("deprecation")
+        File sourceTempFile = ApplicationManager.getApplication().runReadAction((Computable<File>)
+                () -> OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG)
+        );
+        if (sourceTempFile == null) return null;
 
         AtomicReference<File> interfaceTempFile = new AtomicReference<>();
         // only if we are compiling a .ml,
@@ -137,41 +147,44 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             // compile .mli
             if (interfaceTempFile.get() != null) {
                 // get compiler
-                GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
+                CompileWithCmtInfo compiler = OCamlSdkProvidersManager.INSTANCE.getCompileCommandWithCmt(
                         collectedInfo.myHomePath,
+                        myOutputFolder.getAbsolutePath(),
                         interfaceTempFile.get().getPath(),
                         targetFolder.getAbsolutePath(),
                         sourceFile.getNameWithoutExtension()
                 );
-                if (cli == null) {
-                    LOG.error("No cli found for "+collectedInfo.myHomePath+" (mli).");
+                if (compiler == null) {
+                    LOG.error("No cli found for " + collectedInfo.myHomePath + " (mli).");
                     return null;
                 }
-                Process process = cli.createProcess();
+                Process process = compiler.cli.createProcess();
                 process.waitFor(); // wait
             }
 
             // get compiler
-            GeneralCommandLine cli = OCamlSdkProvidersManager.INSTANCE.getCompilerAnnotatorCommand(
+            CompileWithCmtInfo compiler = OCamlSdkProvidersManager.INSTANCE.getCompileCommandWithCmt(
                     collectedInfo.myHomePath,
+                    myOutputFolder.getAbsolutePath(),
                     sourceTempFile.getPath(),
                     targetFolder.getAbsolutePath(),
                     sourceFile.getNameWithoutExtension()
             );
-            if (cli == null) {
-                LOG.error("No cli found for "+collectedInfo.myHomePath+" (ml).");
+            if (compiler == null) {
+                LOG.error("No cli found for " + collectedInfo.myHomePath + " (ml).");
                 return null;
             }
 
             OSProcessHandler processHandler = ProcessHandlerFactory
                     .getInstance()
-                    .createColoredProcessHandler(cli);
+                    .createColoredProcessHandler(compiler.cli);
             Process process = processHandler.getProcess();
             processHandler.startNotify();
 
             ArrayList<CompilerOutputMessage> info = new ArrayList<>();
             CompilerOutputParser outputParser = new CompilerOutputParser() {
                 @Override protected void onMessageReady(@NotNull CompilerOutputMessage message) {
+                    message.content = OCamlMessageAdaptor.temperPaths(message.content, compiler.rootFolderForTempering);
                     LOG.debug("added:" + message.header() + " (line->" + message.filePosition.getStartLine() + ")");
                     info.add(message);
                 }
@@ -181,19 +194,22 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 while ((line = stdin.readLine()) != null) {
                     outputParser.parseLine(line);
                 }
-            } catch (IOException e){
-                LOG.warn("reading "+nameWithoutExtension+" error. Messages are "+info, e);
+                // done
+                outputParser.inputDone();
+            } catch (IOException e) {
+                // may occur if the file was removed, because it will be compiled again?
+                LOG.warn("Reading '" + sourceFile.getName() + "' failed (" + e.getMessage() + ").");
+                return null;
+            } finally {
+                // delete
+                Files.deleteIfExists(sourceTempFile.toPath());
+                if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
             }
-            // done
-            outputParser.inputDone();
-
-            // delete
-            Files.deleteIfExists(sourceTempFile.toPath());
-            if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
 
             return new AnnotationResult(info, collectedInfo.myEditor, cmtFile);
         } catch (Exception e) {
-            LOG.error("Error while processing annotations", e);
+            if (!(e instanceof ProcessCanceledException))
+                LOG.error("Error while processing annotations", e);
             // delete
             try {
                 Files.deleteIfExists(sourceTempFile.toPath());
@@ -215,7 +231,9 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(project);
         ArrayList<Problem> problems = new ArrayList<>();
 
-        for (CompilerOutputMessage message : annotationResult.myOutputInfo) {
+        for (CompilerOutputMessage m : annotationResult.myOutputInfo) {
+            OCamlAnnotation message = OCamlMessageAdaptor.temper(m, file, editor);
+
             // type
             HighlightSeverity t;
             if (message.isWarning()) t = HighlightSeverity.WARNING;
@@ -223,39 +241,37 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
             else t = HighlightSeverity.INFORMATION;
 
-            // position
-            int colStart = message.filePosition.getStartColumn();
-            int colEnd = message.filePosition.getEndColumn();
-            int lineStart = message.filePosition.getStartLine() - 1;
-            int lineEnd = message.filePosition.getEndLine() - 1;
-
-            if (colStart == -1) colStart = 0;
-            if (colEnd == -1) colEnd = 1;
-
-            LogicalPosition start = new LogicalPosition(lineStart, colStart);
-            LogicalPosition end = new LogicalPosition(lineEnd, colEnd);
-            int startOffset = editor.isDisposed() ? 0 : editor.logicalPositionToOffset(start);
-            int endOffset = editor.isDisposed() ? 0 : editor.logicalPositionToOffset(end);
+            TextRangeInterval range = message.computePosition();
 
             // create
-            AnnotationBuilder builder = holder.newAnnotation(t, message.content);
-            if (startOffset != endOffset) builder = builder.range(new TextRangeInterval(startOffset, endOffset));
-            else builder = builder.afterEndOfLine(); // otherwise, it does not make any sense
-            builder = builder.tooltip(message.content);
-            // builder = builder.withFix(null); // fix
-            builder.create();
+            if (message.fileLevel) {
+                // create fileLevel
+                AnnotationBuilder builder = holder.newAnnotation(t, "<html>" + message.header.replace("\n", "<br/>") + "</html>");
+                builder = builder.fileLevel();
+                builder = builder.tooltip(message.content);
+                builder.create();
+            }
+
+            if (message.normalLevel) {
+                AnnotationBuilder builder = holder.newAnnotation(t, message.header);
+                if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
+                builder = builder.tooltip(message.content);
+                builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
+                for (IntentionAction fix : message.fixes) {
+                    builder = builder.withFix(fix); // fix
+                }
+                builder.create();
+            }
 
             if (message.isError()) {
                 problems.add(wolfTheProblemSolver.convertToProblem(
-                        virtualFile, lineStart, colStart,
+                        virtualFile, message.startLine, message.startColumn,
                         message.content.split("\n")
                 ));
             }
         }
 
-        if (!problems.isEmpty())
-            wolfTheProblemSolver.reportProblems(virtualFile, problems);
-        else
-            wolfTheProblemSolver.clearProblems(virtualFile);
+        if (!problems.isEmpty()) wolfTheProblemSolver.reportProblems(virtualFile, problems);
+        else wolfTheProblemSolver.clearProblems(virtualFile);
     }
 }

@@ -10,6 +10,7 @@ public class AbstractWindowsBaseProvider extends BaseOCamlSdkProvider {
     /**
      * On Windows, the WindowsSDKProvider will be the one that will call
      * this method.
+     *
      * @return an empty set
      * @see WindowsOCamlSdkProvider
      */

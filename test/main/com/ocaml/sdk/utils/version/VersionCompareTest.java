@@ -12,7 +12,12 @@ public final class VersionCompareTest extends OCamlBaseTest {
     }
 
     @Test
-    public void testEquals() {
+    public void testEquals1() {
+        assertPath("~/4.08", "~/4.08", 0);
+    }
+
+    @Test
+    public void testEquals2() {
         assertPath("~/4.08.0", "~/4.08.0", 0);
     }
 

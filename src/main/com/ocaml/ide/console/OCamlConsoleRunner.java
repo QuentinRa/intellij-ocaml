@@ -49,9 +49,9 @@ import java.util.stream.Collectors;
  */
 public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlConsoleView> {
 
+    private final ToolWindow myWindow;
     private GeneralCommandLine commandLine;
     private Content myContent;
-    private final ToolWindow myWindow;
     private OCamlVariablesView myVariablesView;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
@@ -246,10 +246,13 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
     /**
      * Process a command, but it won't be added to the history
+     *
      * @param s may be a whole file
      */
     public void processCommand(String s) {
-        getConsoleExecuteActionHandler().processLine(s);
+        OCamlConsoleView consoleView = getConsoleView();
+        consoleView.setInputText(s);
+        getConsoleExecuteActionHandler().runExecuteAction(consoleView);
     }
 
     public void rebuildVariableView(String text) {

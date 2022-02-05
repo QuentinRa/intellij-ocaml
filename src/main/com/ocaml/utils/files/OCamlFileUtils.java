@@ -58,7 +58,8 @@ public final class OCamlFileUtils {
             sourceTempFile = new File(tempCompilationDirectory, name);
             boolean created = sourceTempFile.createNewFile();
             // FIX avoid "deadlock" if the file already exists
-            if (!created && !sourceTempFile.exists()) throw new IOException("Could not create '"+sourceTempFile+"'.");
+            if (!created && !sourceTempFile.exists())
+                throw new IOException("Could not create '" + sourceTempFile + "'.");
         } catch (IOException e) {
             logger.info("Temporary file creation failed", e); // log error but do not show it in UI
             return null;
@@ -80,10 +81,10 @@ public final class OCamlFileUtils {
     }
 
     public static void deleteDirectory(File file) {
-        if(file.isDirectory()) {
+        if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files != null) {
-                for (File subFile: files) {
+                for (File subFile : files) {
                     deleteDirectory(subFile);
                 }
             }

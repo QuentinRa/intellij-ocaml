@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.fileTypes.FileTypeRegistry;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
@@ -21,8 +22,12 @@ public class OCamlFileEditorProvider implements DumbAware, FileEditorProvider {
     }
 
     @Override public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {
-        return FileTypeRegistry.getInstance().isFileOfType(file, OCamlFileType.INSTANCE)
-                || FileTypeRegistry.getInstance().isFileOfType(file, OCamlInterfaceFileType.INSTANCE);
+        FileTypeRegistry fileTypeRegistry = FileTypeRegistry.getInstance();
+        // not excluded, nor ignored, and in a source folder
+        return ProjectFileIndex.getInstance(project).isInSourceContent(file)
+                && // and either .ml or .mli
+                (fileTypeRegistry.isFileOfType(file, OCamlFileType.INSTANCE)
+                        || fileTypeRegistry.isFileOfType(file, OCamlInterfaceFileType.INSTANCE));
     }
 
     @Override public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {

@@ -19,16 +19,18 @@ public class TreeElementGroup implements StructureViewTreeElement {
 
     public final Set<OCamlTreeElement> elements = new HashSet<>();
 
-    private final String name;
+    private final TreeElementGroupKind treeElementGroupKind;
+    private boolean isVisible;
 
-    public TreeElementGroup(String name) {
-        this.name = name;
+    public TreeElementGroup(@NotNull TreeElementGroupKind kind) {
+        this.treeElementGroupKind = kind;
+        this.isVisible = true;
     }
 
     @Override public @NotNull ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Override public String getPresentableText() {
-                return name;
+                return treeElementGroupKind.displayName;
             }
 
             @Override public @Nullable Icon getIcon(boolean unused) {
@@ -55,5 +57,13 @@ public class TreeElementGroup implements StructureViewTreeElement {
 
     @Override public boolean canNavigateToSource() {
         return false;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean state) {
+        isVisible = state;
     }
 }

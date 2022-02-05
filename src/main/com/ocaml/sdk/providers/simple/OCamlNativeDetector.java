@@ -21,6 +21,7 @@ public final class OCamlNativeDetector {
      * Look for the sources.<br>
      * If we found everything, then we return the DetectionResult,
      * otherwise, we return null.
+     *
      * @see OCamlSdkProvider#getOCamlTopLevelCommands()
      * @see OCamlSdkProvider#getOCamlCompilerCommands()
      * @see OCamlSdkProvider#getOCamlSourcesFolders()
@@ -28,13 +29,13 @@ public final class OCamlNativeDetector {
     public static @NotNull DetectionResult detectNativeSdk() {
         Set<String> ocamlExecutablesNames = OCamlSdkProvidersManager.INSTANCE.getOCamlTopLevelCommands();
         // check every binary
-        for (String executableName: ocamlExecutablesNames) {
+        for (String executableName : ocamlExecutablesNames) {
             File f = PathEnvironmentVariableUtil.findInPath(executableName);
             if (f == null || !f.exists()) continue;
             LOG.debug("found binary: " + executableName);
             // look for the compiler
             DetectionResult res = detectNativeSdk(f.getAbsolutePath());
-            LOG.debug("Result binary:"+res);
+            LOG.debug("Result binary:" + res);
             if (!res.isError) return res;
         }
         return DetectionResult.NO_ASSOCIATED_BINARIES;
@@ -46,10 +47,10 @@ public final class OCamlNativeDetector {
     public static DetectionResult detectNativeSdk(String ocamlBinary) {
         AssociatedBinaries associatedBinaries = OCamlSdkProvidersManager.INSTANCE.getAssociatedBinaries(ocamlBinary);
         if (associatedBinaries == null) {
-            LOG.warn("detectNativeSdk: not found for "+ocamlBinary);
+            LOG.warn("detectNativeSdk: not found for " + ocamlBinary);
             return DetectionResult.NO_ASSOCIATED_BINARIES;
         }
-        LOG.debug("detectNativeSdk: found '"+associatedBinaries+"' for '"+ocamlBinary+"'");
+        LOG.debug("detectNativeSdk: found '" + associatedBinaries + "' for '" + ocamlBinary + "'");
         return new DetectionResult(
                 associatedBinaries.ocamlBin,
                 associatedBinaries.compilerPath,

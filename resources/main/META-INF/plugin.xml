@@ -1,7 +1,7 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <id>intellij-ocaml</id>
     <name>OCaml</name>
-    <vendor email="admin@lgs-games.com" url="https://github.com/QuentinRa/intellij-ocaml">QuentinRa</vendor>
+    <vendor email="ramsamy.ws@gmail.com" url="https://github.com/QuentinRa/intellij-ocaml">QuentinRa</vendor>
     <description><![CDATA[
         The OCaml plugin is providing support for the OCaml language in IntelliJ IDEA, using an opam or
         a native SDK. It is based on both ReasonML, and intellij-rust.]]>
@@ -13,6 +13,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
     <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/or.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
     <resource-bundle>messages.OCamlBundle</resource-bundle>
 
@@ -28,6 +29,24 @@
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
+        </action>
+        <action id="editor.repl.run.selection.action" class="com.ocaml.ide.actions.editor.run.OCamlRunSelection">
+            <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
+        <action id="editor.api.action" class="com.ocaml.ide.actions.editor.help.OCamlEditorApiAction"
+                icon="AllIcons.General.Information" >
+            <keyboard-shortcut keymap="$default" first-keystroke="F1" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="F1" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F1" replace-all="true"/>
+        </action>
+        <action id="editor.help.action" class="com.ocaml.ide.actions.editor.help.OCamlEditorHelpAction"
+                icon="AllIcons.Actions.Help" >
+            <keyboard-shortcut keymap="$default" first-keystroke="F11" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="F11" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F11" replace-all="true"/>
         </action>
     </actions>
 
@@ -53,6 +72,7 @@
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
+        <annotator language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlDocumentationAnnotator"/>
         <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.highlight.annotations.CompilerOutputAnnotator" />
         <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
 

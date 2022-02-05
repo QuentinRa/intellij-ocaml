@@ -9,7 +9,7 @@ public class CompilerOutputMessage {
     public FilePosition filePosition;
 
     /** kind of message **/
-    enum Kind { ERROR, WARNING, ALERT, INFO }
+    public enum Kind { ERROR, WARNING, ALERT, INFO }
     public @NotNull Kind kind = Kind.ERROR;
 
     /** The header of the message shown by the compiler.  **/
@@ -33,15 +33,12 @@ public class CompilerOutputMessage {
     public String context = "";
 
     // utils
-    public boolean isError() { return kind == Kind.ERROR; }
-    public boolean isWarning() { return kind == Kind.WARNING; }
-    public boolean isAlert() { return kind == Kind.ALERT; }
 
     @Override public String toString() {
         return "CompilerOutputMessage{" +
                 "file=" + filePosition.getFile().getName() +
-                ", at=(l:"+filePosition.getStartLine()+"-"+filePosition.getEndLine()
-                +",c:" +filePosition.getStartColumn()+"-"+filePosition.getEndColumn() + ")"+
+                ", at=(l:" + filePosition.getStartLine() + "-" + filePosition.getEndLine()
+                + ",c:" + filePosition.getStartColumn() + "-" + filePosition.getEndColumn() + ")" +
                 ", kind=" + kind +
                 ", header='" + header() + '\'' +
                 '}';

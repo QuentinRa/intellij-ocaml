@@ -1,6 +1,8 @@
 package com.ocaml.utils.notifications;
 
-import com.intellij.notification.*;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationGroupManager;
 import org.jetbrains.annotations.NotNull;
 
 /**

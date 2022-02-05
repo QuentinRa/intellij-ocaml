@@ -1,6 +1,6 @@
 # intellij-ocaml
 
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/) (but, development is in progress)
 
 This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. I'm only a student, after all.
 
@@ -31,6 +31,20 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 ## 🚀 Features
 
+| Features coming from ReasonML 🤩️              |
+|------------------------------------------------|
+| File Structure menu                            |
+| Simple autocompletion                          |
+| Go to file, declaration, etc.                  |
+| Comment line/block                             |
+| Insert matching brace, quote                   |
+| Find usages                                    |
+| Preview `odoc` documentation (CTRL-Q / hover)  |
+| ✅ Live templates (**merged**)                  |
+| ✅ Spellchecker (**merged**)                    |
+| ❌ Highlight for not, strings in comments (bug) |
+| ❌ Highlight for odoc                           |
+
 | Setup                                                      |
 |------------------------------------------------------------|
 | ✅ You got some instructions to install what you need       |
@@ -58,16 +72,17 @@ You are now able to create a project using an opam SDK, or create an opam-like S
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
 
-| REPL Console                        |
-|-------------------------------------|
-| ✅ Can execute commands              |
-| ✅ Browse history, use arrow up/down |
-| ✅ See the values of the variables   |
-| ✅ Send a file to the console        |
-| ❌ Send the selection to the console |
-| ❌ Send a statement to the console   |
+| REPL Console                                                    |
+|-----------------------------------------------------------------|
+| ✅ Can execute commands                                          |
+| ✅ Browse history, use arrow up/down                             |
+| ✅ See the values of the variables                               |
+| ✅ Send a file to the console                                    |
+| ✅ Send the selection to the console                             |
+| ✅ Send a statement to the console                               |
+| ❌ Send the whole line, if we are selecting a part, with preview |
 
-This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
+This is a console allowing the use of the ocaml interpreter more easily. For instance, arrows up/down are now properly handled. You also got a history of your commands.
 
 | Code highlighting                                |
 |--------------------------------------------------|
@@ -83,15 +98,16 @@ This is a console allowing the use of the ocaml interpreter in an easier way. Fo
 
 We are compiling the file, and parsing the output, to provide hints in the editor.
 
-| File                                                |
-|-----------------------------------------------------|
-| ✅ Can create .ml, .mli, or .ml and .mli             |
-| ✅ Editor > File and Code Templates for .ml and .mli |
-| ❌ Live templates                                    |
+| File                                                   |
+|--------------------------------------------------------|
+| ✅ Can create .ml, .mli, or .ml and .mli                |
+| ✅ Editor > File and Code Templates for .ml and .mli    |
+| ✅ Buttons to browse the OCaml Manual/API in the editor |
+| ❌ Live templates                                       |
 
 | Dune                                                          |
 |---------------------------------------------------------------|
-| ✅ Import every features in ReasonML                           |
+| ✅ Import every feature in ReasonML                            |
 | ❌ Suggest installing dune if opening a dune file without Dune |
 | ❌ Show a message when updating files not targeted             |
 | ❌ Show an icon to "reload" dune, reloading runConfig, etc.    |
@@ -107,7 +123,7 @@ On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the ins
 <details>
 <summary>Windows (with cygwin)</summary>
 
-Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml** (if you don't want opam), otherwise pick
+Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml** (if you don't want opam), otherwise, pick
 
 * `opam`
 * `make`
@@ -118,6 +134,8 @@ Download [cygwin](https://cygwin.com/install.html). In the installer, you will h
 To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `òpam switch create 4.12.0`.
 
 Ensure that `C:/cygwin64/bin` (for me) is in the path. If you open a PowerShell, and write `opam --version`, you should be good. This is pretty useless (as the command above does not work in a PowerShell), but you are now able to call commands such as `make` in a PowerShell, so you can use a `Makefile`!
+
+Note that, on Windows, there is a problem with `ocaml`/`ocamlc` ([Unbound module Stdlib](https://discuss.ocaml.org/t/unbound-module-stdllib/5133)). You can find the path where both are looking for Stdlib, with `ocamlc -config`. You can set the PATH using an environment variable called `OCAMLLIB`(ex: `Set-Item -Path Env:OCAMLLIB -Value ("C:\Users\username\Desktop\4.13.1+mingw64c\lib\ocaml")`). **NOTE THAT THIS IS DONE BY THE PLUGIN** (for Cygwin/OCaml64 if needed), so you don't have to do this unless you are not using the plugin.
 </details>
 
 <details>

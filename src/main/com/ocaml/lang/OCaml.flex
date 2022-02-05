@@ -2,7 +2,7 @@ package com.ocaml.lang.lexer;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import com.ocaml.lang.core.psi.OCamlTypes;
+import com.or.lang.OCamlTypes;
 
 import static com.intellij.psi.TokenType.*;
 
@@ -75,6 +75,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
 %state INITIAL
 %state IN_STRING
 %state IN_OCAML_ML_COMMENT
+%state IN_OCAML_DOC_COMMENT
 
 %%
 
@@ -172,6 +173,9 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
 
     "\"" { if (!inComment) yybegin(IN_STRING); tokenStart(); }
     "(*" { yybegin(IN_OCAML_ML_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
+    // not a normal, empty, comment
+    // nor a (*** kind of comment
+    "(**" [^*)] { yybegin(IN_OCAML_DOC_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
 
     "#if"     { return OCamlTypes.DIRECTIVE_IF; }
     "#else"   { return OCamlTypes.DIRECTIVE_ELSE; }
@@ -263,6 +267,13 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "*)" { commentDepth -= 1; if (commentDepth == 0) { inComment = false; yybegin(INITIAL); tokenEnd(); return OCamlTypes.MULTI_COMMENT; } }
      . | {NEWLINE} { }
      <<EOF>> { yybegin(INITIAL); tokenEnd(); return OCamlTypes.MULTI_COMMENT; }
+}
+
+<IN_OCAML_DOC_COMMENT> {
+    "(*" { commentDepth += 1; }
+    "*)" { commentDepth -= 1; if (commentDepth == 0) { inComment = false; yybegin(INITIAL); tokenEnd(); return OCamlTypes.DOC_COMMENT; } }
+     . | {NEWLINE} { }
+     <<EOF>> { yybegin(INITIAL); tokenEnd(); return OCamlTypes.DOC_COMMENT; }
 }
 
 [^] { return BAD_CHARACTER; }

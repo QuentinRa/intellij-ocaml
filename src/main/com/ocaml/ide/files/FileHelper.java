@@ -28,4 +28,8 @@ public final class FileHelper {
         var language = psiFile.getLanguage();
         return language == OCamlLanguage.INSTANCE;
     }
+
+    public static boolean isInterface(@Nullable FileType fileType) {
+        return fileType instanceof OCamlInterfaceFileType;
+    }
 }

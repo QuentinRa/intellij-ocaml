@@ -1,5 +1,6 @@
 package com.dune.ide.settings;
 
+import com.dune.DuneLanguage;
 import com.dune.icons.DuneIcons;
 import com.dune.ide.highlight.DuneSyntaxHighlighter;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
@@ -15,6 +16,9 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configure colors for dune
+ */
 public class DuneColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
             new AttributesDescriptor("Comment", DuneSyntaxHighlighter.COMMENT_),
@@ -72,8 +76,7 @@ public class DuneColorSettingsPage implements ColorSettingsPage {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 
-    // todo: const
     @Override public @NotNull String getDisplayName() {
-        return "Dune";
+        return DuneLanguage.NAME;
     }
 }

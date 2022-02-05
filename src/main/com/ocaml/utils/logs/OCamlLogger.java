@@ -41,6 +41,6 @@ public class OCamlLogger {
      * Group for logs related to the top level.
      */
     public static @NotNull Logger getREPLInstance(String name) {
-        return getInstance("repl-"+name);
+        return getInstance("repl-" + name);
     }
 }

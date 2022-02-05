@@ -3,7 +3,6 @@ package com.ocaml.ide.editor;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.actionSystem.ex.ActionUtilsAdaptor;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.*;
@@ -16,7 +15,11 @@ import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.ocaml.OCamlBundle;
+import com.ocaml.ide.actions.editor.help.OCamlEditorApiAction;
+import com.ocaml.ide.actions.editor.help.OCamlEditorHelpAction;
 import com.ocaml.ide.actions.editor.run.OCamlRunFileREPLAction;
+import com.ocaml.ide.actions.editor.run.OCamlRunSelection;
+import com.ocaml.utils.adaptor.actions.ActionUtilsAdaptor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +62,10 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
     private @NotNull ActionGroup createActionGroup() {
         DefaultActionGroup defaultActionGroup = new DefaultActionGroup();
         defaultActionGroup.add(new ToolbarAction(OCamlRunFileREPLAction.ACTION_ID));
+        defaultActionGroup.add(new ToolbarAction(OCamlRunSelection.ACTION_ID));
+        defaultActionGroup.add(new Separator());
+        defaultActionGroup.add(new ToolbarAction(OCamlEditorApiAction.ACTION_ID));
+        defaultActionGroup.add(new ToolbarAction(OCamlEditorHelpAction.ACTION_ID));
         return defaultActionGroup;
     }
 
@@ -80,7 +87,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
             myAction.update(createEvent(e));
         }
 
-        private AnActionEvent createEvent(AnActionEvent e) {
+        private @NotNull AnActionEvent createEvent(AnActionEvent e) {
             var file = FileDocumentManager.getInstance().getFile(myTextEditor.getEditor().getDocument());
             PsiFile psiFile = null;
             if (file != null) psiFile = PsiManager.getInstance(myProject).findFile(file);

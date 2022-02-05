@@ -1,5 +1,6 @@
 package com.dune.ide.structure;
 
+import com.dune.DuneBundle;
 import com.dune.ide.files.DuneFile;
 import com.dune.lang.core.psi.PsiDuneFields;
 import com.dune.lang.core.psi.PsiStanza;
@@ -111,9 +112,8 @@ public class DuneStructureViewElement implements StructureViewTreeElement, Sorta
         }
 
         return new ItemPresentation() {
-            // todo: bundle
             @Override public String getPresentableText() {
-                return "Unknown presentation for element " + m_element.getText();
+                return DuneBundle.message("unknown.presentation.for.element", m_element.getText());
             }
 
             @Override public @Nullable Icon getIcon(boolean unused) {

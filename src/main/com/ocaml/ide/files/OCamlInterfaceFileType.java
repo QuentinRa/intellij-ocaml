@@ -4,8 +4,8 @@ package com.ocaml.ide.files;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.ocaml.OCamlBundle;
-import com.ocaml.icons.OCamlIcons;
 import com.ocaml.OCamlLanguage;
+import com.ocaml.icons.OCamlIcons;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,12 +21,14 @@ public final class OCamlInterfaceFileType extends LanguageFileType {
 
     // instance
     public static final OCamlInterfaceFileType INSTANCE = new OCamlInterfaceFileType();
+
     private OCamlInterfaceFileType() {
         super(OCamlLanguage.INSTANCE);
     }
 
     /**
      * Given a path to a source file, return the path to the interface
+     *
      * @param path path to the source file, must be properly formatted
      * @return the path to the interface
      * @throws IllegalArgumentException if the path is valid using {@link OCamlFileType#isFile(String)}
@@ -34,7 +36,7 @@ public final class OCamlInterfaceFileType extends LanguageFileType {
     public static @NotNull String fromSource(@NotNull String path) {
         if (OCamlFileType.isFile(path))
             return path.replace(OCamlFileType.DEFAULT_EXTENSION, DEFAULT_EXTENSION);
-        throw new IllegalArgumentException("Not a valid source file '"+path+"'");
+        throw new IllegalArgumentException("Not a valid source file '" + path + "'");
     }
 
     // implementation

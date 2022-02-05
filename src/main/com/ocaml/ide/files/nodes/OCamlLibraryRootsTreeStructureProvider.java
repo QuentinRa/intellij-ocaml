@@ -32,11 +32,21 @@ public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProv
     private static final Predicate<String> ALLOWED_FILES =
             s -> s.endsWith(OCamlFileType.DOT_DEFAULT_EXTENSION) || s.endsWith(OCamlInterfaceFileType.DOT_DEFAULT_EXTENSION);
 
+    /**
+     * The folder may be nested, but still inside the SDK
+     */
+    private static boolean isLibraryRootForOCamlSdkRecursive(AbstractTreeNode<?> current) {
+        if (current == null) return false;
+        // check parent instead
+        if (current instanceof PsiDirectoryNode) return isLibraryRootForOCamlSdkRecursive(current.getParent());
+        return OCamlSdkRootsManager.isLibraryRootForOCamlSdk(current);
+    }
+
     @Override
     public @NotNull Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
                                                            @NotNull Collection<AbstractTreeNode<?>> children,
                                                            ViewSettings settings) {
-        if(!(parent instanceof PsiDirectoryNode)) return children;
+        if (!(parent instanceof PsiDirectoryNode)) return children;
         AbstractTreeNode<?> t = parent.getParent();
         if (!isLibraryRootForOCamlSdkRecursive(t)) return children;
         // we are now sure that children is a list of the folders/files in the SDK
@@ -57,15 +67,5 @@ public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProv
                 filtered.add(child);
         }
         return filtered;
-    }
-
-    /**
-     * The folder may be nested, but still inside the SDK
-     */
-    private static boolean isLibraryRootForOCamlSdkRecursive(AbstractTreeNode<?> current) {
-        if (current == null) return false;
-        // check parent instead
-        if (current instanceof PsiDirectoryNode) return isLibraryRootForOCamlSdkRecursive(current.getParent());
-        return OCamlSdkRootsManager.isLibraryRootForOCamlSdk(current);
     }
 }

@@ -5,9 +5,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.PtyCommandLine;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -44,7 +42,7 @@ public final class OCamlSdkCommandsManager {
         if (replCommand == null)
             throw new IllegalStateException("Unable to start the console.");
 
-        Log.debug("REPL command is:"+replCommand.getCommandLineString());
+        Log.debug("REPL command is:" + replCommand.getCommandLineString());
 
         // return PtyCommand
         return new PtyCommandLine(replCommand).withInitialColumns(PtyCommandLine.MAX_COLUMNS);

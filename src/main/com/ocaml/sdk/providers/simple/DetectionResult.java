@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * - a path to the ocaml compiler
  * - the version of ocaml
  * - a path to the sources' folder.
- *
+ * <p>
  * Note that if we got an error, then {@link #NO_ASSOCIATED_BINARIES} is returned.
  */
 public class DetectionResult {
@@ -33,7 +33,7 @@ public class DetectionResult {
     }
 
     DetectionResult(@NotNull String ocaml, @NotNull String ocamlCompiler, @NotNull String version,
-                    @NotNull  String sources, boolean isError) {
+                    @NotNull String sources, boolean isError) {
         this.ocaml = ocaml;
         this.ocamlCompiler = ocamlCompiler;
         this.version = version;
