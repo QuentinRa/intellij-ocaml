@@ -120,6 +120,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // If we are working on the given file, we are not compiling/... the "latest" version,
         // as some changes may not have been committed.
         // FIX: Read access is allowed from inside read-action (or EDT) only (see com.intellij.openapi.application.Application.runReadAction())
+        //noinspection RedundantSuppression
         @SuppressWarnings("deprecation")
         File sourceTempFile = ApplicationManager.getApplication().runReadAction( (Computable<File>)
                 () -> OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG)
@@ -234,9 +235,16 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             TextRangeInterval range = message.computePosition();
 
             // create
+            if (message.fileLevel) {
+                // create fileLevel
+                AnnotationBuilder builder = holder.newAnnotation(t, "<html>"+message.header.replace("\n", "<br/>")+"</html>");
+                builder = builder.fileLevel();
+                builder = builder.tooltip(message.content);
+                builder.create();
+            }
+
             AnnotationBuilder builder = holder.newAnnotation(t, message.header);
-            builder = range == null ? builder.afterEndOfLine() : builder.range(range);
-            builder = message.fileLevel ? builder.fileLevel() : builder;
+            if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
             builder = builder.tooltip(message.content);
             builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
             for (IntentionAction fix: message.fixes) {

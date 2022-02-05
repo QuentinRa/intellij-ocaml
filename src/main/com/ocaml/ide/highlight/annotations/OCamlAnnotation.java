@@ -89,7 +89,6 @@ public class OCamlAnnotation {
     // bunch of errors "mismatch"
     public void toMismatchMli() {
         fileLevel = true;
-        header = "<html>"+header.replace("\n", "<br/>")+"</html>";
     }
 
     // 11, 27, 32, 33, 39, ...
