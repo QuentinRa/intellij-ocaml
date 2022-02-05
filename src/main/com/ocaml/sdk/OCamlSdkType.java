@@ -7,11 +7,11 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownloadTask;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.ocaml.sdk.doc.OCamlSdkAdditionalData;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.icons.OCamlIcons;
-import com.ocaml.utils.ComputeMethod;
 import com.ocaml.utils.adaptor.SinceIdeVersion;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -118,14 +118,33 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
     // Data
     //
 
+    @Override public boolean isRootTypeApplicable(@NotNull OrderRootType type) {
+        return type == OrderRootType.CLASSES;
+    }
+
     @Override @Nullable
     public AdditionalDataConfigurable createAdditionalDataConfigurable(@NotNull SdkModel sdkModel,
                                                                        @NotNull SdkModificator sdkModificator) {
-        return null;
+        return null; // no editor for now
+    }
+
+    @Override
+    public @Nullable SdkAdditionalData loadAdditionalData(@NotNull Sdk currentSdk, @NotNull Element additional) {
+        OCamlSdkAdditionalData sdkAdditionalData = new OCamlSdkAdditionalData();
+        sdkAdditionalData.ocamlManualURL = additional.getAttributeValue("ocamlManualURL");
+        sdkAdditionalData.ocamlApiURL = additional.getAttributeValue("ocamlApiURL");
+        if (sdkAdditionalData.shouldFillWithDefaultValues()) {
+            sdkAdditionalData.ocamlApiURL = getDefaultAPIUrl(currentSdk);
+            sdkAdditionalData.ocamlManualURL = getDefaultDocumentationUrl(currentSdk);
+        }
+        return sdkAdditionalData;
     }
 
     @Override public void saveAdditionalData(@NotNull SdkAdditionalData additionalData,
                                              @NotNull Element additional) {
+        OCamlSdkAdditionalData sdkAdditionalData = (OCamlSdkAdditionalData) additionalData;
+        sdkAdditionalData.ocamlManualURL = additional.getAttributeValue("ocamlManualURL");
+        sdkAdditionalData.ocamlApiURL = additional.getAttributeValue("ocamlApiURL");
     }
 
     //
@@ -174,20 +193,6 @@ public class OCamlSdkType extends LocalSdkType implements SdkDownload {
         if (last != version.indexOf('.'))
             version = version.substring(0, last);
         return version;
-    }
-
-    public @Nullable String getRealDocumentationURL(@NotNull Sdk sdk) {
-        return getOrCreateURL(sdk, this::getDefaultDocumentationUrl, "/manual/index.html", "/htmlman/index.html");
-    }
-
-    public @Nullable String getRealAPIURL(@NotNull Sdk sdk) {
-        return getOrCreateURL(sdk, this::getDefaultAPIUrl, "/api/index.html", "/libref/index_modules.html");
-    }
-
-    // should look for the SDK in the ROOTs
-    public @Nullable String getOrCreateURL(@NotNull Sdk sdk, @NotNull ComputeMethod<String, Sdk> defaultProvider,
-                                           String pattern1, String pattern2) {
-        return defaultProvider.call(sdk);
     }
 
     //
