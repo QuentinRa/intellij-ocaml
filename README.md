@@ -43,6 +43,7 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Live templates (PR)                                     |
 | ✅ Spellchecker (PR)                                       |
 | ❌ Highlight for not, strings in comments (bug), doc (PR?) |
+| ❌ Highlight for odoc                                      |
 
 | Setup                                                      |
 |------------------------------------------------------------|
@@ -96,11 +97,12 @@ This is a console allowing the use of the ocaml interpreter in an easier way. Fo
 
 We are compiling the file, and parsing the output, to provide hints in the editor.
 
-| File                                                |
-|-----------------------------------------------------|
-| ✅ Can create .ml, .mli, or .ml and .mli             |
-| ✅ Editor > File and Code Templates for .ml and .mli |
-| ❌ Live templates                                    |
+| File                                                   |
+|--------------------------------------------------------|
+| ✅ Can create .ml, .mli, or .ml and .mli                |
+| ✅ Editor > File and Code Templates for .ml and .mli    |
+| ✅ Buttons to browse the OCaml Manual/API in the editor |
+| ❌ Live templates                                       |
 
 | Dune                                                          |
 |---------------------------------------------------------------|

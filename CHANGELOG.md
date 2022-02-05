@@ -6,13 +6,18 @@ The plugin is experimental. You should implement any feature directly in the [Re
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.6-EAP]
+## [0.0.6] - 2022-02-05
 ### Internal
 - Keeping a Changelog
 
+### Added
+- 🚀🚀 Almost every feature in ReasonML for OCaml was imported
+- 🚀 Can send the selected code to the REPL (#41)
+
 ### Changed
-- Improving editor (#41, #47): shown for .mli, not shown for excluded files. We can send the selection to the console, and browse the manual/the API with a shortcut.
-- Proper highlight for warnings, errors, and alerts (#38).
+- 🚀 Improving editor (#41, #47): shown for .mli, not shown for excluded files. We can send the selection to the console
+- ✨ Proper highlight for odoc documentation, and buttons to browse the OCaml Manual/API in the editor (#49).
+- ✨ Proper highlight for warnings, errors, and alerts (#38).
 
 ## [0.0.5] - 2022-02-01
 ### Added
