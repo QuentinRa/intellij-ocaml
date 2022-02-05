@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🚀🚀 Almost every feature in ReasonML for OCaml was imported
 - 🚀 Can send the selected code to the REPL (#41)
 - 🚀 We can send the selection to the console.
-- ✨ Buttons to browse the OCaml Manual/API in the editor, and a tab in the Sdk window, to change these links. (#49)
+- ✨ Buttons to browse the OCaml Manual/API in the editor, and a tab in the SDK window, to change these links. (#49)
 
 ### Changed
 - 🚀 Improving editor (#41, #47): shown for .mli, not shown for excluded files.
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.4] - 2022-01-22
 ### Internal
-- 🚀 The code is not dependent on SDK Providers (ex: WSL, Cygwin, OCaml64, etc.) any more. We can add/remove them however we want.
+- 🚀 The code is not dependent on SDK Providers (ex: WSL, Cygwin, OCaml64, etc.) anymore. We can add/remove them however we want.
 
 ### Added
 - 🪲 Fixing #9
@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundle
 
 ### Added
-- 🚀 Adding a project Wizard. One can create an opam-like SDK (for those that do not have opam), or create an opam SDK. 
+- 🚀 Adding a project wizard. One can create an opam-like SDK (for those that do not have opam), or create an opam SDK. 
 - ✨ For non-opam SDK, fields aside from the `ocaml binary` are detected by the plugin.
 - 🚀 Use "Project SDK" as the module SDK, or you can select a custom SDK.
 - 🚀 Set the compilation output directory

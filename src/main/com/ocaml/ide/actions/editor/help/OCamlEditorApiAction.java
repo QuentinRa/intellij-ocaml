@@ -1,23 +1,22 @@
-package com.ocaml.ide.actions.editor;
+package com.ocaml.ide.actions.editor.help;
 
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkAdditionalData;
-import com.ocaml.ide.actions.editor.help.OCamlBaseOpenLikeAction;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.doc.OCamlSdkAdditionalData;
 
-public class OCamlEditorHelpAction extends OCamlBaseOpenLikeAction {
+public class OCamlEditorApiAction extends OCamlBaseOpenLikeAction {
 
-    public static final String ACTION_ID = "editor.help.action";
+    public static final String ACTION_ID = "editor.api.action";
 
     @Override protected String getURL(Sdk sdk) {
         SdkAdditionalData sdkAdditionalData = sdk.getSdkAdditionalData();
         String url = null;
         if (sdkAdditionalData != null) {
-            url = ((OCamlSdkAdditionalData) sdkAdditionalData).ocamlManualURL;
+            url = ((OCamlSdkAdditionalData) sdkAdditionalData).ocamlApiURL;
             url = url != null && url.startsWith("http") ? url : null;
         }
-        if (url == null) url = OCamlSdkType.getInstance().getDefaultDocumentationUrl(sdk);
+        if (url == null) url = OCamlSdkType.getInstance().getDefaultAPIUrl(sdk);
         return url;
     }
 }

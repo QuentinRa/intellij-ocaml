@@ -1,6 +1,6 @@
 # intellij-ocaml
 
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/) (but, development is in progress)
 
 This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. I'm only a student, after all.
 
@@ -82,7 +82,7 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 | ✅ Send a statement to the console                               |
 | ❌ Send the whole line, if we are selecting a part, with preview |
 
-This is a console allowing the use of the ocaml interpreter in an easier way. For instance, arrow up/down are now properly handled. You also got a history of your commands.
+This is a console allowing the use of the ocaml interpreter more easily. For instance, arrows up/down are now properly handled. You also got a history of your commands.
 
 | Code highlighting                                |
 |--------------------------------------------------|
@@ -107,7 +107,7 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 
 | Dune                                                          |
 |---------------------------------------------------------------|
-| ✅ Import every features in ReasonML                           |
+| ✅ Import every feature in ReasonML                            |
 | ❌ Suggest installing dune if opening a dune file without Dune |
 | ❌ Show a message when updating files not targeted             |
 | ❌ Show an icon to "reload" dune, reloading runConfig, etc.    |
@@ -123,7 +123,7 @@ On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the ins
 <details>
 <summary>Windows (with cygwin)</summary>
 
-Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml** (if you don't want opam), otherwise pick
+Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml** (if you don't want opam), otherwise, pick
 
 * `opam`
 * `make`
