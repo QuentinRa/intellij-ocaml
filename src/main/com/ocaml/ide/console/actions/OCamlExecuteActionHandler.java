@@ -1,7 +1,9 @@
 package com.ocaml.ide.console.actions;
 
+import com.intellij.codeInsight.hint.HintManager;
+import com.intellij.execution.console.LanguageConsoleView;
 import com.intellij.execution.console.ProcessBackedConsoleExecuteActionHandler;
-import com.intellij.execution.process.ProcessHandler;
+import com.ocaml.ide.console.OCamlConsoleRunner;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,8 +12,22 @@ import org.jetbrains.annotations.NotNull;
  */
 public class OCamlExecuteActionHandler extends ProcessBackedConsoleExecuteActionHandler {
 
-    public OCamlExecuteActionHandler(ProcessHandler processHandler, boolean preserveMarkup) {
-        super(processHandler, preserveMarkup);
+    private final OCamlConsoleRunner runner;
+
+    public OCamlExecuteActionHandler(@NotNull OCamlConsoleRunner runner, boolean preserveMarkup) {
+        super(runner.getProcessHandler(), preserveMarkup);
+        this.runner = runner;
+    }
+
+    @Override public void runExecuteAction(@NotNull LanguageConsoleView consoleView) {
+        if (runner.isRunning()) {
+            HintManager.getInstance().showErrorHint(
+                    consoleView.getConsoleEditor(),
+                    "Previous command is still running. Please wait, or restart the console."
+            );
+            return;
+        }
+        super.runExecuteAction(consoleView);
     }
 
     @Override public void processLine(@NotNull String line) {

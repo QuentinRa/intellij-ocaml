@@ -171,7 +171,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     @Override protected @NotNull ProcessBackedConsoleExecuteActionHandler createExecuteActionHandler() {
         ConsoleHistoryController historyController = new ConsoleHistoryController(OCamlConsoleRootType.getInstance(), "", getConsoleView());
         historyController.install();
-        return new OCamlExecuteActionHandler(getProcessHandler(), true);
+        return new OCamlExecuteActionHandler(this, true);
     }
 
     @Override public OCamlExecuteActionHandler getConsoleExecuteActionHandler() {
@@ -264,17 +264,26 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
     public void updateQueue() {
         // no queued commands
-        if (commands.isEmpty()) return;
+        if (commands.isEmpty()) {
+            isRunning = false;
+            return;
+        }
         // fetch and run one
         String text = commands.remove(0);
         OCamlConsoleView consoleView = getConsoleView();
+        String original = consoleView.getCurrentEditor().getDocument().getText();
         consoleView.setInputText(text);
         getConsoleExecuteActionHandler().runExecuteAction(consoleView);
+        consoleView.setInputText(original);
         isRunning = true;
     }
 
     public void setRunning(boolean running) {
         this.isRunning = running;
         if (!isRunning) ApplicationManager.getApplication().invokeLater(this::updateQueue);
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 }
