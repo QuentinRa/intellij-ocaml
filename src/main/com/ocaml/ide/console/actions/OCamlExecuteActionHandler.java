@@ -1,9 +1,11 @@
 package com.ocaml.ide.console.actions;
 
 import com.intellij.codeInsight.hint.HintManager;
+import com.intellij.execution.console.ConsoleHistoryController;
 import com.intellij.execution.console.LanguageConsoleView;
 import com.intellij.execution.console.ProcessBackedConsoleExecuteActionHandler;
 import com.ocaml.ide.console.OCamlConsoleRunner;
+import com.ocaml.ide.console.OCamlConsoleView;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +30,12 @@ public class OCamlExecuteActionHandler extends ProcessBackedConsoleExecuteAction
             return;
         }
         super.runExecuteAction(consoleView);
+    }
+
+    public void runExecuteAction(@NotNull  OCamlConsoleView consoleView, String text) {
+        consoleView.printWithPrompt(text);
+        ConsoleHistoryController.addToHistory(consoleView, text);
+        execute(text, consoleView);
     }
 
     @Override public void processLine(@NotNull String line) {

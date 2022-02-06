@@ -271,10 +271,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         // fetch and run one
         String text = commands.remove(0);
         OCamlConsoleView consoleView = getConsoleView();
-        String original = consoleView.getCurrentEditor().getDocument().getText();
-        consoleView.setInputText(text);
-        getConsoleExecuteActionHandler().runExecuteAction(consoleView);
-        consoleView.setInputText(original);
+        getConsoleExecuteActionHandler().runExecuteAction(consoleView, text);
         isRunning = true;
     }
 
