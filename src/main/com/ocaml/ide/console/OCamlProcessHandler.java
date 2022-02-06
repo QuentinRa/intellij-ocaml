@@ -40,7 +40,7 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         // pass input (this is a trick, if the lines ends with ;;, then that's the user input)
         if (textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE)) return;
         // can we pass the next command?
-        if (textOriginal.trim().equals(OCamlREPLConstants.PROMPT)) {
+        if (textOriginal.replace(OCamlREPLConstants.PROMPT,"").trim().isEmpty()) {
             runner.setRunning(false); // yes
             return;
         }
