@@ -34,7 +34,11 @@ public class ExtendedEditorActionUtil {
         PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
         if (psiFile == null) return null;
         PsiElement elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
-        if (elementAt == null) return null;
+        if (elementAt == null) { // did we reach the end of the file?
+            // maybe we can go back a bit
+            elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset()-1);
+            if (elementAt == null) return null;
+        }
         PsiElement s = OCamlPsiUtils.findStatementBefore(elementAt);
         if (s == null) {
             s = OCamlPsiUtils.findStatementAfter(elementAt);
