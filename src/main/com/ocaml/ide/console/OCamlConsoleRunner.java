@@ -31,6 +31,7 @@ import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.console.actions.OCamlExecuteActionHandler;
 import com.ocaml.ide.console.actions.OCamlRestartAction;
+import com.ocaml.ide.console.actions.ShowVariablesAction;
 import com.ocaml.ide.console.debug.OCamlVariablesView;
 import com.ocaml.sdk.utils.OCamlSdkCommandsManager;
 import org.jetbrains.annotations.NotNull;
@@ -56,6 +57,8 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     private OCamlVariablesView myVariablesView;
     private boolean isRunning;
     private final ArrayList<String> commands = new ArrayList<>();
+    private boolean isVariableViewEnabled = true;
+    private JBSplitter split;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
         super(project, OCamlConsoleView.CONS0LE_TITLE, null);
@@ -80,7 +83,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         // main panel
         OCamlConsoleView consoleView = getConsoleView();
 
-        JBSplitter split = new JBSplitter(false, 0.5f);
+        split = new JBSplitter(false, 0.5f);
         split.setFirstComponent(consoleView.getComponent());
         // create "variable view"
         myVariablesView = new OCamlVariablesView(consoleView);
@@ -118,12 +121,15 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         // add run actions
         ArrayList<AnAction> runActions = new ArrayList<>();
         runActions.add(createConsoleExecAction(getConsoleExecuteActionHandler()));
-        runActions.add(new OCamlRestartAction(getProject()));
         runActions.add(Objects.requireNonNull(ConsoleHistoryController.getController(getConsoleView())).getBrowseHistory());
+        runActions.add(new OCamlRestartAction(getProject()));
+        runActions.add(new ShowVariablesAction(this));
         group.addAll(runActions);
+        group.addSeparator();
 
         // add other actions
         group.add(new ScrollToTheEndToolbarAction(console.getEditor()));
+        // todo: help
 
         registerActionShortcuts(runActions, console.getConsoleEditor().getComponent());
         registerActionShortcuts(runActions, mainPanel);
@@ -197,7 +203,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         }
     }
 
-    private void showErrorsInConsole(Exception e) {
+    private void showErrorsInConsole(@NotNull Exception e) {
         var actionGroup = new DefaultActionGroup(new OCamlRestartAction(getProject()));
 
         var actionToolbar = ActionManager.getInstance()
@@ -245,6 +251,16 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
     public ToolWindow getWindow() {
         return myWindow;
+    }
+
+    public boolean isVariableViewEnabled() {
+        return isVariableViewEnabled;
+    }
+
+    public void showVariableView(boolean show) {
+        // simply using this trick is enough
+        split.setSecondComponent(show ? myVariablesView : null);
+        isVariableViewEnabled = show;
     }
 
     /**
