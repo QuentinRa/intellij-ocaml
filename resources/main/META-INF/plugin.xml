@@ -1,7 +1,7 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <id>intellij-ocaml</id>
     <name>OCaml</name>
-    <vendor email="ramsamy.ws@gmail.com" url="https://github.com/QuentinRa/intellij-ocaml">QuentinRa</vendor>
+    <vendor email="ramsamy.ws@gmail.com" url="https://github.com/QuentinRa/">QuentinRa</vendor>
     <description><![CDATA[
         The OCaml plugin is providing support for the OCaml language in IntelliJ IDEA, using an opam or
         a native SDK. It is based on both ReasonML, and intellij-rust.]]>
