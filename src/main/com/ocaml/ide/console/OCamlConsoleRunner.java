@@ -10,6 +10,7 @@ import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
@@ -29,6 +30,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.ui.MessageCategory;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.ide.OCamlWebHelpProvider;
 import com.ocaml.ide.console.actions.OCamlExecuteActionHandler;
 import com.ocaml.ide.console.actions.OCamlRestartAction;
 import com.ocaml.ide.console.actions.ShowVariablesAction;
@@ -129,7 +131,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
 
         // add other actions
         group.add(new ScrollToTheEndToolbarAction(console.getEditor()));
-        // todo: help
+        group.add(CommonActionsManager.getInstance().createHelpAction(OCamlWebHelpProvider.OCAML_REPL_HELP));
 
         registerActionShortcuts(runActions, console.getConsoleEditor().getComponent());
         registerActionShortcuts(runActions, mainPanel);

@@ -131,7 +131,7 @@ Download [cygwin](https://cygwin.com/install.html). In the installer, you will h
 * `tar` and `unzip`
 * `libclang` and `mingw[...]clang` (pick the one according to your OS)
 
-To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `òpam switch create 4.12.0`.
+To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `opam switch create 4.12.0`.
 
 Ensure that `C:/cygwin64/bin` (for me) is in the path. If you open a PowerShell, and write `opam --version`, you should be good. This is pretty useless (as the command above does not work in a PowerShell), but you are now able to call commands such as `make` in a PowerShell, so you can use a `Makefile`!
 

@@ -85,5 +85,8 @@
         <!-- NOTIFICATIONS -->
         <notificationGroup id="OCaml Plugin" displayType="BALLOON"/>
         <notificationGroup id="OCaml Build Log" displayType="NONE"/>
+
+        <!-- HELP -->
+        <webHelpProvider implementation="com.ocaml.ide.OCamlWebHelpProvider"/>
     </extensions>
 </idea-plugin>
