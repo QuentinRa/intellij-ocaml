@@ -12,6 +12,7 @@ import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -53,6 +54,8 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     private GeneralCommandLine commandLine;
     private Content myContent;
     private OCamlVariablesView myVariablesView;
+    private boolean isRunning;
+    private final ArrayList<String> commands = new ArrayList<>();
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
         super(project, OCamlConsoleView.CONS0LE_TITLE, null);
@@ -250,13 +253,28 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
      * @param s may be a whole file
      */
     public void processCommand(String s) {
-        OCamlConsoleView consoleView = getConsoleView();
-        consoleView.setInputText(s);
-        getConsoleExecuteActionHandler().runExecuteAction(consoleView);
+        commands.add(s);
+        if (!isRunning) updateQueue();
     }
 
     public void rebuildVariableView(String text) {
         if (myVariablesView != null)
             myVariablesView.rebuild(text);
+    }
+
+    public void updateQueue() {
+        // no queued commands
+        if (commands.isEmpty()) return;
+        // fetch and run one
+        String text = commands.remove(0);
+        OCamlConsoleView consoleView = getConsoleView();
+        consoleView.setInputText(text);
+        getConsoleExecuteActionHandler().runExecuteAction(consoleView);
+        isRunning = true;
+    }
+
+    public void setRunning(boolean running) {
+        this.isRunning = running;
+        if (!isRunning) ApplicationManager.getApplication().invokeLater(this::updateQueue);
     }
 }

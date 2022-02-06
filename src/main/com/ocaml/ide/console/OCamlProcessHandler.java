@@ -37,8 +37,13 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         if (!firstLine) { firstLine = true; return; }
         // pass empty
         if (textOriginal.isBlank()) return;
-        // pass input
+        // pass input (this is a trick, if the lines ends with ;;, then that's the user input)
         if (textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE)) return;
+        // can we pass the next command?
+        if (textOriginal.equals(OCamlREPLConstants.PROMPT)) {
+            runner.setRunning(false); // yes
+            return;
+        }
 
         // update variables view
         runner.rebuildVariableView(textOriginal);

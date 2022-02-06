@@ -253,7 +253,7 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     @Override public @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath) {
         if (!canUseProviderForHome(sdkHomePath)) return null;
-        return new GeneralCommandLine(sdkHomePath + "/bin/ocaml", "-noprompt", "-no-version");
+        return new GeneralCommandLine(sdkHomePath + "/bin/ocaml", "-no-version");
     }
 
     @Override

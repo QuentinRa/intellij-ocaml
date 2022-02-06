@@ -170,7 +170,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         if (path == null) return null;
         try {
             String ocaml = path.getLinuxPath() + "/bin/ocaml";
-            GeneralCommandLine cli = new GeneralCommandLine(ocaml, "-noprompt", "-no-version");
+            GeneralCommandLine cli = new GeneralCommandLine(ocaml, "-no-version");
             return path.getDistribution().patchCommandLine(cli, null, new WSLCommandLineOptions());
         } catch (ExecutionException e) {
             LOG.error("Error creating REPL command", e);

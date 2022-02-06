@@ -123,7 +123,7 @@ public interface OCamlSdkProvider {
 
     /**
      * @param sdkHomePath path to the SDK home
-     * @return "ocaml -noprompt -no-version"
+     * @return "ocaml -no-version"
      */
     @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath);
 

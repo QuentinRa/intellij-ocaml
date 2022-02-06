@@ -72,7 +72,7 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
 
     @Override public @Nullable GeneralCommandLine getREPLCommand(String sdkHomePath) {
         if (!canUseProviderForHome(sdkHomePath)) return null;
-        GeneralCommandLine cli = new GeneralCommandLine(sdkHomePath + "\\bin\\" + OCAML_EXE, "-noprompt", "-no-version");
+        GeneralCommandLine cli = new GeneralCommandLine(sdkHomePath + "\\bin\\" + OCAML_EXE, "-no-version");
         cli.withEnvironment("OCAMLLIB", sdkHomePath + "\\lib\\ocaml");
         return cli;
     }
