@@ -49,6 +49,22 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         return res;
     }
 
+    private void assertVariableElement(@NotNull Pair<OCamlTreeElement, TreeElementGroupKind> parse,
+                                       String expectedValue,
+                                       String expectedText, String expectedLocation) {
+        assertElement(parse, expectedValue, expectedText, expectedLocation, OCamlVariableElement.class);
+    }
+
+    private void assertFunctionElement(@NotNull Pair<OCamlTreeElement, TreeElementGroupKind> parse,
+                                           String expectedText, String expectedLocation) {
+        assertElement(parse, OCamlREPLConstants.FUN, expectedText, expectedLocation, OCamlFunctionElement.class);
+    }
+
+    private void assertModuleElement(@NotNull Pair<OCamlTreeElement, TreeElementGroupKind> parse,
+                                           String expectedText) {
+        assertElement(parse, null, expectedText, null, OCamlModuleElement.class);
+    }
+
     private <T> void assertElement(@NotNull Pair<OCamlTreeElement, TreeElementGroupKind> parse,
                                    String expectedValue, String expectedText,
                                    String expectedLocation, Class<T> aClass) {
@@ -126,16 +142,8 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         List<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
                 assertResult("val x : int = 5\n" + "val y : int = 3");
         assertSize(2, res);
-        assertElement(res.get(0),
-                "5",
-                "x = 5",
-                "int",
-                OCamlVariableElement.class);
-        assertElement(res.get(1),
-                "3",
-                "y = 3",
-                "int",
-                OCamlVariableElement.class);
+        assertVariableElement(res.get(0), "5", "x = 5", "int");
+        assertVariableElement(res.get(1), "3", "y = 3", "int");
     }
 
     @Test
@@ -163,16 +171,8 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         List<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
                 assertResult("val f4 : 'a -> int = <fun>\n" + "val f5 : 'a -> int = <fun>");
         assertSize(2, res);
-        assertElement(res.get(0),
-                OCamlREPLConstants.FUN,
-                "f4 = <fun>",
-                "'a -> int",
-                OCamlFunctionElement.class);
-        assertElement(res.get(1),
-                OCamlREPLConstants.FUN,
-                "f5 = <fun>",
-                "'a -> int",
-                OCamlFunctionElement.class);
+        assertFunctionElement(res.get(0), "f4 = <fun>", "'a -> int");
+        assertFunctionElement(res.get(1), "f5 = <fun>", "'a -> int");
     }
 
     @Test
@@ -180,16 +180,8 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         List<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
                 assertResult("val f6 : 'a -> int = <fun>\n" + "val v : int = 5");
         assertSize(2, res);
-        assertElement(res.get(0),
-                OCamlREPLConstants.FUN,
-                "f6 = <fun>",
-                "'a -> int",
-                OCamlFunctionElement.class);
-        assertElement(res.get(1),
-                "5",
-                "v = 5",
-                "int",
-                OCamlVariableElement.class);
+        assertFunctionElement(res.get(0), "f6 = <fun>", "'a -> int");
+        assertVariableElement(res.get(1), "5", "v = 5", "int");
     }
 
     @Test
@@ -240,5 +232,36 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
     @Test
     public void testException() {
         assertException("exception E2 of int * int", "E2 of int * int");
+    }
+
+    @Test
+    public void testEmptyModule() {
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> res = assertResult("module X1 : sig  end");
+        assertModuleElement(res.get(0), "X1");
+    }
+
+    @Test
+    public void testSimpleModule() {
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> res = assertResult("module X2 : sig type t = int val compare : 'a -> 'a -> int end");
+        assertModuleElement(res.get(0), "X2");
+    }
+
+    @Test
+    public void testModule() {
+        String module = "module My_Set :\n" +
+                "sig\n" +
+                "type elt = X2.t\n" +
+                "type t = Set.Make(X2).t\n" +
+                "val empty : t\n" +
+                "val is_empty : t -> bool\n" +
+                "val mem : elt -> t -> bool\n" +
+                "val add : elt -> t -> t\n" +
+                "end";
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> res = assertResult(module);
+        assertModuleElement(res.get(0), "My_Set");
+//        assertFunctionElement(res.get(2), "empty", "t");
+//        assertFunctionElement(res.get(3), "is_empty", "t -> bool");
+//        assertFunctionElement(res.get(4), "mem", "elt -> t -> bool");
+//        assertFunctionElement(res.get(5), "add", "elt -> t -> t");
     }
 }

@@ -73,7 +73,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
         var group = new DefaultActionGroup("Variable View Settings", true);
         group.getTemplatePresentation().setIcon(AllIcons.Actions.Show);
         group.add(new ShowElementGroupAction(TreeElementGroupKind.EXCEPTIONS, this));
-        group.add(new ShowElementGroupAction(TreeElementGroupKind.MODULE, this));
+        group.add(new ShowElementGroupAction(TreeElementGroupKind.MODULES, this));
         group.add(new ShowElementGroupAction(TreeElementGroupKind.TYPES, this));
         group.add(new ShowElementGroupAction(TreeElementGroupKind.FUNCTIONS, this));
         group.add(new ShowElementGroupAction(TreeElementGroupKind.VARIABLES, this));
@@ -94,7 +94,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
             TreeElementGroup group = null;
             switch (g.second) {
                 case EXCEPTIONS: group = treeModel.exceptions; break;
-                case MODULE: group = treeModel.modules; break;
+                case MODULES: group = treeModel.modules; break;
                 case TYPES: group = treeModel.types; break;
                 case FUNCTIONS: group = treeModel.functions; break;
                 case VARIABLES: group = treeModel.variables; break;

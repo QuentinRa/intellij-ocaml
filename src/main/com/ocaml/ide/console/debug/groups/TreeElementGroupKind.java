@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 // - OCamlVariablesView#rebuild
 public enum TreeElementGroupKind {
     EXCEPTIONS(OCamlBundle.message("repl.variable.view.exceptions")),
-    MODULE(OCamlBundle.message("repl.variable.view.modules")),
+    MODULES(OCamlBundle.message("repl.variable.view.modules")),
     TYPES(OCamlBundle.message("repl.variable.view.types")),
     FUNCTIONS(OCamlBundle.message("repl.variable.view.functions")),
     VARIABLES(OCamlBundle.message("repl.variable.view.variables"));

@@ -77,7 +77,7 @@ public class TreeElementGroup implements StructureViewTreeElement {
                 if (e instanceof OCamlExceptionElement)
                     elements.remove(e);
                 break;
-            case MODULE:
+            case MODULES:
                 if (e instanceof OCamlModuleElement)
                     elements.remove(e);
                 break;

@@ -26,6 +26,8 @@ public class OCamlREPLOutputParser {
             return parseType(text);
         if (text.startsWith(OCamlREPLConstants.EXCEPTION))
             return parseException(text);
+        if (text.startsWith(OCamlREPLConstants.MODULE))
+            return parseModule(text);
         return null;
     }
 
@@ -130,5 +132,27 @@ public class OCamlREPLOutputParser {
         String type = text.substring(colon + 2, equals - 1);
 
         return new Pair<>(new OCamlFunctionElement(name, type), group);
+    }
+
+    private static @Nullable @Unmodifiable List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseModule(@NotNull String text) {
+        if (text.startsWith(OCamlREPLConstants.MODULE_TYPE)) {
+            System.out.println("Not supported");
+            return null;
+        }
+
+        // checks
+        int val = text.indexOf(OCamlREPLConstants.MODULE);
+        if (val == -1) return null; // not a module
+        int colon = text.indexOf(':');
+        if (colon == -1) return null; // separator for definition
+
+        // group
+        TreeElementGroupKind group = TreeElementGroupKind.MODULES;
+
+        // element
+        int tagSize = OCamlREPLConstants.MODULE.length();
+        String name = text.substring(val + tagSize + 1, colon - 1);
+
+        return List.of(new Pair<>(new OCamlModuleElement(name, new ArrayList<>()), group));
     }
 }

@@ -36,4 +36,15 @@ public interface OCamlREPLConstants {
      * Exceptions are starting with this symbol
      */
     String EXCEPTION = "exception";
+
+    /**
+     * A module is starting with symbol, and
+     * a module type too.
+     */
+    String MODULE = "module";
+
+    /**
+     * A module type is starting with this symbol.
+     */
+    String MODULE_TYPE = "module type";
 }

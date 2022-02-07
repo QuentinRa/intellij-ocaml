@@ -22,7 +22,7 @@ public class OCamlStupidTreeModel implements TreeModel {
 
     public final TreeElementGroup exceptions = new TreeElementGroup(TreeElementGroupKind.EXCEPTIONS);
     public final TreeElementGroup types = new TreeElementGroup(TreeElementGroupKind.TYPES);
-    public final TreeElementGroup modules = new TreeElementGroup(TreeElementGroupKind.MODULE);
+    public final TreeElementGroup modules = new TreeElementGroup(TreeElementGroupKind.MODULES);
     public final TreeElementGroup functions = new TreeElementGroup(TreeElementGroupKind.FUNCTIONS);
     public final TreeElementGroup variables = new TreeElementGroup(TreeElementGroupKind.VARIABLES);
     public TreeElement root = new StructureViewTreeElement() {
