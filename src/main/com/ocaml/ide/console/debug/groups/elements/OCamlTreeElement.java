@@ -13,8 +13,16 @@ import javax.swing.*;
  */
 public abstract class OCamlTreeElement implements StructureViewTreeElement {
 
+    /**
+     * Show the full value if less than MAX_VALUE_LENGTH characters.
+     * otherwise, create two blocs of BLOC_LENGTH characters, separated by "...".
+     */
+    public static final int MAX_VALUE_LENGTH = 25;
+    public static final int BLOC_LENGTH = 10;
+
     @NotNull private final String name;
     @NotNull private final String value;
+    @NotNull private final String shortValuePreview;
     @NotNull private final String type;
     @NotNull private final Icon icon;
 
@@ -24,6 +32,15 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
         this.value = value;
         this.icon = icon;
         this.type = type;
+
+        // trunc the length of the value shown along the name
+        int length = value.length();
+        if (length > MAX_VALUE_LENGTH) {
+            String end = value.substring(length - BLOC_LENGTH, length);
+            shortValuePreview = value.substring(0, BLOC_LENGTH)+"..."+end;
+        } else {
+            shortValuePreview = value;
+        }
     }
 
     @Override public Object getValue() {
@@ -33,7 +50,7 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
     @Override public @NotNull ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Override public String getPresentableText() {
-                return name + " = " + value;
+                return name + " = " + shortValuePreview;
             }
 
             @Override public Icon getIcon(boolean unused) {

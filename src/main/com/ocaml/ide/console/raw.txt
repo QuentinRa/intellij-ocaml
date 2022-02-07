@@ -25,11 +25,6 @@ Ala
 | START
 | STOP
 
-with:val hw : string = "Hello, World!@."
-
-with:val x : int = 5
-val y : int = 3
-
 with:val u : int list = [3; 4; 5]
 
 with:val big_list : int list =
@@ -46,9 +41,6 @@ with:val list_c1 : (int * int * int * int * int) list = [(3, 4, 5, 3, 5)]
 
 with:val list_c2 : (int * int * int * int * int) list =
 [(3, 4, 5, 3, 5); (3, 4, 5, 3, 5)]
-
-with:val x : int = 5
-val y : int = 3
 
 with:val f1 : 'a -> int = <fun>
 
