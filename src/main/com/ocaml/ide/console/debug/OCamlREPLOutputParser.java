@@ -4,12 +4,15 @@ import com.intellij.openapi.util.Pair;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
+import com.ocaml.ide.console.debug.groups.elements.OCamlTypeElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OCamlREPLOutputParser {
 
@@ -18,16 +21,45 @@ public class OCamlREPLOutputParser {
      * @param text the output
      * @return null, or the list of created elements
      */
-    public static @Nullable ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> parse(String text) {
+    public static @Nullable List<Pair<OCamlTreeElement, TreeElementGroupKind>> parse(String text) {
         if (text == null || text.isBlank()) return null;
         if (text.startsWith(OCamlREPLConstants.VARIABLE))
             return parseVariables(text);
+        if (text.startsWith(OCamlREPLConstants.TYPE))
+            return parseType(text);
         return null;
     }
 
-    private static @NotNull ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> parseVariables(@NotNull String text) {
+    private static @Nullable @Unmodifiable List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseType(@NotNull String text) {
+        // everything on one line
+        text = text.replace("\n", " ").trim();
+
+        // check
+        int type = text.indexOf(OCamlREPLConstants.TYPE);
+        if (type == -1) return null; // not a type
+        int equals = text.indexOf("=");
+
+        // group
+        TreeElementGroupKind group = TreeElementGroupKind.TYPES;
+
+        // element
+        int tagSize = OCamlREPLConstants.TYPE.length();
+        String name;
+        String value;
+        if (equals != -1) {
+            name = text.substring(type + tagSize + 1, equals - 1);
+            value = text.substring(equals + 2);
+        } else {
+            name = text.substring(type + tagSize + 1);
+            value = null;
+        }
+
+        return List.of(new Pair<>(new OCamlTypeElement(name, value), group));
+    }
+
+    private static @NotNull List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseVariables(@NotNull String text) {
         String[] declarations = text.split(OCamlREPLConstants.VARIABLE);
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> variables = new ArrayList<>();
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> variables = new ArrayList<>();
         for (String s:declarations) {
             if (s.isBlank()) continue;
             var variable = parseVariable(OCamlREPLConstants.VARIABLE+s);

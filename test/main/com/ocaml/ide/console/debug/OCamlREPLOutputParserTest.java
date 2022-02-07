@@ -6,33 +6,41 @@ import com.ocaml.OCamlBaseTest;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
+import com.ocaml.ide.console.debug.groups.elements.OCamlTypeElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class OCamlREPLOutputParserTest extends OCamlBaseTest {
 
     private void assertVariable(String message, String expectedValue, String expectedText, String expectedLocation) {
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> r = assertResult(message);
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> r = assertResult(message);
         assertSize(1, r);
         Pair<OCamlTreeElement, TreeElementGroupKind> e = r.get(0);
         assertElement(e, expectedValue, expectedText, expectedLocation, OCamlVariableElement.class);
     }
 
     private void assertFunction(String message, String expectedText, String expectedLocation) {
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> r = assertResult(message);
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> r = assertResult(message);
         assertSize(1, r);
         Pair<OCamlTreeElement, TreeElementGroupKind> e = r.get(0);
         assertElement(e, OCamlREPLConstants.FUN, expectedText, expectedLocation, OCamlFunctionElement.class);
     }
 
-    private @NotNull ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> assertResult(String message) {
+    private void assertType(String message, String expectedValue, String expectedText) {
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> r = assertResult(message);
+        assertSize(1, r);
+        Pair<OCamlTreeElement, TreeElementGroupKind> e = r.get(0);
+        assertElement(e, expectedValue, expectedText, null, OCamlTypeElement.class);
+    }
+
+    private @NotNull List<Pair<OCamlTreeElement, TreeElementGroupKind>> assertResult(String message) {
         // get the result
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> res = OCamlREPLOutputParser.parse(message);
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> res = OCamlREPLOutputParser.parse(message);
         assertNotNull(res);
         return res;
     }
@@ -43,7 +51,11 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         // get the string
         OCamlTreeElement e = parse.first;
         assertInstanceOf(e, aClass);
-        assertEquals(expectedValue, e.getValue());
+        if (expectedValue == null) {
+           assertTrue(e.isValueNull());
+        } else {
+            assertEquals(expectedValue, e.getValue());
+        }
 
         ItemPresentation presentation = e.getPresentation();
         assertEquals(expectedText, presentation.getPresentableText());
@@ -107,7 +119,7 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
 
     @Test
     public void testVariableAnd() {
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
                 assertResult("val x : int = 5\n" + "val y : int = 3");
         assertSize(2, res);
         assertElement(res.get(0),
@@ -144,7 +156,7 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
 
     @Test
     public void testFunctionAnd() {
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
                 assertResult("val f4 : 'a -> int = <fun>\n" + "val f5 : 'a -> int = <fun>");
         assertSize(2, res);
         assertElement(res.get(0),
@@ -161,7 +173,7 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
 
     @Test
     public void testFunctionAndVariable() {
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
                 assertResult("val f6 : 'a -> int = <fun>\n" + "val v : int = 5");
         assertSize(2, res);
         assertElement(res.get(0),
@@ -174,5 +186,45 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
                 "v = 5",
                 "int",
                 OCamlVariableElement.class);
+    }
+
+    @Test
+    public void testSimpleType() {
+        assertType("type t", null, "t");
+    }
+
+    @Test
+    public void testType() {
+        assertType("type nucleotide = A | C | G | T",
+                "A | C | G | T",
+                "nucleotide = A | C | G | T");
+    }
+
+    @Test
+    public void testLongType() {
+        assertType("type acide =\n" +
+                        "Ala\n" +
+                        "| Arg\n" +
+                        "| Asn\n" +
+                        "| Asp\n" +
+                        "| Cys\n" +
+                        "| Glu\n" +
+                        "| Gln\n" +
+                        "| Gly\n" +
+                        "| His\n" +
+                        "| Ile\n" +
+                        "| Leu\n" +
+                        "| Lys\n" +
+                        "| Phe\n" +
+                        "| Pro\n" +
+                        "| Ser\n" +
+                        "| Thr\n" +
+                        "| Trp\n" +
+                        "| Tyr\n" +
+                        "| Val\n" +
+                        "| START\n" +
+                        "| STOP",
+                "Ala | Arg | Asn | Asp | Cys | Glu | Gln | Gly | His | Ile | Leu | Lys | Phe | Pro | Ser | Thr | Trp | Tyr | Val | START | STOP",
+                "acide = Ala | Arg ...ART | STOP");
     }
 }

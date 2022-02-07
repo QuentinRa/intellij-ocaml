@@ -7,7 +7,7 @@ import org.jetbrains.annotations.PropertyKey;
 public enum TreeElementGroupKind {
     EXCEPTION("repl.variable.view.exceptions"),
     MODULE("repl.variable.view.modules"),
-    TYPE("repl.variable.view.types"),
+    TYPES("repl.variable.view.types"),
     FUNCTIONS("repl.variable.view.functions"),
     VARIABLES("repl.variable.view.variables");
 

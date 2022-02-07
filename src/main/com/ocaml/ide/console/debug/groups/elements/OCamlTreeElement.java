@@ -4,6 +4,8 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import javax.swing.*;
 
@@ -21,36 +23,45 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
     public static final int BLOC_LENGTH = 10;
 
     @NotNull private final String name;
-    @NotNull private final String value;
-    @NotNull private final String shortValuePreview;
-    @NotNull private final String type;
+    @Nullable private final String value;
+    @Nullable private final String shortValuePreview;
+    @Nullable private final String type;
     @NotNull private final Icon icon;
 
-    public OCamlTreeElement(@NotNull String name, @NotNull String value,
-                            @NotNull String type, @NotNull Icon icon) {
+    public OCamlTreeElement(@NotNull String name, @Nullable String value,
+                            @Nullable String type, @NotNull Icon icon) {
         this.name = name;
         this.value = value;
         this.icon = icon;
         this.type = type;
 
         // trunc the length of the value shown along the name
-        int length = value.length();
-        if (length > MAX_VALUE_LENGTH) {
-            String end = value.substring(length - BLOC_LENGTH, length);
-            shortValuePreview = value.substring(0, BLOC_LENGTH)+"..."+end;
+        if (value != null) {
+            int length = value.length();
+            if (length > MAX_VALUE_LENGTH) {
+                String end = value.substring(length - BLOC_LENGTH, length);
+                shortValuePreview = value.substring(0, BLOC_LENGTH)+"..."+end;
+            } else {
+                shortValuePreview = value;
+            }
         } else {
-            shortValuePreview = value;
+            shortValuePreview = null;
         }
     }
 
+    @TestOnly
+    public boolean isValueNull() {
+        return value == null;
+    }
+
     @Override public Object getValue() {
-        return value;
+        return value == null ? "<unknown>" : value;
     }
 
     @Override public @NotNull ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Override public String getPresentableText() {
-                return name + " = " + shortValuePreview;
+                return name + (shortValuePreview == null ? "" : " = " + shortValuePreview);
             }
 
             @Override public Icon getIcon(boolean unused) {

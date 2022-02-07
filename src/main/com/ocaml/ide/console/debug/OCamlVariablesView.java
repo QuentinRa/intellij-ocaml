@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Panel with the variables
@@ -74,7 +74,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
         group.getTemplatePresentation().setIcon(AllIcons.Actions.Show);
         group.add(new ShowElementGroupAction(TreeElementGroupKind.EXCEPTION, this));
         group.add(new ShowElementGroupAction(TreeElementGroupKind.MODULE, this));
-        group.add(new ShowElementGroupAction(TreeElementGroupKind.TYPE, this));
+        group.add(new ShowElementGroupAction(TreeElementGroupKind.TYPES, this));
         group.add(new ShowElementGroupAction(TreeElementGroupKind.FUNCTIONS, this));
         group.add(new ShowElementGroupAction(TreeElementGroupKind.VARIABLES, this));
         return group;
@@ -86,7 +86,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
      * @param newEntry lines of the new item (ex: val x : int = 5)
      */
     public void rebuild(@NotNull String newEntry) {
-        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> results = OCamlREPLOutputParser.parse(newEntry);
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> results = OCamlREPLOutputParser.parse(newEntry);
         if (results == null) return;
 
         for (Pair<OCamlTreeElement, TreeElementGroupKind> g : results) {
@@ -95,7 +95,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
             switch (g.second) {
                 case EXCEPTION: group = treeModel.exceptions; break;
                 case MODULE: group = treeModel.modules; break;
-                case TYPE: group = treeModel.types; break;
+                case TYPES: group = treeModel.types; break;
                 case FUNCTIONS: group = treeModel.functions; break;
                 case VARIABLES: group = treeModel.variables; break;
             }

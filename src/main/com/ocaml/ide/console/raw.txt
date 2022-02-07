@@ -1,7 +1,5 @@
 with:type nucleotide = A | C | G | T
 
-with:type brin = nucleotide list
-
 with:type acide =
 Ala
 | Arg

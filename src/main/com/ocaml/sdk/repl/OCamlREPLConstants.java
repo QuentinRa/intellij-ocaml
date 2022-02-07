@@ -18,6 +18,11 @@ public interface OCamlREPLConstants {
     String PROMPT = "#";
 
     /**
+     * Types are starting with this symbol
+     */
+    String TYPE = "type";
+
+    /**
      * Functions are annotated with this
      */
     String FUN = "<fun>";

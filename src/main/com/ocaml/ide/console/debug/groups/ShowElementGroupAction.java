@@ -23,7 +23,7 @@ public class ShowElementGroupAction extends DumbAwareToggleAction {
         switch (kind) {
             case EXCEPTION: target = treeModel.exceptions; break;
             case MODULE: target = treeModel.modules; break;
-            case TYPE: target = treeModel.types; break;
+            case TYPES: target = treeModel.types; break;
             case FUNCTIONS: target = treeModel.functions; break;
             case VARIABLES: target = treeModel.variables; break;
             default: throw new IllegalStateException("Invalid kind:'"+kind.displayName+"'.");
