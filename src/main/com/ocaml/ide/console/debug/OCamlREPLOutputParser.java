@@ -2,6 +2,7 @@ package com.ocaml.ide.console.debug;
 
 import com.intellij.openapi.util.Pair;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
+import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
@@ -38,8 +39,10 @@ public class OCamlREPLOutputParser {
     private static @Nullable Pair<OCamlTreeElement, TreeElementGroupKind> parseVariable(@NotNull String text) {
         // everything on one line
         text = text.replace("\n", " ").trim();
+        if (text.endsWith(OCamlREPLConstants.FUN)) return parseFunction(text);
 
         // checks
+        //noinspection DuplicatedCode
         int val = text.indexOf(OCamlREPLConstants.VARIABLE);
         if (val == -1) return null; // not a variable
         int colon = text.indexOf(':');
@@ -57,5 +60,26 @@ public class OCamlREPLOutputParser {
         String value = text.substring(equals + 2);
 
         return new Pair<>(new OCamlVariableElement(name, value, type), group);
+    }
+
+    private static @Nullable Pair<OCamlTreeElement, TreeElementGroupKind> parseFunction(@NotNull String text) {
+        // checks
+        //noinspection DuplicatedCode
+        int val = text.indexOf(OCamlREPLConstants.VARIABLE);
+        if (val == -1) return null; // not a variable
+        int colon = text.indexOf(':');
+        if (colon == -1) return null; // no type
+        int equals = text.indexOf("=");
+        if (equals == -1) return null; // no value
+
+        // group
+        TreeElementGroupKind group = TreeElementGroupKind.FUNCTIONS;
+
+        // element
+        int tagSize = OCamlREPLConstants.VARIABLE.length();
+        String name = text.substring(val + tagSize + 1, colon - 1);
+        String type = text.substring(colon + 2, equals - 1);
+
+        return new Pair<>(new OCamlFunctionElement(name, type), group);
     }
 }

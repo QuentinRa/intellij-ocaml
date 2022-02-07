@@ -4,8 +4,10 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.Pair;
 import com.ocaml.OCamlBaseTest;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
+import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
+import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -19,6 +21,13 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         assertSize(1, r);
         Pair<OCamlTreeElement, TreeElementGroupKind> e = r.get(0);
         assertElement(e, expectedValue, expectedText, expectedLocation, OCamlVariableElement.class);
+    }
+
+    private void assertFunction(String message, String expectedText, String expectedLocation) {
+        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> r = assertResult(message);
+        assertSize(1, r);
+        Pair<OCamlTreeElement, TreeElementGroupKind> e = r.get(0);
+        assertElement(e, OCamlREPLConstants.FUN, expectedText, expectedLocation, OCamlFunctionElement.class);
     }
 
     private @NotNull ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> assertResult(String message) {
@@ -109,6 +118,60 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         assertElement(res.get(1),
                 "3",
                 "y = 3",
+                "int",
+                OCamlVariableElement.class);
+    }
+
+    @Test
+    public void testFunction() {
+        assertFunction("val f1 : 'a -> int = <fun>", "f1 = <fun>", "'a -> int");
+    }
+
+    @Test
+    public void testFunctionWithLongType() {
+        assertFunction("val f2 : int -> int -> int -> int -> int -> int = <fun>",
+                "f2 = <fun>",
+                "int -> int -> int -> int -> int -> int");
+    }
+
+    @Test
+    public void testFunctionWithNewLine() {
+        assertFunction("val f3 : float -> ('a -> float) -> 'a -> float -> float -> float -> float =\n" +
+                        "<fun>",
+                "f3 = <fun>",
+                "float -> ('a -> float) -> 'a -> float -> float -> float -> float");
+    }
+
+    @Test
+    public void testFunctionAnd() {
+        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
+                assertResult("val f4 : 'a -> int = <fun>\n" + "val f5 : 'a -> int = <fun>");
+        assertSize(2, res);
+        assertElement(res.get(0),
+                OCamlREPLConstants.FUN,
+                "f4 = <fun>",
+                "'a -> int",
+                OCamlFunctionElement.class);
+        assertElement(res.get(1),
+                OCamlREPLConstants.FUN,
+                "f5 = <fun>",
+                "'a -> int",
+                OCamlFunctionElement.class);
+    }
+
+    @Test
+    public void testFunctionAndVariable() {
+        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> res =
+                assertResult("val f6 : 'a -> int = <fun>\n" + "val v : int = 5");
+        assertSize(2, res);
+        assertElement(res.get(0),
+                OCamlREPLConstants.FUN,
+                "f6 = <fun>",
+                "'a -> int",
+                OCamlFunctionElement.class);
+        assertElement(res.get(1),
+                "5",
+                "v = 5",
                 "int",
                 OCamlVariableElement.class);
     }

@@ -21,6 +21,7 @@ public interface OCamlREPLConstants {
      * Functions are annotated with this
      */
     String FUN = "<fun>";
+
     /**
      * Variables are starting with this symbol
      */

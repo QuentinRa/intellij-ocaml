@@ -42,13 +42,6 @@ with:val list_c1 : (int * int * int * int * int) list = [(3, 4, 5, 3, 5)]
 with:val list_c2 : (int * int * int * int * int) list =
 [(3, 4, 5, 3, 5); (3, 4, 5, 3, 5)]
 
-with:val f1 : 'a -> int = <fun>
-
-with:val f2 : int -> int -> int -> int -> int -> int = <fun>
-
-with:val f3 : float -> ('a -> float) -> 'a -> float -> float -> float -> float =
-<fun>
-
 with:exception E1
 
 with:exception E2 of int * int
