@@ -73,7 +73,7 @@ public class TreeElementGroup implements StructureViewTreeElement {
 
     public void removeElement(TreeElement e) {
         switch (treeElementGroupKind) {
-            case EXCEPTION:
+            case EXCEPTIONS:
                 if (e instanceof OCamlExceptionElement)
                     elements.remove(e);
                 break;

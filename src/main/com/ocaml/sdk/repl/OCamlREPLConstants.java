@@ -31,4 +31,9 @@ public interface OCamlREPLConstants {
      * Variables are starting with this symbol
      */
     String VARIABLE = "val";
+
+    /**
+     * Exceptions are starting with this symbol
+     */
+    String EXCEPTION = "exception";
 }

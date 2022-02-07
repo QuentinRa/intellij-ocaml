@@ -4,10 +4,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.Pair;
 import com.ocaml.OCamlBaseTest;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
-import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
-import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
-import com.ocaml.ide.console.debug.groups.elements.OCamlTypeElement;
-import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
+import com.ocaml.ide.console.debug.groups.elements.*;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -36,6 +33,13 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
         assertSize(1, r);
         Pair<OCamlTreeElement, TreeElementGroupKind> e = r.get(0);
         assertElement(e, expectedValue, expectedText, null, OCamlTypeElement.class);
+    }
+
+    private void assertException(String message, String expectedText) {
+        List<Pair<OCamlTreeElement, TreeElementGroupKind>> r = assertResult(message);
+        assertSize(1, r);
+        Pair<OCamlTreeElement, TreeElementGroupKind> e = r.get(0);
+        assertElement(e, null, expectedText, null, OCamlExceptionElement.class);
     }
 
     private @NotNull List<Pair<OCamlTreeElement, TreeElementGroupKind>> assertResult(String message) {
@@ -226,5 +230,15 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
                         "| STOP",
                 "Ala | Arg | Asn | Asp | Cys | Glu | Gln | Gly | His | Ile | Leu | Lys | Phe | Pro | Ser | Thr | Trp | Tyr | Val | START | STOP",
                 "acide = Ala | Arg ...ART | STOP");
+    }
+
+    @Test
+    public void testSimpleException() {
+        assertException("exception E1", "E1");
+    }
+
+    @Test
+    public void testException() {
+        assertException("exception E2 of int * int", "E2 of int * int");
     }
 }

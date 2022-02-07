@@ -2,10 +2,7 @@ package com.ocaml.ide.console.debug;
 
 import com.intellij.openapi.util.Pair;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
-import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
-import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
-import com.ocaml.ide.console.debug.groups.elements.OCamlTypeElement;
-import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
+import com.ocaml.ide.console.debug.groups.elements.*;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +24,27 @@ public class OCamlREPLOutputParser {
             return parseVariables(text);
         if (text.startsWith(OCamlREPLConstants.TYPE))
             return parseType(text);
+        if (text.startsWith(OCamlREPLConstants.EXCEPTION))
+            return parseException(text);
         return null;
+    }
+
+    private static List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseException(String text) {
+        // everything on one line
+        text = text.replace("\n", " ").trim();
+
+        // check
+        int exception = text.indexOf(OCamlREPLConstants.EXCEPTION);
+        if (exception == -1) return null; // not an exception
+
+        // group
+        TreeElementGroupKind group = TreeElementGroupKind.EXCEPTIONS;
+
+        // element
+        int tagSize = OCamlREPLConstants.EXCEPTION.length();
+        String name = text.substring(exception + tagSize + 1);
+
+        return List.of(new Pair<>(new OCamlExceptionElement(name), group));
     }
 
     private static @Nullable @Unmodifiable List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseType(@NotNull String text) {

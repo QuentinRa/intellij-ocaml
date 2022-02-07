@@ -21,7 +21,7 @@ public class ShowElementGroupAction extends DumbAwareToggleAction {
 
         OCamlStupidTreeModel treeModel = view.getTreeModel();
         switch (kind) {
-            case EXCEPTION: target = treeModel.exceptions; break;
+            case EXCEPTIONS: target = treeModel.exceptions; break;
             case MODULE: target = treeModel.modules; break;
             case TYPES: target = treeModel.types; break;
             case FUNCTIONS: target = treeModel.functions; break;
