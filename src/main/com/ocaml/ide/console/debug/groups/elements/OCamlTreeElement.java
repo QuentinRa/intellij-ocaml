@@ -13,7 +13,7 @@ import javax.swing.*;
  * An element inside a group.
  * Could be a variable, a function, etc.
  */
-public abstract class OCamlTreeElement implements StructureViewTreeElement {
+public abstract class OCamlTreeElement implements StructureViewTreeElement, Comparable<OCamlTreeElement> {
 
     /**
      * Show the full value if less than MAX_VALUE_LENGTH characters.
@@ -101,5 +101,9 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement {
 
     @Override public int hashCode() {
         return name.hashCode();
+    }
+
+    @Override public int compareTo(@NotNull OCamlTreeElement o) {
+        return name.compareTo(o.name);
     }
 }

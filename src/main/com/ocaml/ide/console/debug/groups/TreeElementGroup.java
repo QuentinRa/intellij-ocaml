@@ -40,7 +40,7 @@ public class TreeElementGroup implements StructureViewTreeElement {
     }
 
     @Override public TreeElement @NotNull [] getChildren() {
-        return elements.toArray(new OCamlTreeElement[0]);
+        return elements.stream().sorted().toArray(OCamlTreeElement[]::new);
     }
 
     @Override public Object getValue() {
