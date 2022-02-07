@@ -5,6 +5,7 @@ import com.intellij.ide.util.treeView.smartTree.*;
 import com.intellij.navigation.ItemPresentation;
 import com.ocaml.ide.console.debug.groups.TreeElementGroup;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
+import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,8 +72,7 @@ public class OCamlStupidTreeModel implements TreeModel {
     public void remove(Object o) {
         for (TreeElement e : root.getChildren()) {
             if (!(e instanceof TreeElementGroup)) continue;
-            //noinspection SuspiciousMethodCalls
-            ((TreeElementGroup) e).elements.remove(o);
+            ((TreeElementGroup) e).removeElement((OCamlTreeElement) o);
         }
     }
 

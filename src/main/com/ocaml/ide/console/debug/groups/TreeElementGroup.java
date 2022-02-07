@@ -3,7 +3,7 @@ package com.ocaml.ide.console.debug.groups;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
-import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
+import com.ocaml.ide.console.debug.groups.elements.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class TreeElementGroup implements StructureViewTreeElement {
 
-    public final Set<OCamlTreeElement> elements = new HashSet<>();
+    private final Set<OCamlTreeElement> elements = new HashSet<>();
 
     private final TreeElementGroupKind treeElementGroupKind;
     private boolean isVisible;
@@ -66,4 +66,31 @@ public class TreeElementGroup implements StructureViewTreeElement {
     public void setVisible(boolean state) {
         isVisible = state;
     }
+
+    public void addElement(OCamlTreeElement e) {
+        elements.add(e);
+    }
+
+    public void removeElement(TreeElement e) {
+        switch (treeElementGroupKind) {
+            case EXCEPTION:
+                if (e instanceof OCamlExceptionElement)
+                    elements.remove(e);
+                break;
+            case MODULE:
+                if (e instanceof OCamlModuleElement)
+                    elements.remove(e);
+                break;
+            case TYPES:
+                if (e instanceof OCamlTypeElement)
+                    elements.remove(e);
+                break;
+            case FUNCTIONS:
+            case VARIABLES:
+                if (e instanceof OCamlVariableElement || e instanceof OCamlFunctionElement)
+                    elements.remove(e);
+                break;
+        }
+    }
+
 }

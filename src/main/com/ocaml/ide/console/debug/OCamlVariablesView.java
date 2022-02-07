@@ -106,7 +106,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
             // remove
             treeModel.remove(g.first);
             // add
-            group.elements.add(g.first);
+            group.addElement(g.first);
         }
 
         invalidateTree();
