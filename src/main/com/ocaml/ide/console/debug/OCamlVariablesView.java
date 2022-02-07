@@ -12,6 +12,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import com.intellij.openapi.util.Pair;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.tree.AsyncTreeModel;
 import com.intellij.ui.tree.StructureTreeModel;
@@ -20,14 +21,13 @@ import com.ocaml.ide.console.OCamlConsoleView;
 import com.ocaml.ide.console.debug.groups.ShowElementGroupAction;
 import com.ocaml.ide.console.debug.groups.TreeElementGroup;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
-import com.ocaml.ide.console.debug.groups.elements.OCamlFunctionElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
-import com.ocaml.ide.console.debug.groups.elements.OCamlVariableElement;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Panel with the variables
@@ -86,42 +86,28 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
      * @param newEntry lines of the new item (ex: val x : int = 5)
      */
     public void rebuild(@NotNull String newEntry) {
-//        System.out.println("with:"+newEntry);
-        if (!newEntry.startsWith("val")) return; // not possible yet
-        // handle "val" -> variables or functions
+        ArrayList<Pair<OCamlTreeElement, TreeElementGroupKind>> results = OCamlREPLOutputParser.parse(newEntry);
+        if (results == null) return;
 
-        newEntry = newEntry.trim();
-        // todo: log
-        if (newEntry.endsWith("<fun>")) LOG.debug("adding a function:" + newEntry);
-        else LOG.debug("adding a variable:" + newEntry);
-
-        // todo: const + parser
-
-        // find name
-        int val = newEntry.indexOf("val");
-        int colon = newEntry.indexOf(":");
-        int equals = newEntry.indexOf("=");
-        String name = newEntry.substring(val + 3 + 1, colon - 1);
-
-        // find type
-        String type = newEntry.substring(colon + 1, equals - 1);
-
-        OCamlTreeElement element;
-        TreeElementGroup group;
-        if (!newEntry.endsWith("<fun>")) {
-            // find value
-            String value = newEntry.substring(equals + 1);
-            element = new OCamlVariableElement(name, value, type);
-            group = treeModel.variables;
-        } else {
-            element = new OCamlFunctionElement(name, type);
-            group = treeModel.functions;
+        for (Pair<OCamlTreeElement, TreeElementGroupKind> g : results) {
+            // add
+            TreeElementGroup group = null;
+            switch (g.second) {
+                case EXCEPTION: group = treeModel.exceptions; break;
+                case MODULE: group = treeModel.modules; break;
+                case TYPE: group = treeModel.types; break;
+                case FUNCTIONS: group = treeModel.functions; break;
+                case VARIABLES: group = treeModel.variables; break;
+            }
+            if (group == null) {
+                LOG.error("Unknown kind:"+g.second);
+                continue;
+            }
+            // remove
+            treeModel.remove(g.first);
+            // add
+            group.elements.add(g.first);
         }
-
-        // remove
-        treeModel.remove(element);
-        // add
-        group.elements.add(element);
 
         invalidateTree();
     }

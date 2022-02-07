@@ -5,6 +5,7 @@ import com.intellij.execution.console.ConsolePromptDecorator;
 import com.intellij.execution.console.LanguageConsoleImpl;
 import com.intellij.execution.impl.ConsoleViewUtil;
 import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.execution.ui.ObservableConsoleView;
 import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.injected.editor.EditorWindow;
 import com.intellij.openapi.application.ApplicationManager;
@@ -31,7 +32,7 @@ import javax.swing.*;
 /**
  * Handle how the console is rendered.
  */
-public class OCamlConsoleView extends LanguageConsoleImpl {
+public class OCamlConsoleView extends LanguageConsoleImpl implements ObservableConsoleView {
 
     public static final String CONS0LE_TITLE = "OCaml";
     public static final String MAIN_PROMPT = ">>>";
@@ -80,7 +81,6 @@ public class OCamlConsoleView extends LanguageConsoleImpl {
 
     /**
      * Print a command with the prompt, without changing the input text
-     * of the documentation.
      * @param command the command
      */
     public void printWithPrompt(String command) {
