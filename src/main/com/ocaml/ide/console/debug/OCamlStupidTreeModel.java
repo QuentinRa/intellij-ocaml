@@ -3,6 +3,7 @@ package com.ocaml.ide.console.debug;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.*;
 import com.intellij.navigation.ItemPresentation;
+import com.ocaml.ide.console.debug.groups.OCamlModuleGroup;
 import com.ocaml.ide.console.debug.groups.TreeElementGroup;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
@@ -22,7 +23,7 @@ public class OCamlStupidTreeModel implements TreeModel {
 
     public final TreeElementGroup exceptions = new TreeElementGroup(TreeElementGroupKind.EXCEPTIONS);
     public final TreeElementGroup types = new TreeElementGroup(TreeElementGroupKind.TYPES);
-    public final TreeElementGroup modules = new TreeElementGroup(TreeElementGroupKind.MODULES);
+    public final TreeElementGroup modules = new OCamlModuleGroup(); // this one is special
     public final TreeElementGroup functions = new TreeElementGroup(TreeElementGroupKind.FUNCTIONS);
     public final TreeElementGroup variables = new TreeElementGroup(TreeElementGroupKind.VARIABLES);
     public TreeElement root = new StructureViewTreeElement() {

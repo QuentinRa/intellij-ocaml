@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class TreeElementGroup implements StructureViewTreeElement {
 
-    private final Set<OCamlTreeElement> elements = new HashSet<>();
+    protected final Set<OCamlTreeElement> elements = new HashSet<>();
 
     private final TreeElementGroupKind treeElementGroupKind;
     private boolean isVisible;

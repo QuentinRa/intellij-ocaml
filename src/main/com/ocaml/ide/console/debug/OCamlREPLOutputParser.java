@@ -31,7 +31,7 @@ public class OCamlREPLOutputParser {
         return null;
     }
 
-    private static List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseException(String text) {
+    private static @Nullable @Unmodifiable List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseException(String text) {
         // everything on one line
         text = text.replace("\n", " ").trim();
 
@@ -66,9 +66,11 @@ public class OCamlREPLOutputParser {
         String name;
         String value;
         if (equals != -1) {
+            // type t = definition
             name = text.substring(type + tagSize + 1, equals - 1);
             value = text.substring(equals + 2);
         } else {
+            // type t
             name = text.substring(type + tagSize + 1);
             value = null;
         }
@@ -104,7 +106,7 @@ public class OCamlREPLOutputParser {
         // group
         TreeElementGroupKind group = TreeElementGroupKind.VARIABLES;
 
-        // element
+        // val t : type = value
         int tagSize = OCamlREPLConstants.VARIABLE.length();
         String name = text.substring(val + tagSize + 1, colon - 1);
         String type = text.substring(colon + 2, equals - 1);
@@ -126,7 +128,7 @@ public class OCamlREPLOutputParser {
         // group
         TreeElementGroupKind group = TreeElementGroupKind.FUNCTIONS;
 
-        // element
+        // val t : type = <fun>
         int tagSize = OCamlREPLConstants.VARIABLE.length();
         String name = text.substring(val + tagSize + 1, colon - 1);
         String type = text.substring(colon + 2, equals - 1);
@@ -136,23 +138,45 @@ public class OCamlREPLOutputParser {
 
     private static @Nullable @Unmodifiable List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseModule(@NotNull String text) {
         if (text.startsWith(OCamlREPLConstants.MODULE_TYPE)) {
-            System.out.println("Not supported");
-            return null;
+            return parseModuleType(text);
         }
 
         // checks
-        int val = text.indexOf(OCamlREPLConstants.MODULE);
-        if (val == -1) return null; // not a module
+        int module = text.indexOf(OCamlREPLConstants.MODULE);
+        if (module == -1) return null; // not a module
         int colon = text.indexOf(':');
         if (colon == -1) return null; // separator for definition
 
         // group
         TreeElementGroupKind group = TreeElementGroupKind.MODULES;
 
-        // element
+        // module name : ...
         int tagSize = OCamlREPLConstants.MODULE.length();
-        String name = text.substring(val + tagSize + 1, colon - 1);
+        String name = text.substring(module + tagSize + 1, colon - 1);
 
         return List.of(new Pair<>(new OCamlModuleElement(name, new ArrayList<>()), group));
+    }
+
+    private static @Nullable @Unmodifiable List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseModuleType(@NotNull String text) {
+        // checks
+        int moduleType = text.indexOf(OCamlREPLConstants.MODULE_TYPE);
+        if (moduleType == -1) return null; // not a module
+        int equals = text.indexOf('=');
+
+        // group
+        TreeElementGroupKind group = TreeElementGroupKind.MODULES;
+
+        // element
+        int tagSize = OCamlREPLConstants.MODULE_TYPE.length();
+        String name;
+        if (equals == -1) {
+            // module type t
+            name = text.substring(moduleType + tagSize + 1);
+        } else {
+            // module type t = ...
+            name = text.substring(moduleType + tagSize + 1, equals - 1);
+        }
+
+        return List.of(new Pair<>(new OCamlModuleTypeElement(name), group));
     }
 }
