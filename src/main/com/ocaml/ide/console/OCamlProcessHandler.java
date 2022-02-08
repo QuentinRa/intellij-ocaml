@@ -32,20 +32,74 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
     // this is the command that was used to start the console
     // we will not print it
     private boolean firstLine = false;
+    private boolean waitForEcho = false;
+    public String output = "";
+    public String potentialOutput = "";
 
+    /**
+     * We are expecting the output to be the command line ("firstLine"), that is skipped,
+     * then we are repeating these
+     * <ol>
+     *     <li>#</li>
+     *     <li>the input again (if we are in ocaml < 4.13), ending with ";;"</li>
+     *     <li>the output of the command</li>
+     * </ul>
+     */
     public void coloredTextAvailable(@NotNull String textOriginal, @NotNull Key attributes) {
         if (!firstLine) { firstLine = true; return; }
-        // pass empty
+        // pass empty (we got some empty lines in older versions)
         if (textOriginal.isBlank()) return;
-        // pass input
-        if (textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE)) return;
+        // did we get the echo of the user input?
+        // (note that in 4.13+, we are never passing in this if,
+        // as there is no echo of the input)
+        if (isUserInputEchoReceived(textOriginal)) {
+            waitForEcho = false; // no, let's start reading the output
+            return;
+        }
+        // are we waiting for input?
+        if (isPrompt(textOriginal)) {
+            // yes, but are we done with the previous job?
+            if (waitForEcho) { // no, transfer and print
+                output = potentialOutput;
+                consoleView.print(output, ConsoleViewContentType.SYSTEM_OUTPUT);
+            }
+            waitForEcho = true; // wait again
+            runner.setRunning(false);
+            // update variables view
+            runner.rebuildVariableView(output);
+            // clean
+            output = "";
+            potentialOutput = "";
+            return;
+        }
 
-        // update variables view
-        runner.rebuildVariableView(textOriginal);
+        // trim
+        textOriginal = textOriginal.trim() + "\n";
+
+        if (waitForEcho) {
+            // we are waiting for the echo of the user input
+            potentialOutput += textOriginal;
+            return;
+        }
+
+        // merge texts
+        output += textOriginal;
 
         // print
         consoleView.print(textOriginal, ConsoleViewContentType.SYSTEM_OUTPUT);
     }
+
+    // shortcuts
+
+    private boolean isUserInputEchoReceived(@NotNull String textOriginal) {
+        return textOriginal.trim().endsWith(OCamlREPLConstants.END_LINE);
+    }
+
+    private boolean isPrompt(@NotNull String textOriginal) {
+        return textOriginal.replace(OCamlREPLConstants.PROMPT,"").trim().isEmpty();
+    }
+
+    // implementation
 
     public boolean isSilentlyDestroyOnClose() {
         return true;

@@ -23,7 +23,7 @@ public class OCamlElementVisitor extends PsiElementVisitor {
     @Override
     public void visitElement(@NotNull PsiElement element) {
         if (element instanceof PsiStructuredElement && !(element instanceof PsiFakeModule)) {
-            if (((PsiStructuredElement) element).canBeDisplayed()) {
+            if (element instanceof PsiLet) {
                 PsiLet let = (PsiLet) element;
                 if (let.isScopeIdentifier()) {
                     // it's a tuple! add each element of the tuple separately.

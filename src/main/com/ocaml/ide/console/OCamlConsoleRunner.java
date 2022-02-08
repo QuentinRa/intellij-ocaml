@@ -10,8 +10,10 @@ import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -28,8 +30,10 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.ui.MessageCategory;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.ide.OCamlWebHelpProvider;
 import com.ocaml.ide.console.actions.OCamlExecuteActionHandler;
 import com.ocaml.ide.console.actions.OCamlRestartAction;
+import com.ocaml.ide.console.actions.ShowVariablesAction;
 import com.ocaml.ide.console.debug.OCamlVariablesView;
 import com.ocaml.sdk.utils.OCamlSdkCommandsManager;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +57,10 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     private GeneralCommandLine commandLine;
     private Content myContent;
     private OCamlVariablesView myVariablesView;
+    private boolean isRunning;
+    private final ArrayList<String> commands = new ArrayList<>();
+    private boolean isVariableViewEnabled = true;
+    private JBSplitter split;
 
     public OCamlConsoleRunner(@NotNull Project project, @NotNull ToolWindow window) {
         super(project, OCamlConsoleView.CONS0LE_TITLE, null);
@@ -77,7 +85,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         // main panel
         OCamlConsoleView consoleView = getConsoleView();
 
-        JBSplitter split = new JBSplitter(false, 0.5f);
+        split = new JBSplitter(false, 0.5f);
         split.setFirstComponent(consoleView.getComponent());
         // create "variable view"
         myVariablesView = new OCamlVariablesView(consoleView);
@@ -115,12 +123,15 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         // add run actions
         ArrayList<AnAction> runActions = new ArrayList<>();
         runActions.add(createConsoleExecAction(getConsoleExecuteActionHandler()));
-        runActions.add(new OCamlRestartAction(getProject()));
         runActions.add(Objects.requireNonNull(ConsoleHistoryController.getController(getConsoleView())).getBrowseHistory());
+        runActions.add(new OCamlRestartAction(getProject()));
+        runActions.add(new ShowVariablesAction(this));
         group.addAll(runActions);
+        group.addSeparator();
 
         // add other actions
         group.add(new ScrollToTheEndToolbarAction(console.getEditor()));
+        group.add(CommonActionsManager.getInstance().createHelpAction(OCamlWebHelpProvider.OCAML_REPL_HELP));
 
         registerActionShortcuts(runActions, console.getConsoleEditor().getComponent());
         registerActionShortcuts(runActions, mainPanel);
@@ -168,7 +179,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
     @Override protected @NotNull ProcessBackedConsoleExecuteActionHandler createExecuteActionHandler() {
         ConsoleHistoryController historyController = new ConsoleHistoryController(OCamlConsoleRootType.getInstance(), "", getConsoleView());
         historyController.install();
-        return new OCamlExecuteActionHandler(getProcessHandler(), true);
+        return new OCamlExecuteActionHandler(this, true);
     }
 
     @Override public OCamlExecuteActionHandler getConsoleExecuteActionHandler() {
@@ -194,7 +205,7 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         }
     }
 
-    private void showErrorsInConsole(Exception e) {
+    private void showErrorsInConsole(@NotNull Exception e) {
         var actionGroup = new DefaultActionGroup(new OCamlRestartAction(getProject()));
 
         var actionToolbar = ActionManager.getInstance()
@@ -244,19 +255,50 @@ public class OCamlConsoleRunner extends AbstractConsoleRunnerWithHistory<OCamlCo
         return myWindow;
     }
 
+    public boolean isVariableViewEnabled() {
+        return isVariableViewEnabled;
+    }
+
+    public void showVariableView(boolean show) {
+        // simply using this trick is enough
+        split.setSecondComponent(show ? myVariablesView : null);
+        isVariableViewEnabled = show;
+    }
+
     /**
      * Process a command, but it won't be added to the history
      *
      * @param s may be a whole file
      */
     public void processCommand(String s) {
-        OCamlConsoleView consoleView = getConsoleView();
-        consoleView.setInputText(s);
-        getConsoleExecuteActionHandler().runExecuteAction(consoleView);
+        commands.add(s);
+        if (!isRunning) updateQueue();
     }
 
     public void rebuildVariableView(String text) {
         if (myVariablesView != null)
             myVariablesView.rebuild(text);
+    }
+
+    public void updateQueue() {
+        // no queued commands
+        if (commands.isEmpty()) {
+            isRunning = false;
+            return;
+        }
+        // fetch and run one
+        String text = commands.remove(0);
+        OCamlConsoleView consoleView = getConsoleView();
+        getConsoleExecuteActionHandler().runExecuteAction(consoleView, text);
+        isRunning = true;
+    }
+
+    public void setRunning(boolean running) {
+        this.isRunning = running;
+        if (!isRunning) ApplicationManager.getApplication().invokeLater(this::updateQueue);
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 }
