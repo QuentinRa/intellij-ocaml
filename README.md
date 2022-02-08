@@ -23,11 +23,11 @@ Originally, I was planning to make things, so that we can use this plugin outsid
 
 ## ✨ How will I do that?
 
-I'm planning to use WSL on Windows. It's easy to install ocaml (and opam) on a WSL, as one only has to do what one would have done on Linux. I'm planning to use ocaml rather than ocaml, because this would allow more features in the features, and opam is great if we want to have multiple versions of ocaml.
+On Windows, one may use WSL, OCaml64, or a WSL. Both ocaml installed with, or without opam should work. For the latter, some features won't be available, as some files will be missing.
 
-On Linux, I will directly use ocaml and/or opam, for the reasons mentioned above.
+On Linux, you can also use ocaml installed with, or without opam.
 
-I'm also planning to allow someone to compile on a remote host. This is an experimental feature, hence I'm not sure how it will go, but I will try.
+Finally, I'm planning to allow someone to compile on a remote host. This is an experimental feature (from the classes I inspected), so I'm not sure how it will go, but I will give it a try.
 
 ## 🚀 Features
 
