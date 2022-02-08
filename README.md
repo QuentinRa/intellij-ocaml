@@ -31,19 +31,19 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 
 ## 🚀 Features
 
-| Features coming from ReasonML 🤩️              |
-|------------------------------------------------|
-| File Structure menu                            |
-| Simple autocompletion                          |
-| Go to file, declaration, etc.                  |
-| Comment line/block                             |
-| Insert matching brace, quote                   |
-| Find usages                                    |
-| Preview `odoc` documentation (CTRL-Q / hover)  |
-| ✅ Live templates (**merged**)                  |
-| ✅ Spellchecker (**merged**)                    |
-| ❌ Highlight for not, strings in comments (bug) |
-| ❌ Highlight for odoc                           |
+| Features coming from ReasonML 🤩️                |
+|--------------------------------------------------|
+| File Structure menu                              |
+| Simple autocompletion                            |
+| Go to file, declaration, etc.                    |
+| Comment line/block                               |
+| Insert matching brace, quote                     |
+| Find usages                                      |
+| Preview `odoc` documentation (CTRL-Q / hover)    |
+| ✅ Live templates (**merged**)                    |
+| ✅ Spellchecker (**merged**)                      |
+| ❌ Highlight for "not", strings in comments (bug) |
+| ❌ Highlight for odoc (+issues with the resolver) |
 
 | Setup                                                      |
 |------------------------------------------------------------|
@@ -57,7 +57,7 @@ I'm also planning to allow someone to compile on a remote host. This is an exper
 | ✅ Can create a file (.ml, .mli, .ml+.mli)                  |
 | ❌ The project is created with a default runConfiguration   |
 
-You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you only have /bin/ocaml, etc.). You may use a template, two are available, one using a <b>Makefile</b>, and the other using <b>Dune</b>.
+You are now able to create a project using an opam SDK, or create an opam-like SDK. Opam like SDKs should be used if you are not using opam (ex: you only have /bin/ocaml, etc.). Two templates are available, one using a <b>Makefile</b>, and another using <b>Dune</b>.
 
 | SDK                                                     |
 |---------------------------------------------------------|
@@ -80,7 +80,7 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 | ✅ Send a file to the console                                    |
 | ✅ Send the selection to the console                             |
 | ✅ Send a statement to the console                               |
-| ❌ Send the whole line, if we are selecting a part, with preview |
+| ✅ Send the whole line, if we are selecting a part, with preview |
 
 This is a console allowing the use of the ocaml interpreter more easily. For instance, arrows up/down are now properly handled. You also got a history of your commands.
 
@@ -103,7 +103,15 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 | ✅ Can create .ml, .mli, or .ml and .mli                |
 | ✅ Editor > File and Code Templates for .ml and .mli    |
 | ✅ Buttons to browse the OCaml Manual/API in the editor |
-| ❌ Live templates                                       |
+| ❌ Live templates (improved, priority, ...)             |
+
+
+| OCaml                                                  |
+|--------------------------------------------------------|
+| ✅ Can create .ml, .mli, or .ml and .mli                |
+| ✅ Editor > File and Code Templates for .ml and .mli    |
+| ✅ Buttons to browse the OCaml Manual/API in the editor |
+| ❌ Live templates (improved, priority, ...)             |
 
 | Dune                                                          |
 |---------------------------------------------------------------|
