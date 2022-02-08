@@ -228,8 +228,8 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
             if (!hasSources) continue;
             // ensure that the directory is not empty
             String[] list = path.toFile().list();
-            sourcesMissing = list == null || list.length > 0;
-            // System.out.println("check "+path+" isn't empty?"+hasSources);
+            sourcesMissing = list == null || list.length == 0;
+//            System.out.println("check "+path+" isn't empty?"+sourcesMissing);
             break;
         }
         if (!hasSources) {
