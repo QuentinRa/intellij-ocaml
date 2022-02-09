@@ -73,6 +73,11 @@ sourceSets {
     }
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
+    if (loadPlatform != null && !loadPlatform.isBlank()) {
+        for(String s: (loadPlatform as String).split(",")) {
+            test.java.srcDirs += ["test/$s"]
+        }
+    }
     test.resources.srcDirs = ["resources/main", "resources/$platformVersion", "test/testData"]
 }
 

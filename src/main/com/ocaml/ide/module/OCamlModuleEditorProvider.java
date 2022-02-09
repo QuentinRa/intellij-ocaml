@@ -21,7 +21,6 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.util.ui.JBUI;
-import com.ocaml.ide.actions.module.OCamlModuleEditorProviderAdaptor;
 
 import javax.swing.*;
 import java.awt.*;
