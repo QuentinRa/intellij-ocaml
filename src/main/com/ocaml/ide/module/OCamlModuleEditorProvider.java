@@ -17,13 +17,11 @@
  */
 package com.ocaml.ide.module;
 
-import com.intellij.openapi.module.GeneralModuleType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
-import com.intellij.openapi.module.ModuleType;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.util.ui.JBUI;
+import com.ocaml.ide.actions.module.OCamlModuleEditorProviderAdaptor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,14 +38,9 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
 
     @Override
     public ModuleConfigurationEditor[] createEditors(ModuleConfigurationState state) {
-        Module module = state.getCurrentRootModel().getModule();
-        ModuleType<?> moduleType = ModuleType.get(module);
-
-        // We are not handling non-ocaml modules
-        if (!(moduleType instanceof OCamlModuleType) &&
-                (!GeneralModuleType.INSTANCE.equals(moduleType) || ProjectRootManager.getInstance(state.getProject()).getProjectSdk() == null)) {
+        Module module = OCamlModuleEditorProviderAdaptor.getModuleFromState(state);
+        if (module == null)
             return ModuleConfigurationEditor.EMPTY;
-        }
 
         // creating the tabs
         List<ModuleConfigurationEditor> editors = new ArrayList<>();

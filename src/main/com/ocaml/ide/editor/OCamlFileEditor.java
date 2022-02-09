@@ -3,7 +3,7 @@ package com.ocaml.ide.editor;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
+import com.ocaml.utils.adaptor.actions.SimpleDataContextBuilderAdaptor;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorImpl;
@@ -94,7 +94,7 @@ public class OCamlFileEditor extends UserDataHolderBase implements TextEditor {
 
             return AnActionEvent.createFromInputEvent(
                     e.getInputEvent(), "", e.getPresentation(),
-                    SimpleDataContext.builder()
+                    SimpleDataContextBuilderAdaptor.builder()
                             .add(CommonDataKeys.EDITOR, myTextEditor.getEditor())
                             .add(CommonDataKeys.VIRTUAL_FILE, file)
                             .add(CommonDataKeys.PSI_FILE, psiFile)

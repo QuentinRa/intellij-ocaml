@@ -6,6 +6,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.ocaml.OCamlBundle;
 import com.ocaml.ide.console.debug.groups.elements.OCamlModuleTypeElement;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -74,6 +75,11 @@ public class OCamlModuleGroup extends TreeElementGroup {
                 }
 
                 @Override public @Nullable Icon getIcon(boolean unused) {
+                    return null;
+                }
+
+                @UntilIdeVersion(release = "203")
+                @Override public @Nullable String getLocationString() {
                     return null;
                 }
             };

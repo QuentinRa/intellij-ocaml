@@ -7,6 +7,7 @@ import com.ocaml.ide.console.debug.groups.OCamlModuleGroup;
 import com.ocaml.ide.console.debug.groups.TreeElementGroup;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.elements.OCamlTreeElement;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +39,11 @@ public class OCamlStupidTreeModel implements TreeModel {
                 }
 
                 @Override public @Nullable Icon getIcon(boolean unused) {
+                    return null;
+                }
+
+                @UntilIdeVersion(release = "203")
+                @Override public @Nullable String getLocationString() {
                     return null;
                 }
             };
