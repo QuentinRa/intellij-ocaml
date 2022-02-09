@@ -6,7 +6,7 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 
 ## 🎯 What's my goal?
 
-* [ ] We must be able to run/compile ocaml files without having to install Dune, Esy, or BuckleScript (if we have installed ocaml)
+* [ ] We must be able to run/compile ocaml files without having to install Dune, Esy, or BuckleScript. We must be able to enjoy most features without having to use stuff that is irrelevant for some.
 * [ ] Support for opam
 * [ ] Support for Makefile
 * [ ] Support for Dune (already supported in ReasonML)
@@ -19,7 +19,7 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 
 Originally, I was planning to make things, so that we can use this plugin outside IntelliJ, but now my goal is to at least make this plugin work in IntelliJ before targeting minor IDEs.
 
-> Please note that some features are already available in ReasonML (ex: support of odoc, dune support, etc.), and I will "import" them.
+> Please note that some features are already available in ReasonML (ex: odoc support, dune support, etc.), and I will reuse (and hopefully improve) them.
 
 ## ✨ How will I do that?
 
@@ -72,15 +72,15 @@ You are now able to create a project using an opam SDK, or create an opam-like S
 
 An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which you got a folder `bin` with `ocaml`, ... and a folder `lib` with the sources. The sources (from the GitHub repository), are stored in `.opam-switch/sources/` (optional).
 
-| REPL Console                                                    |
-|-----------------------------------------------------------------|
-| ✅ Can execute commands                                          |
-| ✅ Browse history, use arrow up/down                             |
-| ✅ See the values of the variables                               |
-| ✅ Send a file to the console                                    |
-| ✅ Send the selection to the console                             |
-| ✅ Send a statement to the console                               |
-| ✅ Send the whole line, if we are selecting a part, with preview |
+| REPL Console                                          |
+|-------------------------------------------------------|
+| ✅ Can execute commands                                |
+| ✅ Browse history, use arrow up/down                   |
+| ✅ See the values of the variables                     |
+| ✅ Send a file to the console                          |
+| ✅ Send the selection to the console                   |
+| ✅ Send a statement to the console                     |
+| ✅ Preview the auto-selected statement, can be changed |
 
 This is a console allowing the use of the ocaml interpreter more easily. For instance, arrows up/down are now properly handled. You also got a history of your commands.
 
@@ -92,7 +92,7 @@ This is a console allowing the use of the ocaml interpreter more easily. For ins
 | ✅ we can see alerts in the file                  |
 | ✅ errors are shown project-wide                  |
 | ✅ mli is compiled is present, when in a .ml      |
-| ❌ handle files using other modules               |
+| ✅ show parameters names                          |
 | ❌ handle dune projects                           |
 | ❌ handle Makefile projects                       |
 
@@ -103,22 +103,17 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 | ✅ Can create .ml, .mli, or .ml and .mli                |
 | ✅ Editor > File and Code Templates for .ml and .mli    |
 | ✅ Buttons to browse the OCaml Manual/API in the editor |
-| ❌ Live templates (improved, priority, ...)             |
 
+| OCaml |
+|-------|
+| ...   |
 
-| OCaml                                                  |
-|--------------------------------------------------------|
-| ✅ Can create .ml, .mli, or .ml and .mli                |
-| ✅ Editor > File and Code Templates for .ml and .mli    |
-| ✅ Buttons to browse the OCaml Manual/API in the editor |
-| ❌ Live templates (improved, priority, ...)             |
-
-| Dune                                                          |
-|---------------------------------------------------------------|
-| ✅ Import every feature in ReasonML                            |
-| ❌ Suggest installing dune if opening a dune file without Dune |
-| ❌ Show a message when updating files not targeted             |
-| ❌ Show an icon to "reload" dune, reloading runConfig, etc.    |
+| Dune                                              |
+|---------------------------------------------------|
+| ✅ Import every feature in ReasonML                |
+| ❌ Suggest installing dune                         |
+| ❌ Show a message when updating files not targeted |
+| ❌ Show an icon to "reload" dune                   |
 
 ## 📖 Install ocaml and opam
 
