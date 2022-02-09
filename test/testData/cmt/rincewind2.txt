@@ -1,0 +1,193 @@
+"f1.ml" 1 0 4 "f1.ml" 1 0 5
+type(
+  int
+)
+ident(
+  def x "f1.ml" 1 0 9 "f1.ml" 1 0 -1
+)
+"f1.ml" 1 0 8 "f1.ml" 1 0 9
+type(
+  int
+)
+
+// 4-5 => 8-9
+let x = 5
+
+------------------------------------------------
+
+let x = 5
+let y = 7
+
+"f2.ml" 1 0 4 "f2.ml" 1 0 5
+type(
+  int
+)
+ident(
+  def x "f2.ml" 2 10 10 "f2.ml" 1 0 -1
+)
+"f2.ml" 1 0 8 "f2.ml" 1 0 9
+type(
+  int
+)
+"f2.ml" 2 10 14 "f2.ml" 2 10 15
+type(
+  int
+)
+ident(
+  def y "f2.ml" 2 10 19 "f2.ml" 1 0 -1
+)
+"f2.ml" 2 10 18 "f2.ml" 2 10 19
+type(
+  int
+)
+
+------------------------------
+
+let x = let y = 0.0 in int_of_float y
+
+"f3.ml" 1 0 4 "f3.ml" 1 0 5
+type(
+  int
+)
+ident(
+  def x "f3.ml" 1 0 37 "f3.ml" 1 0 -1
+)
+"f3.ml" 1 0 12 "f3.ml" 1 0 13
+type(
+  float
+)
+ident(
+  def y "f3.ml" 1 0 23 "f3.ml" 1 0 37
+)
+"f3.ml" 1 0 16 "f3.ml" 1 0 19
+type(
+  float
+)
+"f3.ml" 1 0 23 "f3.ml" 1 0 35
+type(
+  float -> int
+)
+ident(
+  int_ref Stdlib.int_of_float "stdlib.mli" 527 20239 20239 "stdlib.mli" 527 20239 20291
+)
+"f3.ml" 1 0 36 "f3.ml" 1 0 37
+type(
+  float
+)
+ident(
+  int_ref y "f3.ml" 1 0 12 "f3.ml" 1 0 13
+)
+"f3.ml" 1 0 23 "f3.ml" 1 0 37
+type(
+  int
+)
+"f3.ml" 1 0 8 "f3.ml" 1 0 37
+type(
+  int
+)
+
+-------------------
+
+let x = let y = 0.0 in y
+calistro@MSI:~$ cat f4.annot
+"f4.ml" 1 0 4 "f4.ml" 1 0 5
+type(
+  float
+)
+ident(
+  def x "f4.ml" 1 0 24 "f4.ml" 1 0 -1
+)
+"f4.ml" 1 0 12 "f4.ml" 1 0 13
+type(
+  float
+)
+ident(
+  def y "f4.ml" 1 0 23 "f4.ml" 1 0 24
+)
+"f4.ml" 1 0 16 "f4.ml" 1 0 19
+type(
+  float
+)
+"f4.ml" 1 0 23 "f4.ml" 1 0 24
+type(
+  float
+)
+ident(
+  int_ref y "f4.ml" 1 0 12 "f4.ml" 1 0 13
+)
+"f4.ml" 1 0 8 "f4.ml" 1 0 24
+type(
+  float
+)
+
+--------------------
+
+type t = int
+let z : int = 5
+
+
+"f5.ml" 2 13 17 "f5.ml" 2 13 18
+type(
+  int
+)
+ident(
+  def z "f5.ml" 2 13 28 "f5.ml" 1 0 -1
+)
+"f5.ml" 2 13 27 "f5.ml" 2 13 28
+type(
+  int
+)
+type(
+  int
+)
+
+---------------------
+
+module E = Set.Make(struct type t = int let compare = compare end)
+
+"f6.ml" 1 0 44 "f6.ml" 1 0 51
+type(
+  'a -> 'a -> int
+)
+ident(
+  def compare "f6.ml" 1 0 61 "f6.ml" 1 0 65
+)
+"f6.ml" 1 0 54 "f6.ml" 1 0 61
+type(
+  'a -> 'a -> int
+)
+ident(
+  int_ref Stdlib.compare "stdlib.mli" 93 3855 3855 "stdlib.mli" 93 3855 3902
+)
+"f6.ml" 1 0 11 "f6.ml" 1 0 66
+call(
+  stack
+)
+
+-------------------
+
+exception E
+let ubw = raise E
+
+"f7.ml" 2 12 16 "f7.ml" 2 12 19
+type(
+  'a
+)
+ident(
+  def ubw "f7.ml" 2 12 29 "f7.ml" 1 0 -1
+)
+"f7.ml" 2 12 22 "f7.ml" 2 12 27
+type(
+  exn -> 'a
+)
+ident(
+  int_ref Stdlib.raise "stdlib.mli" 36 1664 1664 "stdlib.mli" 36 1664 1701
+)
+"f7.ml" 2 12 28 "f7.ml" 2 12 29
+type(
+  exn
+)
+"f7.ml" 2 12 22 "f7.ml" 2 12 29
+type(
+  'a
+)
