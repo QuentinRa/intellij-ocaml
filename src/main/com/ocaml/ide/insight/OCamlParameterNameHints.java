@@ -9,12 +9,15 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.ocaml.lang.utils.OCamlPsiUtils;
+import com.or.ide.search.index.LetFqnIndex;
 import com.or.lang.core.psi.*;
 import com.or.lang.core.psi.impl.PsiLowerIdentifier;
 import com.or.lang.core.psi.impl.PsiScopedExpr;
 import com.or.lang.core.psi.impl.PsiUpperIdentifier;
+import com.or.lang.core.psi.impl.PsiValImpl;
 import com.or.lang.core.psi.reference.PsiLowerSymbolReference;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +56,21 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
         // resolve the real element?
         PsiElement resolvedRef = reference.resolve();
         PsiElement resolvedElement = (resolvedRef instanceof PsiLowerIdentifier || resolvedRef instanceof PsiUpperIdentifier) ? resolvedRef.getParent() : resolvedRef;
-        if (!(resolvedElement instanceof PsiLet)) return EMPTY_COLLECTION;
+        if (!(resolvedElement instanceof PsiLet)) {
+            // look for the implementation of val
+            if (resolvedElement instanceof PsiValImpl) {
+                Project project = element.getProject();
+                GlobalSearchScope scope = GlobalSearchScope.allScope(project);
+                String valQName = ((PsiValImpl) resolvedElement).getQualifiedName();
+                Collection<PsiLet> elements = LetFqnIndex.getElements(valQName.hashCode(), project, scope);
+                Optional<PsiLet> first = elements.stream().findFirst();
+                if (first.isPresent()) {
+                    resolvedElement = first.get();
+                }
+            }
+            // found or not?
+            if(!(resolvedElement instanceof PsiLet)) return EMPTY_COLLECTION;
+        }
         // get the parameters
         PsiLet psiLet = (PsiLet) resolvedElement;
         List<PsiParameter> parameters = null;
