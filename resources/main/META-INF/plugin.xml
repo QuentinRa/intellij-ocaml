@@ -76,6 +76,9 @@
         <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.highlight.annotations.CompilerOutputAnnotator" />
         <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
 
+        <!-- INFERENCE -->
+        <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />
+
         <!-- REPL -->
         <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
         <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>

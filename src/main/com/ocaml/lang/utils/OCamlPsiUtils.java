@@ -1,7 +1,9 @@
 package com.ocaml.lang.utils;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.or.lang.core.psi.PsiStructuredElement;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class OCamlPsiUtils {
@@ -22,4 +24,22 @@ public final class OCamlPsiUtils {
         return findStatementAfter(nextSibling);
     }
 
+    public static int findIndexOfParameter(@NotNull PsiElement element, String functionName) {
+        PsiElement prevSibling = element.getPrevSibling();
+        int count = 0;
+        while (prevSibling != null) {
+            // skip white spaces
+            if (prevSibling instanceof PsiWhiteSpace) {
+                prevSibling = prevSibling.getPrevSibling();
+                continue;
+            }
+            // done, we found the name of the function
+            if (prevSibling.getText().equals(functionName)) return count;
+            // pass, this is an argument (I hope so ><)
+            count++;
+            prevSibling = prevSibling.getPrevSibling();
+        }
+
+        return -1; // not found
+    }
 }
