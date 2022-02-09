@@ -51,6 +51,15 @@ public class PsiParameterImpl extends PsiTokenStub<PsiParameter, PsiParameterStu
         return identifier;
     }
 
+    @Override public @NotNull String getRealName() {
+        String name = getName();
+        // (t: type) -> t
+        if (name != null && name.indexOf(':') != -1) {
+            name = name.substring(name.startsWith("(") ? 1 : 0, name.indexOf(':')).trim();
+        }
+        return name == null ? getText() : name;
+    }
+
     @Override
     public @Nullable String getName() {
         PsiParameterStub stub = getGreenStub();
