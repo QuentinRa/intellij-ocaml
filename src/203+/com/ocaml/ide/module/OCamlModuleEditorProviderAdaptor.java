@@ -1,11 +1,10 @@
-package com.ocaml.ide.actions.module;
+package com.ocaml.ide.module;
 
 import com.intellij.openapi.module.GeneralModuleType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
-import com.ocaml.ide.module.OCamlModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
