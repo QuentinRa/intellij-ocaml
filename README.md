@@ -40,7 +40,7 @@ Finally, I'm planning to allow someone to compile on a remote host. This is an e
 | Insert matching brace, quote                     |
 | Find usages                                      |
 | Preview `odoc` documentation (CTRL-Q / hover)    |
-| ✅ Live templates (**merged**)                    |
+| ✅ Live templates (**merged**) (CTRL+J)           |
 | ✅ Spellchecker (**merged**)                      |
 | ❌ Highlight for "not", strings in comments (bug) |
 | ❌ Highlight for odoc (+issues with the resolver) |

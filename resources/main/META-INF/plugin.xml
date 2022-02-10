@@ -78,6 +78,7 @@
 
         <!-- INFERENCE -->
         <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />
+        <codeInsight.typeInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlTypeInfoHint"/>
 
         <!-- REPL -->
         <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
