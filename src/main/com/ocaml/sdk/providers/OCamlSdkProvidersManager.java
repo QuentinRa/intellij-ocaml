@@ -105,6 +105,10 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
         return callProvidersValue(provider -> provider.isHomePathValid(homePath));
     }
 
+    @Override public @Nullable String getDuneVersion(String sdkHomePath) {
+        return callProvidersValue(provider -> provider.getDuneVersion(sdkHomePath));
+    }
+
     // call providers
 
     private <R> Set<R> callProvidersValuesS(ComputeProviders<Set<R>> computeValues) {

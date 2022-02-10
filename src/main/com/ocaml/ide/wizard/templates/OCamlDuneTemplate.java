@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectTemplate;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.utils.files.OCamlFileUtils;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +62,10 @@ class OCamlDuneTemplate implements ProjectTemplate, TemplateBuildInstructions {
 
     @Override
     public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot) {
+    }
+
+    @Override
+    public void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot, @Nullable String sdkHomePath) {
         File sourceFolder = VfsUtilCore.virtualToIoFile(sourceRoot);
         // Files
         OCamlFileUtils.createFile(sourceFolder, "hello_world.mli", "val hello_world : unit -> unit", LOG);
@@ -69,6 +74,10 @@ class OCamlDuneTemplate implements ProjectTemplate, TemplateBuildInstructions {
         // Dune
         File rootFolder = sourceFolder.getParentFile();
         OCamlFileUtils.createFile(sourceFolder, "dune", "(executable\n (name test_hello_world))", LOG);
-        OCamlFileUtils.createFile(rootFolder, "dune-project", "(lang dune 2.9)", LOG);
+        // get real version
+        String version = sdkHomePath != null ? OCamlSdkProvidersManager.INSTANCE.getDuneVersion(sdkHomePath) : null;
+        if (version == null) version = "2.9"; // default is 2.9
+        // create project file
+        OCamlFileUtils.createFile(rootFolder, "dune-project", "(lang dune "+version+")", LOG);
     }
 }

@@ -97,4 +97,8 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
         LOG.warn("No compiler found for cygwin in " + sdkHomePath + ".");
         return null;
     }
+
+    @Override protected @NotNull String getDuneExecutable(String sdkHomePath) {
+        return sdkHomePath+"\\bin\\dune.exe";
+    }
 }

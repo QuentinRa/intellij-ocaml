@@ -272,4 +272,22 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
             return null;
         }
     }
+
+    @Override public @Nullable String getDuneVersion(String sdkHomePath) {
+        WslPath path = WslPath.parseWindowsUncPath(sdkHomePath);
+        if (path == null) return null;
+        WSLDistribution distribution = path.getDistribution();
+        try {
+            // create command
+            GeneralCommandLine cli = new GeneralCommandLine(path.getLinuxPath()+"/bin/dune", "--version");
+            // same code as for the base provider ><
+            return new String(distribution.patchCommandLine(cli, null, new WSLCommandLineOptions())
+                    .createProcess()
+                    .getInputStream()
+                    .readAllBytes()).trim(); // remove \n
+        } catch (IOException | ExecutionException e) {
+            LOG.warn("Get dune version error:"+e.getMessage());
+            return null;
+        }
+    }
 }

@@ -142,4 +142,14 @@ public interface OCamlSdkProvider {
                                                           String file,
                                                           String outputDirectory,
                                                           String executableName);
+
+    //
+    // DUNE
+    //
+    /**
+     * @param sdkHomePath path to the sdkHome
+     * @return Version of dune
+     */
+    @Nullable String getDuneVersion(String sdkHomePath);
+
 }

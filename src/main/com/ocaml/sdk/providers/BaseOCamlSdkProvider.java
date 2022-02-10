@@ -12,6 +12,7 @@ import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.utils.files.OCamlPathUtils;
 import com.ocaml.utils.logs.OCamlLogger;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -267,5 +268,24 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
                 ), // nothing to change
                 rootFolderForTempering
         );
+    }
+
+    @Override public @Nullable String getDuneVersion(String sdkHomePath) {
+        if (!canUseProviderForHome(sdkHomePath)) return null;
+        try {
+            String s = new String(new GeneralCommandLine(getDuneExecutable(sdkHomePath), "--version")
+                    .createProcess()
+                    .getInputStream()
+                    .readAllBytes()).trim();// remove \n
+            return s.isEmpty() ? null : s;
+        } catch (IOException | ExecutionException e) {
+            LOG.warn("Get dune version error:"+e.getMessage());
+            return null;
+        }
+    }
+
+    @Contract(pure = true)
+    protected @NotNull String getDuneExecutable(String sdkHomePath) {
+        return sdkHomePath+"/bin/dune";
     }
 }
