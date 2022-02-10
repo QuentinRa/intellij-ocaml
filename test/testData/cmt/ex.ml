@@ -1,5 +1,5 @@
 (*
-~/.opam/4.13.0/bin/ocamlc test.ml -bin-annot && rm -rf *.cmo *.cmi a.out
+~/.opam/4.13.0/bin/ocamlc test.ml -annot && rm -rf *.cmo *.cmi a.out
 ~/.opam/rincewind/_build/default/bin/rincewind.exe test.cmt
 *)
 
