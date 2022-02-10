@@ -34,7 +34,9 @@ public final class OCamlMessageAdaptor {
             if (c.startsWith("Alert deprecated:")) annotation.toDeprecated();
         }
         else if (annotation.isWarning()) {
-            if (c.startsWith("Warning 27: unused variable")) annotation.toUnusedVariable();
+            // added 26 because for unused (let z = first) in function not highlighted
+            if (c.startsWith("Warning 26: unused variable") || c.startsWith("Warning 27: unused variable"))
+                annotation.toUnusedVariable();
             else if (c.startsWith("Warning 70: Cannot find interface file.")) annotation.toMliMissing();
             else if (c.startsWith("Warning 39: unused rec flag.")) annotation.toUnusedRec();
             else if (c.startsWith("Warning 3: deprecated:")) annotation.toDeprecated();
