@@ -5,15 +5,16 @@ import com.intellij.codeInsight.hints.InlayParameterHintsProvider;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.or.ide.search.index.LetFqnIndex;
+import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.*;
+import com.or.lang.core.psi.PsiLiteralExpression;
+import com.or.lang.core.psi.PsiParameter;
 import com.or.lang.core.psi.impl.PsiLowerIdentifier;
 import com.or.lang.core.psi.impl.PsiScopedExpr;
 import com.or.lang.core.psi.impl.PsiUpperIdentifier;
@@ -34,7 +35,19 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
     }
 
     @Override public @NotNull List<InlayInfo> getParameterHints(@NotNull PsiElement element, @NotNull PsiFile file) {
-        // excluded : ignored
+        // small optimisation: skip
+        if (element instanceof PsiWhiteSpace) return EMPTY_COLLECTION;
+        // supported: literals and scope expr
+        if (!(element instanceof PsiLiteralExpression) && !(element instanceof PsiScopedExpr)
+        && !(element instanceof PsiLowerSymbol)){
+            boolean ok = false;
+            IElementType elementType = element.getNode().getElementType();
+            if (elementType.equals(OCamlTypes.FLOAT_VALUE)) ok = true;
+            if (!ok && elementType.equals(OCamlTypes.INT_VALUE)) ok = true;
+            if (!ok) return EMPTY_COLLECTION;
+        }
+
+        // is file excluded ? ignore
         VirtualFile virtualFile = file.getVirtualFile();
         Project project = file.getProject();
         if (CompilerManager.getInstance(project).isExcludedFromCompilation(virtualFile))
@@ -44,11 +57,6 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
     }
 
     @Override public @NotNull List<InlayInfo> getParameterHints(@NotNull PsiElement element) {
-        // small optimisation: skip
-        if (element instanceof PsiWhiteSpace ||
-                // supported: literals and scope expr
-                (!(element instanceof PsiLiteralExpression) && !(element instanceof PsiScopedExpr)))
-            return EMPTY_COLLECTION;
         // get a reference to the function
         PsiLowerSymbol functionName = PsiTreeUtil.getPrevSiblingOfType(element, PsiLowerSymbol.class);
         PsiReference reference = functionName == null ? null : functionName.getReference();
