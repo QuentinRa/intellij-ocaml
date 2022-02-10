@@ -1,5 +1,6 @@
 package com.ocaml.lang.utils;
 
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.or.lang.core.psi.PsiStructuredElement;
@@ -29,7 +30,8 @@ public final class OCamlPsiUtils {
         int count = 0;
         while (prevSibling != null) {
             // skip white spaces
-            if (prevSibling instanceof PsiWhiteSpace) {
+            // and comments (fix, added)
+            if (prevSibling instanceof PsiWhiteSpace || prevSibling instanceof PsiComment) {
                 prevSibling = prevSibling.getPrevSibling();
                 continue;
             }

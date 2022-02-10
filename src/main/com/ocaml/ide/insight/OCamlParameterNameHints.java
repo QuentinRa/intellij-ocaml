@@ -62,6 +62,7 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
         PsiReference reference = functionName == null ? null : functionName.getReference();
         if (!(reference instanceof PsiLowerSymbolReference)) return EMPTY_COLLECTION;
         // resolve the real element?
+        ((PsiLowerSymbolReference) reference).setResolveFor(element);
         PsiElement resolvedRef = reference.resolve();
         PsiElement resolvedElement = (resolvedRef instanceof PsiLowerIdentifier || resolvedRef instanceof PsiUpperIdentifier) ? resolvedRef.getParent() : resolvedRef;
         if (!(resolvedElement instanceof PsiLet)) {

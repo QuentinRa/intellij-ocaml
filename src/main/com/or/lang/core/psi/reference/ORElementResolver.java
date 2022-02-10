@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 
@@ -112,6 +113,10 @@ public class ORElementResolver implements Disposable {
         void removeIncomplete();
 
         @NotNull Collection<PsiQualifiedPathElement> resolvedElements();
+
+        default @NotNull List<PsiQualifiedPathElement> resolveAllElements() {
+            return emptyList();
+        }
     }
 
     /*
@@ -371,6 +376,23 @@ public class ORElementResolver implements Disposable {
             allResolutions.sort(Resolution::compareTo);
 
             return allResolutions.isEmpty() ? emptyList() : allResolutions.get(0).myElements;
+        }
+
+        public @NotNull List<PsiQualifiedPathElement> resolveAllElements() {
+            List<Resolution> allResolutions = new ArrayList<>();
+
+            // flatten elements
+            for (Map<String, Resolution> topModuleEntry : myResolutionsPerTopModule.values()) {
+                allResolutions.addAll(topModuleEntry.values());
+            }
+
+            allResolutions.sort(Resolution::compareTo);
+
+            List<PsiQualifiedPathElement> l = new ArrayList<>();
+            Stream<List<PsiQualifiedPathElement>> stream = allResolutions.stream().map(resolution -> resolution.myElements);
+            stream.forEach(l::addAll);
+
+            return l;
         }
     }
 }
