@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🚀🚀 Available for 203.*
 - 🚀 parameters names are shown before parameters (#38)
 
+### Changed
+- ✨ Fill the dune-project version using "dune --version" (with the dune associated with the module SDK, #43)
+
 ## [0.0.7]
 ### Added
 - ✨ Can show/hide the variable view, can be docked next to the file (#40)
