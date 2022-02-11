@@ -1,0 +1,47 @@
+# ReasonML
+
+A lot of features are from the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. The packages `dune`, `odoc`, and `or` are mostly coming from the plugin "as if".
+
+## Unchanged
+
+* File Structure menu
+* Simple autocompletion
+* Go to file, declaration, etc.
+* Comment line/block
+* Insert matching brace, quote
+* Find usages 
+* Preview `odoc` documentation (CTRL-Q / hover)
+
+## Changes
+### Added
+
+This is the list features that I added directly into the code of the ReasonML plugin.
+
+* ✅ Adding highlight for `odoc`
+* ❌ Improving documentation (https://github.com/QuentinRa/intellij-ocaml/issues/68)
+* ❌ Invalid resolved documentation (https://github.com/QuentinRa/intellij-ocaml/issues/69)
+* ❌ Priorities for autocompletion (https://github.com/QuentinRa/intellij-ocaml/issues/55)
+* ❌ Unpleasant suggestions (https://github.com/QuentinRa/intellij-ocaml/issues/66) 
+* ❌ Duplicate suggestions (https://github.com/QuentinRa/intellij-ocaml/issues/67)
+
+### Bugs
+
+This is a list of bugs in this version of the ReasonML plugin.
+
+* ❌ invalid highlight (https://github.com/QuentinRa/intellij-ocaml/issues/45)
+* ❌ bug with the resolver (https://github.com/QuentinRa/intellij-ocaml/issues/62)
+* ❌ highlight for todo (https://github.com/QuentinRa/intellij-ocaml/issues/64)
+* ❌ empty type in variable view (https://github.com/QuentinRa/intellij-ocaml/issues/63)
+
+## To be merged
+
+This is the list a changes that are planned to be merged with the ReasonML plugin.
+
+* ❌ bug with quotes inside a comment
+
+## Merged
+
+This is a list of changes that were merged with the ReasonML plugin.
+
+* ✅ Live templates (CTRL+J)
+* ✅ Spellchecker

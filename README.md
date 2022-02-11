@@ -31,19 +31,7 @@ Finally, I'm planning to allow someone to compile on a remote host. This is an e
 
 ## 🚀 Features
 
-| Features coming from ReasonML 🤩️                |
-|--------------------------------------------------|
-| File Structure menu                              |
-| Simple autocompletion                            |
-| Go to file, declaration, etc.                    |
-| Comment line/block                               |
-| Insert matching brace, quote                     |
-| Find usages                                      |
-| Preview `odoc` documentation (CTRL-Q / hover)    |
-| ✅ Live templates (**merged**) (CTRL+J)           |
-| ✅ Spellchecker (**merged**)                      |
-| ❌ Highlight for "not", strings in comments (bug) |
-| ❌ Highlight for odoc (+issues with the resolver) |
+[Features coming from ReasonML 🤩️](ReasonML.md)
 
 | Setup                                                      |
 |------------------------------------------------------------|
