@@ -1,14 +1,43 @@
 package com.ocaml.sdk.annot;
 
+import com.intellij.build.FilePosition;
 import com.ocaml.OCamlBaseTest;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 // todo: add types
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class OcamlAnnotParserTest extends OCamlBaseTest {
 
     private void assertParserResult(String input, String expectedOutput) {
-        assertEquals(expectedOutput, OCamlAnnotParser.parse(input));
+        ArrayList<OCamlInferredSignature> res = new OCamlAnnotParser(input).parse();
+        String[] lines = expectedOutput.split("\n");
+        assertSize(lines.length, res);
+        for (int i = 0; i < lines.length; i++) {
+            OCamlInferredSignature e = res.get(i);
+            String result = null;
+            switch (e.kind) {
+                case UNKNOWN: fail(); break;
+                case VALUE:
+                    result = "Li|"+parsePosition(e.position)+"|"+e.type;
+                    break;
+                case VARIABLE:
+                    result = "Va|"+parsePosition(e.position)+"|"+e.name+"|"+e.type;
+                    break;
+                case MODULE:
+                    break;
+            }
+            assertNotNull(result);
+            assertEquals(lines[i], result);
+        }
+    }
+
+    private @NotNull String parsePosition(@NotNull FilePosition position) {
+        assertNotNull(position.getFile());
+        return position.getStartLine()+"."+position.getStartColumn()+","
+                +position.getEndLine()+"."+position.getEndColumn();
     }
 
     @Test
@@ -23,7 +52,8 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                 "\"test.ml\" 1 0 8 \"test.ml\" 1 0 9\n" +
                 "type(\n" +
                 "  int\n" +
-                ")", "Va|1.4,1.5|x|int");
+                ")", "Va|1.4,1.5|x|int\n" +
+                "Li|1.8,1.9|int");
     }
 
     @Test

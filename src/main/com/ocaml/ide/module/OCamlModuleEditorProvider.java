@@ -21,6 +21,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.util.ui.JBUI;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,7 +61,7 @@ public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvi
         }
 
         @Override
-        protected JComponent createComponentImpl() {
+        protected @NotNull JComponent createComponentImpl() {
             JPanel panel = (JPanel) super.createComponentImpl();
             panel.getComponent(1).setVisible(false); // javadocPanel
             panel.getComponent(2).setVisible(false); // annotationsPanel
