@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class OcamlAnnotParserTest extends OCamlBaseTest {
 
-    private void assertParserResult(String input, String expectedOutput) {
+    private void assertParserResult(String input, @NotNull String expectedOutput) {
         ArrayList<OCamlInferredSignature> res = new OCamlAnnotParser(input).parse();
         String[] lines = expectedOutput.split("\n");
         assertSize(lines.length, res);
@@ -27,6 +27,7 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                     result = "Va|"+parsePosition(e.position)+"|"+e.name+"|"+e.type;
                     break;
                 case MODULE:
+                    result = "Md|"+parsePosition(e.position)+"|"+e.name;
                     break;
             }
             assertNotNull(result);
@@ -81,7 +82,7 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                         "  int\n" +
                         ")",
                 "Va|1.4,1.5|x|int\n" +
-                        "Va|2.4,2.5|y|int");
+                "Li|1.8,1.9|int\n" + "Va|2.4,2.5|y|int\n" + "Li|2.8,2.9|int");
     }
 
     @Test
@@ -106,9 +107,10 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                         ")\n" +
                         "\"test.ml\" 1 0 18 \"test.ml\" 1 0 19\n" +
                         "type(\n" +
-                        "  int",
-                "Va|1.4,1.5|x|int\n" +
-                        "Va|1.14,1.15|y|int");
+                        "  int\n" +
+                        ")",
+                "Va|1.4,1.5|x|int\n" + "Li|1.8,1.9|int\n" +
+                        "Va|1.14,1.15|y|int\n" + "Li|1.18,1.19|int");
     }
 
     @Test
@@ -142,9 +144,8 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                         "type(\n" +
                         "  int\n" +
                         ")",
-                "Va|1.4,1.5|x|int\n" +
-                        "Va|2.8,2.9|y|int\n" +
-                        "Id|3.7,3.8|y|y|int");
+                "Va|1.4,1.5|x|int\n" + "Va|2.8,2.9|y|int\n" +
+                        "Li|2.12,2.13|int\n" + "Va|3.7,3.8|y|int\n" + "Li|2.4,3.8|int");
     }
 
     @Test
@@ -207,7 +208,7 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                         "ident(\n" +
                         "  def Make \"test.ml\" 3 15 45 \"test.ml\" 0 0 -1\n" +
                         ")",
-                "Md|3.0,3.30|Make");
+                "Md|3.7,3.11|Make");
     }
 
     @Test
@@ -227,8 +228,7 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                         "type(\n" +
                         "  int\n" +
                         ")",
-                "Md|1.0,3.3|Make\n" +
-                        "Va|2.5,2.6|x|int");
+                "Md|1.7,1.11|Make\n" + "Va|2.8,2.9|x|int\n" + "Li|2.12,2.13|int");
     }
 
     @Test

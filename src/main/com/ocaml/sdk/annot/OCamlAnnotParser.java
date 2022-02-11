@@ -44,7 +44,13 @@ public class OCamlAnnotParser {
         String line = readLine();
         // it's a module
         if(!line.startsWith("type(")) {
-            System.out.println("module todo:");
+            if (line.startsWith("ident")) {
+                line = readLine().trim(); // look for module name
+                state.name = line.substring(getStartingPosition(line), line.indexOf("\"")-1);
+                pos++; // skip )
+            } else {
+                throw new IllegalStateException("Unexpected line:'"+previousLine()+"'.");
+            }
         } else {
             // it's a variable
             // next is the type
@@ -54,16 +60,28 @@ public class OCamlAnnotParser {
             if (line != null && line.startsWith("ident(")) { // variable
                 line = readLine().trim(); // look for variable name
                 int end = line.indexOf("\"");
-                line = line.substring("def".length()+1, end-1);
+                int start = getStartingPosition(line);
+                line = line.substring(start, end-1);
                 state.name = line;
                 state.kind = AnnotParserState.AnnotKind.VARIABLE;
                 pos++; // skip ')'
             } else {
                 // this is a value
                 state.kind = AnnotParserState.AnnotKind.VALUE;
+
+                // we need to offset the "tryReadLine"
+                if (line != null) pos--; // whoops, go back
             }
         }
         return state;
+    }
+
+    private int getStartingPosition(@NotNull String line) {
+        if (!line.startsWith("def")) {
+            return line.indexOf("ref")+4; // 'ref '
+        } else {
+            return "def".length()+1;
+        }
     }
 
     private @NotNull OCamlInferredSignature createAnnotResult(@NotNull AnnotParserState state) {
