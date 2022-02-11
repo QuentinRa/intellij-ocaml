@@ -187,7 +187,6 @@ public interface OCamlTypes {
     ORTokenElementType NEW = new ORTokenElementType("new");
     ORTokenElementType NONE = new ORTokenElementType("None");
     ORTokenElementType NONREC = new ORTokenElementType("nonrec");
-    ORTokenElementType NOT = new ORTokenElementType("not");
     ORTokenElementType NOT_EQ = new ORTokenElementType("!=");
     ORTokenElementType NOT_EQEQ = new ORTokenElementType("!==");
     ORTokenElementType OBJECT = new ORTokenElementType("object");

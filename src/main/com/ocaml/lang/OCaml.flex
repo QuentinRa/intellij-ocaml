@@ -114,7 +114,6 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "module"      { return OCamlTypes.MODULE;}
     "mutable"     { return OCamlTypes.MUTABLE; }
     "new"         { return OCamlTypes.NEW; }
-    "not"         { return OCamlTypes.NOT; }
     "nonrec"      { return OCamlTypes.NONREC; }
     "object"      { return OCamlTypes.OBJECT; }
     "of"          { return OCamlTypes.OF; }

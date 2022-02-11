@@ -150,7 +150,6 @@ public class OCamlSyntaxHighlighter implements SyntaxHighlighter {
                     OCamlTypes.MOD,
                     OCamlTypes.NEW,
                     OCamlTypes.NONREC,
-                    OCamlTypes.NOT,
                     OCamlTypes.OR,
                     OCamlTypes.PRIVATE,
                     OCamlTypes.VIRTUAL,

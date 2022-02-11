@@ -3,6 +3,7 @@ package com.ocaml.sdk.annot;
 import com.ocaml.OCamlBaseTest;
 import org.junit.Test;
 
+// todo: add types
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class OcamlAnnotParserTest extends OCamlBaseTest {
 
@@ -200,7 +201,6 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                         "Va|2.5,2.6|x|int");
     }
 
-    // todo: type of the string
     @Test
     public void testUnsavedVariableAndLetFunction() {
         assertParserResult("\"test.ml\" 1 0 4 \"test.ml\" 1 0 5\n" +
