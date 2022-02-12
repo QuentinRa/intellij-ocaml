@@ -1,4 +1,4 @@
-package com.ocaml.ide.highlight.annotations;
+package com.ocaml.ide.insight.annotations;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;

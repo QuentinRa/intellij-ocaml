@@ -1,4 +1,4 @@
-package com.ocaml.ide.highlight.annotations;
+package com.ocaml.ide.insight.annotations;
 
 import com.intellij.build.FilePosition;
 import com.intellij.codeInsight.intention.IntentionAction;

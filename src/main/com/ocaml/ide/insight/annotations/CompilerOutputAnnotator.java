@@ -1,4 +1,4 @@
-package com.ocaml.ide.highlight.annotations;
+package com.ocaml.ide.insight.annotations;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.execution.process.OSProcessHandler;
@@ -29,6 +29,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
+import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
@@ -141,8 +142,6 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             );
         }
 
-        String nameWithoutExtension = sourceFile.getNameWithoutExtension();
-        File cmtFile = new File(targetFolder, nameWithoutExtension + ".cmt");
         try {
             // compile .mli
             if (interfaceTempFile.get() != null) {
@@ -206,7 +205,9 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
             }
 
-            return new AnnotationResult(info, collectedInfo.myEditor, cmtFile);
+            String nameWithoutExtension = sourceFile.getNameWithoutExtension();
+            File annotFile = new File(targetFolder, nameWithoutExtension + "." + compiler.getAnnotationFileExtension());
+            return new AnnotationResult(info, collectedInfo.myEditor, annotFile);
         } catch (Exception e) {
             if (!(e instanceof ProcessCanceledException))
                 LOG.error("Error while processing annotations", e);
@@ -271,7 +272,13 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             }
         }
 
-        if (!problems.isEmpty()) wolfTheProblemSolver.reportProblems(virtualFile, problems);
-        else wolfTheProblemSolver.clearProblems(virtualFile);
+        OCamlAnnotResultsService annotResultsService = project.getService(OCamlAnnotResultsService.class);
+        if (!problems.isEmpty()) {
+            wolfTheProblemSolver.reportProblems(virtualFile, problems);
+            annotResultsService.clearForFile(virtualFile.getPath());
+        } else {
+            wolfTheProblemSolver.clearProblems(virtualFile);
+            annotResultsService.updateForFile(virtualFile.getPath(), annotationResult.myAnnotFile);
+        }
     }
 }
