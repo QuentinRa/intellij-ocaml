@@ -9,16 +9,14 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.ocaml.lang.core.PsiFakeLet;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.or.ide.search.index.LetFqnIndex;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.*;
 import com.or.lang.core.psi.PsiLiteralExpression;
 import com.or.lang.core.psi.PsiParameter;
-import com.or.lang.core.psi.impl.PsiLowerIdentifier;
-import com.or.lang.core.psi.impl.PsiScopedExpr;
-import com.or.lang.core.psi.impl.PsiUpperIdentifier;
-import com.or.lang.core.psi.impl.PsiValImpl;
+import com.or.lang.core.psi.impl.*;
 import com.or.lang.core.psi.reference.PsiLowerSymbolReference;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,6 +63,25 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
         ((PsiLowerSymbolReference) reference).setResolveFor(element);
         PsiElement resolvedRef = reference.resolve();
         PsiElement resolvedElement = (resolvedRef instanceof PsiLowerIdentifier || resolvedRef instanceof PsiUpperIdentifier) ? resolvedRef.getParent() : resolvedRef;
+        if (resolvedElement instanceof PsiParameterImpl) {
+            PsiElement resolvedElementParent = resolvedElement.getParent();
+            if (!(resolvedElementParent instanceof PsiParameters)) {
+                System.out.println("warn: the cast of PsiParameters (l!=1) in function wasn't handled.");
+                return EMPTY_COLLECTION;
+            }
+            ArrayList<PsiParameter> params = new ArrayList<>();
+            boolean found = false;
+            for (PsiParameter parameter : ((PsiParameters) resolvedElementParent).getParametersList()) {
+                if (parameter.equals(resolvedElement)) { found = true; continue; }
+                if (!found) continue;
+                params.add(parameter);
+            }
+            resolvedElement = new PsiFakeLet( params );
+        }
+
+        System.out.println("for:"+element.getText());
+        System.out.println("  resolved:"+(resolvedElement != null ? resolvedElement.getText() : null));
+        System.out.println("  class:"+(resolvedElement != null ? resolvedElement.getClass() : null));
         if (!(resolvedElement instanceof PsiLet)) {
             // look for the implementation of val
             if (resolvedElement instanceof PsiValImpl) {
@@ -89,9 +106,11 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
                 parameters = psiFunction.getParameters();
             }
         }
+        System.out.println("  has params?"+parameters);
         if (parameters == null) return EMPTY_COLLECTION;
         // get the name for this value
         int indexOfParameter = OCamlPsiUtils.findIndexOfParameter(element, functionName.getText());
+        System.out.println("    index is:"+indexOfParameter);
         if (indexOfParameter < parameters.size()) {
             PsiParameter psiParameter = parameters.get(indexOfParameter);
             return List.of(new InlayInfo(psiParameter.getRealName(), element.getTextOffset()));
