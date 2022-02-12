@@ -78,7 +78,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="ae9ec" class="javax.swing.JLabel">
+              <component id="ae9ec" class="javax.swing.JLabel" binding="myOCamlBinaryLabel">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="5" use-parent-layout="false"/>
                 </constraints>
