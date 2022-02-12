@@ -1,4 +1,4 @@
-package com.ocaml.ide.insight.annotations;
+package com.ocaml.ide.insight.annotations.providers;
 
 import com.intellij.openapi.editor.Editor;
 import com.ocaml.sdk.output.CompilerOutputMessage;

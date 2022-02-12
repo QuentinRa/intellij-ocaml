@@ -1,45 +1,28 @@
-package com.ocaml.ide.insight.annotations;
+package com.ocaml.ide.insight.annotations.providers;
 
-import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
-import com.intellij.lang.annotation.AnnotationBuilder;
-import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.lang.annotation.ExternalAnnotator;
-import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.impl.TextRangeInterval;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.progress.ProcessCanceledException;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
-import com.intellij.problems.Problem;
-import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
-import com.ocaml.ide.insight.OCamlAnnotResultsService;
+import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
 import com.ocaml.lang.utils.OCamlPsiUtils;
-import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
 import com.ocaml.utils.files.OCamlFileUtils;
-import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,38 +32,14 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Relies on the ocaml compiler (ocamlc) to provide warnings, errors, and alerts
- * in real-time, in the editor.
- */
-public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, AnnotationResult> implements DumbAware {
+public class BasicExternalAnnotator implements CompilerOutputProvider {
 
-    private static final Logger LOG = OCamlLogger.getSdkInstance("annotator");
-    private static final String TEMP_COMPILATION_FOLDER = "/tmp/";
-
-    /* ensure that we got an OCaml SDK */
-
-    @Override
-    public @Nullable CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
-                                                      boolean hasErrors) {
+    public CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
+                                            String homePath, @NotNull ModuleRootManager moduleRootManager,
+                                            String outputFolder) {
         Project project = file.getProject();
         VirtualFile sourceFile = file.getVirtualFile();
-
-        // not inside a module?
-        Module module = ModuleUtil.findModuleForFile(sourceFile, project);
-        if (module == null) return null;
-        // find sdk
-        ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-        Sdk sdk = moduleRootManager.getSdk();
-        if (sdk == null || !(sdk.getSdkType() instanceof OCamlSdkType)) return null;
-        // get home path
-        String homePath = sdk.getHomePath();
-        if (homePath == null) return null;
-
         String targetFile = null;
-
-        LOG.trace("Working on file:" + sourceFile.getPath());
-
         Set<String> dependencies = OCamlPsiUtils.findDependencies(file);
 
         // find the file we are trying to compile
@@ -106,25 +65,21 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             if (mliV != null) mli = PsiManager.getInstance(project).findFile(mliV);
         }
 
-        // output folder
-        CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
-        VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
-        String outputFolder = outputPointer.getPresentableUrl() + TEMP_COMPILATION_FOLDER;
         System.out.println("final deps:"+deps);
-        return new CollectedInfo(file, editor, homePath, targetFile, mli, outputFolder);
+        return new CollectedInfo(this, file, editor, homePath, targetFile, mli, outputFolder);
     }
 
-    @Override public @Nullable AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo) {
+    @Override public AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo, Logger log) {
         // build/out folder
         File myOutputFolder = new File(collectedInfo.myOutputFolder);
         if (!myOutputFolder.exists() && !myOutputFolder.mkdirs()) {
-            LOG.warn("Couldn't create '" + myOutputFolder + "'");
+            log.warn("Couldn't create '" + myOutputFolder + "'");
             return null;
         }
         // target folder
         File targetFolder = new File(myOutputFolder, collectedInfo.myTargetFile).getParentFile();
         if (!targetFolder.exists() && !targetFolder.mkdirs()) {
-            LOG.warn("Couldn't create '" + targetFolder + "'");
+            log.warn("Couldn't create '" + targetFolder + "'");
             return null;
         }
 
@@ -138,7 +93,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         //noinspection RedundantSuppression
         @SuppressWarnings("deprecation")
         File sourceTempFile = ApplicationManager.getApplication().runReadAction((Computable<File>)
-                () -> OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), LOG)
+                () -> OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.mySourcePsiFile, sourceFile.getName(), log)
         );
         if (sourceTempFile == null) return null;
 
@@ -147,7 +102,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // and we got a .mli
         if (collectedInfo.myTargetMli != null) {
             ApplicationManager.getApplication().runReadAction(
-                    () -> interfaceTempFile.set(OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.myTargetMli, collectedInfo.myTargetMli.getName(), LOG))
+                    () -> interfaceTempFile.set(OCamlFileUtils.copyToTempFile(targetFolder, collectedInfo.myTargetMli, collectedInfo.myTargetMli.getName(), log))
             );
         }
 
@@ -163,7 +118,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                         sourceFile.getNameWithoutExtension()
                 );
                 if (compiler == null) {
-                    LOG.error("No cli found for " + collectedInfo.myHomePath + " (mli).");
+                    log.error("No cli found for " + collectedInfo.myHomePath + " (mli).");
                     return null;
                 }
                 Process process = compiler.cli.createProcess();
@@ -179,7 +134,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                     sourceFile.getNameWithoutExtension()
             );
             if (compiler == null) {
-                LOG.error("No cli found for " + collectedInfo.myHomePath + " (ml).");
+                log.error("No cli found for " + collectedInfo.myHomePath + " (ml).");
                 return null;
             }
             System.out.println("cli2:"+compiler.cli.getCommandLineString());
@@ -194,7 +149,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             CompilerOutputParser outputParser = new CompilerOutputParser() {
                 @Override protected void onMessageReady(@NotNull CompilerOutputMessage message) {
                     message.content = OCamlMessageAdaptor.temperPaths(message.content, compiler.rootFolderForTempering);
-                    LOG.debug("added:" + message.header() + " (line->" + message.filePosition.getStartLine() + ")");
+                    log.debug("added:" + message.header() + " (line->" + message.filePosition.getStartLine() + ")");
                     info.add(message);
                 }
             };
@@ -207,7 +162,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 outputParser.inputDone();
             } catch (IOException e) {
                 // may occur if the file was removed, because it will be compiled again?
-                LOG.warn("Reading '" + sourceFile.getName() + "' failed (" + e.getMessage() + ").");
+                log.warn("Reading '" + sourceFile.getName() + "' failed (" + e.getMessage() + ").");
                 return null;
             }
 
@@ -216,68 +171,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             return new AnnotationResult(info, collectedInfo.myEditor, annotFile);
         } catch (Exception e) {
             if (!(e instanceof ProcessCanceledException))
-                LOG.error("Error while processing annotations", e);
+                log.error("Error while processing annotations", e);
             return null;
-        }
-    }
-
-    @Override
-    public void apply(@NotNull PsiFile file, @NotNull AnnotationResult annotationResult,
-                      @NotNull AnnotationHolder holder) {
-        VirtualFile virtualFile = file.getVirtualFile();
-        Project project = file.getProject();
-        Editor editor = annotationResult.myEditor;
-
-        WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(project);
-        ArrayList<Problem> problems = new ArrayList<>();
-
-        for (CompilerOutputMessage m : annotationResult.myOutputInfo) {
-            OCamlAnnotation message = OCamlMessageAdaptor.temper(m, file, editor);
-
-            // type
-            HighlightSeverity t;
-            if (message.isWarning()) t = HighlightSeverity.WARNING;
-            else if (message.isError()) t = HighlightSeverity.ERROR;
-            else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
-            else t = HighlightSeverity.INFORMATION;
-
-            TextRangeInterval range = message.computePosition();
-
-            // create
-            if (message.fileLevel) {
-                // create fileLevel
-                AnnotationBuilder builder = holder.newAnnotation(t, "<html>" + message.header.replace("\n", "<br/>") + "</html>");
-                builder = builder.fileLevel();
-                builder = builder.tooltip(message.content);
-                builder.create();
-            }
-
-            if (message.normalLevel) {
-                AnnotationBuilder builder = holder.newAnnotation(t, message.header);
-                if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
-                builder = builder.tooltip(message.content);
-                builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
-                for (IntentionAction fix : message.fixes) {
-                    builder = builder.withFix(fix); // fix
-                }
-                builder.create();
-            }
-
-            if (message.isError()) {
-                problems.add(wolfTheProblemSolver.convertToProblem(
-                        virtualFile, message.startLine, message.startColumn,
-                        message.content.split("\n")
-                ));
-            }
-        }
-
-        OCamlAnnotResultsService annotResultsService = project.getService(OCamlAnnotResultsService.class);
-        if (!problems.isEmpty()) {
-            wolfTheProblemSolver.reportProblems(virtualFile, problems);
-            annotResultsService.clearForFile(virtualFile.getPath());
-        } else {
-            wolfTheProblemSolver.clearProblems(virtualFile);
-            annotResultsService.updateForFile(virtualFile.getPath(), annotationResult.myAnnotFile);
         }
     }
 }
