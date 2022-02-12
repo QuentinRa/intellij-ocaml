@@ -33,17 +33,9 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
     }
 
     @Override public @NotNull List<InlayInfo> getParameterHints(@NotNull PsiElement element, @NotNull PsiFile file) {
-        // small optimisation: skip
-        if (element instanceof PsiWhiteSpace) return EMPTY_COLLECTION;
-        // supported: literals and scope expr
-        if (!(element instanceof PsiLiteralExpression) && !(element instanceof PsiScopedExpr)
-        && !(element instanceof PsiLowerSymbol)){
-            boolean ok = false;
-            IElementType elementType = element.getNode().getElementType();
-            if (elementType.equals(OCamlTypes.FLOAT_VALUE)) ok = true;
-            if (!ok && elementType.equals(OCamlTypes.INT_VALUE)) ok = true;
-            if (!ok) return EMPTY_COLLECTION;
-        }
+        // skip unsupported element (whitespaces, ...)
+        // exceptions are added one by one
+        if (OCamlInsightFilter.shouldSkip(element)) return EMPTY_COLLECTION;
 
         // is file excluded ? ignore
         VirtualFile virtualFile = file.getVirtualFile();
@@ -66,6 +58,7 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
         if (resolvedElement instanceof PsiParameterImpl) {
             PsiElement resolvedElementParent = resolvedElement.getParent();
             if (!(resolvedElementParent instanceof PsiParameters)) {
+                // todo: log
                 System.out.println("warn: the cast of PsiParameters (l!=1) in function wasn't handled.");
                 return EMPTY_COLLECTION;
             }
@@ -79,9 +72,10 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
             resolvedElement = new PsiFakeLet( params );
         }
 
-        System.out.println("for:"+element.getText());
-        System.out.println("  resolved:"+(resolvedElement != null ? resolvedElement.getText() : null));
-        System.out.println("  class:"+(resolvedElement != null ? resolvedElement.getClass() : null));
+        // todo: log?
+        //System.out.println("for:"+element.getText());
+        // System.out.println("  resolved:"+(resolvedElement != null ? resolvedElement.getText() : null));
+        //  System.out.println("  class:"+(resolvedElement != null ? resolvedElement.getClass() : null));
         if (!(resolvedElement instanceof PsiLet)) {
             // look for the implementation of val
             if (resolvedElement instanceof PsiValImpl) {
@@ -106,11 +100,13 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
                 parameters = psiFunction.getParameters();
             }
         }
-        System.out.println("  has params?"+parameters);
+        // todo: log?
+        // System.out.println("  has params?"+parameters);
         if (parameters == null) return EMPTY_COLLECTION;
         // get the name for this value
         int indexOfParameter = OCamlPsiUtils.findIndexOfParameter(element, functionName.getText());
-        System.out.println("    index is:"+indexOfParameter);
+        // todo: log?
+        // System.out.println("    index is:"+indexOfParameter);
         if (indexOfParameter < parameters.size()) {
             PsiParameter psiParameter = parameters.get(indexOfParameter);
             return List.of(new InlayInfo(psiParameter.getRealName(), element.getTextOffset()));
