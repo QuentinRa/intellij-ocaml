@@ -4,6 +4,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
+import com.ocaml.sdk.providers.utils.InvalidHomeError;
 import com.ocaml.sdk.providers.windows.WindowsOCamlSdkProvider;
 import com.ocaml.utils.ComputeMethod;
 import org.jetbrains.annotations.NotNull;
@@ -103,6 +104,10 @@ public final class OCamlSdkProvidersManager implements OCamlSdkProvider {
 
     @Override public Boolean isHomePathValid(@NotNull Path homePath) {
         return callProvidersValue(provider -> provider.isHomePathValid(homePath));
+    }
+
+    @Override public @Nullable InvalidHomeError isHomePathValidErrorMessage(@NotNull Path homePath) {
+        return callProvidersValue(provider -> provider.isHomePathValidErrorMessage(homePath));
     }
 
     @Override public @Nullable String getDuneVersion(String sdkHomePath) {

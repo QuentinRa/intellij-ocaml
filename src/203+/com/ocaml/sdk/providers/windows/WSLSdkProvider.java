@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.impl.wsl.WslConstants;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
+import com.ocaml.sdk.providers.utils.InvalidHomeError;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -227,7 +228,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
         return index > 0;
     }
 
-    @Override protected @Nullable Boolean handleSymlinkHomePath(Path homePath) {
+    @Override protected @Nullable InvalidHomeError handleSymlinkHomePath(@NotNull Path homePath) {
         WslPath path = WslPath.parseWindowsUncPath(homePath.toFile().getAbsolutePath());
         if (path == null) return null;
         WSLDistribution distribution = path.getDistribution();
@@ -267,7 +268,7 @@ public class WSLSdkProvider extends AbstractWindowsBaseProvider {
                     new String(process.getInputStream().readAllBytes()).replace("\n", "")
             );
             LOG.debug("code:" + exitCode);
-            return exitCode == 0;
+            return exitCode == 0 ? InvalidHomeError.NONE : InvalidHomeError.GENERIC;
         } catch (ExecutionException | InterruptedException | IOException | NumberFormatException e) {
             return null;
         }

@@ -7,9 +7,11 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownloadTask;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.sdk.doc.OCamlSdkAdditionalData;
 import com.ocaml.sdk.doc.OCamlSdkAdditionalDataConfigurable;
+import com.ocaml.sdk.providers.utils.InvalidHomeError;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -126,6 +129,22 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
 
     @Override public boolean isValidSdkHome(@NotNull String sdkHome) {
         return OCamlSdkHomeManager.isValid(sdkHome);
+    }
+
+    @Override public String getInvalidHomeMessage(@NotNull String path) {
+        InvalidHomeError kind = OCamlSdkHomeManager.invalidHomeErrorMessage(Path.of(path));
+        if (kind == null)
+            return OCamlBundle.message("sdk.home.error.no.provider");
+        switch (kind) {
+            case INVALID_HOME_PATH: return OCamlBundle.message("sdk.home.error.invalid");
+            case NO_TOP_LEVEL: return OCamlBundle.message("sdk.home.error.no.top.level");
+            case NO_COMPILER: return OCamlBundle.message("sdk.home.error.no.compiler");
+            case NO_SOURCES: return OCamlBundle.message("sdk.home.error.no.sources");
+            case NONE:
+            case GENERIC:
+            default:
+                return super.getInvalidHomeMessage(path);
+        }
     }
 
     //

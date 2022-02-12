@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🚀🚀 Available for 203.*
 - 🚀 parameters names are shown before parameters (#38)
 - 🚀 can see the type with `CTRL+SHIFT+P` (#38)
+- ✨ Custom error messages if the SDK is invalid.
 
 ### Changed
 - ✨ Fill the dune-project version using "dune --version" (with the dune associated with the module SDK, #43)

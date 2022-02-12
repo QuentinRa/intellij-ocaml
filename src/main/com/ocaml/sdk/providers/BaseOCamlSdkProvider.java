@@ -8,6 +8,7 @@ import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
+import com.ocaml.sdk.providers.utils.InvalidHomeError;
 import com.ocaml.sdk.providers.utils.OCamlSdkScanner;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.utils.files.OCamlPathUtils;
@@ -192,11 +193,15 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
 
     @Override public @Nullable Boolean isHomePathValid(@NotNull Path homePath) {
         if (!canUseProviderForHome(homePath)) return null;
+        return isHomePathValidErrorMessage(homePath) == InvalidHomeError.NONE;
+    }
+
+    @Override public @Nullable InvalidHomeError isHomePathValidErrorMessage(@NotNull Path homePath) {
         // version
         boolean ok = OCamlSdkVersionManager.isValid(homePath.toFile().getName());
         if (!ok) {
             LOG.debug("Not a valid home name: " + homePath);
-            return false;
+            return InvalidHomeError.INVALID_HOME_PATH;
         }
         // interactive toplevel
         boolean hasTopLevel = false;
@@ -205,9 +210,11 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
             if (hasTopLevel) break;
         }
         if (!hasTopLevel) {
-            Boolean link = handleSymlinkHomePath(homePath);
-            if (link == null)
+            InvalidHomeError link = handleSymlinkHomePath(homePath);
+            if (link == null) {
                 LOG.debug("Not top level found for " + homePath);
+                link = InvalidHomeError.NO_TOP_LEVEL;
+            }
             return link;
         }
         // compiler
@@ -218,11 +225,12 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         }
         if (!hasCompiler) {
             LOG.debug("Not compiler found for " + homePath);
-            return false;
+            return InvalidHomeError.NO_COMPILER;
         }
         // sources
         boolean hasSources = false;
         boolean sourcesMissing = false;
+        InvalidHomeError e = InvalidHomeError.NONE;
         for (String sourceFolder : getOCamlSourcesFolders()) {
             Path path = homePath.resolve(sourceFolder);
             hasSources = Files.exists(path);
@@ -235,14 +243,15 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
         }
         if (!hasSources) {
             LOG.debug("Not sources found for " + homePath);
+            e = InvalidHomeError.NO_SOURCES;
         }
         if (sourcesMissing) {
             LOG.warn("Sources are missing for " + homePath);
         }
-        return hasSources;
+        return e;
     }
 
-    protected @Nullable Boolean handleSymlinkHomePath(Path homePath) {
+    protected @Nullable InvalidHomeError handleSymlinkHomePath(Path homePath) {
         return null;
     }
 
