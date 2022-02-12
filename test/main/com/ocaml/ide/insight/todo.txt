@@ -1,0 +1,39 @@
+let f x y = 5
+
+let _ = f 1 0.0
+let _ = f 1 "0.0"
+let _ = f 1 (* this is stopping type inference *) 3
+
+let x s = f 1 s
+
+(* bug: inferred "y" for "x y" instead of "x s" *)
+let _ = x 0
+
+---------------
+
+let var(s) = "toto"
+let x = var "x"
+
+-------------------------
+
+(* bug inferred check 2 *)
+let nes t =
+    let nx f (k: float list) = function
+    | [] -> []
+    | _ -> []
+    in nx (nx [][]) []
+
+let nes t =
+    let nx f (k: int list) = function
+    | [] -> []
+    | _ -> []
+    in nx (nx [][]) []
+
+---------------------------
+
+(* bug parenthesis marked as k *)
+let nes t =
+    let nx f k = function
+    | [] -> []
+    | _ -> []
+    in nx (nx []) []
