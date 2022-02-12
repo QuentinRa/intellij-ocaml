@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -40,16 +42,11 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
         Project project = file.getProject();
         VirtualFile sourceFile = file.getVirtualFile();
         String targetFile = null;
-        Set<String> dependencies = OCamlPsiUtils.findDependencies(file);
+        Set<VirtualFile> dependencies = getDependencies(file, moduleRootManager);
 
         // find the file we are trying to compile
-        ArrayList<VirtualFile> deps = new ArrayList<>();
         for (VirtualFile root : moduleRootManager.getSourceRoots()) {
             boolean under = VfsUtil.isUnder(sourceFile, Set.of(root));
-            deps.addAll(VfsUtil.getChildren(root,
-                    // is a .ml and is in the list of dependencies
-                    f -> OCamlFileType.isFile(f.getPath()) && dependencies.contains(f.getNameWithoutExtension())
-            ));
             if (!under) continue;
             // we are asking for the parent, because we want the root inside the relative path
             // ex: src/errors/mismatch/missing_impl/file.ml
@@ -64,9 +61,45 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
             VirtualFile mliV = sourceFile.getParent().findChild(OCamlInterfaceFileType.fromSource(sourceFile.getName()));
             if (mliV != null) mli = PsiManager.getInstance(project).findFile(mliV);
         }
+        return new CollectedInfo(this, file, editor, homePath, targetFile, mli, dependencies, outputFolder);
+    }
 
-        System.out.println("final deps:"+deps);
-        return new CollectedInfo(this, file, editor, homePath, targetFile, mli, outputFolder);
+    private @NotNull Set<VirtualFile> getDependencies(@NotNull PsiFile file, @NotNull ModuleRootManager moduleRootManager) {
+        Set<String> dependencies = OCamlPsiUtils.findDependencies(file);
+        Set<VirtualFile> deps = new HashSet<>();
+
+        // small optimisation
+        if (dependencies.isEmpty()) return deps;
+
+        // look into every source folder
+        HashMap<String, VirtualFile> potential = new HashMap<>();
+        for (VirtualFile root : moduleRootManager.getSourceRoots()) {
+            for (VirtualFile f : VfsUtil.getChildren(root)) {
+                // is in the list of dependencies?
+                if(!dependencies.contains(f.getNameWithoutExtension())) continue;
+                // yes
+                if(OCamlInterfaceFileType.isFile(f.getPath())) {
+                    String s = OCamlFileType.fromInterface(f.getPath());
+                    // remove the source
+                    potential.remove(s);
+                    // we are adding the interface instead
+                    deps.add(f);
+                } else {
+                    potential.put(f.getPath(), f);
+                }
+            }
+        }
+        deps.addAll(potential.values());
+        // there is no dependency graph
+        // they should be sorted by dependency
+        // is it needed trough? (we are using -c)
+        for (VirtualFile dep : deps) {
+            PsiFile psiFile = PsiManager.getInstance(file.getProject())
+                    .findFile(dep);
+            if (psiFile == null) continue;
+            deps.addAll(getDependencies(psiFile, moduleRootManager));
+        }
+        return deps;
     }
 
     @Override public AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo, Logger log) {

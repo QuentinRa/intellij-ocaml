@@ -6,6 +6,7 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.ocaml.OCamlBundle;
 import com.ocaml.OCamlLanguage;
 import com.ocaml.icons.OCamlIcons;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +38,10 @@ public final class OCamlInterfaceFileType extends LanguageFileType {
         if (OCamlFileType.isFile(path))
             return path.replace(OCamlFileType.DEFAULT_EXTENSION, DEFAULT_EXTENSION);
         throw new IllegalArgumentException("Not a valid source file '" + path + "'");
+    }
+
+    @Contract(pure = true) public static boolean isFile(@NotNull String name) {
+        return name.endsWith(DOT_DEFAULT_EXTENSION);
     }
 
     // implementation
