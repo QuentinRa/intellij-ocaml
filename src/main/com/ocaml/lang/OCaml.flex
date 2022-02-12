@@ -15,6 +15,7 @@ import static com.intellij.psi.TokenType.*;
     private CharSequence quotedStringId;
     private int commentDepth;
     private boolean inComment = false;
+    private boolean inAnnotationDetails = false;
 
     //Store the start index of a token
     private void tokenStart() {
@@ -176,7 +177,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     // nor a (*** kind of comment
     "(**" [^*)] { yybegin(IN_OCAML_DOC_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
     // annotations
-    "[@" { yybegin(IN_OCAML_ANNOT); tokenStart(); }
+    "[@" { yybegin(IN_OCAML_ANNOT); inAnnotationDetails = false; tokenStart(); }
 
     "#if"     { return OCamlTypes.DIRECTIVE_IF; }
     "#else"   { return OCamlTypes.DIRECTIVE_ELSE; }
@@ -278,8 +279,9 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
 }
 
 <IN_OCAML_ANNOT> {
-    "]" { yybegin(INITIAL); tokenEnd(); return OCamlTypes.ANNOTATION; }
-     // match {| |}
+    "]" { if (!inAnnotationDetails) { yybegin(INITIAL); tokenEnd(); return OCamlTypes.ANNOTATION; } }
+    "{|" { inAnnotationDetails = true; }
+    "|}" { inAnnotationDetails = false; }
      . | {NEWLINE} { }
      <<EOF>> { yybegin(INITIAL); tokenEnd(); return OCamlTypes.ANNOTATION; }
 }

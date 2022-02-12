@@ -7,7 +7,7 @@
 
 [@@@ocaml.deprecated {|
      As you could guess, Deprecated_module is deprecated.
-     Please use something else!
+     Please use something else! This token is ignored : ].
    |} ]
 
 let [@ocaml.deprecated] x = 5 [@unbox]
