@@ -21,7 +21,7 @@ This is the list features that I added directly into the code of the ReasonML pl
 * ❌ Improving documentation (https://github.com/QuentinRa/intellij-ocaml/issues/68)
 * ❌ Invalid resolved documentation (https://github.com/QuentinRa/intellij-ocaml/issues/69)
 * ❌ Priorities for autocompletion (https://github.com/QuentinRa/intellij-ocaml/issues/55)
-* ❌ Unpleasant suggestions (https://github.com/QuentinRa/intellij-ocaml/issues/66) 
+* ✅ Unpleasant suggestions (https://github.com/QuentinRa/intellij-ocaml/issues/66) 
 * ❌ Duplicate suggestions (https://github.com/QuentinRa/intellij-ocaml/issues/67)
 
 ### Bugs
