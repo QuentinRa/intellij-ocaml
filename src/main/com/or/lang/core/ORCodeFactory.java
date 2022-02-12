@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ORCodeFactory {
-    // todo: why RML?
     private ORCodeFactory() {
     }
 

@@ -3,9 +3,17 @@ package com.ocaml.lang.utils;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
+import com.or.lang.OCamlTypes;
+import com.or.lang.core.psi.PsiInclude;
+import com.or.lang.core.psi.PsiOpen;
 import com.or.lang.core.psi.PsiStructuredElement;
+import com.or.lang.core.psi.PsiUpperSymbol;
+import com.or.lang.core.type.ORTokenElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public final class OCamlPsiUtils {
 
@@ -43,5 +51,44 @@ public final class OCamlPsiUtils {
         }
 
         return -1; // not found
+    }
+
+    public static @NotNull Set<String> findDependencies(@NotNull PsiElement element) {
+        Set<String> res = new HashSet<>();
+        for (PsiElement child : element.getChildren()) {
+            if (child instanceof PsiWhiteSpace) continue;
+
+            // open ModuleName
+            if (child instanceof PsiOpen) {
+                res.add(((PsiOpen) child).getPath().toLowerCase());
+            }
+
+            if (child instanceof PsiInclude) {
+                res.add(((PsiInclude) child).getIncludePath().toLowerCase());
+            }
+
+            // child instanceof PsiLocalOpen?
+
+            // ModuleName.function
+            if (child instanceof PsiUpperSymbol && OCamlPsiUtils.isNextMeaningfulSibling(child, OCamlTypes.DOT)) {
+                res.add(child.getText().toLowerCase());
+            }
+            // next
+            res.addAll(findDependencies(child));
+        }
+        return res;
+    }
+
+    public static boolean isNextMeaningfulSibling(@NotNull PsiElement element, ORTokenElementType type) {
+        PsiElement nextSibling = element.getNextSibling();
+        while (nextSibling != null) {
+            // skip white spaces and comments
+            if (nextSibling instanceof PsiWhiteSpace || nextSibling instanceof PsiComment) {
+                nextSibling = nextSibling.getNextSibling();
+                continue;
+            }
+            return nextSibling.getNode().getElementType().equals(type);
+        }
+        return false;
     }
 }

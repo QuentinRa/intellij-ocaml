@@ -247,7 +247,6 @@ public interface OCamlTypes {
     ORTokenElementType WHILE = new ORTokenElementType("while");
     ORTokenElementType WITH = new ORTokenElementType("with");
 
-    // todo: handle properly (not in the lexer)
     ORTokenElementType PROPERTY_NAME = new ORTokenElementType("PROPERTY_NAME");
     ORTokenElementType VARIANT_NAME = new ORTokenElementType("VARIANT_NAME");
     ORTokenElementType DOUBLE_QUOTE = new ORTokenElementType("DOUBLE_QUOTE");
