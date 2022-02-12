@@ -76,6 +76,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
 %state IN_STRING
 %state IN_OCAML_ML_COMMENT
 %state IN_OCAML_DOC_COMMENT
+%state IN_OCAML_ANNOT
 
 %%
 
@@ -168,13 +169,14 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "'"{LOWERCASE}{IDENTCHAR}*       { return OCamlTypes.TYPE_ARGUMENT; }
     "`"{UPPERCASE}{IDENTCHAR}*       { return OCamlTypes.POLY_VARIANT; }
     "`"{LOWERCASE}{IDENTCHAR}*       { return OCamlTypes.POLY_VARIANT; }
-    "[@" .* "]"                      { return OCamlTypes.ANNOTATION; }
 
     "\"" { if (!inComment) yybegin(IN_STRING); tokenStart(); }
     "(*" { yybegin(IN_OCAML_ML_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
     // not a normal, empty, comment
     // nor a (*** kind of comment
     "(**" [^*)] { yybegin(IN_OCAML_DOC_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
+    // annotations
+    "[@" { yybegin(IN_OCAML_ANNOT); tokenStart(); }
 
     "#if"     { return OCamlTypes.DIRECTIVE_IF; }
     "#else"   { return OCamlTypes.DIRECTIVE_ELSE; }
@@ -273,6 +275,13 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "*)" { commentDepth -= 1; if (commentDepth == 0) { inComment = false; yybegin(INITIAL); tokenEnd(); return OCamlTypes.DOC_COMMENT; } }
      . | {NEWLINE} { }
      <<EOF>> { yybegin(INITIAL); tokenEnd(); return OCamlTypes.DOC_COMMENT; }
+}
+
+<IN_OCAML_ANNOT> {
+    "]" { yybegin(INITIAL); tokenEnd(); return OCamlTypes.ANNOTATION; }
+     // match {| |}
+     . | {NEWLINE} { }
+     <<EOF>> { yybegin(INITIAL); tokenEnd(); return OCamlTypes.ANNOTATION; }
 }
 
 [^] { return BAD_CHARACTER; }
