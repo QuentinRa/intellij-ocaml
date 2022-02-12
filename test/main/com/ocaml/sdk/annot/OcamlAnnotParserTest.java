@@ -7,12 +7,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-// todo: add types
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class OcamlAnnotParserTest extends OCamlBaseTest {
 
     private void assertParserResult(String input, @NotNull String expectedOutput) {
-        ArrayList<OCamlInferredSignature> res = new OCamlAnnotParser(input).parse();
+        ArrayList<OCamlInferredSignature> res = new OCamlAnnotParser(input).get();
         String[] lines = expectedOutput.split("\n");
         assertSize(lines.length, res);
         for (int i = 0; i < lines.length; i++) {

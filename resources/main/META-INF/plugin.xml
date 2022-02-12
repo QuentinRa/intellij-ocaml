@@ -73,12 +73,13 @@
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
         <annotator language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlDocumentationAnnotator"/>
-        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.highlight.annotations.CompilerOutputAnnotator" />
+        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.insight.annotations.CompilerOutputAnnotator" />
         <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
 
         <!-- INFERENCE -->
         <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />
         <codeInsight.typeInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlTypeInfoHint"/>
+        <projectService serviceImplementation="com.ocaml.ide.insight.OCamlAnnotResultsService"/>
 
         <!-- REPL -->
         <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>

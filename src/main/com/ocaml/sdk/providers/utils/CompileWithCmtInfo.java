@@ -1,7 +1,9 @@
 package com.ocaml.sdk.providers.utils;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
 import com.ocaml.utils.ImplementationNote;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 @ImplementationNote(
@@ -22,7 +24,7 @@ public final class CompileWithCmtInfo {
     @NotNull public final GeneralCommandLine cli;
 
     /**
-     * This root is used by {@link com.ocaml.ide.highlight.annotations.OCamlMessageAdaptor#temperPaths(String, String)}
+     * This root is used by {@link OCamlMessageAdaptor#temperPaths(String, String)}
      * to provide an OS-independent path in the messages.
      */
     @NotNull public final String rootFolderForTempering;
@@ -36,6 +38,13 @@ public final class CompileWithCmtInfo {
             rootFolderForTempering += rootFolderForTempering.contains("/") ? "/" : "\\";
 
         this.rootFolderForTempering = rootFolderForTempering;
+    }
+
+    /**
+     * @return the extension of the annotation file, without the dot (".").
+     */
+    @Contract(pure = true) public @NotNull String getAnnotationFileExtension() {
+        return "annot";
     }
 
     /**

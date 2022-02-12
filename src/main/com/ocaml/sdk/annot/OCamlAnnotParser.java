@@ -1,6 +1,7 @@
 package com.ocaml.sdk.annot;
 
 import com.intellij.build.FilePosition;
+import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +22,11 @@ public class OCamlAnnotParser {
         this.pos = 0;
     }
 
-    public ArrayList<OCamlInferredSignature> parse() {
+    /**
+     * Parse and return the result of the parsing
+     * @return list of signature that were found in the file
+     */
+    public ArrayList<OCamlInferredSignature> get() {
         ArrayList<OCamlInferredSignature> elements = new ArrayList<>();
         AnnotParserState state = parseInstruction();
         while (state != null) {
@@ -97,8 +102,9 @@ public class OCamlAnnotParser {
                 new File(state.fileName),
                 state.startLine, state.startColumn, state.endLine, state.endColumn
         );
+        annotatedElement.range = new TextRange(state.startOffset, state.endOffset);
 
-        System.out.println("state:"+state);
+//        System.out.println("state:"+state);
         return annotatedElement;
     }
 
@@ -127,12 +133,14 @@ public class OCamlAnnotParser {
      */
     private static class AnnotParserState {
         private final String fileName;
-        public int startLine;
-        public int startColumn;
-        public int endLine;
-        public int endColumn;
-        public String type; // type of the element
-        public String name;
+        private final int startOffset;
+        private final int endOffset;
+        private final int startLine;
+        private final int startColumn;
+        private final int endLine;
+        private final int endColumn;
+        private String type; // type of the element
+        private String name;
 
         enum AnnotKind {
             VARIABLE, VALUE, MODULE
@@ -142,13 +150,16 @@ public class OCamlAnnotParser {
         public AnnotParserState(String fileName, String startLine, String startOffset,
                                 String startColumnWithOffset, String endLine,
                                 String endOffset, String endColumnWithOffset) {
-            this.fileName = fileName;
             int offsetStart = Integer.parseInt(startOffset);
             int offsetEnd = Integer.parseInt(endOffset);
+
+            this.fileName = fileName;
+            this.startOffset = Integer.parseInt(startColumnWithOffset);
+            this.endOffset = Integer.parseInt(endColumnWithOffset);
             this.startLine = Integer.parseInt(startLine);
-            this.startColumn = Integer.parseInt(startColumnWithOffset) - offsetStart;
+            this.startColumn = this.startOffset - offsetStart;
             this.endLine = Integer.parseInt(endLine);
-            this.endColumn = Integer.parseInt(endColumnWithOffset) - offsetEnd;
+            this.endColumn = this.endOffset - offsetEnd;
         }
 
         @Contract(pure = true)
