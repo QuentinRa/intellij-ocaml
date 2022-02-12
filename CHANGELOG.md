@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - 🚀🚀 Available for 203.*
 - 🚀 parameters names are shown before parameters (#38)
+- 🚀 can see the type with `CTRL+SHIFT+P` (#38)
 
 ### Changed
 - ✨ Fill the dune-project version using "dune --version" (with the dune associated with the module SDK, #43)

@@ -12,7 +12,7 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] Support for Dune (already supported in ReasonML)
 * [x] Any installation must be simple, and effortless
 * [ ] **Real-time checks for errors/warnings**, including quick fixes
-* [ ] **Real-time type inference**
+* [x] **Real-time type inference**
 * [ ] **Smart completion**
 * [x] **REPL support**: we must be able to send commands from our file, to a REPL console
 * [x] **Using a bundle** (possible support for Localization later)
@@ -69,6 +69,9 @@ An SDK is a folder (**named after its ocaml version** such as 4.05.0) in which y
 | ✅ Send the selection to the console                   |
 | ✅ Send a statement to the console                     |
 | ✅ Preview the auto-selected statement, can be changed |
+| ❌ Multiples consoles                                  |
+| ❌ Select the SDK used in a console                    |
+| ❌ Use `utop`                                          |
 
 This is a console allowing the use of the ocaml interpreter more easily. For instance, arrows up/down are now properly handled. You also got a history of your commands.
 
@@ -80,7 +83,6 @@ This is a console allowing the use of the ocaml interpreter more easily. For ins
 | ✅ we can see alerts in the file                  |
 | ✅ errors are shown project-wide                  |
 | ✅ mli is compiled is present, when in a .ml      |
-| ✅ show parameters names                          |
 | ❌ handle dune projects                           |
 | ❌ handle Makefile projects                       |
 
@@ -92,9 +94,10 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 | ✅ Editor > File and Code Templates for .ml and .mli    |
 | ✅ Buttons to browse the OCaml Manual/API in the editor |
 
-| OCaml |
-|-------|
-| ...   |
+| OCaml                            |
+|----------------------------------|
+| ✅ Show names before parameters   |
+| ✅ Show types with `CTRL+SHIFT+P` |
 
 | Dune                                              |
 |---------------------------------------------------|
@@ -147,11 +150,11 @@ In my case, on Linux or Debian, I'm using these commands (you may call `sudo apt
 <details>
 <summary>macOS</summary>
 
-I do not have a computer with a macOS, so you should submit feedback, so that I can update this section. From what I know, you may look around
+I do not have a computer with a macOS, so you should submit feedback, so that I can update this section. From what I saw, you may only have to do
 
 * `brew update`
-* `brew install ocaml`
-* `brew install opam`
+* `brew install ocaml` (for ocaml)
+* `brew install opam` (for opam)
 
 [Source](https://stackoverflow.com/questions/35563263/install-opam-in-mac-os).
 </details>
