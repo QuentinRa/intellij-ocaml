@@ -30,6 +30,7 @@ import com.intellij.psi.PsiManager;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
+import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
@@ -44,7 +45,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, AnnotationResult> implements DumbAware {
 
     private static final Logger LOG = OCamlLogger.getSdkInstance("annotator");
+    private static final String TEMP_COMPILATION_FOLDER = "/tmp/";
 
     /* ensure that we got an OCaml SDK */
 
@@ -80,9 +81,16 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
         LOG.trace("Working on file:" + sourceFile.getPath());
 
+        Set<String> dependencies = OCamlPsiUtils.findDependencies(file);
+
         // find the file we are trying to compile
+        ArrayList<VirtualFile> deps = new ArrayList<>();
         for (VirtualFile root : moduleRootManager.getSourceRoots()) {
             boolean under = VfsUtil.isUnder(sourceFile, Set.of(root));
+            deps.addAll(VfsUtil.getChildren(root,
+                    // is a .ml and is in the list of dependencies
+                    f -> OCamlFileType.isFile(f.getPath()) && dependencies.contains(f.getNameWithoutExtension())
+            ));
             if (!under) continue;
             // we are asking for the parent, because we want the root inside the relative path
             // ex: src/errors/mismatch/missing_impl/file.ml
@@ -101,7 +109,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         // output folder
         CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
         VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
-        String outputFolder = outputPointer.getPresentableUrl() + "/tmp/";
+        String outputFolder = outputPointer.getPresentableUrl() + TEMP_COMPILATION_FOLDER;
+        System.out.println("final deps:"+deps);
         return new CollectedInfo(file, editor, homePath, targetFile, mli, outputFolder);
     }
 
@@ -173,6 +182,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 LOG.error("No cli found for " + collectedInfo.myHomePath + " (ml).");
                 return null;
             }
+            System.out.println("cli2:"+compiler.cli.getCommandLineString());
 
             OSProcessHandler processHandler = ProcessHandlerFactory
                     .getInstance()
@@ -199,10 +209,6 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 // may occur if the file was removed, because it will be compiled again?
                 LOG.warn("Reading '" + sourceFile.getName() + "' failed (" + e.getMessage() + ").");
                 return null;
-            } finally {
-                // delete
-                Files.deleteIfExists(sourceTempFile.toPath());
-                if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
             }
 
             String nameWithoutExtension = sourceFile.getNameWithoutExtension();
@@ -211,13 +217,6 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         } catch (Exception e) {
             if (!(e instanceof ProcessCanceledException))
                 LOG.error("Error while processing annotations", e);
-            // delete
-            try {
-                Files.deleteIfExists(sourceTempFile.toPath());
-                if (interfaceTempFile.get() != null) Files.deleteIfExists(interfaceTempFile.get().toPath());
-            } catch (IOException ex) {
-                LOG.error("Files were not deleted", ex);
-            }
             return null;
         }
     }
