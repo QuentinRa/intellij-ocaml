@@ -65,9 +65,6 @@ public class OclSyntaxAnnotator implements Annotator {
 
     private void color(@NotNull AnnotationHolder holder, @NotNull PsiElement element, @NotNull TextAttributesKey key) {
         holder.newSilentAnnotation(INFORMATION)
-                .enforcedTextAttributes(TextAttributes.ERASE_MARKER)
-                .create();
-        holder.newSilentAnnotation(INFORMATION)
                 .range(element)
                 .textAttributes(key)
                 .create();

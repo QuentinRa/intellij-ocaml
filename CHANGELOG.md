@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - ✨ Fill the dune-project version using "dune --version" (with the dune associated with the module SDK, #43)
+- ✨ No autocompletion in strings. No autocompletion for numbers, and floats. (#66)
+- 🚀 Fix errors when using modules. Compilation should be working fine now. (#65)
+- ✨ Fix problems with the highlighter (#45)
 
 ## [0.0.7]
 ### Added

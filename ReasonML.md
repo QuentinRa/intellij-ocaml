@@ -29,6 +29,8 @@ This is the list features that I added directly into the code of the ReasonML pl
 This is a list of bugs in this version of the ReasonML plugin.
 
 * ❌ invalid highlight (https://github.com/QuentinRa/intellij-ocaml/issues/45)
+  * Removing ERASE_MARKER in annotator
+  * Every other case was from my side of the Lexer
 * ❌ bug with the resolver (https://github.com/QuentinRa/intellij-ocaml/issues/62)
 * ❌ highlight for todo (https://github.com/QuentinRa/intellij-ocaml/issues/64)
 * ❌ empty type in variable view (https://github.com/QuentinRa/intellij-ocaml/issues/63)
