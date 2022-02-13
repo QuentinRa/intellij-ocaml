@@ -13,6 +13,11 @@ import java.util.regex.Pattern;
 
 public class OCamlAnnotParser {
     private static final Pattern FILE_POSITION = Pattern.compile("\"([^\"]+)\" (\\d+) (\\d+) (\\d+) \"[^\"]+\" (\\d+) (\\d+) (\\d+).*");
+    // tested: same values for ocaml 4.05 to ocamlc 4.14
+    private static final String TYPE_START = "type(";
+    private static final String IDENT_START = "ident(";
+    private static final String VARIABLE_DEF = "def";
+    private static final String VARIABLE_REF = "ref";
 
     private final String[] lines;
     private int pos;
@@ -48,8 +53,8 @@ public class OCamlAnnotParser {
         );
         String line = readLine();
         // it's a module
-        if(!line.startsWith("type(")) {
-            if (line.startsWith("ident")) {
+        if(!line.startsWith(TYPE_START)) {
+            if (line.startsWith(IDENT_START)) {
                 line = readLine().trim(); // look for module name
                 state.name = line.substring(getStartingPosition(line), line.indexOf("\"")-1);
                 pos++; // skip )
@@ -62,7 +67,7 @@ public class OCamlAnnotParser {
             state.type = readLine().trim();
             pos++; // skip )
             line = tryReadLine();
-            if (line != null && line.startsWith("ident(")) { // variable
+            if (line != null && line.startsWith(IDENT_START)) { // variable
                 line = readLine().trim(); // look for variable name
                 int end = line.indexOf("\"");
                 int start = getStartingPosition(line);
@@ -82,10 +87,10 @@ public class OCamlAnnotParser {
     }
 
     private int getStartingPosition(@NotNull String line) {
-        if (!line.startsWith("def")) {
-            return line.indexOf("ref")+4; // 'ref '
+        if (!line.startsWith(VARIABLE_DEF)) {
+            return line.indexOf(VARIABLE_REF)+VARIABLE_REF.length()+1; // ex: 'ref ' => 3+1
         } else {
-            return "def".length()+1;
+            return VARIABLE_DEF.length()+1; // ex: 'def ' => 3 + 1
         }
     }
 
@@ -104,7 +109,6 @@ public class OCamlAnnotParser {
         );
         annotatedElement.range = new TextRange(state.startOffset, state.endOffset);
 
-//        System.out.println("state:"+state);
         return annotatedElement;
     }
 
@@ -118,6 +122,7 @@ public class OCamlAnnotParser {
         return lines[pos++];
     }
 
+    @Contract(mutates = "this")
     private @Nullable String tryReadLine() {
         if (pos >= lines.length) return null;
         return lines[pos++];
