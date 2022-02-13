@@ -30,6 +30,7 @@ public final class OCamlAnnotResultsService {
             ArrayList<OCamlInferredSignature> res = parser.get();
             results.put(file, res);
         } catch (IOException | IllegalStateException e) {
+            // todo: log
             // may occur if the file is removed because a new one will be generated
             System.out.println("warn:"+e);
         }
@@ -48,9 +49,11 @@ public final class OCamlAnnotResultsService {
         String path = element.getContainingFile().getVirtualFile().getPath();
         List<OCamlInferredSignature> inferredSignatures = results.get(path);
         if (inferredSignatures == null) return null;
-        System.out.println("r:"+element.getTextRange());
+        // todo: log ?
+//        System.out.println("r:"+element.getTextRange());
         for (OCamlInferredSignature inferredSignature : inferredSignatures) {
-            System.out.println("testing with "+inferredSignature);
+            // todo: log ?
+//            System.out.println("testing with "+inferredSignature);
             if (inferredSignature.range.contains(element.getTextRange()))
                 return inferredSignature;
         }
