@@ -37,3 +37,8 @@ let nes t =
     | [] -> []
     | _ -> []
     in nx (nx []) []
+
+----------------------------
+let x = let y = 0.0 in int_of_float y
+----------------------------
+module E = Set.Make(struct type t = int let compare = compare end)

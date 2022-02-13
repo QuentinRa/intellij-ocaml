@@ -343,4 +343,27 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                 "Li|2.11,2.17|< .. >\nLi|3.30,3.32|int list\n" +
                         "Va|5.4,5.5|s|stack_of_ints\nLi|5.8,5.25|stack_of_ints");
     }
+
+    @Test
+    public void testModuleWithCall() {
+        assertParserResult("\"test.ml\" 1 0 44 \"test.ml\" 1 0 51\n" +
+                "type(\n" +
+                "  'a -> 'a -> int\n" +
+                ")\n" +
+                "ident(\n" +
+                "  def compare \"test.ml\" 1 0 61 \"test.ml\" 1 0 65\n" +
+                ")\n" +
+                "\"test.ml\" 1 0 54 \"test.ml\" 1 0 61\n" +
+                "type(\n" +
+                "  'a -> 'a -> int\n" +
+                ")\n" +
+                "ident(\n" +
+                "  int_ref Stdlib.compare \"stdlib.mli\" 93 3855 3855 \"stdlib.mli\" 93 3855 3902\n" +
+                ")\n" +
+                "\"test.ml\" 1 0 11 \"test.ml\" 1 0 66\n" +
+                "call(\n" +
+                "  stack\n" +
+                ")", "Va|1.44,1.51|compare|'a -> 'a -> int\n" +
+                "Va|1.54,1.61|Stdlib.compare|'a -> 'a -> int");
+    }
 }

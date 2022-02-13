@@ -401,4 +401,34 @@ type(
 )
 </pre>
 </td></tr>
+
+<tr><td>13</td><td><pre>
+module E = Set.Make(
+struct type t = int let compare = compare end
+)
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"test.ml" 1 0 44 "test.ml" 1 0 51
+type(
+  'a -> 'a -> int
+)
+ident(
+  def compare "test.ml" 1 0 61 "test.ml" 1 0 65
+)
+"test.ml" 1 0 54 "test.ml" 1 0 61
+type(
+  'a -> 'a -> int
+)
+ident(
+  int_ref Stdlib.compare "stdlib.mli" 93 3855 3855 "stdlib.mli" 93 3855 3902
+)
+"test.ml" 1 0 11 "test.ml" 1 0 66
+call(
+  stack
+)
+</pre>
+</td></tr>
 </table>

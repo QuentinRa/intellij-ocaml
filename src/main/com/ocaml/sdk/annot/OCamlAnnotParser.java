@@ -16,6 +16,7 @@ public class OCamlAnnotParser {
     // tested: same values for ocaml 4.05 to ocamlc 4.14
     private static final String TYPE_START = "type(";
     private static final String IDENT_START = "ident(";
+    private static final String CALL_START = "call(";
     private static final String VARIABLE_DEF = "def";
     private static final String VARIABLE_REF = "ref";
 
@@ -35,7 +36,9 @@ public class OCamlAnnotParser {
         ArrayList<OCamlInferredSignature> elements = new ArrayList<>();
         AnnotParserState state = parseInstruction();
         while (state != null) {
-            elements.add(createAnnotResult(state));
+            // add if not skipped
+            if (!state.skip) elements.add(createAnnotResult(state));
+            // continue reading
             state = parseInstruction();
         }
         return elements;
@@ -58,8 +61,11 @@ public class OCamlAnnotParser {
                 line = readLine().trim(); // look for module name
                 state.name = line.substring(getStartingPosition(line), line.indexOf("\"")-1);
                 pos++; // skip )
+            } else if (line.startsWith(CALL_START)) {
+                state.skip = true; // skip
+                pos+=2; // skip value and ')'
             } else {
-                throw new IllegalStateException("Unexpected line:'"+previousLine()+"'.");
+                throw new IllegalStateException("Unsupported:'"+previousLine()+"'. Please, fill a bug.");
             }
         } else {
             // it's a variable
@@ -144,6 +150,7 @@ public class OCamlAnnotParser {
         private final int startColumn;
         private final int endLine;
         private final int endColumn;
+        private boolean skip = false; // true if this will not be created
         private String type; // type of the element
         private String name;
 
