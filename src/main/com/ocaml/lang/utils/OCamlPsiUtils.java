@@ -70,7 +70,7 @@ public final class OCamlPsiUtils {
             // child instanceof PsiLocalOpen?
 
             // ModuleName.function
-            if (child instanceof PsiUpperSymbol && OCamlPsiUtils.isNextMeaningfulSibling(child, OCamlTypes.DOT)) {
+            if (child instanceof PsiUpperSymbol && OCamlPsiUtils.isNextMeaningfulNextSibling(child, OCamlTypes.DOT)) {
                 res.add(child.getText().toLowerCase());
             }
             // next
@@ -79,7 +79,7 @@ public final class OCamlPsiUtils {
         return res;
     }
 
-    public static boolean isNextMeaningfulSibling(@NotNull PsiElement element, ORTokenElementType type) {
+    public static boolean isNextMeaningfulNextSibling(@NotNull PsiElement element, ORTokenElementType type) {
         PsiElement nextSibling = element.getNextSibling();
         while (nextSibling != null) {
             // skip white spaces and comments
@@ -90,5 +90,46 @@ public final class OCamlPsiUtils {
             return nextSibling.getNode().getElementType().equals(type);
         }
         return false;
+    }
+
+    public static boolean isNextMeaningfulNextSibling(@NotNull PsiElement element, Class<? extends PsiElement> aClass) {
+        PsiElement nextSibling = element.getNextSibling();
+        while (nextSibling != null) {
+            // skip white spaces and comments
+            if (nextSibling instanceof PsiWhiteSpace || nextSibling instanceof PsiComment) {
+                nextSibling = nextSibling.getNextSibling();
+                continue;
+            }
+            return aClass.isInstance(nextSibling);
+        }
+        return false;
+    }
+
+    public static @Nullable PsiElement getNextMeaningfulNextSibling(@NotNull PsiElement element, ORTokenElementType type) {
+        PsiElement nextSibling = element.getNextSibling();
+        while (nextSibling != null) {
+            // skip white spaces and comments
+            if (nextSibling instanceof PsiWhiteSpace || nextSibling instanceof PsiComment) {
+                nextSibling = nextSibling.getNextSibling();
+                continue;
+            }
+            if (nextSibling.getNode().getElementType().equals(type)) return nextSibling;
+            break;
+        }
+        return null;
+    }
+
+    public static @Nullable PsiElement getPreviousMeaningfulNextSibling(@NotNull PsiElement element, ORTokenElementType type) {
+        PsiElement prevSibling = element.getPrevSibling();
+        while (prevSibling != null) {
+            // skip white spaces and comments
+            if (prevSibling instanceof PsiWhiteSpace || prevSibling instanceof PsiComment) {
+                prevSibling = prevSibling.getPrevSibling();
+                continue;
+            }
+            if (prevSibling.getNode().getElementType().equals(type)) return prevSibling;
+            break;
+        }
+        return null;
     }
 }

@@ -27,4 +27,17 @@ public class OCamlInsightFilter {
         return false;
     }
 
+    public static boolean isWhiteSpace(@NotNull PsiElement element) {
+        return element instanceof PsiWhiteSpace;
+    }
+
+    public static boolean isLiteral(@NotNull PsiElement element) {
+        if (element instanceof PsiLiteralExpression) return true;
+        // is float, bool, or int?
+        IElementType elementType = element.getNode().getElementType();
+        return elementType.equals(OCamlTypes.FLOAT_VALUE)
+                || elementType.equals(OCamlTypes.INT_VALUE)
+                || elementType.equals(OCamlTypes.BOOL_VALUE);
+    }
+
 }

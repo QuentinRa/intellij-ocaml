@@ -25,7 +25,7 @@ exception E of int * int
 let _ = "Hello, world!"
 let rec f x = x
 
-let x = function ()
+let x () = function
 | _ -> ()
 
 class type name = object
@@ -43,3 +43,11 @@ let s = new stack_of_ints;;
 module E = Set.Make(
 struct type t = int let compare = compare end
 )
+
+(* small test with a "complex" function *)
+let z = fun x ->
+    let z = fun y -> x + y
+    in z x
+
+(* adding support for lists *)
+let list = [[4],5,6,8]

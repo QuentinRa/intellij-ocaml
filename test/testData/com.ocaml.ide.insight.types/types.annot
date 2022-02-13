@@ -178,30 +178,26 @@ ident(
 )
 "types.ml" 28 276 280 "types.ml" 28 276 281
 type(
-  unit -> unit
+  unit -> 'a -> unit
 )
 ident(
   def x "types.ml" 31 307 307 "types.ml" 0 0 -1
 )
-"types.ml" 28 276 293 "types.ml" 28 276 295
+"types.ml" 28 276 282 "types.ml" 28 276 284
 type(
   unit
 )
 "types.ml" 29 296 298 "types.ml" 29 296 299
 type(
-  unit
-)
-"types.ml" 28 276 293 "types.ml" 29 296 299
-type(
-  unit
+  'a
 )
 "types.ml" 29 296 303 "types.ml" 29 296 305
 type(
   unit
 )
-"types.ml" 28 276 284 "types.ml" 29 296 305
+"types.ml" 28 276 287 "types.ml" 29 296 305
 type(
-  unit -> unit
+  'a -> unit
 )
 "types.ml" 37 385 396 "types.ml" 37 385 402
 type(
@@ -239,4 +235,122 @@ type(
 )
 ident(
   int_ref Stdlib.compare "stdlib.mli" 162 6792 6792 "stdlib.mli" 162 6792 6839
+)
+"types.ml" 48 599 603 "types.ml" 48 599 604
+type(
+  int -> int
+)
+ident(
+  def z "types.ml" 53 686 686 "types.ml" 0 0 -1
+)
+"types.ml" 48 599 611 "types.ml" 48 599 612
+type(
+  int
+)
+ident(
+  def x "types.ml" 49 616 620 "types.ml" 50 643 653
+)
+"types.ml" 49 616 624 "types.ml" 49 616 625
+type(
+  int -> int
+)
+ident(
+  def z "types.ml" 50 643 650 "types.ml" 50 643 653
+)
+"types.ml" 49 616 632 "types.ml" 49 616 633
+type(
+  int
+)
+ident(
+  def y "types.ml" 49 616 637 "types.ml" 49 616 642
+)
+"types.ml" 49 616 637 "types.ml" 49 616 638
+type(
+  int
+)
+ident(
+  int_ref x "types.ml" 48 599 611 "types.ml" 48 599 612
+)
+"types.ml" 49 616 639 "types.ml" 49 616 640
+type(
+  int -> int -> int
+)
+ident(
+  int_ref Stdlib.( + ) "stdlib.mli" 347 13626 13626 "stdlib.mli" 347 13626 13672
+)
+"types.ml" 49 616 641 "types.ml" 49 616 642
+type(
+  int
+)
+ident(
+  int_ref y "types.ml" 49 616 632 "types.ml" 49 616 633
+)
+"types.ml" 49 616 637 "types.ml" 49 616 642
+type(
+  int
+)
+"types.ml" 49 616 628 "types.ml" 49 616 642
+type(
+  int -> int
+)
+"types.ml" 50 643 650 "types.ml" 50 643 651
+type(
+  int -> int
+)
+ident(
+  int_ref z "types.ml" 49 616 624 "types.ml" 49 616 625
+)
+"types.ml" 50 643 652 "types.ml" 50 643 653
+type(
+  int
+)
+ident(
+  int_ref x "types.ml" 48 599 611 "types.ml" 48 599 612
+)
+"types.ml" 50 643 650 "types.ml" 50 643 653
+type(
+  int
+)
+"types.ml" 49 616 620 "types.ml" 50 643 653
+type(
+  int
+)
+"types.ml" 48 599 607 "types.ml" 50 643 653
+type(
+  int -> int
+)
+"types.ml" 53 686 690 "types.ml" 53 686 694
+type(
+  (int list * int * int * int) list
+)
+ident(
+  def list "types.ml" 53 686 708 "types.ml" 0 0 -1
+)
+"types.ml" 53 686 699 "types.ml" 53 686 700
+type(
+  int
+)
+"types.ml" 53 686 698 "types.ml" 53 686 701
+type(
+  int list
+)
+"types.ml" 53 686 702 "types.ml" 53 686 703
+type(
+  int
+)
+"types.ml" 53 686 704 "types.ml" 53 686 705
+type(
+  int
+)
+"types.ml" 53 686 706 "types.ml" 53 686 707
+type(
+  int
+)
+"types.ml" 53 686 698 "types.ml" 53 686 707
+type(
+  int list * int * int * int
+)
+"types.ml" 53 686 697 "types.ml" 53 686 708
+type(
+  (int list * int * int * int) list
 )

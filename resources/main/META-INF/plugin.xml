@@ -77,7 +77,7 @@
         <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
 
         <!-- INFERENCE -->
-        <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />
+<!--        <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />-->
         <codeInsight.typeInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlTypeInfoHint"/>
         <projectService serviceImplementation="com.ocaml.ide.insight.OCamlAnnotResultsService"/>
 
