@@ -39,7 +39,7 @@ public class TestTypeInference extends OCamlIdeTest {
     }
 
     @Override protected String getCustomTestDataPath() {
-        return "com.ocaml.ide.insight.types/";
+        return "com.ocaml.ide.insight/types/";
     }
 
     // The cursor must be before the variable/...
