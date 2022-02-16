@@ -51,3 +51,8 @@ let z = fun x ->
 
 (* adding support for lists *)
 let list = [[4],5,6,8]
+
+(* bug - long type *)
+let id s = s
+let f x y = x + y
+let _ = id (fun f x y -> f x y) f 0 5

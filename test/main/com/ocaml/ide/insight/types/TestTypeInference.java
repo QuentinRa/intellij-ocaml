@@ -100,4 +100,11 @@ public class TestTypeInference extends OCamlIdeTest {
     public void testFunction4() {
         doTest(44, 35, "'a -> 'a -> int");
     }
+
+    // Bugs
+
+    @Test
+    public void testBugLongType() {
+        doTest(58, 9, "((int -> int -> int) -> int -> int -> int) -> (int -> int -> int) -> int -> int -> int");
+    }
 }

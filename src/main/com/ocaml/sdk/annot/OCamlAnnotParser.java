@@ -19,6 +19,7 @@ public class OCamlAnnotParser {
     private static final String CALL_START = "call(";
     private static final String VARIABLE_DEF = "def";
     private static final String VARIABLE_REF = "ref";
+    private static final String LPAREN = ")";
 
     private final String[] lines;
     private int pos;
@@ -70,17 +71,16 @@ public class OCamlAnnotParser {
         } else {
             // it's a variable
             // next is the type
-            state.type = readLine().trim();
-            pos++; // skip )
+            state.type = consumeLParen(readLine().trim());
+
             line = tryReadLine();
             if (line != null && line.startsWith(IDENT_START)) { // variable
-                line = readLine().trim(); // look for variable name
+                line = consumeLParen(readLine().trim()); // look for variable name
                 int end = line.indexOf("\"");
                 int start = getStartingPosition(line);
                 line = line.substring(start, end-1);
                 state.name = line;
                 state.kind = AnnotParserState.AnnotKind.VARIABLE;
-                pos++; // skip ')'
             } else {
                 // this is a value
                 state.kind = AnnotParserState.AnnotKind.VALUE;
@@ -90,6 +90,17 @@ public class OCamlAnnotParser {
             }
         }
         return state;
+    }
+
+    private @NotNull String consumeLParen(String base) {
+        StringBuilder b = new StringBuilder(base);
+        String next = readLine(); // look for the closing ')'
+        while (!next.trim().equals(LPAREN)) {
+            // bug (fixed) may be on multiple lines
+            b.append(' ').append(next.trim());
+            next = readLine();
+        }
+        return b.toString();
     }
 
     private int getStartingPosition(@NotNull String line) {
