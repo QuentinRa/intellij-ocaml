@@ -1,22 +1,13 @@
-package com.ocaml.ide.insight;
+package com.lang.utils;
 
 import com.intellij.openapi.util.Pair;
-import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
-import com.intellij.psi.tree.IElementType;
 import com.ocaml.ide.OCamlIdeTest;
-import com.ocaml.lang.utils.OCamlPsiUtils;
-import com.or.lang.OCamlTypes;
-import com.or.lang.core.psi.PsiLet;
-import com.or.lang.core.psi.PsiLiteralExpression;
-import com.or.lang.core.psi.PsiLowerSymbol;
-import com.or.lang.core.psi.PsiUpperSymbol;
-import com.or.lang.core.psi.impl.PsiScopedExpr;
+import com.ocaml.ide.insight.OCamlAnnotResultsService;
+import com.ocaml.lang.utils.OCamlFindFunction;
+import com.or.lang.core.psi.*;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -30,7 +21,7 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
     private static final String FILE_NAME_ANNOT = "call.annot";
 
     @Override protected String getCustomTestDataPath() {
-        return "com.ocaml.ide.insight/";
+        return "com.lang.utils/";
     }
 
     private void assertParameter(@Language("OCaml") @NotNull String code, String expectedFunctionName, int expectedIndex) {
@@ -52,103 +43,11 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
         File annotations = new File(getTestDataPath(), FILE_NAME_ANNOT);
         annot.updateForFile(elementAt.getContainingFile().getVirtualFile().getPath(), annotations);
 
-        ArrayList<Pair<PsiElement, Integer>> candidates = new ArrayList<>();
-        ArrayList<Pair<PsiElement, Integer>> res = lookForFunction(caret, -1, candidates);
+        ArrayList<Pair<PsiElement, Integer>> res = new OCamlFindFunction(caret).lookForFunction();
         assertTrue(res.size() >= 1);
         Pair<PsiElement, Integer> data = res.get(0);
         assertEquals(expectedFunctionName, data.first.getText());
         assertEquals(expectedIndex, (int) data.second);
-    }
-
-    private @NotNull ArrayList<Pair<PsiElement, Integer>> lookForFunction(@NotNull PsiElement caret,
-                                                                           int index,
-                                                                           ArrayList<Pair<PsiElement, Integer>> candidates) {
-        @Nullable PsiElement prevSibling = caret.getPrevSibling();
-        // skip spaces and comments
-        if (caret instanceof PsiWhiteSpace || caret instanceof PsiComment)
-            return callLookForFunction(prevSibling, index, candidates);
-
-        System.out.println("current is:"+caret.getClass());
-        System.out.println("current is:"+caret.getText());
-        if (prevSibling != null) System.out.println("  previous will be:"+prevSibling.getClass());
-
-        if (caret instanceof PsiLiteralExpression || caret instanceof PsiScopedExpr)
-            return callLookForFunction(prevSibling, index+1, candidates); // value => new argument
-        if (caret instanceof LeafPsiElement) {
-            IElementType elementType = ((LeafPsiElement) caret).getElementType();
-            System.out.println("  with type:"+elementType);
-
-            if (elementType.equals(OCamlTypes.INT_VALUE) || elementType.equals(OCamlTypes.FLOAT_VALUE)
-                    || elementType.equals(OCamlTypes.BOOL_VALUE))
-                // value => new argument
-                return callLookForFunction(prevSibling, index+1, candidates);
-            // ref <value> is still the same argument
-            if (elementType.equals(OCamlTypes.REF))
-                return callLookForFunction(prevSibling, index, candidates);
-            if (elementType.equals(OCamlTypes.LPAREN)) {
-                boolean isUnit = OCamlPsiUtils.isNextMeaningfulNextSibling(caret, OCamlTypes.RPAREN);
-                if (isUnit)
-                    // get out of the Scoped expression
-                    // unit = value => new argument
-                    return callLookForFunction(caret.getParent().getPrevSibling(), index+1, candidates);
-            }
-
-            if (elementType.equals(OCamlTypes.RPAREN)) {
-                // we are moving from ')' to before '('
-                PsiElement newPrev  = OCamlPsiUtils.getPreviousMeaningfulNextSibling(caret, OCamlTypes.LPAREN);
-                if (newPrev != null)
-                    // get out of the Scoped expression
-                    // unit = value => new argument
-                    return callLookForFunction(newPrev.getParent().getPrevSibling(), index+1, candidates);
-            }
-
-            // that's a variable
-            if (elementType.equals(OCamlTypes.LIDENT))
-                // value => new argument
-                return callLookForFunction(caret.getParent().getPrevSibling(), index+1, candidates);
-
-            // assuming that the syntax is OK, then skip
-            if (elementType.equals(OCamlTypes.EXCLAMATION_MARK))
-                return callLookForFunction(prevSibling, index, candidates);
-
-            if (elementType.equals(OCamlTypes.COMMA)) {
-                if (candidates.isEmpty()) // index must be set to 0, because we are leaving the
-                    // couple, meaning we are not in the scope of a function
-                    // nested in the couple
-                    return callLookForFunction(caret.getParent().getPrevSibling(), 0, candidates);
-                else return candidates; // done
-            }
-        } else // cannot be function if it's a token
-
-        // name of a function
-        if (caret instanceof PsiLowerSymbol) {
-            if (prevSibling instanceof LeafPsiElement && ((LeafPsiElement) prevSibling).getElementType().equals(OCamlTypes.DOT)) {
-                // Module.something
-                if (prevSibling.getPrevSibling() instanceof PsiUpperSymbol) {
-                    // skip
-                    prevSibling = prevSibling.getPrevSibling().getPrevSibling();
-                }
-            }
-            candidates.add(0, new Pair<>(caret, index));
-            return callLookForFunction(prevSibling, index+1, candidates);
-        }
-
-        // at the end, because it could have been unit for ()
-        // and we may not have to do anything, if we were inside this scoped expression,
-        // and we found a candidate
-        if (candidates.isEmpty() && caret.getParent() instanceof PsiScopedExpr) {
-            System.out.println("c:"+candidates);
-            // this expression is a new argument
-            return callLookForFunction(caret.getParent().getPrevSibling(), index+1, candidates);
-        }
-
-        // no function
-        return candidates;
-    }
-
-    private @NotNull ArrayList<Pair<PsiElement, Integer>> callLookForFunction(@Nullable PsiElement prevSibling, int index,
-                                                                               ArrayList<Pair<PsiElement, Integer>> candidates) {
-        return prevSibling == null ? candidates : lookForFunction(prevSibling, index, candidates);
     }
 
     //testing with OCamlInferredSignature{name='null', kind=VALUE, type='int', file=call.ml(l:8-8, c:15-16), range=(113,114)}
@@ -304,5 +203,32 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
     @Test
     public void testWithTupleOfInt() {
         assertParameter("let _ = cpl_s (3,(*caret*)2)", "cpl_s", 0);
+    }
+
+    @Test
+    public void testWithTupleOfTupleWithFunction() {
+        assertParameter("let _ = cpl_s (0, cpl_s (5, (*caret*)7))", "cpl_s", 0);
+    }
+
+    @Test
+    public void testWithTupleOfTupleWithFunctionBefore() {
+        assertParameter("let _ = cpl_s (0, cpl_s (*caret*)(5, 7))", "cpl_s", 0);
+    }
+
+    @Test
+    public void testWith2TuplesBeforeFunction() {
+        assertParameter("let _ = cpl2_s (0, v_i) (\"toto\",(*caret*) max 3 7)", "cpl2_s", 1);
+    }
+
+    @Test
+    public void testWith2TuplesVariable() {
+        assertParameter("let _ = cpl2_s (0, (*caret*)v_i) (\"toto\", max 3 7)", "cpl2_s", 0);
+    }
+
+    // weird
+
+    @Test
+    public void testFunAsParameterOut() { // todo: what is an argument is a function -> fail
+        assertParameter("let _ = g (fun x (*caret*)y -> max x y) 0 5", "g", 0);
     }
 }

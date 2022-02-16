@@ -12,6 +12,8 @@ public final class OCamlLanguage extends Language implements ORLanguagePropertie
     @NotNull
     public static final OCamlLanguage INSTANCE = new OCamlLanguage();
 
+    public static final String FUNCTION_SIGNATURE_SEPARATOR = " -> ";
+
     private OCamlLanguage() {
         super("OCAML");
     }
@@ -29,12 +31,12 @@ public final class OCamlLanguage extends Language implements ORLanguagePropertie
 
     @Override
     public @NotNull String getParameterSeparator() {
-        return " -> ";
+        return FUNCTION_SIGNATURE_SEPARATOR;
     }
 
     @Override
     public @NotNull String getFunctionSeparator() {
-        return " -> ";
+        return FUNCTION_SIGNATURE_SEPARATOR;
     }
 
     @Override

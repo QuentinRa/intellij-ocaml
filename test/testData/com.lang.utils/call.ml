@@ -43,6 +43,9 @@ let _ = hd [0;3;5] 0
 let _ = hd [0;3;5] 7
 let _ = List.hd [0;3;5]
 
+(* weird *)
+let _ = f (if true then 5 else 0) 3
+
 (* Labeled *)
 (*let f ~x ~y = x - y*)
 (*let _ = f ~x: 3 ~y: 5*)
