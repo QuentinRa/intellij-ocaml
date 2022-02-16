@@ -106,6 +106,18 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
             if (elementType.equals(OCamlTypes.LIDENT))
                 // value => new argument
                 return callLookForFunction(caret.getParent().getPrevSibling(), index+1, candidates);
+
+            // assuming that the syntax is OK, then skip
+            if (elementType.equals(OCamlTypes.EXCLAMATION_MARK))
+                return callLookForFunction(prevSibling, index, candidates);
+
+            if (elementType.equals(OCamlTypes.COMMA)) {
+                if (candidates.isEmpty()) // index must be set to 0, because we are leaving the
+                    // couple, meaning we are not in the scope of a function
+                    // nested in the couple
+                    return callLookForFunction(caret.getParent().getPrevSibling(), 0, candidates);
+                else return candidates; // done
+            }
         } else // cannot be function if it's a token
 
         // name of a function
@@ -267,15 +279,30 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
     }
 
     @Test
+    public void testWithVariable() {
+        assertParameter("let _ = id (*caret*)v_f", "id", 0);
+    }
+
+    @Test
     public void testWithNot() { // todo: actually, it's not 1, but 0???
         // id got the type (bool -> bool) -> bool -> bool
         // meaning id f b -> b (but, actually, id is 'a -> 'a)
-        // ... I'm kinda lost
         assertParameter("let _ = id not (*caret*)true", "id", 1);
     }
 
     @Test
-    public void testWithVariable() {
-        assertParameter("let _ = id (*caret*)v_f", "id", 0);
+    public void testWithVariantFunction() { // todo: actually, it's not 1, but 0???
+        assertParameter("let _ = id id ref (*caret*)0", "id", 1);
+    }
+
+    @Test
+    public void testWithValueOfRef() { // todo: actually, it's not 1, but 0???
+        assertParameter("let _ = id !(ref id) (*caret*)0", "id", 1);
+    }
+
+    // tuples
+    @Test
+    public void testWithTupleOfInt() {
+        assertParameter("let _ = cpl_s (3,(*caret*)2)", "cpl_s", 0);
     }
 }

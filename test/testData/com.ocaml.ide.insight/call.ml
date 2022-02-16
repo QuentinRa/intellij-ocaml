@@ -32,8 +32,10 @@ let _ = g (fun x y -> max x y) 0 5
 
 (* couples *)
 let cpl_s (x, y) = x + y
+let cpl2_s (x, y) (_, _) = x + y
 let _ = cpl_s (3,2)
-let _ = cpl_s (0, 3)
+let _ = cpl_s (0, cpl_s (5, 7))
+let _ = cpl2_s (0, v_i) ("toto", max 3 7)
 
 (* lists *)
 let hd l _ = List.hd l
