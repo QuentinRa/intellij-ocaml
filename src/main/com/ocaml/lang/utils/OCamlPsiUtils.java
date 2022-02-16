@@ -92,6 +92,19 @@ public final class OCamlPsiUtils {
         return false;
     }
 
+    public static boolean isMeaningfulPrevSibling(@NotNull PsiElement element, ORTokenElementType type) {
+        PsiElement prevSibling = element.getPrevSibling();
+        while (prevSibling != null) {
+            // skip white spaces and comments
+            if (prevSibling instanceof PsiWhiteSpace || prevSibling instanceof PsiComment) {
+                prevSibling = prevSibling.getPrevSibling();
+                continue;
+            }
+            return prevSibling.getNode().getElementType().equals(type);
+        }
+        return false;
+    }
+
     public static boolean isNextMeaningfulNextSibling(@NotNull PsiElement element, Class<? extends PsiElement> aClass) {
         PsiElement nextSibling = element.getNextSibling();
         while (nextSibling != null) {
