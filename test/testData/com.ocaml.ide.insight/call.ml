@@ -24,6 +24,7 @@ let _ = f (0) (5)
 let _ = (f) (0) (5)
 let _ = f 0 (* some comment *) 5
 let _ = f (f 0 5) 0
+let _ = g f (f 0 5) 0
 let _ = g max 0 5
 (* using UpperIdentifier *)
 let _ = g Stdlib.max 0 5
