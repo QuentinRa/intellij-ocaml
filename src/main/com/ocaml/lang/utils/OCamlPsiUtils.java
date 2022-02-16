@@ -145,4 +145,17 @@ public final class OCamlPsiUtils {
         }
         return null;
     }
+
+    public static @Nullable PsiElement skipMeaninglessPreviousSibling(@NotNull PsiElement element) {
+        PsiElement prevSibling = element.getPrevSibling();
+        while (prevSibling != null) {
+            // skip white spaces and comments
+            if (prevSibling instanceof PsiWhiteSpace || prevSibling instanceof PsiComment) {
+                prevSibling = prevSibling.getPrevSibling();
+                continue;
+            }
+            break;
+        }
+        return prevSibling;
+    }
 }

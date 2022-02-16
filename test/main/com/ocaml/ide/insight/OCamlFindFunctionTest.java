@@ -12,6 +12,7 @@ import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiLet;
 import com.or.lang.core.psi.PsiLiteralExpression;
 import com.or.lang.core.psi.PsiLowerSymbol;
+import com.or.lang.core.psi.impl.PsiScopedExpr;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +20,25 @@ import org.junit.Test;
 
 import java.io.File;
 
+/*
+OCamlInferredSignature sig = annot.findAnnotationFor(caret);
+        assertNotNull(sig);
+        System.out.println("sig:"+sig.type);
+        PsiElement psiElement = OCamlPsiUtils.skipMeaninglessPreviousSibling(caret);
+        assertNotNull(psiElement);
+        sig = annot.findAnnotationFor(psiElement);
+        assertNotNull(sig);
+        System.out.println("sig:"+sig.type);
+        psiElement = OCamlPsiUtils.skipMeaninglessPreviousSibling(psiElement);
+        assertNotNull(psiElement);
+        sig = annot.findAnnotationFor(psiElement);
+        assertNotNull(sig);
+        System.out.println("sig:"+sig.type);
+        /*
+        sig:int
+        sig:int -> int ref
+        sig:(int -> int ref) -> int -> int ref
+*/
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class OCamlFindFunctionTest extends OCamlIdeTest {
 
@@ -62,7 +82,7 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
         // skip spaces and comments
         if (caret instanceof PsiWhiteSpace || caret instanceof PsiComment)
             return callLookForFunction(prevSibling, index);
-        if (caret instanceof PsiLiteralExpression)
+        if (caret instanceof PsiLiteralExpression || caret instanceof PsiScopedExpr)
             return callLookForFunction(prevSibling, index+1); // value => new argument
         if (caret instanceof LeafPsiElement) {
             IElementType elementType = ((LeafPsiElement) caret).getElementType();
@@ -104,6 +124,7 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
         return prevSibling == null ? null : lookForFunction(prevSibling, index);
     }
 
+    //testing with OCamlInferredSignature{name='null', kind=VALUE, type='int', file=call.ml(l:8-8, c:15-16), range=(113,114)}
     @Test
     public void testFunctionGenericWithRefBefore() {
         assertParameter("let _ = id ref (*caret*)0", "id", 0);
@@ -142,5 +163,35 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
     @Test
     public void testFunctionWithFloat() {
         assertParameter("let _ = id (*caret*)5.0", "id", 0);
+    }
+
+    @Test
+    public void testFunctionTwoParamsP1() {
+        assertParameter("let _ = f 5 (*caret*)0", "f", 1);
+    }
+
+    @Test
+    public void testFunctionTwoParamsP2() {
+        assertParameter("let _ = f (*caret*)5 0", "f", 0);
+    }
+
+    @Test
+    public void testFunctionTwoParamsFirstScopedBeforeP1() {
+        assertParameter("let _ = f (*caret*)(0) 5", "f", 0);
+    }
+
+    @Test
+    public void testFunctionTwoParamsFirstScopedBeforeP2() {
+        assertParameter("let _ = f (0) (*caret*)5", "f", 1);
+    }
+
+    @Test
+    public void testFunctionTwoParamsBothScopedP1() {
+        assertParameter("let _ = f (*caret*)(0) (5)", "f", 0);
+    }
+
+    @Test
+    public void testFunctionTwoParamsBothScopedAfterP2() {
+        assertParameter("let _ = f (0) (5)(*caret*)", "f", 1);
     }
 }
