@@ -1181,3 +1181,295 @@ type(
 type(
   int
 )
+"call.ml" 47 858 862 "call.ml" 47 858 863
+type(
+  int
+)
+"call.ml" 47 858 866 "call.ml" 47 858 867
+type(
+  int -> int -> int
+)
+ident(
+  int_ref f "call.ml" 2 13 17 "call.ml" 2 13 18
+)
+"call.ml" 47 858 872 "call.ml" 47 858 876
+type(
+  bool
+)
+"call.ml" 47 858 882 "call.ml" 47 858 883
+type(
+  int
+)
+"call.ml" 47 858 889 "call.ml" 47 858 890
+type(
+  int
+)
+"call.ml" 47 858 868 "call.ml" 47 858 891
+type(
+  int
+)
+"call.ml" 47 858 892 "call.ml" 47 858 893
+type(
+  int
+)
+"call.ml" 47 858 866 "call.ml" 47 858 893
+type(
+  int
+)
+"call.ml" 48 894 898 "call.ml" 48 894 899
+type(
+  int
+)
+"call.ml" 48 894 902 "call.ml" 48 894 903
+type(
+  int -> int -> int
+)
+ident(
+  int_ref f "call.ml" 2 13 17 "call.ml" 2 13 18
+)
+"call.ml" 48 894 908 "call.ml" 48 894 911
+type(
+  bool -> bool
+)
+ident(
+  int_ref Stdlib.not "stdlib.mli" 211 8889 8889 "stdlib.mli" 211 8889 8929
+)
+"call.ml" 48 894 912 "call.ml" 48 894 916
+type(
+  bool
+)
+"call.ml" 48 894 908 "call.ml" 48 894 916
+type(
+  bool
+)
+"call.ml" 48 894 922 "call.ml" 48 894 923
+type(
+  int
+)
+"call.ml" 48 894 929 "call.ml" 48 894 930
+type(
+  int
+)
+"call.ml" 48 894 904 "call.ml" 48 894 931
+type(
+  int
+)
+"call.ml" 48 894 932 "call.ml" 48 894 933
+type(
+  int
+)
+"call.ml" 48 894 902 "call.ml" 48 894 933
+type(
+  int
+)
+"call.ml" 49 934 938 "call.ml" 49 934 939
+type(
+  int
+)
+"call.ml" 49 934 942 "call.ml" 49 934 945
+type(
+  int -> int -> int
+)
+ident(
+  int_ref Stdlib.max "stdlib.mli" 186 7963 7963 "stdlib.mli" 186 7963 7987
+)
+"call.ml" 49 934 951 "call.ml" 49 934 952
+type(
+  'a -> 'b -> int
+)
+ident(
+  def f "call.ml" 49 934 964 "call.ml" 49 934 965
+)
+"call.ml" 49 934 953 "call.ml" 49 934 954
+type(
+  'a
+)
+ident(
+  def x "call.ml" 49 934 955 "call.ml" 49 934 960
+)
+"call.ml" 49 934 955 "call.ml" 49 934 956
+type(
+  'b
+)
+ident(
+  def y "call.ml" 49 934 959 "call.ml" 49 934 960
+)
+"call.ml" 49 934 959 "call.ml" 49 934 960
+type(
+  int
+)
+"call.ml" 49 934 964 "call.ml" 49 934 965
+type(
+  int
+)
+"call.ml" 49 934 946 "call.ml" 49 934 966
+type(
+  int
+)
+"call.ml" 49 934 967 "call.ml" 49 934 968
+type(
+  int
+)
+"call.ml" 49 934 942 "call.ml" 49 934 968
+type(
+  int
+)
+"call.ml" 50 969 973 "call.ml" 50 969 974
+type(
+  int
+)
+"call.ml" 50 969 977 "call.ml" 50 969 979
+type(
+  ((int -> int -> int) -> int -> int -> int) ->
+  (int -> int -> int) -> int -> int -> int
+)
+ident(
+  int_ref id "call.ml" 1 0 4 "call.ml" 1 0 6
+)
+"call.ml" 50 969 985 "call.ml" 50 969 986
+type(
+  int -> int -> int
+)
+ident(
+  def f "call.ml" 50 969 987 "call.ml" 50 969 999
+)
+"call.ml" 50 969 987 "call.ml" 50 969 988
+type(
+  int
+)
+ident(
+  def x "call.ml" 50 969 989 "call.ml" 50 969 999
+)
+"call.ml" 50 969 989 "call.ml" 50 969 990
+type(
+  int
+)
+ident(
+  def y "call.ml" 50 969 994 "call.ml" 50 969 999
+)
+"call.ml" 50 969 994 "call.ml" 50 969 995
+type(
+  int -> int -> int
+)
+ident(
+  int_ref f "call.ml" 50 969 985 "call.ml" 50 969 986
+)
+"call.ml" 50 969 996 "call.ml" 50 969 997
+type(
+  int
+)
+ident(
+  int_ref x "call.ml" 50 969 987 "call.ml" 50 969 988
+)
+"call.ml" 50 969 998 "call.ml" 50 969 999
+type(
+  int
+)
+ident(
+  int_ref y "call.ml" 50 969 989 "call.ml" 50 969 990
+)
+"call.ml" 50 969 994 "call.ml" 50 969 999
+type(
+  int
+)
+"call.ml" 50 969 980 "call.ml" 50 969 1000
+type(
+  (int -> int -> int) -> int -> int -> int
+)
+"call.ml" 50 969 1001 "call.ml" 50 969 1002
+type(
+  int -> int -> int
+)
+ident(
+  int_ref f "call.ml" 2 13 17 "call.ml" 2 13 18
+)
+"call.ml" 50 969 1003 "call.ml" 50 969 1004
+type(
+  int
+)
+"call.ml" 50 969 1005 "call.ml" 50 969 1006
+type(
+  int
+)
+"call.ml" 50 969 977 "call.ml" 50 969 1006
+type(
+  int
+)
+"call.ml" 51 1007 1011 "call.ml" 51 1007 1012
+type(
+  int
+)
+"call.ml" 51 1007 1015 "call.ml" 51 1007 1017
+type(
+  ((int -> int -> int) -> int -> int -> int) ->
+  (int -> int -> int) -> int -> int -> int
+)
+ident(
+  int_ref id "call.ml" 1 0 4 "call.ml" 1 0 6
+)
+"call.ml" 51 1007 1023 "call.ml" 51 1007 1024
+type(
+  int -> int -> int
+)
+"call.ml" 51 1007 1025 "call.ml" 51 1007 1026
+type(
+  int
+)
+ident(
+  def x "call.ml" 51 1007 1027 "call.ml" 51 1007 1037
+)
+"call.ml" 51 1007 1027 "call.ml" 51 1007 1028
+type(
+  int
+)
+ident(
+  def y "call.ml" 51 1007 1032 "call.ml" 51 1007 1037
+)
+"call.ml" 51 1007 1032 "call.ml" 51 1007 1033
+type(
+  int -> int -> int
+)
+ident(
+  int_ref f "call.ml" 2 13 17 "call.ml" 2 13 18
+)
+"call.ml" 51 1007 1034 "call.ml" 51 1007 1035
+type(
+  int
+)
+ident(
+  int_ref x "call.ml" 51 1007 1025 "call.ml" 51 1007 1026
+)
+"call.ml" 51 1007 1036 "call.ml" 51 1007 1037
+type(
+  int
+)
+ident(
+  int_ref y "call.ml" 51 1007 1027 "call.ml" 51 1007 1028
+)
+"call.ml" 51 1007 1032 "call.ml" 51 1007 1037
+type(
+  int
+)
+"call.ml" 51 1007 1018 "call.ml" 51 1007 1038
+type(
+  (int -> int -> int) -> int -> int -> int
+)
+"call.ml" 51 1007 1039 "call.ml" 51 1007 1040
+type(
+  int -> int -> int
+)
+ident(
+  int_ref f "call.ml" 2 13 17 "call.ml" 2 13 18
+)
+"call.ml" 51 1007 1041 "call.ml" 51 1007 1042
+type(
+  int
+)
+"call.ml" 51 1007 1043 "call.ml" 51 1007 1044
+type(
+  int
+)
+"call.ml" 51 1007 1015 "call.ml" 51 1007 1044
+type(
+  int
+)

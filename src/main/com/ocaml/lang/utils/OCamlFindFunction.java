@@ -10,12 +10,12 @@ import com.ocaml.OCamlLanguage;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
 import com.or.lang.OCamlTypes;
-import com.or.lang.core.psi.PsiLiteralExpression;
-import com.or.lang.core.psi.PsiLowerSymbol;
-import com.or.lang.core.psi.PsiUpperSymbol;
+import com.or.lang.core.psi.*;
+import com.or.lang.core.psi.impl.PsiLowerIdentifier;
 import com.or.lang.core.psi.impl.PsiScopedExpr;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import r.n.P;
 
 import java.util.ArrayList;
 
@@ -35,8 +35,12 @@ public class OCamlFindFunction {
         this.annot = this.startingElement.getProject().getService(OCamlAnnotResultsService.class);
     }
 
-    public @NotNull ArrayList<Pair<PsiElement, Integer>> lookForFunction() {
-        return lookForFunction(startingElement, -1, new ArrayList<>());
+    public @Nullable Pair<PsiElement, Integer> lookForFunction() {
+        ArrayList<Pair<PsiElement, Integer>> res = lookForFunction(startingElement, -1, new ArrayList<>());
+        if (res.size() == 0) return null;
+        Pair<PsiElement, Integer> p = res.get(0);
+        if (p.second == -1) p = new Pair<>(p.first, 0);
+        return p;
     }
 
     private @NotNull ArrayList<Pair<PsiElement, Integer>> lookForFunction(@NotNull PsiElement caret,
@@ -47,10 +51,27 @@ public class OCamlFindFunction {
         if (caret instanceof PsiWhiteSpace || caret instanceof PsiComment)
             return callLookForFunction(prevSibling, index, candidates);
 
+        if (caret.getParent() instanceof PsiLowerIdentifier) {
+            PsiElement ancestor = caret.getParent().getParent();
+            if (ancestor instanceof PsiParameter) ancestor = ancestor.getParent();
+            if (ancestor instanceof PsiParameters) ancestor = ancestor.getParent();
+            if (ancestor instanceof PsiFunction) ancestor = ancestor.getParent();
+            if (ancestor instanceof PsiLetBinding) ancestor = ancestor.getParent();
+            if (ancestor.getParent() instanceof PsiScopedExpr) // we know how to handle that
+                return lookForFunction(ancestor, 0, candidates);
+            return candidates; // nop, no way, I'm not going to check your weird stuff
+        }
+
         // todo: remove
         System.out.println("current is:"+caret.getClass());
         System.out.println("current is:"+caret.getText());
         if (prevSibling != null) System.out.println("  previous will be:"+prevSibling.getClass());
+        System.out.println("  parent is:"+caret.getParent());
+        System.out.println("    parent is:"+caret.getParent().getText());
+        System.out.println("    parent next is:"+caret.getParent().getPrevSibling());
+        System.out.println("       gp is:"+caret.getParent().getParent());
+        System.out.println("       gp is:"+caret.getParent().getParent().getText());
+        System.out.println("       gp next is:"+caret.getParent().getParent().getPrevSibling());
 
         if (caret instanceof PsiLiteralExpression || caret instanceof PsiScopedExpr)
             return callLookForFunction(prevSibling, index+1, candidates); // value => new argument
@@ -85,9 +106,18 @@ public class OCamlFindFunction {
             }
 
             // that's a variable
-            if (elementType.equals(OCamlTypes.LIDENT))
+            if (elementType.equals(OCamlTypes.LIDENT)) {
+                // and is this variable a function?
+                if (caret.getParent() instanceof PsiLowerSymbol) {
+                    OCamlInferredSignature signature = annot.findAnnotationFor(caret);
+                    // this is a real function, the token is present
+                    if (signature != null && signature.type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR)) {
+                        candidates.add(0, new Pair<>(caret, index));
+                    }
+                }
                 // value => new argument
                 return callLookForFunction(caret.getParent().getPrevSibling(), index+1, candidates);
+            }
 
             // assuming that the syntax is OK, then skip
             if (elementType.equals(OCamlTypes.EXCLAMATION_MARK))
@@ -99,6 +129,12 @@ public class OCamlFindFunction {
                     // nested in the couple
                     return callLookForFunction(caret.getParent().getPrevSibling(), 0, candidates);
                 else return candidates; // done
+            }
+
+            // you were inside a function declaration dummy!
+            // start again
+            if (elementType.equals(OCamlTypes.FUN) || elementType.equals(OCamlTypes.FUNCTION)) {
+                return callLookForFunction(caret.getParent().getPrevSibling(), 0, new ArrayList<>());
             }
         } else // cannot be function if it's a token
 

@@ -45,6 +45,11 @@ let _ = List.hd [0;3;5]
 
 (* weird *)
 let _ = f (if true then 5 else 0) 3
+let _ = f (if not true then 5 else 0) 3
+let _ = max (let f x y = 5 in 3) 3
+let _ = id (fun f x y -> f x y) f 0 5
+let _ = id (fun _ x y -> f x y) f 0 5
+(*let _ = id (match f 3 5 with _ as v -> g) f 0 5*)
 
 (* Labeled *)
 (*let f ~x ~y = x - y*)
