@@ -24,7 +24,6 @@ public class WSLFolders {
     public @Nullable String OPAM_INVALID_BIN;
 
     public @Nullable String HOME_INVALID;
-    public @Nullable String HOME_INVALID_TS;
     public @Nullable String OCAML_BIN_INVALID;
 
     public WSLFolders() {
@@ -79,7 +78,7 @@ public class WSLFolders {
                 Process process = cli.createProcess();
                 String version = new String(process.getInputStream().readAllBytes()).trim();
                 if (version.isEmpty() || process.exitValue() != 0)
-                    throw new ExecutionException("No version / switch.");
+                    throw new ExecutionException("No version.");
 
                 cli = new GeneralCommandLine("true");
                 WSLCommandLineOptions options = new WSLCommandLineOptions();
@@ -107,7 +106,6 @@ public class WSLFolders {
         }
 
         HOME_INVALID = "\\\\wsl$\\Debian\\invalid";
-        HOME_INVALID_TS = "\\\\wsl$\\Debian\\invalid\\";
         OCAML_BIN_INVALID = "\\\\wsl$\\Debian\\invalid\\ocaml";
     }
 

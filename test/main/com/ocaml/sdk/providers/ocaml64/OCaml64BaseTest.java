@@ -7,7 +7,7 @@ import java.io.File;
 
 public class OCaml64BaseTest extends CygwinBaseTest {
 
-    @Override protected boolean passCygwinTest() {
+    protected boolean passCygwinTest() {
         if(!SystemInfo.isWin10OrNewer) return true;
         boolean canPass = new File(OCaml64Folders.OPAM_HOME).exists()
                 && new File(OCaml64Folders.OPAM_VALID_SDK.path).exists()

@@ -11,16 +11,16 @@ import java.util.ArrayList;
 public class CygwinCreateSimpleSdkTest extends CygwinBaseTest {
 
     private void assertCreate(int i) {
-        if (passCygwinTest()) return;
+        if (folders.BIN_CREATE_SDK == null) return;
         ArrayList<String> homes = new ArrayList<>();
         try {
             try {
                 for (; i > 0 ; i--) {
                     SimpleSdkData simpleSdkData = new SimpleSdkData(
-                            CygwinFolders.BIN_CREATE_SDK.toplevel,
-                            CygwinFolders.BIN_CREATE_SDK.comp,
-                            CygwinFolders.BIN_CREATE_SDK.version,
-                            CygwinFolders.BIN_CREATE_SDK.sources
+                            folders.BIN_CREATE_SDK.toplevel,
+                            folders.BIN_CREATE_SDK.comp,
+                            folders.BIN_CREATE_SDK.version,
+                            folders.BIN_CREATE_SDK.sources
                     );
                     homes.add(simpleSdkData.homePath);
                     assertCygwinHomeValid(simpleSdkData.homePath);

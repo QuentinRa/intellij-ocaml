@@ -7,6 +7,7 @@ public final class CygwinSuggestHomePathsTest extends CygwinBaseTest {
 
     @Test
     public void testCygwinOpamSdksAreSuggested() {
-        assertInstallationFolderWasSuggested(CygwinFolders.OPAM_HOME);
+        if (folders.OPAM_HOME == null) return;
+        assertInstallationFolderWasSuggested(folders.OPAM_HOME);
     }
 }

@@ -13,7 +13,7 @@ public final class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test @Ignore // todo: test https://stefanbirkner.github.io/system-rules/
     public void testPath() {
-        if (passCygwinTest()) return;
+        if (true) return;
         DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk();
         assertEquals("C:\\cygwin64\\bin\\ocaml.exe", detectionResult.ocaml);
         assertEquals("C:\\cygwin64\\bin\\ocamlc.opt.exe", detectionResult.ocamlCompiler);
@@ -33,31 +33,37 @@ public final class CygwinNativeDetectionTest extends CygwinBaseTest {
 
     @Test
     public void testPathInvalid() {
-        assertCygwinDetectionInvalid("C:\\cygwin64\\invalid\\bin\\ocaml.exe");
+        if (folders.OCAML_BIN_INVALID == null) return;
+        assertCygwinDetectionInvalid(folders.OCAML_BIN_INVALID);
     }
 
     @Test
     public void testNoExe() {
-        assertCygwinDetectionInvalid("C:\\cygwin64\\invalid\\bin\\ocaml");
+        if (folders.OCAML_BIN_INVALID_NO_EXE == null) return;
+        assertCygwinDetectionInvalid(folders.OCAML_BIN_INVALID_NO_EXE);
     }
 
     @Test
     public void testNotOCaml() {
-        assertCygwinDetectionInvalid(CygwinFolders.BIN_VALID_EXE);
+        if (folders.BIN_VALID_EXE == null) return;
+        assertCygwinDetectionInvalid(folders.BIN_VALID_EXE);
     }
 
     @Test
     public void testBin() {
-        assertCygwinDetectionValid(CygwinFolders.BIN_VALID_SDK);
+        if (folders.BIN_VALID_SDK == null) return;
+        assertCygwinDetectionValid(folders.BIN_VALID_SDK);
     }
 
     @Test
     public void testOpamBinValid() {
-        assertCygwinDetectionValid(CygwinFolders.OPAM_VALID_SDK);
+        if (folders.OPAM_VALID_SDK == null) return;
+        assertCygwinDetectionValid(folders.OPAM_VALID_SDK);
     }
 
     @Test
     public void testOpamBinInvalid() {
-        assertCygwinDetectionInvalid(CygwinFolders.OPAM_INVALID_BIN);
+        if (folders.OPAM_INVALID_BIN == null) return;
+        assertCygwinDetectionInvalid(folders.OPAM_INVALID_BIN);
     }
 }

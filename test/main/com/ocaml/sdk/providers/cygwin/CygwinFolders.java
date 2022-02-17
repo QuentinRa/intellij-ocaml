@@ -1,47 +1,113 @@
 package com.ocaml.sdk.providers.cygwin;
 
+import com.intellij.execution.ExecutionException;
+import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.SystemProperties;
+import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.utils.SdkInfo;
+import org.jetbrains.annotations.Nullable;
+import r.i.A.F;
 
-public interface CygwinFolders {
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-    //
-    // BIN
-    //
-    /** a valid binary candidate for an SDK **/
-    SdkInfo BIN_VALID_SDK = new SdkInfo(
-            "C:\\cygwin64\\",
-            "C:\\cygwin64\\bin\\ocaml.exe",
-            "ocamlc.opt.exe",
-            "4.10.0"
-    );
-    SdkInfo BIN_CREATE_SDK = new SdkInfo(
-            null,
-            "C:\\cygwin64\\bin\\ocaml.exe",
-            "C:\\cygwin64\\bin\\ocamlc.opt.exe",
-            "4.10.0",
-            "C:\\cygwin64\\lib\\ocaml"
-    );
+public class CygwinFolders {
 
-    /** a valid file that is not ocaml **/
-    String BIN_VALID_EXE = "C:\\cygwin64\\bin\\find.exe";
+    public @Nullable SdkInfo BIN_VALID_SDK;
+    public @Nullable SdkInfo BIN_CREATE_SDK;
+    public @Nullable String BIN_VALID_EXE;
+    public @Nullable String OPAM_HOME;
+    public @Nullable SdkInfo OPAM_VALID_SDK;
+    public @Nullable String OPAM_INVALID_BIN;
 
-    //
-    // OPAM
-    //
+    public @Nullable String HOME_INVALID;
+    public @Nullable String OCAML_BIN_INVALID;
+    public @Nullable String OCAML_BIN_INVALID_NO_EXE;
 
-    /** path to the opam folder **/
-    String OPAM_HOME =  "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() +"\\.opam\\";
+    public CygwinFolders(String installationFolderName) {
+        if(!SystemInfo.isWindows) return;
+        // resolve the installation folder
+        String cygwinRootFolder = null;
+        Iterable<Path> fsRoots = FileSystems.getDefault().getRootDirectories();
+        for (Path root : fsRoots) {
+            Path cygwin64 = root.resolve(installationFolderName);
+            if (!Files.exists(cygwin64)) continue;
+            cygwinRootFolder = cygwin64.toFile().getAbsolutePath();
+            break;
+        }
+        if (cygwinRootFolder == null) return;
 
-    /** everything should be valid **/
-    SdkInfo OPAM_VALID_SDK = new SdkInfo(
-            "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\4.08.0\\",
-            "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\4.08.0\\bin\\ocaml.exe",
-            "ocamlc.opt.exe",
-            "4.08.0"
-    );
+        // fill binaries-related variables
+        try {
+            final String binaryPath = cygwinRootFolder+"\\bin\\ocaml.exe";
 
-    /** expected: properly formatted path, non-existing SDK version **/
-    String OPAM_INVALID_BIN = "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\0.0.0\\bin\\ocaml.exe";
+            GeneralCommandLine cli = new GeneralCommandLine(binaryPath, "-vnum");
+            Process process = cli.createProcess();
+            String version = new String(process.getInputStream().readAllBytes()).trim();
+            process.waitFor();
+            System.out.println("v:"+version);
+            if (version.isEmpty() || process.exitValue() != 0)
+                throw new ExecutionException("No version / switch.");
+            System.out.println("v:"+version);
 
+            // todo: ...
+            String ocamlCompilerName = "ocamlc.opt.exe";
+            String libFolder = "\\lib\\ocaml";
+
+            /* a valid binary candidate for an SDK **/
+            BIN_VALID_SDK = new SdkInfo(
+                    cygwinRootFolder,
+                    cygwinRootFolder+"\\bin\\ocaml.exe",
+                    ocamlCompilerName,
+                    version
+            );
+
+            BIN_CREATE_SDK = new SdkInfo(
+                    null,
+                    cygwinRootFolder+"\\bin\\ocaml.exe",
+                    cygwinRootFolder+"\\bin\\"+ocamlCompilerName,
+                    version,
+                    cygwinRootFolder+libFolder
+            );
+        } catch (IOException | ExecutionException | InterruptedException ignore) {
+        }
+
+        /* a valid file that is not ocaml **/
+        BIN_VALID_EXE = "C:\\cygwin64\\bin\\find.exe";
+
+        try {
+            String opamHome = "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() +"\\.opam\\";
+            Path opamHomePath = Path.of(opamHome);
+            if (!Files.exists(opamHomePath)) throw new ExecutionException("Opam not installed");
+            /* path to the opam folder **/
+            OPAM_HOME = opamHome;
+
+            File[] files = opamHomePath.toFile().listFiles();
+            if (files == null || files.length == 0) throw new ExecutionException("Opam folder empty");
+
+            for (File file : files) {
+                String version = file.getName();
+                if (!OCamlSdkVersionManager.isValid(version)) continue;
+
+                /* everything should be valid **/
+                OPAM_VALID_SDK = new SdkInfo(
+                        "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\"+version+"\\",
+                        "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\"+version+"\\bin\\ocaml.exe",
+                        "ocamlc.opt.exe", // todo: ...
+                        version
+                );
+
+                /* expected: properly formatted path, non-existing SDK version **/
+                OPAM_INVALID_BIN = "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\0.0.0\\bin\\ocaml.exe";
+            }
+        } catch (ExecutionException ignore) {}
+
+        HOME_INVALID = "C:\\cygwin64\\invalid";
+        OCAML_BIN_INVALID = "C:\\cygwin64\\invalid\\bin\\ocaml.exe";
+        OCAML_BIN_INVALID_NO_EXE = "C:\\cygwin64\\invalid\\bin\\ocaml";
+    }
 }

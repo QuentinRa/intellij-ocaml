@@ -21,8 +21,8 @@ public final class WSLHomePathTest extends WSLBaseTest {
 
     @Test
     public void testInvalidTS() {
-        if (folders.HOME_INVALID_TS == null) return;
-        assertWSLHomeInvalid(folders.HOME_INVALID_TS);
+        if (folders.HOME_INVALID == null) return;
+        assertWSLHomeInvalid(folders.HOME_INVALID+"\\");
     }
 
     @Test
