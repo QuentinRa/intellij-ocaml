@@ -6,17 +6,20 @@ The plugin is experimental. You should implement any feature directly in the [Re
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.8-EAP]
-### Added
-- 🚀🚀 Available for 203.*
+## Unreleased
+
 - 🚀 parameters names are shown before parameters (#38)
 - 🚀 can see the type with `CTRL+SHIFT+P` (#38)
-- ✨ Custom error messages if the SDK is invalid.
+
+## [0.0.8]
+### Added
+- 🚀🚀 Available for 203.*
+- ✨ Custom error messages if the SDK is invalid. (#42)
 
 ### Changed
-- ✨ Fill the dune-project version using "dune --version" (with the dune associated with the module SDK, #43)
+- ✨ Use "dune --version" to set value in dune-project. (#43)
 - ✨ No autocompletion in strings. No autocompletion for numbers, and floats. (#66)
-- 🚀 Fix errors when using modules. Compilation should be working fine now. (#65)
+- 🚀 Fix errors when using modules. (#65)
 - ✨ Fix problems with the highlighter (#45)
 
 ## [0.0.7]
