@@ -65,6 +65,7 @@
         <projectSdkSetupValidator implementation="com.ocaml.ide.files.select.OCamlSDKValidator"/>
 
         <!-- FILES -->
+        <fileType extensions="annot" hashBangs="annot" name="OCAML_ANNOT" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlAnnotFileType"/>
         <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
         <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
         <internalFileTemplate name="OCaml File"/>

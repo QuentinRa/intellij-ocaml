@@ -68,6 +68,7 @@ public class OCamlIcons {
     }
 
     public static final class FileTypes {
+        public static final Icon OCAML_ANNOT = loadIcon("/icons/annotFile.svg");
         public static final Icon OCAML_SOURCE = loadIcon("/icons/mlFile.svg");
         public static final Icon OCAML_INTERFACE = loadIcon("/icons/mliFile.svg");
         public static final Icon OCAML_SOURCE_AND_INTERFACE = loadIcon("/icons/ocamlFiles.svg");
