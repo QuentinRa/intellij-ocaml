@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - ✨ Use "dune --version" to set value in dune-project. (#43)
-- ✨ No autocompletion in strings. No autocompletion for numbers, and floats. (#66)
+- ✨ No autocompletion in strings. No auto-completion for numbers, and floats. (#66)
 - 🚀 Fix errors when using modules. (#65)
 - ✨ Fix problems with the highlighter (#45)
 

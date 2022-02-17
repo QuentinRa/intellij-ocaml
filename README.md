@@ -12,7 +12,7 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] Support for Dune (already supported in ReasonML)
 * [x] Any installation must be simple, and effortless
 * [ ] **Real-time checks for errors/warnings**, including quick fixes
-* [x] **Real-time type inference**
+* [ ] **Real-time type inference**
 * [ ] **Smart completion**
 * [x] **REPL support**: we must be able to send commands from our file, to a REPL console
 * [x] **Using a bundle** (possible support for Localization later)
@@ -23,7 +23,7 @@ Originally, I was planning to make things, so that we can use this plugin outsid
 
 ## ✨ How will I do that?
 
-On Windows, one may use WSL, OCaml64, or a WSL. Both ocaml installed with, or without opam should work. For the latter, some features won't be available, as some files will be missing.
+On Windows, one may use Cygwin, OCaml64, or a WSL. Both ocaml installed with, or without opam should work. For the latter, some features won't be available, as some files will be missing.
 
 On Linux, you can also use ocaml installed with, or without opam.
 
@@ -117,25 +117,29 @@ On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the ins
 <details>
 <summary>Windows (with cygwin)</summary>
 
-Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and pick **ocaml** (if you don't want opam), otherwise, pick
+Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and 
 
-* `opam`
-* `make`
-* `wget` and `curl`
-* `tar` and `unzip`
-* `libclang` and `mingw[...]clang` (pick the one according to your OS)
+* **ocaml**: simply search and select "ocaml"
+* **opam**: search and select 
+  * `opam`
+  * `make`
+  * `wget` and `curl`
+  * `tar` and `unzip`
+  * `libclang` and `mingw[...]clang` (ex: mingw64-i686-clang)
 
-To install new versions of OCaml, run `Cygwin.bat` (in cygwin64 folder), then call `opam switch create 4.12.0`.
+To install new versions of OCaml, run `C:\cygwin64\Cygwin.bat`, then call `opam switch create 4.12.0` to install `ocaml 4.12.0`.
 
-Ensure that `C:/cygwin64/bin` (for me) is in the path. If you open a PowerShell, and write `opam --version`, you should be good. This is pretty useless (as the command above does not work in a PowerShell), but you are now able to call commands such as `make` in a PowerShell, so you can use a `Makefile`!
-
-Note that, on Windows, there is a problem with `ocaml`/`ocamlc` ([Unbound module Stdlib](https://discuss.ocaml.org/t/unbound-module-stdllib/5133)). You can find the path where both are looking for Stdlib, with `ocamlc -config`. You can set the PATH using an environment variable called `OCAMLLIB`(ex: `Set-Item -Path Env:OCAMLLIB -Value ("C:\Users\username\Desktop\4.13.1+mingw64c\lib\ocaml")`). **NOTE THAT THIS IS DONE BY THE PLUGIN** (for Cygwin/OCaml64 if needed), so you don't have to do this unless you are not using the plugin.
+* **Note**: to use "ocaml", "opam", "make", or "ocamlc" in a PowerShell/cmd, you need to ensure that the folder `C:/cygwin64/bin` is in the path.
 </details>
 
 <details>
 <summary>Windows (Cygwin, installer, mingw)</summary>
 
 Simply download the installer for [OCaml64](https://fdopen.github.io/opam-repository-mingw/installation/). Once installed, you will have your SDK in `C:\\OCam64\\home\\username\\.opam\\`. You will have opam installed, so you can add/versions if you want.
+
+* Run `C:\\OCam64\\Cygwin.bat`
+* `opam switch create 4.12.0` to install `ocaml 4.12.0`
+
 </details>
 
 <details>
@@ -144,7 +148,9 @@ Simply download the installer for [OCaml64](https://fdopen.github.io/opam-reposi
 In my case, on Linux or Debian, I'm using these commands (you may call `sudo apt-get update` first).
 
 * **ocaml**: `sudo apt-get install ocaml`
-* **opam** (recommended): `sudo apt-get install opam` then, you may use `òpam switch create 4.12.0` to install `ocaml 4.12.0`
+* **opam** (recommended): 
+  * `sudo apt-get install opam` 
+  * `opam switch create 4.12.0` to install `ocaml 4.12.0`
 </details>
 
 <details>
@@ -153,11 +159,15 @@ In my case, on Linux or Debian, I'm using these commands (you may call `sudo apt
 I do not have a computer with a macOS, so you should submit feedback, so that I can update this section. From what I saw, you may only have to do
 
 * `brew update`
-* `brew install ocaml` (for ocaml)
-* `brew install opam` (for opam)
+* **ocaml**: `brew install ocaml`
+* **opam** (recommended):
+  * `brew install opam` (for opam)
+  * `opam switch create 4.12.0` to install `ocaml 4.12.0`
 
 [Source](https://stackoverflow.com/questions/35563263/install-opam-in-mac-os).
 </details>
+
+* **Note**: if you got the error [Unbound module Stdlib](https://discuss.ocaml.org/t/unbound-module-stdllib/5133), ensure that the path to the ocaml library is valid (`ocamlc -config`). If you need to change it, set the environment variable called `OCAMLLIB`(ex: `"C:\Users\username\Desktop\4.13.1+mingw64c\lib\ocaml"`). **THIS IS DONE BY THE PLUGIN** (if needed).
 
 ## 📄 License
 

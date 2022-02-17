@@ -43,7 +43,7 @@ intellij {
         untilBuild = pluginUntilBuild
         changeNotes = """
                 <ul>
-                    <li>No autocompletion in strings. No autocompletion for numbers, and floats. (#66)</li>
+                    <li>No autocompletion in strings. No auto-completion for numbers, and floats. (#66)</li>
                     <li>Fix errors when using modules. (#65)</li>
                     <li>Fix problems with the highlighter (#45)</li>
                     <li>Use "dune --version" to set value in dune-project. (#43)</li>
