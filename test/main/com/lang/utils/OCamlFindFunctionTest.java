@@ -42,9 +42,10 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
         File annotations = new File(getTestDataPath(), FILE_NAME_ANNOT);
         annot.updateForFile(elementAt.getContainingFile().getVirtualFile().getPath(), annotations);
 
-        Pair<PsiElement, Integer> data = new OCamlFindFunction(caret).lookForFunction();
+        Pair<PsiElement, Integer> data = new OCamlFindFunction(caret).lookForFunction(caret.getTextOffset());
         assertNotNull(data);
         assertEquals(expectedFunctionName, data.first.getText());
+        System.out.println("dx:"+data.first.getTextOffset());
         assertEquals(expectedIndex, (int) data.second);
     }
 
@@ -241,13 +242,23 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
     }
 
     @Test
-    public void testFunName() {
+    public void testFunNameBefore() {
         assertFindResult("let _ = id (fun (*caret*)f x y -> f x y) f 0 5", "id", 0);
     }
 
     @Test
-    public void testNestedFunName() {
-        assertFindResult("let _ = id (fun f x y -> (*caret*)f x y) f 0 5", "f", 0);
+    public void testFunNameAfter() {
+        assertFindResult("let _ = id (fun f(*caret*) x y -> f x y) f 0 5", "id", 0);
+    }
+
+    @Test // not f
+    public void testNestedFunNameBefore() {
+        assertFindResult("let _ = id (fun f x y -> (*caret*)f x y) f 0 5", "id", 0);
+    }
+
+    @Test // not -1
+    public void testNestedFunNameAfter() {
+        assertFindResult("let _ = id (fun f x y -> f(*caret*) x y) f 0 5", "f", 0);
     }
 
     @Test

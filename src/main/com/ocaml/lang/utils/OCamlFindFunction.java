@@ -15,7 +15,6 @@ import com.or.lang.core.psi.impl.PsiLowerIdentifier;
 import com.or.lang.core.psi.impl.PsiScopedExpr;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import r.n.P;
 
 import java.util.ArrayList;
 
@@ -35,11 +34,27 @@ public class OCamlFindFunction {
         this.annot = this.startingElement.getProject().getService(OCamlAnnotResultsService.class);
     }
 
-    public @Nullable Pair<PsiElement, Integer> lookForFunction() {
+    public @Nullable Pair<PsiElement, Integer> lookForFunction(int caretPosition) {
+        return lookForFunction(caretPosition, startingElement);
+    }
+
+    public @Nullable Pair<PsiElement, Integer> lookForFunction(int caretPosition, @NotNull PsiElement startingElement) {
         ArrayList<Pair<PsiElement, Integer>> res = lookForFunction(startingElement, -1, new ArrayList<>());
         if (res.size() == 0) return null;
         Pair<PsiElement, Integer> p = res.get(0);
-        if (p.second == -1) p = new Pair<>(p.first, 0);
+        // we are starting with "-1", but, if we are on the function, then there is no recursive call,
+        // and the index is still "-1". If the cursor is after the function name, then we are goog
+        if (p.second == -1) {
+            // not >= (before is equals, after is superior)
+            if (caretPosition > p.first.getTextOffset()) p = new Pair<>(p.first, 0);
+            else {
+                // start again, but pick the correct startElement
+                PsiElement prevSibling = startingElement.getPrevSibling();
+                if (prevSibling == null) prevSibling = startingElement.getParent();
+                if (prevSibling == null) return null;
+                return lookForFunction(caretPosition, prevSibling);
+            }
+        }
         return p;
     }
 
