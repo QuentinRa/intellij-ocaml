@@ -49,15 +49,20 @@ let _ = f (if not true then 5 else 0) 3
 let _ = max (let f x y = 5 in 3) 3
 let _ = id (fun f x y -> f x y) f 0 5
 let _ = id (fun _ x y -> f x y) f 0 5
-(*let _ = id (match f 3 5 with _ as v -> g) f 0 5*)
+let _ = id (match f 3 5 with _ as v -> g) f 0 5
+let _ = id (match id None with _ -> fun f x y -> y) f 0 5
+
+type random = A of int * int | B
+let _ = g (fun _ _ -> 0) (A (5,6)) B
+let _ = id (match A(5,6) with _ -> 0)
 
 (* Labeled *)
-(*let f ~x ~y = x - y*)
-(*let _ = f ~x: 3 ~y: 5*)
+let f ~x ~y = x - y
+let _ = f ~x: 3 ~y: 5
 
 (* optional *)
-(*let bump ?(step = 1) x = x + step*)
-(*let _ = bump 2*)
-(*let _ = bump ~step:3 2*)
-(*let test ?(x = 0) ?(y = 0) () ?(z = 0) () = (x, y, z)*)
-(*let _ = test ~x:2 () ~z:3 ()*)
+let bump ?(step = 1) x = x + step
+let _ = bump 2
+let _ = bump ~step:3 2
+let test ?(x = 0) ?(y = 0) () ?(z = 0) () = (x, y, z)
+let _ = test ~x:2 () ~z:3 ()

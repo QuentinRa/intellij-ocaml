@@ -56,3 +56,9 @@ let list = [[4],5,6,8]
 let id s = s
 let f x y = x + y
 let _ = id (fun f x y -> f x y) f 0 5
+
+(* bug - two types 1 *)
+let x (l : float list) : float = List.hd l
+
+(* bug with a lot of types and 2 ident *)
+let bump ?(step = 1) x = x + step

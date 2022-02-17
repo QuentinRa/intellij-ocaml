@@ -107,4 +107,19 @@ public class TestTypeInference extends OCamlIdeTest {
     public void testBugLongType() {
         doTest(58, 9, "((int -> int -> int) -> int -> int -> int) -> (int -> int -> int) -> int -> int -> int");
     }
+
+    /*
+let x (l : float list) : float = List.hd l
+type(
+  float list
+)
+type(
+  float list
+)
+
+let id s = s
+let f x y = x + y
+let _ = id (match id None with _ -> fun f x y -> y) f 0 5
+_ => 'b option
+     */
 }

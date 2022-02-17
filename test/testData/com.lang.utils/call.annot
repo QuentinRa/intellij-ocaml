@@ -1473,3 +1473,181 @@ type(
 type(
   int
 )
+"call.ml" 53 1097 1101 "call.ml" 53 1097 1102
+type(
+  int
+)
+"call.ml" 53 1097 1105 "call.ml" 53 1097 1107
+type(
+  ((int -> int -> int) -> int -> int -> int) ->
+  (int -> int -> int) -> int -> int -> int
+)
+ident(
+  int_ref id "call.ml" 1 0 4 "call.ml" 1 0 6
+)
+"call.ml" 53 1097 1115 "call.ml" 53 1097 1117
+type(
+  'a option -> 'a option
+)
+ident(
+  int_ref id "call.ml" 1 0 4 "call.ml" 1 0 6
+)
+"call.ml" 53 1097 1118 "call.ml" 53 1097 1122
+type(
+  'a option
+)
+"call.ml" 53 1097 1115 "call.ml" 53 1097 1122
+type(
+  'a option
+)
+"call.ml" 53 1097 1128 "call.ml" 53 1097 1129
+type(
+  'b option
+)
+type(
+  'b option
+)
+"call.ml" 53 1097 1137 "call.ml" 53 1097 1138
+type(
+  int -> int -> int
+)
+ident(
+  def f "call.ml" 53 1097 1139 "call.ml" 53 1097 1147
+)
+"call.ml" 53 1097 1139 "call.ml" 53 1097 1140
+type(
+  int
+)
+ident(
+  def x "call.ml" 53 1097 1141 "call.ml" 53 1097 1147
+)
+"call.ml" 53 1097 1141 "call.ml" 53 1097 1142
+type(
+  int
+)
+ident(
+  def y "call.ml" 53 1097 1146 "call.ml" 53 1097 1147
+)
+"call.ml" 53 1097 1146 "call.ml" 53 1097 1147
+type(
+  int
+)
+ident(
+  int_ref y "call.ml" 53 1097 1141 "call.ml" 53 1097 1142
+)
+"call.ml" 53 1097 1133 "call.ml" 53 1097 1147
+type(
+  (int -> int -> int) -> int -> int -> int
+)
+"call.ml" 53 1097 1108 "call.ml" 53 1097 1148
+type(
+  (int -> int -> int) -> int -> int -> int
+)
+"call.ml" 53 1097 1149 "call.ml" 53 1097 1150
+type(
+  int -> int -> int
+)
+ident(
+  int_ref f "call.ml" 2 13 17 "call.ml" 2 13 18
+)
+"call.ml" 53 1097 1151 "call.ml" 53 1097 1152
+type(
+  int
+)
+"call.ml" 53 1097 1153 "call.ml" 53 1097 1154
+type(
+  int
+)
+"call.ml" 53 1097 1105 "call.ml" 53 1097 1154
+type(
+  int
+)
+"call.ml" 56 1189 1193 "call.ml" 56 1189 1194
+type(
+  int
+)
+"call.ml" 56 1189 1197 "call.ml" 56 1189 1198
+type(
+  (random -> random -> int) -> random -> random -> int
+)
+ident(
+  int_ref g "call.ml" 3 31 35 "call.ml" 3 31 36
+)
+"call.ml" 56 1189 1204 "call.ml" 56 1189 1205
+type(
+  random
+)
+"call.ml" 56 1189 1206 "call.ml" 56 1189 1207
+type(
+  random
+)
+"call.ml" 56 1189 1211 "call.ml" 56 1189 1212
+type(
+  int
+)
+"call.ml" 56 1189 1199 "call.ml" 56 1189 1213
+type(
+  random -> random -> int
+)
+"call.ml" 56 1189 1218 "call.ml" 56 1189 1219
+type(
+  int
+)
+"call.ml" 56 1189 1220 "call.ml" 56 1189 1221
+type(
+  int
+)
+"call.ml" 56 1189 1214 "call.ml" 56 1189 1223
+type(
+  random
+)
+"call.ml" 56 1189 1224 "call.ml" 56 1189 1225
+type(
+  random
+)
+"call.ml" 56 1189 1197 "call.ml" 56 1189 1225
+type(
+  int
+)
+"call.ml" 57 1226 1230 "call.ml" 57 1226 1231
+type(
+  int
+)
+"call.ml" 57 1226 1234 "call.ml" 57 1226 1236
+type(
+  int -> int
+)
+ident(
+  int_ref id "call.ml" 1 0 4 "call.ml" 1 0 6
+)
+"call.ml" 57 1226 1246 "call.ml" 57 1226 1247
+type(
+  int
+)
+"call.ml" 57 1226 1248 "call.ml" 57 1226 1249
+type(
+  int
+)
+"call.ml" 57 1226 1244 "call.ml" 57 1226 1250
+type(
+  random
+)
+"call.ml" 57 1226 1256 "call.ml" 57 1226 1257
+type(
+  random
+)
+type(
+  random
+)
+"call.ml" 57 1226 1261 "call.ml" 57 1226 1262
+type(
+  int
+)
+"call.ml" 57 1226 1237 "call.ml" 57 1226 1263
+type(
+  int
+)
+"call.ml" 57 1226 1234 "call.ml" 57 1226 1263
+type(
+  int
+)
