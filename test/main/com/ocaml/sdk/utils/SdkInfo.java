@@ -19,4 +19,14 @@ public class SdkInfo {
         this.comp = comp;
         this.sources = sources;
     }
+
+    @Override public String toString() {
+        return "SdkInfo{" +
+                "path='" + path + '\'' +
+                ", version='" + version + '\'' +
+                ", toplevel='" + toplevel + '\'' +
+                ", sources='" + sources + '\'' +
+                ", comp='" + comp + '\'' +
+                '}';
+    }
 }

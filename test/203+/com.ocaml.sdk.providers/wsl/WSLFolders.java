@@ -35,23 +35,76 @@ public class WSLFolders {
         List<WSLDistribution> list = WslDistributionManager.getInstance().getInstalledDistributions();
         if (list.size() <= 0) return;
 
-        String version = null;
-
         // find
         for (WSLDistribution distribution : list) {
+            // opam, if installed
             try {
-                // opam
                 GeneralCommandLine cli = new GeneralCommandLine("opam", "switch", "show");
                 cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
                 Process process = cli.createProcess();
-                String s = new String(process.getInputStream().readAllBytes());
-                if (s.isEmpty()) throw new ExecutionException("Empty version");
-                System.out.println("found:"+s);
-                // todo: fill variables
+                String version = new String(process.getInputStream().readAllBytes()).trim();
+                if (version.isEmpty() || process.exitValue() != 0)
+                    throw new ExecutionException("No version / switch.");
+
+                /* path to the opam folder **/
+                String opamFolder = distribution.getUserHome() + "/.opam/";
+                OPAM_HOME = distribution.getWindowsPath(opamFolder);
+
+                /* everything should be valid */
+                OPAM_VALID_SDK = new SdkInfo(
+                        OPAM_HOME+version, OPAM_HOME+version+"\\bin\\ocaml",
+                        "", version, "\\lib\\ocaml"
+                );
+
+                OPAM_INVALID_DIST = new SdkInfo(
+                        "\\\\wsl$\\Fedora\\home\\username\\.opam\\4.07.0",
+                        "\\\\wsl$\\Fedora\\home\\username\\.opam\\4.07.0\\bin\\ocaml",
+                        "",
+                        ""
+                );
+
+                /* expected: properly formatted path, non-existing SDK version */
+                OPAM_INVALID = OPAM_HOME+"\\0.00.0";
+                OPAM_INVALID_BIN = OPAM_HOME+"\\0.00.0\\\\bin\\\\ocaml";
+            } catch (ExecutionException | IOException ignore) {}
+
+            // check native
+
+            /* a valid file that is not ocaml **/
+            BIN_VALID = distribution.getWindowsPath("/bin/find");
+
+            try {
+                GeneralCommandLine cli = new GeneralCommandLine("/bin/ocamlc", "-version");
+                cli = distribution.patchCommandLine(cli, null, new WSLCommandLineOptions());
+                Process process = cli.createProcess();
+                String version = new String(process.getInputStream().readAllBytes()).trim();
+                if (version.isEmpty() || process.exitValue() != 0)
+                    throw new ExecutionException("No version / switch.");
+
+                cli = new GeneralCommandLine("true");
+                WSLCommandLineOptions options = new WSLCommandLineOptions();
+                options.addInitCommand("ocamlc -config | sed -nr 's/^standard_library: (.*)*/\\1/p'");
+                cli = distribution.patchCommandLine(cli, null, options);
+                process = cli.createProcess();
+                String libFolder = new String(process.getInputStream().readAllBytes()).trim();
+                if (libFolder.isEmpty() || process.exitValue() != 0)
+                    throw new ExecutionException("No lib folder.");
+
+                String root = distribution.getWindowsPath("/");
+                String ocamlBin = distribution.getWindowsPath("/bin/ocaml");
+                String ocamlCompilerBin = distribution.getWindowsPath("/bin/ocamlc");
+                /* a valid binary candidate for an SDK **/
+                BIN_VALID_SDK = new SdkInfo(root, ocamlBin,
+                        "", version, libFolder.replace("/","\\")
+                );
+                BIN_CREATE_SDK = new SdkInfo(null,
+                        ocamlBin,
+                        ocamlCompilerBin,
+                        version,
+                        distribution.getWindowsPath(libFolder)
+                );
             } catch (ExecutionException | IOException ignore) {}
         }
-
-        if (version == null) return;
 
         HOME_INVALID = "\\\\wsl$\\Debian\\invalid";
         HOME_INVALID_TS = "\\\\wsl$\\Debian\\invalid\\";
@@ -61,53 +114,4 @@ public class WSLFolders {
     private boolean isWSLCompatible () {
         return SystemInfo.isWin10OrNewer;
     }
-
-    //    //
-//    // BIN
-//    //
-//    /** a valid binary candidate for an SDK **/
-//    SdkInfo BIN_VALID_SDK = new SdkInfo(
-//            "\\\\wsl$\\Debian\\",
-//            "\\\\wsl$\\Debian\\bin\\ocaml",
-//            "",
-//            "4.12.0",
-//            "\\usr\\lib\\ocaml"
-//    );
-//    SdkInfo BIN_CREATE_SDK = new SdkInfo(
-//            null,
-//            "\\\\wsl$\\Debian\\bin\\ocaml",
-//            "\\\\wsl$\\Debian\\bin\\ocamlc",
-//            "4.12.0",
-//            "\\\\wsl$\\Debian\\usr\\lib\\ocaml"
-//    );
-//
-//    /** a valid file that is not ocaml **/
-//    String BIN_VALID = "\\\\wsl$\\Debian\\bin\\find";
-//
-//    //
-//    // OPAM
-//    //
-//
-//    /** path to the opam folder **/
-//    String OPAM_HOME =  "\\\\wsl$\\Debian\\home\\calistro\\.opam\\";
-//
-//    /** everything should be valid **/
-//    SdkInfo OPAM_VALID_SDK = new SdkInfo(
-//            "\\\\wsl$\\Debian\\home\\calistro\\.opam\\4.07.0",
-//            "\\\\wsl$\\Debian\\home\\calistro\\.opam\\4.07.0\\bin\\ocaml",
-//            "",
-//            "4.07.0",
-//            "\\lib\\ocaml"
-//    );
-//
-//    SdkInfo OPAM_INVALID_DIST = new SdkInfo(
-//            "\\\\wsl$\\Fedora\\home\\calistro\\.opam\\4.07.0",
-//            "\\\\wsl$\\Fedora\\home\\calistro\\.opam\\4.07.0\\bin\\ocaml",
-//            "",
-//            ""
-//    );
-//
-//    /** expected: properly formatted path, non-existing SDK version **/
-//    String OPAM_INVALID = "\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0";
-//    String OPAM_INVALID_BIN = "\\\\wsl$\\Debian\\home\\calistro\\.opam\\0.00.0\\bin\\ocaml";
 }
