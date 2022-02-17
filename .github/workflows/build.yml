@@ -43,8 +43,11 @@ jobs:
           cache: gradle
 
       # Run tests
-      - name: Run Tests
-        run: ./gradlew test
+      # https://github.com/gradle/gradle-build-action
+      - name: Test with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: test
 
       # Run Qodana inspections
       - name: Qodana - Code Inspection
