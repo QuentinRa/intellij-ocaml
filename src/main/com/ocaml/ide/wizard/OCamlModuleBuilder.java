@@ -7,6 +7,7 @@ import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ContentEntry;
@@ -84,7 +85,8 @@ public class OCamlModuleBuilder extends ModuleBuilder {
             if (sourceRoot != null) {
                 contentEntry.addSourceFolder(sourceRoot, false, "");
                 // create the files
-                instructions.createFiles(rootModel, sourceRoot);
+                Sdk sdk = rootModel.getSdk();
+                instructions.createFiles(rootModel, sourceRoot, sdk == null ? null : sdk.getHomePath());
                 // refresh
                 ApplicationManager.getApplication().runWriteAction(() -> sourceRoot.refresh(true, true));
             }

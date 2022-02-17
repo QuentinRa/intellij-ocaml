@@ -4,6 +4,7 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import com.ocaml.ide.console.debug.groups.elements.*;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,11 @@ public class TreeElementGroup implements StructureViewTreeElement {
             }
 
             @Override public @Nullable Icon getIcon(boolean unused) {
+                return null;
+            }
+
+            @UntilIdeVersion(release = "203")
+            @Override public @Nullable String getLocationString() {
                 return null;
             }
         };

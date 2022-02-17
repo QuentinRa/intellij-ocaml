@@ -1,7 +1,9 @@
 package com.ocaml.ide.wizard.view;
 
 import com.intellij.CommonBundle;
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.ide.HelpTooltip;
 import com.intellij.ide.JavaUiBundle;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.ProjectJdkForModuleStep;
@@ -22,6 +24,7 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.LabeledIcon;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
 import com.ocaml.OCamlPluginConstants;
@@ -102,6 +105,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private TextFieldWithBrowseButton myOCamlLocation; // 2# submit ocaml binary location
     @NotNull private JLabel myOCamlCompilerLocation; // 2# show compiler location deduced using myOCamlLocation
     @NotNull private JLabel myCreateLocationLabel; // 2# show were the created sdk will be stored
+    private JLabel myOCamlBinaryLabel;
     @Nullable private Sdk createSDK; // 2# the sdk that we created
     boolean shouldValidateAgain = true; // selected SDK changed
     private SimpleSdkData myCustomSdkData; // 2# data of the SDK we are about to create
@@ -168,6 +172,13 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
                     }
                 }
         );
+
+        // help
+        myOCamlBinaryLabel.setIcon(AllIcons.General.ContextHelp);
+        myOCamlBinaryLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        new HelpTooltip()
+                .setDescription(OCamlBundle.message("project.wizard.sdk.ocaml.binary.help"))
+                .installOn(myOCamlBinaryLabel);
 
         // set the text + color
         myCreateLocationLabel.setText(OCamlBundle.message("project.wizard.create.location", SimpleSdkData.SDK_FOLDER));

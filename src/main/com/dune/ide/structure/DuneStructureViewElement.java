@@ -11,10 +11,13 @@ import com.intellij.ide.util.treeView.smartTree.SortableTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.util.NlsSafe;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.PsiIconUtil;
+import com.ocaml.utils.adaptor.SinceIdeVersion;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,6 +120,11 @@ public class DuneStructureViewElement implements StructureViewTreeElement, Sorta
             }
 
             @Override public @Nullable Icon getIcon(boolean unused) {
+                return null;
+            }
+
+            @UntilIdeVersion(release = "203")
+            @Override public @Nullable String getLocationString() {
                 return null;
             }
         };

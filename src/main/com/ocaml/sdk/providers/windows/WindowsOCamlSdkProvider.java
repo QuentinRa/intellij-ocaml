@@ -17,16 +17,10 @@ import java.util.*;
  * We are calling providers such as, WSL, Cygwin, Ocaml64, etc.
  */
 public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
-    private final CygwinSdkProvider cygwinSdkProvider;
-    private final OCaml64SdkProvider oCaml64SdkProvider;
-    private final WSLSdkProvider wslSdkProvider;
     private final OCamlSdkProvider[] myProviders;
 
     public WindowsOCamlSdkProvider() {
-        cygwinSdkProvider = new CygwinSdkProvider();
-        oCaml64SdkProvider = new OCaml64SdkProvider();
-        wslSdkProvider = new WSLSdkProvider();
-        myProviders = new OCamlSdkProvider[]{cygwinSdkProvider, oCaml64SdkProvider, wslSdkProvider};
+        myProviders = WindowProviderUtil.createWindowsProviders();
     }
 
     // There is no such thing on Windows
@@ -71,7 +65,7 @@ public class WindowsOCamlSdkProvider extends BaseOCamlSdkProvider {
 
         HashSet<Path> installationDirectories = new HashSet<>();
         HashSet<Path> roots = new HashSet<>();
-        for (OCamlSdkProvider p : new OCamlSdkProvider[]{cygwinSdkProvider, oCaml64SdkProvider, wslSdkProvider}) {
+        for (OCamlSdkProvider p : myProviders) {
             for (String installationDirectory : p.getInstallationFolders()) {
                 Path installationDirectoryPath = Path.of(installationDirectory);
                 boolean absolute = installationDirectoryPath.isAbsolute() || installationDirectory.startsWith("\\\\"); // UNC path

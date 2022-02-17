@@ -3,6 +3,7 @@ package com.ocaml.ide.wizard.templates;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Instructions to build the template.
@@ -24,4 +25,8 @@ public interface TemplateBuildInstructions {
      * @see com.intellij.ide.util.projectWizard.ModuleBuilder#setupRootModel
      **/
     void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot);
+
+    default void createFiles(ModifiableRootModel rootModel, VirtualFile sourceRoot, @Nullable String sdkHomePath) {
+        createFiles(rootModel, sourceRoot);
+    }
 }

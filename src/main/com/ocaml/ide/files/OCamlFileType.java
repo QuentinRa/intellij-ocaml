@@ -27,6 +27,19 @@ public final class OCamlFileType extends LanguageFileType {
         super(OCamlLanguage.INSTANCE);
     }
 
+    /**
+     * Given a path to an interface, return the path to the source
+     *
+     * @param path path to the interface file, must be properly formatted
+     * @return the path to the source
+     * @throws IllegalArgumentException if the path is valid using {@link OCamlFileType#isFile(String)}
+     */
+    public static @NotNull String fromInterface(@NotNull String path) {
+        if (OCamlInterfaceFileType.isFile(path))
+            return path.replace(OCamlInterfaceFileType.DEFAULT_EXTENSION, DEFAULT_EXTENSION);
+        throw new IllegalArgumentException("Not a valid interface file '" + path + "'");
+    }
+
     @Contract(pure = true) public static boolean isFile(@NotNull String name) {
         return name.endsWith(DOT_DEFAULT_EXTENSION);
     }

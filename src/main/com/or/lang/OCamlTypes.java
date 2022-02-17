@@ -187,7 +187,6 @@ public interface OCamlTypes {
     ORTokenElementType NEW = new ORTokenElementType("new");
     ORTokenElementType NONE = new ORTokenElementType("None");
     ORTokenElementType NONREC = new ORTokenElementType("nonrec");
-    ORTokenElementType NOT = new ORTokenElementType("not");
     ORTokenElementType NOT_EQ = new ORTokenElementType("!=");
     ORTokenElementType NOT_EQEQ = new ORTokenElementType("!==");
     ORTokenElementType OBJECT = new ORTokenElementType("object");
@@ -248,7 +247,6 @@ public interface OCamlTypes {
     ORTokenElementType WHILE = new ORTokenElementType("while");
     ORTokenElementType WITH = new ORTokenElementType("with");
 
-    // todo: handle properly (not in the lexer)
     ORTokenElementType PROPERTY_NAME = new ORTokenElementType("PROPERTY_NAME");
     ORTokenElementType VARIANT_NAME = new ORTokenElementType("VARIANT_NAME");
     ORTokenElementType DOUBLE_QUOTE = new ORTokenElementType("DOUBLE_QUOTE");

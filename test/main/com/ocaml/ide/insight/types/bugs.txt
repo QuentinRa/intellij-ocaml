@@ -1,0 +1,10 @@
+--------- PATCHED in 0.08
+=> The scope detection was remade :)
+
+#1 - remove ... in "class ..." from scope
+#2 - add [] and [...] from scope
+#3 - remove types (ex: ": types" or "of types"
+#4 - remove "method name"
+#5 - remove "type name"
+#6 - add "_" ? (pattern)
+#7 - add "()" ? (unit)

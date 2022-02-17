@@ -15,6 +15,7 @@ import static com.intellij.psi.TokenType.*;
     private CharSequence quotedStringId;
     private int commentDepth;
     private boolean inComment = false;
+    private boolean inAnnotationDetails = false;
 
     //Store the start index of a token
     private void tokenStart() {
@@ -76,6 +77,7 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
 %state IN_STRING
 %state IN_OCAML_ML_COMMENT
 %state IN_OCAML_DOC_COMMENT
+%state IN_OCAML_ANNOT
 
 %%
 
@@ -114,7 +116,6 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "module"      { return OCamlTypes.MODULE;}
     "mutable"     { return OCamlTypes.MUTABLE; }
     "new"         { return OCamlTypes.NEW; }
-    "not"         { return OCamlTypes.NOT; }
     "nonrec"      { return OCamlTypes.NONREC; }
     "object"      { return OCamlTypes.OBJECT; }
     "of"          { return OCamlTypes.OF; }
@@ -169,13 +170,14 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "'"{LOWERCASE}{IDENTCHAR}*       { return OCamlTypes.TYPE_ARGUMENT; }
     "`"{UPPERCASE}{IDENTCHAR}*       { return OCamlTypes.POLY_VARIANT; }
     "`"{LOWERCASE}{IDENTCHAR}*       { return OCamlTypes.POLY_VARIANT; }
-    "[@" .* "]"                      { return OCamlTypes.ANNOTATION; }
 
     "\"" { if (!inComment) yybegin(IN_STRING); tokenStart(); }
     "(*" { yybegin(IN_OCAML_ML_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
     // not a normal, empty, comment
     // nor a (*** kind of comment
     "(**" [^*)] { yybegin(IN_OCAML_DOC_COMMENT); commentDepth = 1; inComment = true; tokenStart(); }
+    // annotations
+    "[@" { yybegin(IN_OCAML_ANNOT); inAnnotationDetails = false; tokenStart(); }
 
     "#if"     { return OCamlTypes.DIRECTIVE_IF; }
     "#else"   { return OCamlTypes.DIRECTIVE_ELSE; }
@@ -274,6 +276,14 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
     "*)" { commentDepth -= 1; if (commentDepth == 0) { inComment = false; yybegin(INITIAL); tokenEnd(); return OCamlTypes.DOC_COMMENT; } }
      . | {NEWLINE} { }
      <<EOF>> { yybegin(INITIAL); tokenEnd(); return OCamlTypes.DOC_COMMENT; }
+}
+
+<IN_OCAML_ANNOT> {
+    "]" { if (!inAnnotationDetails) { yybegin(INITIAL); tokenEnd(); return OCamlTypes.ANNOTATION; } }
+    "{|" { inAnnotationDetails = true; }
+    "|}" { inAnnotationDetails = false; }
+     . | {NEWLINE} { }
+     <<EOF>> { yybegin(INITIAL); tokenEnd(); return OCamlTypes.ANNOTATION; }
 }
 
 [^] { return BAD_CHARACTER; }

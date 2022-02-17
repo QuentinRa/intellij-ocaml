@@ -1,6 +1,7 @@
 package com.ocaml.sdk.utils;
 
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
+import com.ocaml.sdk.providers.utils.InvalidHomeError;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,5 +36,9 @@ public final class OCamlSdkHomeManager {
 
     public static boolean isValid(@NotNull Path homePath) {
         return Boolean.TRUE.equals(OCamlSdkProvidersManager.INSTANCE.isHomePathValid(homePath));
+    }
+
+    public static @Nullable InvalidHomeError invalidHomeErrorMessage(@NotNull Path homePath) {
+        return OCamlSdkProvidersManager.INSTANCE.isHomePathValidErrorMessage(homePath);
     }
 }

@@ -3,6 +3,7 @@ package com.ocaml.sdk.providers;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.ocaml.sdk.providers.utils.AssociatedBinaries;
 import com.ocaml.sdk.providers.utils.CompileWithCmtInfo;
+import com.ocaml.sdk.providers.utils.InvalidHomeError;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,6 +108,12 @@ public interface OCamlSdkProvider {
      */
     @Nullable Boolean isHomePathValid(@NotNull Path homePath);
 
+    /**
+     * @param homePath an invalid sdk home path
+     * @return why this home path is invalid or null if no provider
+     */
+    @Nullable InvalidHomeError isHomePathValidErrorMessage(@NotNull Path homePath);
+
     //
     // Commands
     //
@@ -142,4 +149,14 @@ public interface OCamlSdkProvider {
                                                           String file,
                                                           String outputDirectory,
                                                           String executableName);
+
+    //
+    // DUNE
+    //
+    /**
+     * @param sdkHomePath path to the sdkHome
+     * @return Version of dune
+     */
+    @Nullable String getDuneVersion(String sdkHomePath);
+
 }

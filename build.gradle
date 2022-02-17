@@ -43,9 +43,12 @@ intellij {
         untilBuild = pluginUntilBuild
         changeNotes = """
                 <ul>
-                    <li>Preview auto-selected statement (CTRL-ENTER) if needed (#56)</li>
-                    <li>Can show/hide the variable view, can be docked next to the file (#40)</li>
-                    <li>Fix issues with the REPL console (#37, #57, #60)</li>
+                    <li>No autocompletion in strings. No autocompletion for numbers, and floats. (#66)</li>
+                    <li>Fix errors when using modules. (#65)</li>
+                    <li>Fix problems with the highlighter (#45)</li>
+                    <li>Use "dune --version" to set value in dune-project. (#43)</li>
+                    <li>Custom error messages if the SDK is invalid. (#42)</li>
+                    <li>Available for 203.*</li>
                     <li>See <a href="https://github.com/QuentinRa/intellij-ocaml/blob/main/CHANGELOG.md">CHANGELOG.md</a></li>
                 <ul>
             """.stripIndent()
@@ -66,9 +69,18 @@ compileJava.options.encoding = 'UTF-8'
 // and a folder such as "212" or "213"
 sourceSets {
     main.java.srcDirs = ["src/$platformVersion", "src/main"]
-    if (loadPlatform != null && !loadPlatform.isBlank()) main.java.srcDirs += ["src/$loadPlatform"]
+    if (loadPlatform != null && !loadPlatform.isBlank()) {
+        for(String s: (loadPlatform as String).split(",")) {
+            main.java.srcDirs += ["src/$s"]
+        }
+    }
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
+    if (loadPlatform != null && !loadPlatform.isBlank()) {
+        for(String s: (loadPlatform as String).split(",")) {
+            test.java.srcDirs += ["test/$s"]
+        }
+    }
     test.resources.srcDirs = ["resources/main", "resources/$platformVersion", "test/testData"]
 }
 

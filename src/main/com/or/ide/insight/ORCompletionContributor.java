@@ -12,6 +12,7 @@ import com.or.ide.insight.provider.ModuleCompletionProvider;
 import com.or.ide.insight.provider.ObjectCompletionProvider;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiInclude;
+import com.or.lang.core.psi.PsiLiteralExpression;
 import com.or.lang.core.psi.PsiOpen;
 import com.or.lang.utils.QNameFinder;
 import com.or.utils.Log;
@@ -32,6 +33,7 @@ abstract class ORCompletionContributor extends CompletionContributor {
                         IElementType prevNodeType = prevLeaf == null ? null : prevLeaf.getNode().getElementType();
                         PsiElement parent = element.getParent();
                         PsiElement grandParent = parent == null ? null : parent.getParent();
+                        IElementType elementType = element.getNode().getElementType();
 
                         if (LOG.isTraceEnabled()) {
                             LOG.debug("»» Completion: position: " + position + ", " + position.getText());
@@ -49,6 +51,12 @@ abstract class ORCompletionContributor extends CompletionContributor {
                         // A comment, stop completion
                         if (element instanceof PsiComment) {
                             LOG.debug("comment, stop");
+                            return;
+                        }
+                        // A string, a number, a boolean, stop completion
+                        if (element instanceof PsiLiteralExpression ||
+                                elementType.equals(OCamlTypes.INT_VALUE) ||
+                                elementType.equals(OCamlTypes.FLOAT_VALUE)) {
                             return;
                         }
 

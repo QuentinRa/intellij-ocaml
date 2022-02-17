@@ -22,17 +22,26 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
 
-public class PsiLowerSymbolReference extends ORMultiSymbolReference<PsiLowerSymbol> {
+public class PsiLowerSymbolReference extends ORMultiSymbolReference<PsiLowerSymbol> implements FetchLastForStatement {
     private static final Log LOG = Log.create("ref.lower");
     private static final Log LOG_PERF = Log.create("ref.perf.lower");
+    private @Nullable PsiElement symbol;
 
     public PsiLowerSymbolReference(@NotNull PsiLowerSymbol element) {
         super(element);
     }
 
     @Override
+    public void setResolveFor(PsiElement symbol) {
+        this.symbol = symbol;
+    }
+
+    @Override
     public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
+        PsiElement symbol = this.symbol;
+        this.symbol = null;
         if (myReferenceName == null) {
             return ResolveResult.EMPTY_ARRAY;
         }
@@ -123,7 +132,22 @@ public class PsiLowerSymbolReference extends ORMultiSymbolReference<PsiLowerSymb
         long endUpdateResolutions = System.currentTimeMillis();
 
         resolutions.removeIncomplete();
-        Collection<PsiQualifiedPathElement> sortedResult = resolutions.resolvedElements();
+        Collection<PsiQualifiedPathElement> sortedResult;
+        if (symbol != null) {
+            int max = symbol.getTextOffset();
+            PsiQualifiedPathElement e = null;
+            List<PsiQualifiedPathElement> choices = resolutions.resolveAllElements();
+            for (PsiQualifiedPathElement element : choices) {
+                if (element.getTextOffset() > max) break;
+                e = element;
+            }
+            if (e != null) sortedResult = List.of(e);
+            else if (choices.size() > 0) {
+                sortedResult = List.of(choices.get(0));
+            } else sortedResult = List.of();
+        } else {
+            sortedResult = resolutions.resolvedElements();
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("  => found", Joiner.join(", ", sortedResult,
@@ -205,6 +229,10 @@ public class PsiLowerSymbolReference extends ORMultiSymbolReference<PsiLowerSymb
 
         public boolean isInterface() {
             return FileHelper.isInterface(m_referencedIdentifier.getContainingFile().getFileType());
+        }
+
+        @Override public String toString() {
+            return "LowerResolveResult{" + m_referencedIdentifier.getText() + '}';
         }
     }
 }

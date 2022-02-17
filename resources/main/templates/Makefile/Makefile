@@ -10,10 +10,10 @@ all: init $(OUTPUT)test_hello_world
 # generic rules to compile our files  #
 #######################################
 $(OUTPUT)%.cmi: $(SOURCE)%.mli
-	ocamlc -c $< -o $@ -I $(OUTPUT) -bin-annot
+	ocamlc -c $< -o $@ -I $(OUTPUT)
 
 $(OUTPUT)%.cmo: $(SOURCE)%.ml
-	ocamlc -c $< -o $@ -I $(OUTPUT) -bin-annot
+	ocamlc -c $< -o $@ -I $(OUTPUT)
 
 ##############################
 # Rules to cmpile our files  #
@@ -21,7 +21,7 @@ $(OUTPUT)%.cmo: $(SOURCE)%.ml
 
 # we need hello_world.cmo and test_hello_world.cmo to create test_hello_world
 $(OUTPUT)test_hello_world: $(OUTPUT)hello_world.cmo $(OUTPUT)test_hello_world.cmo
-	ocamlc $^ -o $@ -I $(OUTPUT) -bin-annot
+	ocamlc $^ -o $@ -I $(OUTPUT)
 # we need to compile the interface first to get hello_world.cmo
 $(OUTPUT)hello_world.cmo: $(OUTPUT)hello_world.cmi
 # we need to compile hello_world.cmo first
