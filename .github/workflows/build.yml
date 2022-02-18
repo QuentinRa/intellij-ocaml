@@ -68,7 +68,7 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - name: Print Opam folder
-        run: opam var -w | sed -nr 's/^root[[:space:]]*(.*)* #.*/\1/p'
+        run: opam var -w | sed -nr 's/^root[[:space:]]*(.*)* \#.*/\1/p'
 
       - name: Print OCaml folder
         run: opam var -w | sed -nr 's/^prefix[[:space:]]*(.*)*/\1/p'
@@ -84,5 +84,5 @@ jobs:
           arguments: test
 
       # Run Qodana inspections
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v4.2.5
+#      - name: Qodana - Code Inspection
+#        uses: JetBrains/qodana-action@v4.2.5
