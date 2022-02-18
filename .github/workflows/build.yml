@@ -32,8 +32,8 @@ jobs:
 #          - windows-latest
         ocaml-compiler:
           - 4.05.x
-          - 4.08.1
-          - 4.13.x
+          #- 4.08.1
+          #- 4.13.x
 
     runs-on: ${{ matrix.os }}
 
@@ -68,7 +68,7 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - name: Print Opam folder
-        run: find / -name ".opam" -type d 2> /dev/null
+        run: ls -l /home/runner/.opam/
 
       - name: Print OCaml folder
         run: echo $OPAM_SWITCH_PREFIX
