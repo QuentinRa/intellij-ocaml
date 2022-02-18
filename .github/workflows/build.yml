@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
+          # - macos-latest (mac is not supported)
           - ubuntu-latest
           - windows-latest
         ocaml-compiler:
@@ -61,7 +61,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+      # https://github.com/ocaml/setup-ocaml
+      - name: Setup Opam and OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}

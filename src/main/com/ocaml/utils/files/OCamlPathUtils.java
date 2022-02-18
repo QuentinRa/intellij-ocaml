@@ -84,4 +84,17 @@ public final class OCamlPathUtils {
             f = PathEnvironmentVariableUtil.findInPath(name + ".exe");
         return f;
     }
+
+    public static @Nullable File findDirectoryByName(@NotNull String folderName, @NotNull File root) {
+        File[] files = root.listFiles();
+        if (files == null) return null;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                if (file.getName().equals(folderName)) return file;
+                File res = findDirectoryByName(folderName, file);
+                if (res != null) return res;
+            }
+        }
+        return null;
+    }
 }

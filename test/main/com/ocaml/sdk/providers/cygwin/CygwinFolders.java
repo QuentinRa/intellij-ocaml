@@ -7,6 +7,7 @@ import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.providers.BaseFolderProvider;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.utils.SdkInfo;
+import com.ocaml.utils.files.OCamlPathUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -44,7 +45,12 @@ public class CygwinFolders implements BaseFolderProvider {
             cygwinRootFolder = cygwin64.toFile().getAbsolutePath();
             break;
         }
-        if (cygwinRootFolder == null) return;
+        if (cygwinRootFolder == null) {
+            for (Path root : fsRoots) {
+                OCamlPathUtils.findDirectoryByName(installationFolderName, root.toFile());
+            }
+            return;
+        }
 
         // fill binaries-related variables
         try {

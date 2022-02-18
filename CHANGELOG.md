@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Internal
 - 🚀🚀 Remade of the test infrastructure to support workflows, and fix bugs
 
+### Changed
+- ✨ Fixed sending statement with "and" to the REPL. (#80)
+
 ## [0.0.8]
 ### Added
 - 🚀🚀 Available for 203.*

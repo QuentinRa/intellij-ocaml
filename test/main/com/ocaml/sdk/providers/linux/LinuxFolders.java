@@ -73,7 +73,14 @@ public class LinuxFolders implements BaseFolderProvider {
         try {
             String opamHome = SystemProperties.getUserHome() +"/.opam/";
             Path opamHomePath = Path.of(opamHome);
-            if (!Files.exists(opamHomePath)) throw new ExecutionException("Opam not installed");
+            if (!Files.exists(opamHomePath)) {
+                GeneralCommandLine c = new GeneralCommandLine("eval", "opam var -w | sed -nr 's/^root[[:space:]]*(.*)* #.*/\\1/p'");
+                Process process = c.createProcess();
+                opamHome = new String(process.getInputStream().readAllBytes()).trim();
+                process.waitFor();
+                if (opamHome.isEmpty() || process.exitValue() != 0)
+                    throw new ExecutionException("Opam not installed");
+            }
             /* path to the opam folder **/
             OPAM_HOME = opamHome;
 
@@ -96,7 +103,7 @@ public class LinuxFolders implements BaseFolderProvider {
                 OPAM_INVALID = opamHome+"0.0.0";
                 OPAM_INVALID_BIN = opamHome+"0.0.0/bin/ocaml";
             }
-        } catch (ExecutionException ignore) {}
+        } catch (ExecutionException | IOException | InterruptedException ignore) {}
 
         BIN_INVALID = "/bin/invalid";
         OCAML_BIN_INVALID = "/invalid/ocaml";
