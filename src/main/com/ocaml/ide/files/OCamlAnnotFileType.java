@@ -3,10 +3,14 @@
 package com.ocaml.ide.files;
 
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -45,5 +49,10 @@ public final class OCamlAnnotFileType implements FileType {
 
     @Override public @Nls @NotNull String getDisplayName() {
         return getDescription();
+    }
+
+    @Override @UntilIdeVersion(release = "203")
+    public @Nullable String getCharset(@NotNull VirtualFile file, byte @NotNull [] content) {
+        return null;
     }
 }

@@ -6,13 +6,14 @@ import com.intellij.execution.wsl.WSLCommandLineOptions;
 import com.intellij.execution.wsl.WSLDistribution;
 import com.intellij.execution.wsl.WslDistributionManager;
 import com.intellij.openapi.util.SystemInfo;
+import com.ocaml.sdk.providers.BaseFolderProvider;
 import com.ocaml.sdk.utils.SdkInfo;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
 
-public class WSLFolders {
+public class WSLFolders implements BaseFolderProvider {
 
     public @Nullable SdkInfo BIN_VALID_SDK;
     public @Nullable SdkInfo BIN_CREATE_SDK;
@@ -111,5 +112,17 @@ public class WSLFolders {
 
     private boolean isWSLCompatible () {
         return SystemInfo.isWin10OrNewer;
+    }
+
+    @Override public String getName() {
+        return "WSL";
+    }
+
+    @Override public boolean isBinAvailable() {
+        return BIN_CREATE_SDK != null || BIN_VALID_SDK != null;
+    }
+
+    @Override public boolean isOpamAvailable() {
+        return OPAM_HOME != null || OPAM_VALID_SDK != null;
     }
 }

@@ -17,6 +17,7 @@ let f2 number1 number2 number3 number4 number5 = number1 + number2 + number3 + n
 let f3 number1 g number2 number3 number4 number5 = number1 +. g number2 +. number3 +. number4 +. number5
 let f4 y = 5 and f5 y = 3
 let f6 y = 0 and v = 7
+let f ~x ~y = x + y
 
 exception E1
 exception E2 of int * int

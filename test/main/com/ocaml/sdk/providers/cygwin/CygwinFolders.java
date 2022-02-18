@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.SystemProperties;
+import com.ocaml.sdk.providers.BaseFolderProvider;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.utils.SdkInfo;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +15,12 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CygwinFolders {
+public class CygwinFolders implements BaseFolderProvider {
 
+    public static final String CYGWIN_FOLDER = "cygwin64";
+    public static final String OCAML64_FOLDER = "OCaml64";
+
+    private final String installationFolderName;
     public @Nullable SdkInfo BIN_VALID_SDK;
     public @Nullable SdkInfo BIN_CREATE_SDK;
     public @Nullable String BIN_VALID_EXE;
@@ -28,6 +33,7 @@ public class CygwinFolders {
     public @Nullable String OCAML_BIN_INVALID_NO_EXE;
 
     public CygwinFolders(String installationFolderName) {
+        this.installationFolderName = installationFolderName;
         if(!SystemInfo.isWindows) return;
         // resolve the installation folder
         String cygwinRootFolder = null;
@@ -124,5 +130,17 @@ public class CygwinFolders {
         HOME_INVALID = "C:\\cygwin64\\invalid";
         OCAML_BIN_INVALID = "C:\\cygwin64\\invalid\\bin\\ocaml.exe";
         OCAML_BIN_INVALID_NO_EXE = "C:\\cygwin64\\invalid\\bin\\ocaml";
+    }
+
+    @Override public String getName() {
+        return installationFolderName;
+    }
+
+    @Override public boolean isBinAvailable() {
+        return BIN_VALID_SDK != null || BIN_CREATE_SDK != null;
+    }
+
+    @Override public boolean isOpamAvailable() {
+        return OPAM_VALID_SDK != null || OPAM_INVALID_BIN != null;
     }
 }

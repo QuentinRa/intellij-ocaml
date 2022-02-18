@@ -186,6 +186,13 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
     }
 
     @Test
+    public void testFunctionWithLabels() {
+        assertFunction("val f7 : x:int -> y:int -> int = <fun>",
+                "f7 = <fun>",
+                "x:int -> y:int -> int");
+    }
+
+    @Test
     public void testSimpleType() {
         assertType("type t", null, "t");
     }
@@ -265,6 +272,4 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
 //        assertFunctionElement(res.get(4), "mem", "elt -> t -> bool");
 //        assertFunctionElement(res.get(5), "add", "elt -> t -> t");
     }
-
-    // todo: function with labels
 }

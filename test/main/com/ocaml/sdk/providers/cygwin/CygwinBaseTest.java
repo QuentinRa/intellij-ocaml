@@ -22,7 +22,7 @@ public class CygwinBaseTest extends BaseSdkProviderTest {
 
     @Contract(pure = true) @Parameterized.Parameters(name= "{0}")
     public static @NotNull Iterable<Object[]> data() {
-        return Arrays.asList(new Object[][] { { "cygwin64" }, { "OCaml64" } });
+        return Arrays.asList(new Object[][] { { CygwinFolders.CYGWIN_FOLDER }, { CygwinFolders.OCAML64_FOLDER } });
     }
 
     public CygwinBaseTest(String folderName) {
