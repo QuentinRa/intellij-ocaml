@@ -29,7 +29,7 @@ jobs:
         os:
           # - macos-latest (mac is not supported)
           - ubuntu-latest
-          - windows-latest
+#          - windows-latest
         ocaml-compiler:
           - 4.05.x
           - 4.08.1
@@ -66,6 +66,15 @@ jobs:
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
+
+      - name: Print Opam folder
+        run: opam var -w | sed -nr 's/^root[[:space:]]*(.*)* #.*/\1/p'
+
+      - name: Print OCaml folder
+        run: opam var -w | sed -nr 's/^prefix[[:space:]]*(.*)*/\1/p'
+
+      - name: See the current folder
+        run: ls -l .
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
