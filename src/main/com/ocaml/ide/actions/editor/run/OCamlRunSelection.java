@@ -2,10 +2,11 @@ package com.ocaml.ide.actions.editor.run;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.introduce.PsiIntroduceTarget;
 import com.ocaml.OCamlBundle;
@@ -28,21 +29,23 @@ public class OCamlRunSelection extends OCamlEditorActionBase {
 
     public static final String ACTION_ID = "editor.repl.run.selection.action";
 
-    @SinceIdeVersion(release = "211")
     public OCamlRunSelection() {
-        // fix 211, can't use the package icon if not in main/icons
-        getTemplatePresentation().setIcon(OCamlIcons.External.ExecuteSelection);
+        @SinceIdeVersion(release = "211", note = "can't use the package icon if not in main/icons")
+        Presentation templatePresentation = getTemplatePresentation();
+        templatePresentation.setIcon(OCamlIcons.External.ExecuteSelection);
     }
 
     @Override protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         if (editor == null) return;
-        PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-        if (file == null) return;
+        doAction(editor, runner);
+    }
+
+    public static void doAction(Editor editor, OCamlConsoleRunner runner) {
         ArrayList<PsiElement> selectedElements = ExtendedEditorActionUtil.getSelectedElements(editor);
         if (selectedElements == null || selectedElements.size() == 0) return;
-        // only one, do not ask
-        if (selectedElements.size() == 1) {
+        // only one, do not ask (and if we are in unit testing too)
+        if (selectedElements.size() == 1 || ApplicationManager.getApplication().isUnitTestMode()) {
             runner.processCommand(selectedElements.get(0).getText());
             return;
         }
@@ -54,6 +57,6 @@ public class OCamlRunSelection extends OCamlEditorActionBase {
                 if (choice == null || choice.getPlace() == null) return;
                 runner.processCommand(choice.getPlace().getText());
             }
-       }, OCamlBundle.message("repl.select.a.statement"), 0);
+        }, OCamlBundle.message("repl.select.a.statement"), 0);
     }
 }

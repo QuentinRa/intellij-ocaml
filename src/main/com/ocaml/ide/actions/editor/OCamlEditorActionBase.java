@@ -50,6 +50,5 @@ public abstract class OCamlEditorActionBase extends DumbAwareAction implements O
     }
 
     protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
-
     }
 }

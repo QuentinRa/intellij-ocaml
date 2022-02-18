@@ -80,32 +80,37 @@ public final class OCamlPsiUtils {
     }
 
     public static boolean isNextMeaningfulNextSibling(@NotNull PsiElement element, ORTokenElementType type) {
-        PsiElement nextSibling = element.getNextSibling();
-        while (nextSibling != null) {
-            // skip white spaces and comments
-            if (nextSibling instanceof PsiWhiteSpace || nextSibling instanceof PsiComment) {
-                nextSibling = nextSibling.getNextSibling();
-                continue;
-            }
-            return nextSibling.getNode().getElementType().equals(type);
-        }
-        return false;
+        PsiElement nextSibling = skipMeaninglessNextSibling(element);
+        if (nextSibling == null) return false;
+        return nextSibling.getNode().getElementType().equals(type);
     }
 
     public static boolean isMeaningfulPrevSibling(@NotNull PsiElement element, ORTokenElementType type) {
-        PsiElement prevSibling = element.getPrevSibling();
-        while (prevSibling != null) {
-            // skip white spaces and comments
-            if (prevSibling instanceof PsiWhiteSpace || prevSibling instanceof PsiComment) {
-                prevSibling = prevSibling.getPrevSibling();
-                continue;
-            }
-            return prevSibling.getNode().getElementType().equals(type);
-        }
-        return false;
+        PsiElement prevSibling = skipMeaninglessPreviousSibling(element);
+        if (prevSibling == null) return false;
+        return prevSibling.getNode().getElementType().equals(type);
     }
 
     public static boolean isNextMeaningfulNextSibling(@NotNull PsiElement element, Class<? extends PsiElement> aClass) {
+        PsiElement nextSibling = skipMeaninglessNextSibling(element);
+        if (nextSibling == null) return false;
+        return aClass.isInstance(nextSibling);
+    }
+
+    public static @Nullable PsiElement getNextMeaningfulSibling(@NotNull PsiElement element, ORTokenElementType type) {
+        PsiElement nextSibling = skipMeaninglessNextSibling(element);
+        if (nextSibling == null) return null;
+        return nextSibling.getNode().getElementType().equals(type) ? nextSibling : null;
+    }
+
+    // todo: test
+    public static @Nullable PsiElement getPreviousMeaningfulSibling(@NotNull PsiElement element, ORTokenElementType type) {
+        PsiElement prevSibling = skipMeaninglessPreviousSibling(element);
+        if (prevSibling == null) return null;
+        return prevSibling.getNode().getElementType().equals(type) ? prevSibling : null;
+    }
+
+    public static @Nullable PsiElement skipMeaninglessNextSibling(@NotNull PsiElement element) {
         PsiElement nextSibling = element.getNextSibling();
         while (nextSibling != null) {
             // skip white spaces and comments
@@ -113,37 +118,9 @@ public final class OCamlPsiUtils {
                 nextSibling = nextSibling.getNextSibling();
                 continue;
             }
-            return aClass.isInstance(nextSibling);
-        }
-        return false;
-    }
-
-    public static @Nullable PsiElement getNextMeaningfulNextSibling(@NotNull PsiElement element, ORTokenElementType type) {
-        PsiElement nextSibling = element.getNextSibling();
-        while (nextSibling != null) {
-            // skip white spaces and comments
-            if (nextSibling instanceof PsiWhiteSpace || nextSibling instanceof PsiComment) {
-                nextSibling = nextSibling.getNextSibling();
-                continue;
-            }
-            if (nextSibling.getNode().getElementType().equals(type)) return nextSibling;
             break;
         }
-        return null;
-    }
-
-    public static @Nullable PsiElement getPreviousMeaningfulNextSibling(@NotNull PsiElement element, ORTokenElementType type) {
-        PsiElement prevSibling = element.getPrevSibling();
-        while (prevSibling != null) {
-            // skip white spaces and comments
-            if (prevSibling instanceof PsiWhiteSpace || prevSibling instanceof PsiComment) {
-                prevSibling = prevSibling.getPrevSibling();
-                continue;
-            }
-            if (prevSibling.getNode().getElementType().equals(type)) return prevSibling;
-            break;
-        }
-        return null;
+        return nextSibling;
     }
 
     public static @Nullable PsiElement skipMeaninglessPreviousSibling(@NotNull PsiElement element) {
