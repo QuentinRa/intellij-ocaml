@@ -65,7 +65,7 @@ public class WSLFolders implements BaseFolderProvider {
 
                 /* expected: properly formatted path, non-existing SDK version */
                 OPAM_INVALID = OPAM_HOME+"\\0.00.0";
-                OPAM_INVALID_BIN = OPAM_HOME+"\\0.00.0\\\\bin\\\\ocaml";
+                OPAM_INVALID_BIN = OPAM_HOME+"\\0.00.0\\bin\\ocaml";
             } catch (ExecutionException | IOException ignore) {}
 
             // check native

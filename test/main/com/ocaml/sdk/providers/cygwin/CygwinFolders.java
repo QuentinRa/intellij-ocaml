@@ -107,7 +107,7 @@ public class CygwinFolders implements BaseFolderProvider {
                 String version = file.getName();
                 if (!OCamlSdkVersionManager.isValid(version)) continue;
 
-                String path = "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\"+version+"\\";
+                String path = opamHome+version+"\\";
 
                 // we may find ocamlc
                 String ocamlCompilerName = "ocamlc.opt.exe";
@@ -116,14 +116,13 @@ public class CygwinFolders implements BaseFolderProvider {
 
                 /* everything should be valid **/
                 OPAM_VALID_SDK = new SdkInfo(
-                        path,
-                        "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\"+version+"\\bin\\ocaml.exe",
+                        path, opamHome+version+"\\bin\\ocaml.exe",
                         ocamlCompilerName,
                         version
                 );
 
                 /* expected: properly formatted path, non-existing SDK version **/
-                OPAM_INVALID_BIN = "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\0.0.0\\bin\\ocaml.exe";
+                OPAM_INVALID_BIN = opamHome + "0.0.0\\bin\\ocaml.exe";
             }
         } catch (ExecutionException ignore) {}
 
@@ -141,6 +140,6 @@ public class CygwinFolders implements BaseFolderProvider {
     }
 
     @Override public boolean isOpamAvailable() {
-        return OPAM_VALID_SDK != null || OPAM_INVALID_BIN != null;
+        return OPAM_VALID_SDK != null;
     }
 }

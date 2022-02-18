@@ -1,27 +1,10 @@
 package com.ocaml.sdk.providers.cygwin;
 
-import com.ocaml.sdk.providers.simple.DetectionResult;
-import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public final class CygwinNativeDetectionTest extends CygwinBaseTest {
     public CygwinNativeDetectionTest(String folderName) {
         super(folderName);
-    }
-
-    // This test is only possible because
-    // this one is in the PATH
-
-    @Test @Ignore // todo: test https://stefanbirkner.github.io/system-rules/
-    public void testPath() {
-        if (true) return;
-        DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk();
-        assertEquals("C:\\cygwin64\\bin\\ocaml.exe", detectionResult.ocaml);
-        assertEquals("C:\\cygwin64\\bin\\ocamlc.opt.exe", detectionResult.ocamlCompiler);
-        assertEquals("C:\\cygwin64\\lib\\ocaml", detectionResult.sources);
-        assertEquals("4.10.0", detectionResult.version);
-        assertFalse(detectionResult.isError);
     }
 
     //

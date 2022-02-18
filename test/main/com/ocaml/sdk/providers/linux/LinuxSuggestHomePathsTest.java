@@ -7,7 +7,7 @@ public final class LinuxSuggestHomePathsTest extends LinuxBaseTest {
 
     @Test
     public void testCygwinOpamSdksAreSuggested() {
-        if (passLinuxTest()) return;
-        assertInstallationFolderWasSuggested(LinuxFolders.OPAM_HOME);
+        if (folders.OPAM_HOME == null) return;
+        assertInstallationFolderWasSuggested(folders.OPAM_HOME);
     }
 }

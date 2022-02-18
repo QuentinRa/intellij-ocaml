@@ -8,19 +8,19 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class LinuxCreateSimpleSdkTest extends LinuxBaseTest {
+public final class LinuxCreateSimpleSdkTest extends LinuxBaseTest {
 
     private void assertCreate(int i) {
-        if (passLinuxTest()) return;
+        if (folders.BIN_CREATE_SDK == null) return;
         ArrayList<String> homes = new ArrayList<>();
         try {
             try {
                 for (; i > 0 ; i--) {
                     SimpleSdkData simpleSdkData = new SimpleSdkData(
-                            LinuxFolders.BIN_CREATE_SDK.toplevel,
-                            LinuxFolders.BIN_CREATE_SDK.comp,
-                            LinuxFolders.BIN_CREATE_SDK.version,
-                            LinuxFolders.BIN_CREATE_SDK.sources
+                            folders.BIN_CREATE_SDK.toplevel,
+                            folders.BIN_CREATE_SDK.comp,
+                            folders.BIN_CREATE_SDK.version,
+                            folders.BIN_CREATE_SDK.sources
                     );
                     homes.add(simpleSdkData.homePath);
                     assertWSLHomeValid(simpleSdkData.homePath);

@@ -2,6 +2,7 @@ package com.ocaml.sdk.providers;
 
 import com.ocaml.OCamlBaseTest;
 import com.ocaml.sdk.providers.cygwin.CygwinFolders;
+import com.ocaml.sdk.providers.linux.LinuxFolders;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -33,7 +34,10 @@ public class BaseSdkProviderTest extends OCamlBaseTest {
         logFolderProvide(ocaml64);
 
         // Linux
-        // ...
+        BaseFolderProvider linux = new LinuxFolders();
+        if (linux.isBinAvailable()) isBinAvailable = true;
+        if (linux.isOpamAvailable()) isOpamAvailable = true;
+        logFolderProvide(linux);
 
         // WSL is available since 203+
         try {
@@ -58,7 +62,7 @@ public class BaseSdkProviderTest extends OCamlBaseTest {
         System.out.println("    - opam : "+instance.isOpamAvailable());
     }
 
-    protected void assertInstallationFolderWasSuggested(String installationFolder) {
+    protected void assertInstallationFolderWasSuggested(@NotNull String installationFolder) {
         List<String> homePaths = OCamlSdkHomeManager.suggestHomePaths();
         Path p = Path.of(installationFolder);
         // cannot test anything
