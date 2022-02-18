@@ -1,8 +1,9 @@
-package com.ocaml.ide.console.debug;
+package com.ocaml.ide.console;
 
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.Pair;
 import com.ocaml.OCamlBaseTest;
+import com.ocaml.ide.console.debug.OCamlREPLOutputParser;
 import com.ocaml.ide.console.debug.groups.TreeElementGroupKind;
 import com.ocaml.ide.console.debug.groups.elements.*;
 import com.ocaml.sdk.repl.OCamlREPLConstants;
