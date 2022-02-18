@@ -65,7 +65,7 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     @Override public @NotNull Set<String> getInstallationFolders() {
-        return Set.of("cygwin64", getCygwinOpamFolder("cygwin64"));
+        return Set.of("cygwin64", "cygwin", getCygwinOpamFolder("cygwin64"));
     }
 
     // commands

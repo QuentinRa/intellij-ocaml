@@ -64,7 +64,8 @@ public class LinuxFolders implements BaseFolderProvider {
                     version,
                     libFolder
             );
-        } catch (IOException | InterruptedException | ExecutionException ignore) {
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            LOG.warn(e.getMessage());
         }
 
         /* a valid file that is not ocaml **/
@@ -103,7 +104,9 @@ public class LinuxFolders implements BaseFolderProvider {
                 OPAM_INVALID = opamHome+"0.0.0";
                 OPAM_INVALID_BIN = opamHome+"0.0.0/bin/ocaml";
             }
-        } catch (ExecutionException | IOException | InterruptedException ignore) {}
+        } catch (ExecutionException | IOException | InterruptedException e) {
+            LOG.warn(e.getMessage());
+        }
 
         BIN_INVALID = "/bin/invalid";
         OCAML_BIN_INVALID = "/invalid/ocaml";

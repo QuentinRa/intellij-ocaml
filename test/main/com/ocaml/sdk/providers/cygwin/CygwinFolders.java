@@ -7,7 +7,7 @@ import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.providers.BaseFolderProvider;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.utils.SdkInfo;
-import com.ocaml.utils.files.OCamlPathUtils;
+import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -19,6 +19,7 @@ import java.nio.file.Path;
 public class CygwinFolders implements BaseFolderProvider {
 
     public static final String CYGWIN_FOLDER = "cygwin64";
+    private static final String CYGWIN_FOLDER_ALT = "cygwin";
     public static final String OCAML64_FOLDER = "OCaml64";
 
     private final String installationFolderName;
@@ -41,14 +42,22 @@ public class CygwinFolders implements BaseFolderProvider {
         Iterable<Path> fsRoots = FileSystems.getDefault().getRootDirectories();
         for (Path root : fsRoots) {
             Path cygwin64 = root.resolve(installationFolderName);
-            if (!Files.exists(cygwin64)) continue;
+            if (!Files.exists(cygwin64)) {
+                // support for "cygwin"
+                if (CYGWIN_FOLDER.equals(installationFolderName)) {
+                    cygwin64 = root.resolve(CYGWIN_FOLDER_ALT);
+                    if (Files.exists(cygwin64)) {
+                        cygwinRootFolder = cygwin64.toFile().getAbsolutePath();
+                        break;
+                    }
+                }
+                continue;
+            }
             cygwinRootFolder = cygwin64.toFile().getAbsolutePath();
             break;
         }
         if (cygwinRootFolder == null) {
-            for (Path root : fsRoots) {
-                OCamlPathUtils.findDirectoryByName(installationFolderName, root.toFile());
-            }
+            LOG.warn("No folder for '"+installationFolderName+"'");
             return;
         }
 
@@ -93,14 +102,15 @@ public class CygwinFolders implements BaseFolderProvider {
                     version,
                     cygwinRootFolder+libFolder
             );
-        } catch (IOException | ExecutionException | InterruptedException ignore) {
+        } catch (IOException | ExecutionException | InterruptedException e) {
+            LOG.warn(e.getMessage());
         }
 
         /* a valid file that is not ocaml **/
-        BIN_VALID_EXE = "C:\\cygwin64\\bin\\find.exe";
+        BIN_VALID_EXE = cygwinRootFolder+"\\bin\\find.exe";
 
         try {
-            String opamHome = "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() +"\\.opam\\";
+            String opamHome = cygwinRootFolder+"\\home\\"+ SystemProperties.getUserName() +"\\.opam\\";
             Path opamHomePath = Path.of(opamHome);
             if (!Files.exists(opamHomePath)) throw new ExecutionException("Opam not installed");
             /* path to the opam folder **/
@@ -130,11 +140,13 @@ public class CygwinFolders implements BaseFolderProvider {
                 /* expected: properly formatted path, non-existing SDK version **/
                 OPAM_INVALID_BIN = opamHome + "0.0.0\\bin\\ocaml.exe";
             }
-        } catch (ExecutionException ignore) {}
+        } catch (ExecutionException e) {
+            LOG.warn(e.getMessage());
+        }
 
-        HOME_INVALID = "C:\\cygwin64\\invalid";
-        OCAML_BIN_INVALID = "C:\\cygwin64\\invalid\\bin\\ocaml.exe";
-        OCAML_BIN_INVALID_NO_EXE = "C:\\cygwin64\\invalid\\bin\\ocaml";
+        HOME_INVALID = cygwinRootFolder+"\\invalid";
+        OCAML_BIN_INVALID = cygwinRootFolder+"\\invalid\\bin\\ocaml.exe";
+        OCAML_BIN_INVALID_NO_EXE = cygwinRootFolder+"\\invalid\\bin\\ocaml";
     }
 
     @Override public String getName() {

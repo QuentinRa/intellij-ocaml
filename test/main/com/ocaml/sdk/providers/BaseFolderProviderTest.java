@@ -55,6 +55,9 @@ public class BaseFolderProviderTest extends OCamlBaseTest {
         System.out.println("  + "+name);
         System.out.println("    - bin : "+instance.isBinAvailable());
         System.out.println("    - opam : "+instance.isOpamAvailable());
+        instance.LOG.debug("  + "+name);
+        instance.LOG.debug("    - bin : "+instance.isBinAvailable());
+        instance.LOG.debug("    - opam : "+instance.isOpamAvailable());
     }
 
 }
