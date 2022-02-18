@@ -30,8 +30,8 @@ jobs:
           - ubuntu-latest
         ocaml-compiler:
           - 4.05.0
-          - 4.08.1
-          - 4.13.0
+#          - 4.08.1
+#          - 4.13.0
 
     runs-on: ${{ matrix.os }}
 
@@ -65,11 +65,14 @@ jobs:
       - name: Install ocaml and opam
         run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install opam && sudo apt-get install ocaml && opam init --auto-setup --bare
 
-      - name: list
-        run: opam switch list-available
-
       - name: Setup Opam and OCaml ${{ matrix.ocaml-compiler }}
         run: opam switch create ocaml-base-compiler.${{ matrix.ocaml-compiler }}
+
+      - name: Move folder
+        run: mv ~/.opam/ocaml-base-compiler.${{ matrix.ocaml-compiler }} ~/.opam/${{ matrix.ocaml-compiler }} && sed 's/ocaml-base-compiler.${{ matrix.ocaml-compiler }}/${{ matrix.ocaml-compiler }}/g' ~/.opam/config
+
+      - name: Check
+        run: ls ~/.opam/
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
