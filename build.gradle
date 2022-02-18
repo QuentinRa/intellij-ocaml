@@ -145,6 +145,11 @@ test {
     systemProperty("jna.nosys", "true")
     filter.failOnNoMatchingTests(false)
 
+    System.setProperty("idea.log.debug.categories", "ocaml.tests")
+    System.setProperty("log4j.debug", "true")
+    systemProperty "idea.log.debug.categories", "ocaml.tests"
+    systemProperty "log4j.debug", true
+
     if (System.getenv("CI") != null) {
         retry {
             maxRetries.set(3)
