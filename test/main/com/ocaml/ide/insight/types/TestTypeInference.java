@@ -7,11 +7,13 @@ import com.ocaml.ide.OCamlIdeTest;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.ide.insight.OCamlTypeInfoHint;
 import org.intellij.lang.annotations.Language;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
+@Ignore
 public class TestTypeInference extends OCamlIdeTest {
 
     private static final String FILE_NAME = "types.ml";

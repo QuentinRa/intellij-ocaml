@@ -5,18 +5,12 @@ import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.SdkInfo;
-import org.junit.Test;
 
 import java.nio.file.Path;
 
 public class CygwinBaseTest extends BaseSdkProviderTest {
 
     protected CygwinFolders folders;
-
-    @Test
-    public void testA() {
-
-    }
 
     @Override protected void setUp() throws Exception {
         super.setUp();
@@ -61,9 +55,5 @@ public class CygwinBaseTest extends BaseSdkProviderTest {
 
     protected void assertCygwinHomeInvalid(String homePath) {
         assertFalse(OCamlSdkHomeManager.isValid(homePath));
-    }
-
-    @Override protected void assertInstallationFolderWasSuggested(String installationFolder) {
-        super.assertInstallationFolderWasSuggested(installationFolder);
     }
 }

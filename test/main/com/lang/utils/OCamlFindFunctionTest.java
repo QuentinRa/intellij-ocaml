@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.File;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
+@Ignore
 public class OCamlFindFunctionTest extends OCamlIdeTest {
 
     private static final String FILE_NAME = "call.ml";

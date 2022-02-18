@@ -54,9 +54,20 @@ public class CygwinFolders {
                 throw new ExecutionException("No version / switch.");
             System.out.println("v:"+version);
 
-            // todo: ...
             String ocamlCompilerName = "ocamlc.opt.exe";
+
+            // we may find ocamlc
+            String ocamlPath = cygwinRootFolder+"\\bin\\ocamlc.exe";
+            if (Files.exists(Path.of(ocamlPath))) ocamlCompilerName = "ocamlc.exe";
+
+            // lib folder
             String libFolder = "\\lib\\ocaml";
+            String libFolderPath = cygwinRootFolder+libFolder;
+            if (!Files.exists(Path.of(libFolderPath))) {
+                libFolder = "\\usr\\lib\\ocaml";
+                libFolderPath = cygwinRootFolder + libFolder;
+            }
+            if (!Files.exists(Path.of(libFolderPath))) throw new ExecutionException("Library not found");
 
             /* a valid binary candidate for an SDK **/
             BIN_VALID_SDK = new SdkInfo(
@@ -93,11 +104,18 @@ public class CygwinFolders {
                 String version = file.getName();
                 if (!OCamlSdkVersionManager.isValid(version)) continue;
 
+                String path = "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\"+version+"\\";
+
+                // we may find ocamlc
+                String ocamlCompilerName = "ocamlc.opt.exe";
+                String ocamlPath = path+"\\bin\\ocamlc.exe";
+                if (Files.exists(Path.of(ocamlPath))) ocamlCompilerName = "ocamlc.exe";
+
                 /* everything should be valid **/
                 OPAM_VALID_SDK = new SdkInfo(
-                        "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\"+version+"\\",
+                        path,
                         "C:\\cygwin64\\home\\"+ SystemProperties.getUserName() + "\\.opam\\"+version+"\\bin\\ocaml.exe",
-                        "ocamlc.opt.exe", // todo: ...
+                        ocamlCompilerName,
                         version
                 );
 

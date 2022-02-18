@@ -264,4 +264,6 @@ public class OCamlREPLOutputParserTest extends OCamlBaseTest {
 //        assertFunctionElement(res.get(4), "mem", "elt -> t -> bool");
 //        assertFunctionElement(res.get(5), "add", "elt -> t -> t");
     }
+
+    // todo: function with labels
 }
