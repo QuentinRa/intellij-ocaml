@@ -22,10 +22,21 @@ jobs:
   # Build plugin and provide the artifact for the next workflow jobs
   build:
     name: Build
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.properties.outputs.version }}
-      changelog: ${{ steps.properties.outputs.changelog }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        ocaml-compiler:
+          - 4.05.x
+          - 4.08.1
+          - 4.13.x
+
+    runs-on: ${{ matrix.os }}
+
     steps:
 
       # Check out current repository
@@ -49,6 +60,11 @@ jobs:
       # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
