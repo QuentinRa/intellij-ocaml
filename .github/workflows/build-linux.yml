@@ -27,13 +27,11 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          # - macos-latest (mac is not supported)
           - ubuntu-latest
-#          - windows-latest
         ocaml-compiler:
           - 4.05.x
-          #- 4.08.1
-          #- 4.13.x
+          - 4.08.1
+          - 4.13.x
 
     runs-on: ${{ matrix.os }}
 
@@ -61,27 +59,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # https://github.com/ocaml/setup-ocaml
+      # I'm not using https://github.com/ocaml/setup-ocaml,
+      # because the switch is installed in an invalid location (a folder named _opam,
+      # while I need a folder named after its ocaml version)
       - name: Setup Opam and OCaml ${{ matrix.ocaml-compiler }}
-        uses: ocaml/setup-ocaml@v2
-        with:
-          ocaml-compiler: ${{ matrix.ocaml-compiler }}
-
-#      - name: Print Opam folder
-#        run: ls -l /home/runner/.opam/
-
-      - name: Print OCaml folder
-        run: opam config env
-
-      - run: opam switch create 4.12.0
+        run: sudo apt-get udpate && sudo apt-get install opam &&
+        sudo apt-get install ocaml && opam switch create ${{ matrix.ocaml-compiler }}
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
-#      - name: Test with Gradle
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: test
+      - name: Test with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: test
 
       # Run Qodana inspections
-#      - name: Qodana - Code Inspection
-#        uses: JetBrains/qodana-action@v4.2.5
+      - name: Qodana - Code Inspection
+        uses: JetBrains/qodana-action@v4.2.5
