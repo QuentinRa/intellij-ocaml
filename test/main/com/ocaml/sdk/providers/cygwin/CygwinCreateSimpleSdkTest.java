@@ -7,8 +7,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class CygwinCreateSimpleSdkTest extends CygwinBaseTest {
+
+    public CygwinCreateSimpleSdkTest(String folderName) {
+        super(folderName);
+    }
 
     private void assertCreate(int i) {
         if (folders.BIN_CREATE_SDK == null) return;

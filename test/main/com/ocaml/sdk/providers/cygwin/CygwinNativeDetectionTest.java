@@ -5,8 +5,10 @@ import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public final class CygwinNativeDetectionTest extends CygwinBaseTest {
+    public CygwinNativeDetectionTest(String folderName) {
+        super(folderName);
+    }
 
     // This test is only possible because
     // this one is in the PATH

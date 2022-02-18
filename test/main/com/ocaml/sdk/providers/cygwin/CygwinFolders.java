@@ -7,7 +7,6 @@ import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.utils.SdkInfo;
 import org.jetbrains.annotations.Nullable;
-import r.i.A.F;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,10 +48,8 @@ public class CygwinFolders {
             Process process = cli.createProcess();
             String version = new String(process.getInputStream().readAllBytes()).trim();
             process.waitFor();
-            System.out.println("v:"+version);
             if (version.isEmpty() || process.exitValue() != 0)
                 throw new ExecutionException("No version / switch.");
-            System.out.println("v:"+version);
 
             String ocamlCompilerName = "ocamlc.opt.exe";
 

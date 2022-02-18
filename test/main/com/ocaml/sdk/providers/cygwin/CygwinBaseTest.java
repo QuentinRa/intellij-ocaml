@@ -5,21 +5,43 @@ import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.SdkInfo;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 
+@RunWith(Parameterized.class)
 public class CygwinBaseTest extends BaseSdkProviderTest {
 
+    private final String folderName;
     protected CygwinFolders folders;
+
+    @Contract(pure = true) @Parameterized.Parameters(name= "{0}")
+    public static @NotNull Iterable<Object[]> data() {
+        return Arrays.asList(new Object[][] { { "cygwin64" }, { "OCaml64" } });
+    }
+
+    public CygwinBaseTest(String folderName) {
+        this.folderName = folderName;
+    }
 
     @Override protected void setUp() throws Exception {
         super.setUp();
-        folders = new CygwinFolders("cygwin64");
+        folders = new CygwinFolders(folderName);
     }
 
     @Override protected void tearDown() throws Exception {
         super.tearDown();
         folders = null;
+    }
+
+    @Test
+    public void test() {
+        assertTrue(true);
     }
 
     protected void assertCygwinDetectionValid(SdkInfo info) {
