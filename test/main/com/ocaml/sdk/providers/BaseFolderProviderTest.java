@@ -48,7 +48,7 @@ public class BaseFolderProviderTest extends OCamlBaseTest {
                 InstantiationException | IllegalAccessException | InvocationTargetException ignore) {}
 
         // we may allow CI
-        if (System.getProperty("CI") != null) assertTrue(true);
+        if (System.getenv("CI") != null) assertTrue(true);
         else { // but not others
             assertTrue(isBinAvailable);
             assertTrue(isOpamAvailable);
