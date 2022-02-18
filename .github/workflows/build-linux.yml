@@ -29,9 +29,9 @@ jobs:
         os:
           - ubuntu-latest
         ocaml-compiler:
-          - 4.05.x
+          - 4.05.0
           - 4.08.1
-          - 4.13.x
+          - 4.13.0
 
     runs-on: ${{ matrix.os }}
 
@@ -62,8 +62,14 @@ jobs:
       # I'm not using https://github.com/ocaml/setup-ocaml,
       # because the switch is installed in an invalid location (a folder named _opam,
       # while I need a folder named after its ocaml version)
+      - name: Install ocaml and opam
+        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install opam && sudo apt-get install ocaml && opam init --auto-setup --bare
+
+      - name: list
+        run: opam switch list-available
+
       - name: Setup Opam and OCaml ${{ matrix.ocaml-compiler }}
-        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install opam && sudo apt-get install ocaml && opam init && opam switch create ${{ matrix.ocaml-compiler }}
+        run: opam switch create ocaml-base-compiler.${{ matrix.ocaml-compiler }}
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
