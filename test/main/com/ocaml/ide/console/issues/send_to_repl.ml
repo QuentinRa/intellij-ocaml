@@ -28,6 +28,12 @@ let (//) x y =
   if y = 0 then Error "Division by zero"
   else Ok (x / y)
 
+let distance x y : int =
+  let diff f s c = match f with
+    | [] -> c
+    | _ -> 4
+    in diff x y 0
+
 module X1 = struct end
 module X2 = struct
 type t = int

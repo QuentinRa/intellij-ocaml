@@ -9,6 +9,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.ocaml.lang.core.PsiLetWithAnd;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +61,7 @@ public class ExtendedEditorActionUtil {
             s = OCamlPsiUtils.findStatementAfter(elementAt);
             if (s == null) return null;
         }
-        return new Pair<>(s, psiFile);
+        return new Pair<>(new PsiLetWithAnd(s), psiFile);
     }
 
     public static @Nullable ArrayList<PsiElement> getSelectedElements(@NotNull Editor editor) {
