@@ -40,9 +40,9 @@ public class LinuxFolders implements BaseFolderProvider {
                 throw new ExecutionException("No version / switch.");
 
             // lib folder
-            String libFolder = "/usr/lib/ocaml";
+            String libFolder = "/lib/ocaml";
             if (!Files.exists(Path.of(libFolder))) {
-                libFolder = "/lib/ocaml";
+                libFolder = "/usr/lib/ocaml";
                 // check again
                 if (!Files.exists(Path.of(libFolder)))
                     throw new ExecutionException("Library not found");
