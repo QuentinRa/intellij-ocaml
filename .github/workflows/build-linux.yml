@@ -90,19 +90,26 @@ jobs:
           chmod +x /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           echo "OCAMLLIB=/home/runner/.opam/${{ matrix.ocaml-compiler }}/lib/ocaml" >> $GITHUB_ENV
 
-      - name: Check
+      - name: Install OCaml binaries
+        run: | 
+          # sudo apt-get update 
+          # sudo apt-get upgrade
+          sudo apt-get install ocaml
+
+      - name: Check that everything was installed properly
         run: |
-          cat /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           /home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocaml -vnum
           /home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlc -vnum
+          /bin/ocaml -vnum
+          /bin/ocamlc -vnum
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
-#      - name: Test with Gradle
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: test
+      - name: Test with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: test
 
       # Run Qodana inspections
-#      - name: Qodana - Code Inspection
-#        uses: JetBrains/qodana-action@v4.2.5
+      - name: Qodana - Code Inspection
+        uses: JetBrains/qodana-action@v4.2.5

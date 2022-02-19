@@ -1,6 +1,5 @@
 package com.ocaml.sdk.providers;
 
-import com.esotericsoftware.minlog.Log;
 import com.ocaml.OCamlBaseTest;
 import com.ocaml.sdk.providers.cygwin.CygwinFolders;
 import com.ocaml.sdk.providers.linux.LinuxFolders;
@@ -47,7 +46,6 @@ public class BaseFolderProviderTest extends OCamlBaseTest {
         } catch (ClassNotFoundException | NoSuchMethodException |
                 InstantiationException | IllegalAccessException | InvocationTargetException ignore) {}
 
-        // we may allow CI
         assertTrue(isBinAvailable);
         assertTrue(isOpamAvailable);
     }
@@ -57,12 +55,6 @@ public class BaseFolderProviderTest extends OCamlBaseTest {
         System.out.println("  + "+name);
         System.out.println("    - bin : "+instance.isBinAvailable());
         System.out.println("    - opam : "+instance.isOpamAvailable());
-        instance.LOG.debug("  + "+name);
-        instance.LOG.debug("    - bin : "+instance.isBinAvailable());
-        instance.LOG.debug("    - opam : "+instance.isOpamAvailable());
-        Log.warn("  + "+name);
-        Log.warn("    - bin : "+instance.isBinAvailable());
-        Log.warn("    - opam : "+instance.isOpamAvailable());
     }
 
 }
