@@ -87,7 +87,6 @@ jobs:
         run: |
           D:\\cygwin\\home\\user\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocaml -vnum
           D:\\cygwin\\home\\user\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlc -vnum
-          echo "$USER"
         env:
           OCAMLLIB: "D:\\cygwin\\home\\user\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml"
 
@@ -132,9 +131,9 @@ jobs:
 
       - name: Test with Gradle (Windows)
         if: runner.os == 'Windows'
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
+        run: |
+          ./gradlew build
+          ./gradlew test
         env:
           OCAMLLIB: "D:\\cygwin\\home\\user\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml"
 
