@@ -85,7 +85,7 @@ jobs:
           echo -n "#!" > /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           echo "/bin/bash" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           echo -n "/home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlrun" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
-          echo -n "$" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+          echo -n " $" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           echo -n "@" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           chmod +x /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           echo "OCAMLLIB=/home/runner/.opam/${{ matrix.ocaml-compiler }}/lib/ocaml" >> $GITHUB_ENV
