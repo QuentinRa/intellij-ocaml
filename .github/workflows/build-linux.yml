@@ -74,9 +74,12 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "The operating system on the runner is $env:RUNNER_OS."
-          D:\cygwin\bin\ls D:\cygwin\home\runner\.opam
+          C:\Windows\system32\cmd.exe /D /S /C "D:\cygwin\wrapperbin\opam.cmd config env"
+          D:\cygwin\bin\opam.exe config env
+          opam config env
+          ls /usr/x86_64-w64-mingw32/sys-root/mingw/
 
-      - name: Move switch to .opam (Windows)
+      - name: Move switch to .opam (Linux)
         if: runner.os != 'Windows'
         run: |
           echo "The operating system on the runner is $env:RUNNER_OS."
