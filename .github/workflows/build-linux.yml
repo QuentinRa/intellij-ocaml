@@ -83,7 +83,6 @@ jobs:
       - name: Move switch to .opam (Windows)
         if: runner.os == 'Windows'
         run: |
-          /bin/bash --version
           mv D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam D:\\.opam\\${{ matrix.ocaml-compiler }}
           sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' D:\\.opam\\config
           sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\environment
