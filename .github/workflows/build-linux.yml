@@ -70,14 +70,14 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
+      # D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam
       - name: Move switch to .opam (Windows)
         if: runner.os == 'Windows'
         run: |
-          echo "The operating system on the runner is $env:RUNNER_OS."
-          C:\Windows\system32\cmd.exe /D /S /C "D:\cygwin\wrapperbin\opam.cmd config env"
-          D:\cygwin\bin\opam.exe config env
           opam config env
-          ls /usr/x86_64-w64-mingw32/sys-root/mingw/
+          which sed
+          C:\Windows\system32\cmd.exe /D /S /C "ls D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam"
+          C:\Windows\system32\cmd.exe /D /S /C "ls /"
 
       - name: Move switch to .opam (Linux)
         if: runner.os != 'Windows'

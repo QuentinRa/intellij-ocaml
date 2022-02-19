@@ -46,8 +46,7 @@ public class BaseFolderProviderTest extends OCamlBaseTest {
         } catch (ClassNotFoundException | NoSuchMethodException |
                 InstantiationException | IllegalAccessException | InvocationTargetException ignore) {}
 
-        assertTrue(isBinAvailable);
-        assertTrue(isOpamAvailable);
+        assertTrue(isBinAvailable || isOpamAvailable);
     }
 
     private void logFolderProvide(@NotNull BaseFolderProvider instance) {
