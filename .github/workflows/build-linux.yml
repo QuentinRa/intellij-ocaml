@@ -83,18 +83,18 @@ jobs:
       - name: Move switch to .opam (Windows)
         if: runner.os == 'Windows'
         run: |
-          C:\Windows\system32\cmd.exe /D /S /C "mv D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam D:\\.opam\\${{ matrix.ocaml-compiler }}"
-          C:\Windows\system32\cmd.exe /D /S /C "sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' D:\\.opam\\config"
-          C:\Windows\system32\cmd.exe /D /S /C "sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\environment"
-          C:\Windows\system32\cmd.exe /D /S /C "sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\config\\ocaml.config"
-          C:\Windows\system32\cmd.exe /D /S /C "mkdir -p D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\"
-          C:\Windows\system32\cmd.exe /D /S /C "echo -n \"#!\" > D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          C:\Windows\system32\cmd.exe /D /S /C "echo \"/bin/bash\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          C:\Windows\system32\cmd.exe /D /S /C "echo -n \"D:\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlrun\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          C:\Windows\system32\cmd.exe /D /S /C "echo -n \" $\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          C:\Windows\system32\cmd.exe /D /S /C "echo -n \"\@\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          C:\Windows\system32\cmd.exe /D /S /C "chmod +x D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          C:\Windows\system32\cmd.exe /D /S /C "echo \"OCAMLLIB=D:\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml\" >> $GITHUB_ENV"
+          D:\cygwin\bin\mv D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam D:\\.opam\\${{ matrix.ocaml-compiler }}"
+          D:\cygwin\bin\sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' D:\\.opam\\config"
+          D:\cygwin\bin\sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\environment"
+          D:\cygwin\bin\sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\config\\ocaml.config"
+          D:\cygwin\bin\mkdir -p D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\"
+          D:\cygwin\bin\echo -n \"#!\" > D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo \"/bin/bash\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo -n \"D:\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlrun\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo -n \" $\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo -n \"\@\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\chmod +x D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo \"OCAMLLIB=D:\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml\" >> $GITHUB_ENV"
 
       - name: Move switch to .opam (Linux)
         if: runner.os != 'Windows'
@@ -109,8 +109,8 @@ jobs:
           cat D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun
           echo "----next----"
           echo "$OCAMLLIB"
-          C:\Windows\system32\cmd.exe /D /S /C "D:\\.opam\\${{ matrix.ocaml-compiler }}/bin/ocaml -vnum"
-          C:\Windows\system32\cmd.exe /D /S /C "D:\\.opam\\${{ matrix.ocaml-compiler }}/bin/ocamlc -vnum"
+          D:\\.opam\\${{ matrix.ocaml-compiler }}/bin/ocaml -vnum"
+          D:\\.opam\\${{ matrix.ocaml-compiler }}/bin/ocamlc -vnum"
 
       # We are moving the folder with the switch
       # Editing the configurations
