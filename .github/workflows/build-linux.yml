@@ -29,7 +29,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+#          - ubuntu-latest
+          - windows-latest
         ocaml-compiler:
           - 4.05.0
 #          - 4.08.1
@@ -69,47 +70,58 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
+      - name: Move switch to .opam (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          echo "The operating system on the runner is $env:RUNNER_OS."
+          D:\cygwin\bin\ls D:\cygwin\home\runner\.opam
+
+      - name: Move switch to .opam (Windows)
+        if: runner.os != 'Windows'
+        run: |
+          echo "The operating system on the runner is $env:RUNNER_OS."
+
       # We are moving the folder with the switch
       # Editing the configurations
       # creating a copy to OCAML RUN (ocaml will always look for it here...)
       # Then we are setting OCAMLLIB (needed, because, we moved the lib folder)
       # \see https://docs.github.com/en/actions/learn-github-actions/environment-variables
       # \see https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-      - name: Move switch to .opam
-        run: |
-          mv /home/runner/work/intellij-ocaml/intellij-ocaml/_opam /home/runner/.opam/${{ matrix.ocaml-compiler }}
-          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' /home/runner/.opam/config
-          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\/_opam/\/home\/runner\/.opam\/${{ matrix.ocaml-compiler }}/g' /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/environment
-          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\/_opam/\/home\/runner\/.opam\/${{ matrix.ocaml-compiler }}/g' /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/config/ocaml.config
-          mkdir -p /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/
-          echo -n "#!" > /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
-          echo "/bin/bash" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
-          echo -n "/home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlrun" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
-          echo -n " $" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
-          echo -n "@" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
-          chmod +x /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
-          echo "OCAMLLIB=/home/runner/.opam/${{ matrix.ocaml-compiler }}/lib/ocaml" >> $GITHUB_ENV
+#      - name: Move switch to .opam
+#        run: |
+#          mv /home/runner/work/intellij-ocaml/intellij-ocaml/_opam /home/runner/.opam/${{ matrix.ocaml-compiler }}
+#          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' /home/runner/.opam/config
+#          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\/_opam/\/home\/runner\/.opam\/${{ matrix.ocaml-compiler }}/g' /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/environment
+#          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\/_opam/\/home\/runner\/.opam\/${{ matrix.ocaml-compiler }}/g' /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/config/ocaml.config
+#          mkdir -p /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/
+#          echo -n "#!" > /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+#          echo "/bin/bash" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+#          echo -n "/home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlrun" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+#          echo -n " $" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+#          echo -n "@" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+#          chmod +x /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+#          echo "OCAMLLIB=/home/runner/.opam/${{ matrix.ocaml-compiler }}/lib/ocaml" >> $GITHUB_ENV
 
-      - name: Install OCaml binaries
-        run: | 
-          # sudo apt-get update 
-          # sudo apt-get upgrade
-          sudo apt-get install ocaml
+#      - name: Install OCaml binaries
+#        run: |
+#          # sudo apt-get update
+#          # sudo apt-get upgrade
+#          sudo apt-get install ocaml
 
-      - name: Check that everything was installed properly
-        run: |
-          /home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocaml -vnum
-          /home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlc -vnum
-          /bin/ocaml -vnum
-          /bin/ocamlc -vnum
+#      - name: Check that everything was installed properly
+#        run: |
+#          /home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocaml -vnum
+#          /home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlc -vnum
+#          /bin/ocaml -vnum
+#          /bin/ocamlc -vnum
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
-      - name: Test with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
+#      - name: Test with Gradle
+#        uses: gradle/gradle-build-action@v2
+#        with:
+#          arguments: test
 
       # Run Qodana inspections
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v4.2.5
+#      - name: Qodana - Code Inspection
+#        uses: JetBrains/qodana-action@v4.2.5
