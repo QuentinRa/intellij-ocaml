@@ -21,7 +21,7 @@ public class OCamlBaseTest extends BasePlatformTestCase {
     public static String EXPECTED_SELECT_START = "<selection>";
     public static String EXPECTED_SELECT_END = "</selection>";
 
-    protected @NotNull PsiElement configureWithCaret(@Language("OCaml") @NotNull String code) {
+    protected @NotNull PsiElement configureCodeWithCaret(@Language("OCaml") @NotNull String code) {
         String cleanedCode = code.replace(OCAML_CARET, EXPECTED_CARET);
         cleanedCode = cleanedCode.replace(OCAML_SELECT_START, EXPECTED_SELECT_START);
         cleanedCode = cleanedCode.replace(OCAML_SELECT_END, EXPECTED_SELECT_END);

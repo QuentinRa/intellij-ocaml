@@ -1,15 +1,14 @@
 package com.ocaml.utils.editor;
 
 import com.intellij.openapi.editor.Caret;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.ocaml.lang.core.PsiLetWithAnd;
+import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.or.lang.core.psi.PsiStructuredElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,9 +23,7 @@ public class ExtendedEditorActionUtil {
      * @param editor the editor
      * @return null if we aren't in a situation in which we can find code to executed,
      * otherwise the selected code
-     * @deprecated this method is returning a string, we need a list of psi tags
      */
-    @Deprecated
     public static @Nullable String getSelectedCode(@NotNull Editor editor) {
         // simply returns the selected code
         // user goal are beyond our understanding
@@ -44,11 +41,7 @@ public class ExtendedEditorActionUtil {
 
     // rip, we need to find what the user want to send to the console
     private static @Nullable Pair<PsiElement, PsiFile> findSelectedElement(@NotNull Editor editor) {
-        Project project = editor.getProject();
-        if (project == null) return null;
-        // find psiFile
-        Document document = editor.getDocument();
-        PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
+        PsiFile psiFile = OCamlPsiUtils.getPsiFile(editor);
         if (psiFile == null) return null;
         PsiElement elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         if (elementAt == null) { // did we reach the end of the file?
@@ -64,7 +57,7 @@ public class ExtendedEditorActionUtil {
         return new Pair<>(new PsiLetWithAnd(s), psiFile);
     }
 
-    public static @Nullable ArrayList<PsiElement> getSelectedElements(@NotNull Editor editor) {
+    public static @Nullable ArrayList<PsiElement> autoSelectStatements(@NotNull Editor editor) {
         Pair<PsiElement, PsiFile> statement = findSelectedElement(editor);
         if (statement == null) return null;
         PsiElement current = statement.first;

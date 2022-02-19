@@ -43,15 +43,24 @@ public class OCamlRunSelection extends OCamlEditorActionBase {
     }
 
     public static void doAction(Editor editor, OCamlConsoleRunner runner) {
-        ArrayList<PsiElement> selectedElements = ExtendedEditorActionUtil.getSelectedElements(editor);
-        if (selectedElements == null || selectedElements.size() == 0) return;
+        // look for selected code
+        String selectedCode = ExtendedEditorActionUtil.getSelectedCode(editor);
+        if (selectedCode != null) {
+            // send every selected code
+            runner.processCommand(selectedCode);
+            return;
+        }
+
+        // Auto-detect
+        ArrayList<PsiElement> autoSelectStatements = ExtendedEditorActionUtil.autoSelectStatements(editor);
+        if (autoSelectStatements == null || autoSelectStatements.size() == 0) return;
         // only one, do not ask (and if we are in unit testing too)
-        if (selectedElements.size() == 1 || ApplicationManager.getApplication().isUnitTestMode()) {
-            runner.processCommand(selectedElements.get(0).getText());
+        if (autoSelectStatements.size() == 1 || ApplicationManager.getApplication().isUnitTestMode()) {
+            runner.processCommand(autoSelectStatements.get(0).getText());
             return;
         }
         // ask which statement?
-        List<PsiIntroduceTarget<PsiElement>> targets = selectedElements
+        List<PsiIntroduceTarget<PsiElement>> targets = autoSelectStatements
                 .stream()
                 .map(element ->
                         new PsiIntroduceTarget<>(
