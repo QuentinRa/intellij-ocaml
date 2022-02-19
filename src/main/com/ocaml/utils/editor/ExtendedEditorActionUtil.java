@@ -10,7 +10,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.ocaml.lang.core.PsiLetWithAnd;
-import com.ocaml.lang.utils.OCamlPsiUtils;
+import com.or.lang.core.psi.PsiStructuredElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,8 +42,8 @@ public class ExtendedEditorActionUtil {
         return res.first.getText();
     }
 
+    // rip, we need to find what the user want to send to the console
     private static @Nullable Pair<PsiElement, PsiFile> findSelectedElement(@NotNull Editor editor) {
-        // rip, we need to find what the user want to send to the console
         Project project = editor.getProject();
         if (project == null) return null;
         // find psiFile
@@ -56,9 +56,9 @@ public class ExtendedEditorActionUtil {
             elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset()-1);
             if (elementAt == null) return null;
         }
-        PsiElement s = OCamlPsiUtils.findStatementBefore(elementAt);
+        PsiElement s = findStatementBefore(elementAt);
         if (s == null) {
-            s = OCamlPsiUtils.findStatementAfter(elementAt);
+            s = findStatementAfter(elementAt);
             if (s == null) return null;
         }
         return new Pair<>(new PsiLetWithAnd(s), psiFile);
@@ -78,6 +78,22 @@ public class ExtendedEditorActionUtil {
         }
 
         return candidates;
+    }
+
+    private static @Nullable PsiElement findStatementBefore(@Nullable PsiElement elementAt) {
+        if (elementAt == null) return null;
+        if (elementAt instanceof PsiStructuredElement) return elementAt;
+        PsiElement prevSibling = elementAt.getPrevSibling();
+        if (prevSibling == null) prevSibling = elementAt.getParent();
+        return findStatementBefore(prevSibling);
+    }
+
+    private static @Nullable PsiElement findStatementAfter(@Nullable PsiElement elementAt) {
+        if (elementAt == null) return null;
+        if (elementAt instanceof PsiStructuredElement) return elementAt;
+        PsiElement nextSibling = elementAt.getNextSibling();
+        if (nextSibling == null) nextSibling = elementAt.getParent();
+        return findStatementAfter(nextSibling);
     }
 
 }

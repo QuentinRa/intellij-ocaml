@@ -17,22 +17,6 @@ import java.util.Set;
 
 public final class OCamlPsiUtils {
 
-    public static @Nullable PsiElement findStatementBefore(@Nullable PsiElement elementAt) {
-        if (elementAt == null) return null;
-        if (elementAt instanceof PsiStructuredElement) return elementAt;
-        PsiElement prevSibling = elementAt.getPrevSibling();
-        if (prevSibling == null) prevSibling = elementAt.getParent();
-        return findStatementBefore(prevSibling);
-    }
-
-    public static @Nullable PsiElement findStatementAfter(@Nullable PsiElement elementAt) {
-        if (elementAt == null) return null;
-        if (elementAt instanceof PsiStructuredElement) return elementAt;
-        PsiElement nextSibling = elementAt.getNextSibling();
-        if (nextSibling == null) nextSibling = elementAt.getParent();
-        return findStatementAfter(nextSibling);
-    }
-
     public static int findIndexOfParameter(@NotNull PsiElement element, String functionName) {
         PsiElement prevSibling = element.getPrevSibling();
         int count = 0;

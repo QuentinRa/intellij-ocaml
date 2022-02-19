@@ -13,6 +13,7 @@ import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.actions.editor.OCamlEditorActionBase;
 import com.ocaml.ide.console.OCamlConsoleRunner;
+import com.ocaml.lang.core.PsiLetWithAnd;
 import com.ocaml.utils.adaptor.SinceIdeVersion;
 import com.ocaml.utils.editor.ExtendedEditorActionUtil;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +51,14 @@ public class OCamlRunSelection extends OCamlEditorActionBase {
             return;
         }
         // ask which statement?
-        List<PsiIntroduceTarget<PsiElement>> targets = selectedElements.stream().map(PsiIntroduceTarget::new).collect(Collectors.toList());
+        List<PsiIntroduceTarget<PsiElement>> targets = selectedElements
+                .stream()
+                .map(element ->
+                        new PsiIntroduceTarget<>(
+                                element instanceof PsiLetWithAnd ?
+                                        ((PsiLetWithAnd) element).getCore() :
+                                        element)
+                ).collect(Collectors.toList());
         IntroduceTargetChooser.showIntroduceTargetChooser(editor, targets, new Pass<>() {
             @Override public void pass(PsiIntroduceTarget<PsiElement> choice) {
                 // just in case

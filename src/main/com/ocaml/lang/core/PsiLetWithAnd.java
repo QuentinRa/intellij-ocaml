@@ -115,4 +115,8 @@ public class PsiLetWithAnd extends PsiLetImpl {
     @Override public PsiElement getParent() {
         return core.getParent();
     }
+
+    public @NotNull PsiElement getCore() {
+        return core;
+    }
 }

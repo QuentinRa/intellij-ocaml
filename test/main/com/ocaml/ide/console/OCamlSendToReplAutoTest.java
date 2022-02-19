@@ -14,7 +14,7 @@ public class OCamlSendToReplAutoTest extends OCamlIdeTest {
     }
 
     private void assertWasSend(@Language("OCaml") @NotNull String code, String expectedCodeSent) {
-        myFixture.configureByText("issue57_eof.ml", code.replace(OCAML_CARET, EXPECTED_CARET));
+        myFixture.configureByText("file.ml", code.replace(OCAML_CARET, EXPECTED_CARET));
         int caretOffset = myFixture.getCaretOffset();
         assertNotSame(-1, caretOffset);
 
