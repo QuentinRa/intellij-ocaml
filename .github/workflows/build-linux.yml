@@ -3,13 +3,15 @@
 #  - removing a lot of unused code
 #  - removing restrictions on versions
 #  - using gradle build action
+#  - installing opam, ocaml with opam, and ocaml
 # License: https://github.com/JetBrains/intellij-platform-plugin-template/blob/main/LICENSE
 #
 # Note: https://github.com/marketplace/actions/qodana-scan
 
 name: Build
 on:
-  # Trigger the workflow on pushes to only the 'main' branch (this avoids duplicate checks being run e.g. for dependabot pull requests)
+  # Trigger the workflow on pushes to only the 'main' branch
+  # (this avoids duplicate checks being run e.g. for dependabot pull requests)
   push:
     branches: [main]
   # Trigger the workflow on any pull request
@@ -67,35 +69,29 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
-      - name: Move switch into the expected folder
+      # We are moving the folder with the switch
+      # Editing the configurations
+      # creating a copy to OCAML RUN (ocaml will always look for it here...)
+      # Then we are setting OCAMLLIB (needed, because, we moved the lib folder)
+      - name: Move switch to .opam
         run: |
           mv /home/runner/work/intellij-ocaml/intellij-ocaml/_opam /home/runner/.opam/${{ matrix.ocaml-compiler }}
-          opam switch install /home/runner/.opam/${{ matrix.ocaml-compiler }}
-          ls /home/runner/.opam/
-          opam switch list
+          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' /home/runner/.opam/config
+          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml/\/home\/runner\/.opam\/${{ matrix.ocaml-compiler }}/g' /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/environment
+          sed -i 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml/\/home\/runner\/.opam\/${{ matrix.ocaml-compiler }}/g' /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/config/ocaml.config
+          mkdir -p /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/
+          echo -n "#!" > /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+          echo -n "/bin/bash\n" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+          echo -n "/home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlrun $@" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+          export OCAMLLIB=/home/runner/.opam/${{ matrix.ocaml-compiler }}/lib/ocaml
 
-      # - run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install ocaml
-      - name: Install ocaml binaries
-        run: sudo apt-get install ocaml
-
-      - run: ls -l /bin/ocaml
-      - run: ls /home/runner/.opam/
-      - run: opam switch list
-      - run: cat /home/runner/.opam/config
-      - run: opam config env
-      - run: ls -l /home/runner/work/intellij-ocaml/intellij-ocaml/
-
-#      - name: Install ocaml and opam
-#        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install opam && sudo apt-get install ocaml && opam init --auto-setup --bare
-#
-#      - name: Setup Opam and OCaml ${{ matrix.ocaml-compiler }}
-#        run: opam switch create ocaml-base-compiler.${{ matrix.ocaml-compiler }}
-#
-#      - name: Move folder
-#        run: mv ~/.opam/ocaml-base-compiler.${{ matrix.ocaml-compiler }} ~/.opam/${{ matrix.ocaml-compiler }} && sed 's/ocaml-base-compiler.${{ matrix.ocaml-compiler }}/${{ matrix.ocaml-compiler }}/g' ~/.opam/config
-#
-#      - name: Check
-#        run: ls ~/.opam/
+      - name: Check
+        run: |
+          cat /home/runner/.opam/config
+          cat /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/environment
+          cat /home/runner/.opam/${{ matrix.ocaml-compiler }}/.opam-switch/config/ocaml.config
+          cat /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
+          echo $OCAMLLIB
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
