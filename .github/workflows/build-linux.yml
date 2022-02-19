@@ -74,11 +74,7 @@ jobs:
       - name: Move switch to .opam (Windows)
         if: runner.os == 'Windows'
         run: |
-          ls -R D:\cygwin\wrapperbin\
-          echo "and"
-          ls C:/Users/runneradmin/
-          echo "and"
-          ls D:\\cygwin
+          ls D:\\cygwin\\home
 
       - name: Move switch to .opam (Linux)
         if: runner.os != 'Windows'
