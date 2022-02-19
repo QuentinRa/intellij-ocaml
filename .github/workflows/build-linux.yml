@@ -74,10 +74,11 @@ jobs:
       - name: Move switch to .opam (Windows)
         if: runner.os == 'Windows'
         run: |
-          opam config env
-          which sed
-          C:\Windows\system32\cmd.exe /D /S /C "ls D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam"
-          C:\Windows\system32\cmd.exe /D /S /C "ls /"
+          ls -R D:\cygwin\wrapperbin\
+          echo "and"
+          ls C:/Users/runneradmin/
+          echo "and"
+          ls D:\\cygwin
 
       - name: Move switch to .opam (Linux)
         if: runner.os != 'Windows'
