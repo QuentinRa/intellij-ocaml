@@ -92,7 +92,7 @@ jobs:
           C:\Windows\system32\cmd.exe /D /S /C "echo \"/bin/bash\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
           C:\Windows\system32\cmd.exe /D /S /C "echo -n \"D:\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlrun\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
           C:\Windows\system32\cmd.exe /D /S /C "echo -n \" $\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-#          C:\Windows\system32\cmd.exe /D /S /C "echo -n \"\@\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          C:\Windows\system32\cmd.exe /D /S /C "echo -n \"\@\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
           C:\Windows\system32\cmd.exe /D /S /C "chmod +x D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
           C:\Windows\system32\cmd.exe /D /S /C "echo \"OCAMLLIB=D:\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml\" >> $GITHUB_ENV"
 
@@ -105,9 +105,12 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           ls D:\\.opam\\${{ matrix.ocaml-compiler }}
+          cat D:\\.opam\\config
           cat D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun
           echo "----next----"
           echo "$OCAMLLIB"
+          C:\Windows\system32\cmd.exe /D /S /C "D:\\.opam\\${{ matrix.ocaml-compiler }}/bin/ocaml -vnum"
+          C:\Windows\system32\cmd.exe /D /S /C "D:\\.opam\\${{ matrix.ocaml-compiler }}/bin/ocamlc -vnum"
 
       # We are moving the folder with the switch
       # Editing the configurations
