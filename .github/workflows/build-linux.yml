@@ -83,18 +83,18 @@ jobs:
       - name: Move switch to .opam (Windows)
         if: runner.os == 'Windows'
         run: |
-          D:\cygwin\bin\mv D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam D:\\.opam\\${{ matrix.ocaml-compiler }}"
-          D:\cygwin\bin\sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' D:\\.opam\\config"
-          D:\cygwin\bin\sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\environment"
-          D:\cygwin\bin\sed -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\config\\ocaml.config"
-          D:\cygwin\bin\mkdir -p D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\"
-          D:\cygwin\bin\echo -n \"#!\" > D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          D:\cygwin\bin\echo \"/bin/bash\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          D:\cygwin\bin\echo -n \"D:\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlrun\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          D:\cygwin\bin\echo -n \" $\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          D:\cygwin\bin\echo -n \"\@\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          D:\cygwin\bin\chmod +x D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
-          D:\cygwin\bin\echo \"OCAMLLIB=D:\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml\" >> $GITHUB_ENV"
+          D:\cygwin\bin\mv.exe D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam D:\\.opam\\${{ matrix.ocaml-compiler }}"
+          D:\cygwin\bin\sed.exe -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\"/${{ matrix.ocaml-compiler }}\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' D:\\.opam\\config"
+          D:\cygwin\bin\sed.exe -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\environment"
+          D:\cygwin\bin\sed.exe -i 's/D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam/D:\\.opam\\${{ matrix.ocaml-compiler }}/g' D:\\.opam\\${{ matrix.ocaml-compiler }}\\.opam-switch\\config\\ocaml.config"
+          D:\cygwin\bin\mkdir.exe -p D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\"
+          D:\cygwin\bin\echo.exe -n \"#!\" > D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo.exe \"/bin/bash\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo.exe -n \"D:\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlrun\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo.exe -n \" $\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo.exe -n \"\@\" >> D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\chmod.exe +x D:\\a\\intellij-ocaml\\intellij-ocaml\\_opam\\bin\\ocamlrun"
+          D:\cygwin\bin\echo.exe \"OCAMLLIB=D:\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml\" >> $GITHUB_ENV"
 
       - name: Move switch to .opam (Linux)
         if: runner.os != 'Windows'
