@@ -10,27 +10,14 @@ import java.util.regex.Pattern;
 
 public final class OCamlSdkVersionManager {
 
-    /**
-     * <ul>
-     * <li>something</li>
-     * <li>then a slash</li>
-     * <li>1# then the major version</li>
-     * <li>1# the two digits of the minor version</li>
-     * <li>1# an optional patch version</li>
-     * <li>1# an optional kind "+kind"</li>
-     * <li>we are allowing some text, after all of this, if the text is starting with "-v"</li>
-     * <li>then we got another slash</li>
-     * <li>something</li>
-     * </ul>
-     */
     private static final Pattern VERSION_PATH_REGEXP =
-            Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?/.*");
+            Pattern.compile(".*/[a-z-]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)/.*");
 
     private static final Pattern VERSION_ONLY_REGEXP =
-            Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?)([+][^/]+)?(-v[^/]*)?/.*");
+            Pattern.compile(".*/[a-z-]*(\\d\\.\\d\\d(\\.\\d)?)([+~][0-9a-z-]+)*/.*");
 
     // This is the regex above, the part between the two slashes
-    private static final Pattern VERSION_REGEXP = Pattern.compile("(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?");
+    private static final Pattern VERSION_REGEXP = Pattern.compile("[a-z-]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)");
 
     /** unknown version **/
     public static final String UNKNOWN_VERSION = OCamlBundle.message("sdk.version.unknown");

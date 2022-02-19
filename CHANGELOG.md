@@ -13,10 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0-EAP]
 ### Internal
-- 🚀🚀 Remade of the test infrastructure to support workflows, and fix bugs
+- 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detected bugs easily by adding a whole set of tests for every feature (🥲)
 
 ### Changed
+- ✨ Wider range of ocaml versions, but the "-" modifier isn't allowed any more. (#81)
 - ✨ Fixed sending statement with "and" to the REPL. (#80)
+- ✨ Can send the selected code again! (#80)
 
 ## [0.0.8]
 ### Added

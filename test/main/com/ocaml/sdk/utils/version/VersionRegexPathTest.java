@@ -4,6 +4,8 @@ import com.ocaml.OCamlBaseTest;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import org.junit.Test;
 
+// todo: test with ~, more +, ocaml-base-compiler
+
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public final class VersionRegexPathTest extends OCamlBaseTest {
 
@@ -71,13 +73,13 @@ public final class VersionRegexPathTest extends OCamlBaseTest {
 
     @Test
     public void test1dThen2dThen2dThenFake() {
-        assertIsVersion("~/.opam/4.12.0-v", "4.12.0");
-        assertIsVersion("~/.opam/4.12.0-v2", "4.12.0");
-        assertIsVersion("~/.opam/4.12.0-v/", "4.12.0");
-        assertIsVersion("~/.opam/4.12.0-v2/", "4.12.0");
-        assertIsVersion("~\\.opam\\4.12.0-v", "4.12.0");
-        assertIsVersion("~\\.opam\\4.12.0-v2", "4.12.0");
-        assertIsVersion("~\\.opam\\4.12.0-v\\", "4.12.0");
-        assertIsVersion("~\\.opam\\4.12.0-v2\\", "4.12.0");
+        assertIsUnknownVersion("~/.opam/4.12.0-v");
+        assertIsUnknownVersion("~/.opam/4.12.0-v2");
+        assertIsUnknownVersion("~/.opam/4.12.0-v/");
+        assertIsUnknownVersion("~/.opam/4.12.0-v2/");
+        assertIsUnknownVersion("~\\.opam\\4.12.0-v");
+        assertIsUnknownVersion("~\\.opam\\4.12.0-v2");
+        assertIsUnknownVersion("~\\.opam\\4.12.0-v\\");
+        assertIsUnknownVersion("~\\.opam\\4.12.0-v2\\");
     }
 }

@@ -36,7 +36,8 @@ public final class VersionRegexTest extends OCamlBaseTest {
 
     @Test
     public void testInvalidStart() {
-        assertFalse(OCamlSdkVersionManager.isValid("ocaml-4.05.0"));
+        // now, this is valid :D
+        assertTrue(OCamlSdkVersionManager.isValid("ocaml-4.05.0"));
     }
 
     // valid
@@ -62,10 +63,61 @@ public final class VersionRegexTest extends OCamlBaseTest {
     }
 
     @Test
+    public void test1d2d1d2Kinds() {
+        assertTrue(OCamlSdkVersionManager.isValid("4.05.0+trunk+afl"));
+    }
+
+    @Test
+    public void test1d2d1d3Kinds() {
+        assertTrue(OCamlSdkVersionManager.isValid("4.05.0+musl+static+flambda"));
+    }
+
+    @Test
+    public void test1d2d1dKindsAndMultiWord() {
+        assertTrue(OCamlSdkVersionManager.isValid("4.05.0+flambda+no-float-float-array"));
+    }
+
+    @Test
+    public void test1d2d1dAlpha() {
+        assertTrue(OCamlSdkVersionManager.isValid("4.05.0~alpha1"));
+    }
+
+    @Test
+    public void test1d2d1dAlphaKind() {
+        assertTrue(OCamlSdkVersionManager.isValid("4.05.0+0~alpha1+options"));
+    }
+
+    @Test
     public void test1d2d1dSpecial() {
-        assertTrue(OCamlSdkVersionManager.isValid("4.05.0-v"));
-        assertTrue(OCamlSdkVersionManager.isValid("4.05.0-v2"));
-        // invalid inside "valid", because they are altogether special
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda+no float float array"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda+*"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda+/"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda+%"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda+_"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda+@"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda+NOT"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0+flambda++"));
+    }
+
+    @Test
+    public void test1d2d1dOCamlBaseCompiler() {
+        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0"));
+        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0+flambda"));
+        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0+flambda+options"));
+        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0~alpha1"));
+        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0~alpha1+options"));
+    }
+
+    @Test
+    public void testTricky() {
+        // :D
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0.4.05.0"));
+    }
+
+    @Test
+    public void test1d2d1dMine() {
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0-v"));
+        assertFalse(OCamlSdkVersionManager.isValid("4.05.0-v2"));
         assertFalse(OCamlSdkVersionManager.isValid("4.05.0-"));
     }
 }
