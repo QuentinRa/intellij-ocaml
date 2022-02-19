@@ -62,25 +62,34 @@ jobs:
       # I'm not using https://github.com/ocaml/setup-ocaml,
       # because the switch is installed in an invalid location (a folder named _opam,
       # while I need a folder named after its ocaml version)
-      - name: Install ocaml and opam
-        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install opam && sudo apt-get install ocaml && opam init --auto-setup --bare
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
-      - name: Setup Opam and OCaml ${{ matrix.ocaml-compiler }}
-        run: opam switch create ocaml-base-compiler.${{ matrix.ocaml-compiler }}
+      - run: ls -l /home/runner/.opam/
 
-      - name: Move folder
-        run: mv ~/.opam/ocaml-base-compiler.${{ matrix.ocaml-compiler }} ~/.opam/${{ matrix.ocaml-compiler }} && sed 's/ocaml-base-compiler.${{ matrix.ocaml-compiler }}/${{ matrix.ocaml-compiler }}/g' ~/.opam/config
+      - run: opam config env
 
-      - name: Check
-        run: ls ~/.opam/
+#      - name: Install ocaml and opam
+#        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install opam && sudo apt-get install ocaml && opam init --auto-setup --bare
+#
+#      - name: Setup Opam and OCaml ${{ matrix.ocaml-compiler }}
+#        run: opam switch create ocaml-base-compiler.${{ matrix.ocaml-compiler }}
+#
+#      - name: Move folder
+#        run: mv ~/.opam/ocaml-base-compiler.${{ matrix.ocaml-compiler }} ~/.opam/${{ matrix.ocaml-compiler }} && sed 's/ocaml-base-compiler.${{ matrix.ocaml-compiler }}/${{ matrix.ocaml-compiler }}/g' ~/.opam/config
+#
+#      - name: Check
+#        run: ls ~/.opam/
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
-      - name: Test with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
+#      - name: Test with Gradle
+#        uses: gradle/gradle-build-action@v2
+#        with:
+#          arguments: test
 
       # Run Qodana inspections
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v4.2.5
+#      - name: Qodana - Code Inspection
+#        uses: JetBrains/qodana-action@v4.2.5
