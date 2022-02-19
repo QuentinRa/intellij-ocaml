@@ -18,6 +18,12 @@ public interface OCamlREPLConstants {
     String PROMPT = "#";
 
     /**
+     * Errors / Warnings may use this token (0 or more times)
+     * in errors messages.
+     */
+    String ERROR_INDICATOR = "^";
+
+    /**
      * Types are starting with this symbol
      */
     String TYPE = "type";

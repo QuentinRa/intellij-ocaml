@@ -73,8 +73,10 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
             return;
         }
 
-        // trim
-        textOriginal = textOriginal.trim() + "\n";
+        // trim if not a suite of ^
+        if (!textOriginal.trim().replace(OCamlREPLConstants.ERROR_INDICATOR,"").isBlank()) {
+            textOriginal = textOriginal.trim() + "\n";
+        }
 
         if (waitForEcho) {
             // we are waiting for the echo of the user input
