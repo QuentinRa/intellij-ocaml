@@ -70,7 +70,7 @@ jobs:
       - name: Move switch into the expected folder
         run: |
           mv /home/runner/work/intellij-ocaml/intellij-ocaml/_opam /home/runner/.opam/${{ matrix.ocaml-compiler }}
-          sed 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\"/4.05.0\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' /home/runner/.opam/config
+          opam switch install /home/runner/.opam/${{ matrix.ocaml-compiler }}
           ls /home/runner/.opam/
           opam switch list
 
