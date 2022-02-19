@@ -73,9 +73,12 @@ jobs:
       - name: Install ocaml binaries
         run: sudo apt-get install ocaml
 
-      - run: opam config env
-      - run: ls /bin/ocaml
+      - run: ls -l /bin/ocaml
       - run: ls /home/runner/.opam/
+      - run: opam switch list
+      - run: cat /home/runner/.opam/config
+      - run: opam config env
+      - run: cat /home/runner/work/intellij-ocaml/intellij-ocaml/manifest.txt
 
 #      - name: Install ocaml and opam
 #        run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install opam && sudo apt-get install ocaml && opam init --auto-setup --bare
