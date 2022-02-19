@@ -1,4 +1,4 @@
-package com.lang.utils;
+package com.ocaml.lang.utils;
 
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
