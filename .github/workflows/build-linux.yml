@@ -74,7 +74,7 @@ jobs:
       - name: Move switch to .opam (Windows)
         if: runner.os == 'Windows'
         run: |
-          C:\Windows\system32\cmd.exe /D /S /C "ls -la ~/.opam"
+          opam config list
 
       - name: Move switch to .opam (Linux)
         if: runner.os != 'Windows'
