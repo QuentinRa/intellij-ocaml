@@ -68,9 +68,11 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - name: Move switch into the expected folder
-        run: mv /home/runner/work/intellij-ocaml/intellij-ocaml/_opam /home/runner/.opam/${{ matrix.ocaml-compiler }}
-      - run: |
-          sed 's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\"/4.05.0\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' /home/runner/.opam/config
+        run: |
+          mv /home/runner/work/intellij-ocaml/intellij-ocaml/_opam /home/runner/.opam/${{ matrix.ocaml-compiler }}
+          's/\/home\/runner\/work\/intellij-ocaml\/intellij-ocaml\"/4.05.0\"\nswitch: \"${{ matrix.ocaml-compiler }}\"/g' /home/runner/.opam/config
+          ls /home/runner/.opam/
+          opam switch list
 
       # - run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install ocaml
       - name: Install ocaml binaries
