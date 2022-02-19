@@ -29,12 +29,13 @@ jobs:
       fail-fast: false
       matrix:
         os:
-#          - ubuntu-latest
+          - ubuntu-latest
           - windows-latest
         ocaml-compiler:
-          - 4.05.0
-#          - 4.08.1
-#          - 4.13.0
+          - 4.05.x
+          - 4.08.x
+          - 4.10.x
+          - 4.13.x
 
     runs-on: ${{ matrix.os }}
 
