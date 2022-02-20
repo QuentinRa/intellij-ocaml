@@ -115,7 +115,7 @@ public final class VersionRegexTest extends OCamlBaseTest {
     }
 
     @Test
-    public void test1d2d1dMine() {
+    public void test1d2d1dFake() {
         assertFalse(OCamlSdkVersionManager.isValid("4.05.0-v"));
         assertFalse(OCamlSdkVersionManager.isValid("4.05.0-v2"));
         assertFalse(OCamlSdkVersionManager.isValid("4.05.0-"));
