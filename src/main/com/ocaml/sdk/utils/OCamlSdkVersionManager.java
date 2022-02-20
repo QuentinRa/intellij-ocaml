@@ -69,9 +69,14 @@ public final class OCamlSdkVersionManager {
         return parse(sdkHome, VERSION_ONLY_REGEXP);
     }
 
+    /**
+     * @param base return true if version is newer than the base version
+     * @param version the version tested with the base
+     * @return true if version is newer (or equals) than the base
+     */
     @Contract(pure = true)
     public static boolean isNewerThan(@NotNull String base, @NotNull String version) {
-        return version.compareTo(base) >= 0;
+        return compareVersions(version, base) >= 0;
     }
 
     /**
@@ -90,8 +95,20 @@ public final class OCamlSdkVersionManager {
      * </ul>
      */
     public static int comparePaths(String p1, String p2) {
-        String v1 = parse(p1);
-        String v2 = parse(p2);
-        return v1.compareTo(v2);
+        String v1 = parseWithoutModifier(p1);
+        String v2 = parseWithoutModifier(p2);
+        return compareVersions(v1, v2);
+    }
+
+    private static int compareVersions(@NotNull String v1, @NotNull String v2) {
+        // missing one '.'
+        int i1 = v1.lastIndexOf('.');
+        int i2 = v2.lastIndexOf('.');
+        if (i2 > i1) v1 += ".0";
+        if (i1 > i2) v2 += ".0";
+
+        // clamp between -1 and 1 (integers)
+        int i = v1.compareTo(v2);
+        return i == 0 ? 0 : i >= 1 ? 1 : -1;
     }
 }
