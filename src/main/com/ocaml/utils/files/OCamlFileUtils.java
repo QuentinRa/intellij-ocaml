@@ -76,11 +76,11 @@ public final class OCamlFileUtils {
         return sourceTempFile;
     }
 
-    public static void deleteDirectory(String file) {
+    public static void deleteDirectory(@NotNull String file) {
         deleteDirectory(new File(file));
     }
 
-    public static void deleteDirectory(File file) {
+    public static void deleteDirectory(@NotNull File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files != null) {

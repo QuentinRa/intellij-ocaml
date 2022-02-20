@@ -1,20 +1,20 @@
 package com.ocaml.utils.editor;
 
-import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.ocaml.lang.core.PsiLetWithAnd;
 import com.ocaml.lang.utils.OCamlPsiUtils;
+import com.ocaml.utils.Tested;
 import com.or.lang.core.psi.PsiStructuredElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
+@Tested(note = "I'm directly testing the class using this one. If I ever have to fix a problem " +
+        "in this class again, I will add tests (note to myself).")
 public class ExtendedEditorActionUtil {
 
     /**

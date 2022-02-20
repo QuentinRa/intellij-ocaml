@@ -1,8 +1,11 @@
 package com.ocaml.lang.utils;
 
+import com.intellij.ide.util.PsiNavigationSupport;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiInclude;
@@ -12,6 +15,7 @@ import com.or.lang.core.type.ORTokenElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -126,5 +130,27 @@ public final class OCamlPsiUtils {
         // find psiFile
         Document document = editor.getDocument();
         return PsiDocumentManager.getInstance(project).getPsiFile(document);
+    }
+
+    /**
+     * @see #openFile(Project, VirtualFile, boolean)
+     */
+    public static void openFile(Project project, File file, boolean requestFocus) {
+        VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file);
+        if (virtualFile == null) return;
+        openFile(project, virtualFile, requestFocus);
+    }
+
+    /**
+     * Open a file in the editor, may request focus
+     *
+     * @param project      the project
+     * @param file         the file
+     * @param requestFocus true if we are requesting the focus.
+     * @see PsiNavigationSupport
+     */
+    public static void openFile(Project project, VirtualFile file, boolean requestFocus) {
+        var navigation = PsiNavigationSupport.getInstance();
+        navigation.createNavigatable(project, file, -1).navigate(requestFocus);
     }
 }
