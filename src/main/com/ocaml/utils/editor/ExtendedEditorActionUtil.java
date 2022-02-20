@@ -26,17 +26,8 @@ public class ExtendedEditorActionUtil {
      */
     public static @Nullable String getSelectedCode(@NotNull Editor editor) {
         // simply returns the selected code
-        // user goal are beyond our understanding
-        String code = editor.getSelectionModel().getSelectedText();
-        if (code != null && !code.isBlank()) return code;
-        // look for the tag
-        Pair<PsiElement, PsiFile> res = findSelectedElement(editor);
-        if (res == null) return null;
-        // select
-        TextRange range = res.first.getNode().getTextRange();
-        Caret currentCaret = editor.getCaretModel().getCurrentCaret();
-        currentCaret.setSelection(range.getStartOffset(), range.getEndOffset());
-        return res.first.getText();
+        // the goal of the user is beyond our understanding
+        return editor.getSelectionModel().getSelectedText();
     }
 
     // rip, we need to find what the user want to send to the console

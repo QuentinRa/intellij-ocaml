@@ -109,7 +109,7 @@ public class OCamlSendToReplAutoTest extends OCamlIdeTest {
     public void testModuleIn() {
         // is not returning "type t = int", but the whole module
         // as this is the first choice of the selection menu
-        assertWasSend("module X2 = struct(*caret*)\n" +
+        assertWasSend("module X2 = struct\n" +
                 "type t =(*caret*) int\n" + "let compare = compare\n" +
                 "end");
     }
