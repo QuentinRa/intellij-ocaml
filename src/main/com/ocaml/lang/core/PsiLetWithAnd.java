@@ -8,6 +8,7 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.CompositePsiElement;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.utils.ComputeMethod;
+import com.ocaml.utils.MayNeedToBeTested;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiStructuredElement;
 import com.or.lang.core.psi.impl.PsiLetImpl;
@@ -16,6 +17,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Statements such as "let x = 5 and y = 5" were not sent correctly
+ * to the REPL. This class is making sure that such statements are sent
+ * in one instruction.
+ */
+@MayNeedToBeTested(note = "Tested by the class using this class for now.")
 public class PsiLetWithAnd extends PsiLetImpl {
 
     // wrapper around the core

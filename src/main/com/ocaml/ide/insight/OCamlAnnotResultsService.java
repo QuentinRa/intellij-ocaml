@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+// todo: handle empty file
+// todo: fix problem with type type?
 public final class OCamlAnnotResultsService {
     public final HashMap<String, List<OCamlInferredSignature>> results = new HashMap<>();
 

@@ -1,9 +1,7 @@
 package com.ocaml.utils.strings;
 
-import com.ocaml.utils.Tested;
 import org.jetbrains.annotations.NotNull;
 
-@Tested
 public final class StringsUtil {
 
     public static @NotNull String capitalize(@NotNull String str) {
