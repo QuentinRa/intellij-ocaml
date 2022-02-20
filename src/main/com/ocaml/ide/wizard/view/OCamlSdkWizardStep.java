@@ -24,7 +24,6 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.LabeledIcon;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
 import com.ocaml.OCamlPluginConstants;
