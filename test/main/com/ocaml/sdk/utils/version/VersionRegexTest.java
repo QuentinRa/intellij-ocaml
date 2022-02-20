@@ -101,11 +101,11 @@ public final class VersionRegexTest extends OCamlBaseTest {
 
     @Test
     public void test1d2d1dOCamlBaseCompiler() {
-        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0"));
-        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0+flambda"));
-        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0+flambda+options"));
-        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0~alpha1"));
-        assertFalse(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0~alpha1+options"));
+        assertTrue(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0"));
+        assertTrue(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0+flambda"));
+        assertTrue(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0+flambda+options"));
+        assertTrue(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0~alpha1"));
+        assertTrue(OCamlSdkVersionManager.isValid("ocaml-base-compiler.4.05.0~alpha1+options"));
     }
 
     @Test

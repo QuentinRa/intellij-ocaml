@@ -11,13 +11,13 @@ import java.util.regex.Pattern;
 public final class OCamlSdkVersionManager {
 
     private static final Pattern VERSION_PATH_REGEXP =
-            Pattern.compile(".*/[a-z-]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)/.*");
+            Pattern.compile(".*/[a-z-.]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)/.*");
 
     private static final Pattern VERSION_ONLY_REGEXP =
-            Pattern.compile(".*/[a-z-]*(\\d\\.\\d\\d(\\.\\d)?)([+~][0-9a-z-]+)*/.*");
+            Pattern.compile(".*/[a-z-.]*(\\d\\.\\d\\d(\\.\\d)?)([+~][0-9a-z-]+)*/.*");
 
-    // This is the regex above, the part between the two slashes
-    private static final Pattern VERSION_REGEXP = Pattern.compile("[a-z-]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)");
+    // This is the first regex above, the part between the two slashes
+    private static final Pattern VERSION_REGEXP = Pattern.compile("[a-z-.]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)");
 
     /** unknown version **/
     public static final String UNKNOWN_VERSION = OCamlBundle.message("sdk.version.unknown");
