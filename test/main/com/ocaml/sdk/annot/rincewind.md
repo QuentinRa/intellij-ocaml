@@ -433,7 +433,8 @@ call(
 </td></tr>
 
 <tr><td>14 (bug)</td><td><pre>
-
+let id s = s
+let _ = id id id id 0
 </pre>
 </td><td>
 ???
@@ -458,13 +459,6 @@ let hd (l: 'a list)
 ???
 </td><td>
 <pre>
-"err.ml" 1 0 4 "err.ml" 1 0 6
-type(
-  'a list -> 'a
-)
-ident(
-  def hd "err.ml" 2 20 31 "err.ml" 0 0 -1
-)
 "err.ml" 1 0 8 "err.ml" 1 0 9
 type(
   'a list
@@ -475,23 +469,43 @@ type(
 ident(
   def l "err.ml" 2 20 22 "err.ml" 2 20 31
 )
-"err.ml" 2 20 22 "err.ml" 2 20 29
+</pre>
+</td></tr>
+
+<tr><td>16 (bug)</td><td><pre>
+let bump ?(step = 1) x = x + step
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"err.ml" 1 0 18 "err.ml" 1 0 19
 type(
-  'a list -> 'a
+  int
+)
+type(
+  int option
+)
+type(
+  int option
+)
+type(
+  int
 )
 ident(
-  int_ref Stdlib.List.hd "list.mli" 65 2780 2780 "list.mli" 65 2780 2802
+  int_ref *sth* "err.ml" 1 0 18 "err.ml" 1 0 19
 )
-"err.ml" 2 20 30 "err.ml" 2 20 31
 type(
-  'a list
+  int
+)
+type(
+  int option
+)
+type(
+  int option
 )
 ident(
-  int_ref l "err.ml" 1 0 8 "err.ml" 1 0 9
-)
-"err.ml" 2 20 22 "err.ml" 2 20 31
-type(
-  'a
+  def *sth* "err.ml" 1 0 18 "err.ml" 1 0 19
 )
 </pre>
 </td></tr>

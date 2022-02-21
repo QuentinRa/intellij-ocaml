@@ -398,12 +398,37 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                 ")", "Va|1.8,1.9|l|'a list");
     }
 
-        /*
-        // todo: one more bug
-let id s = s
-let f x y = x + y
-let _ = id (match id None with _ -> fun f x y -> y) f 0 5
-_ => 'b option
-     */
+    @Test // keep the same strategy: the last is the right one
+    // except that we are NOT accepting ident called *sth*
+    public void test_IssueMultipleTypesAndIdent() {
+        assertParserResult("\"err.ml\" 1 0 18 \"err.ml\" 1 0 19\n" +
+                "type(\n" +
+                "  int\n" +
+                ")\n" +
+                "type(\n" +
+                "  int option\n" +
+                ")\n" +
+                "type(\n" +
+                "  int option\n" +
+                ")\n" +
+                "type(\n" +
+                "  int\n" +
+                ")\n" +
+                "ident(\n" +
+                "  int_ref *sth* \"err.ml\" 1 0 18 \"err.ml\" 1 0 19\n" +
+                ")\n" +
+                "type(\n" +
+                "  int\n" +
+                ")\n" +
+                "type(\n" +
+                "  int option\n" +
+                ")\n" +
+                "type(\n" +
+                "  int option\n" +
+                ")\n" +
+                "ident(\n" +
+                "  def *sth* \"err.ml\" 1 0 18 \"err.ml\" 1 0 19\n" +
+                ")", "Li|1.18,1.19|int option");
+    }
 
 }

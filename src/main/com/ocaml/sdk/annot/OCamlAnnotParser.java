@@ -13,13 +13,15 @@ import java.util.regex.Pattern;
 
 public class OCamlAnnotParser {
     private static final Pattern FILE_POSITION = Pattern.compile("\"([^\"]+)\" (\\d+) (\\d+) (\\d+) \"[^\"]+\" (\\d+) (\\d+) (\\d+).*");
-    // tested: same values for ocaml 4.05 to ocamlc 4.14
+    // tested: same values for 4.05 to 4.14
     private static final String TYPE_START = "type(";
     private static final String IDENT_START = "ident(";
     private static final String CALL_START = "call(";
     private static final String VARIABLE_DEF = "def";
     private static final String VARIABLE_REF = "ref";
     private static final String LPAREN = ")";
+    // a variable can't be named like this
+    private static final String INVALID_CHARACTER = "*sth*";
 
     private final String[] lines;
     private int pos;
@@ -74,19 +76,26 @@ public class OCamlAnnotParser {
             state.type = consumeLParen(readLine().trim());
 
             // if we got multiple "types"
-            line = tryReadLine();
-            while (line != null && line.startsWith(TYPE_START)) {
-                state.type = consumeLParen(readLine().trim());
-                line = tryReadLine();
-            }
+            line = handleMultipleTypes(state);
 
             if (line != null && line.startsWith(IDENT_START)) { // variable
                 line = consumeLParen(readLine().trim()); // look for variable name
-                int end = line.indexOf("\"");
-                int start = getStartingPosition(line);
-                line = line.substring(start, end-1);
-                state.name = line;
-                state.kind = AnnotParserState.AnnotKind.VARIABLE;
+                if (!line.contains(INVALID_CHARACTER)) {
+                    int end = line.indexOf("\"");
+                    int start = getStartingPosition(line);
+                    line = line.substring(start, end-1);
+                    state.name = line;
+                    state.kind = AnnotParserState.AnnotKind.VARIABLE;
+                } else {
+                    // this is a value
+                    state.kind = AnnotParserState.AnnotKind.VALUE;
+                    // and, we may have to consume types again
+                    line = handleMultipleTypes(state);
+                    // read the other ident, and don't parse
+                    if (line != null && line.startsWith(IDENT_START))
+                        consumeLParen(readLine().trim());
+                    else if (line != null) pos--;
+                }
             } else {
                 // this is a value
                 state.kind = AnnotParserState.AnnotKind.VALUE;
@@ -96,6 +105,15 @@ public class OCamlAnnotParser {
             }
         }
         return state;
+    }
+
+    private String handleMultipleTypes(AnnotParserState state) {
+        String line = tryReadLine();
+        while (line != null && line.startsWith(TYPE_START)) {
+            state.type = consumeLParen(readLine().trim());
+            line = tryReadLine();
+        };
+        return line;
     }
 
     private @NotNull String consumeLParen(String base) {

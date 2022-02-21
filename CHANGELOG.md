@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🚀 can see the type with `CTRL+SHIFT+P` (#38)
 
 ## [0.1.0-EAP]
+
+Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added tests for most of the existing features, which is saving a lot of time while making things easier when I have to add new features. I won't be able to work on the plugin much from now on. Please provide feedback while I'm here!
+
 ### Internal
 - 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detected bugs easily by adding a whole set of tests for every feature (🥲)
 
