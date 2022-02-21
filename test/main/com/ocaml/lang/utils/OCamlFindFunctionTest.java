@@ -4,7 +4,6 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.ocaml.ide.OCamlIdeTest;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
-import com.ocaml.lang.utils.OCamlFindFunction;
 import com.or.lang.core.psi.*;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +20,7 @@ public class OCamlFindFunctionTest extends OCamlIdeTest {
     private static final String FILE_NAME_ANNOT = "call.annot";
 
     @Override protected String getCustomTestDataPath() {
-        return "com.lang.utils/";
+        return "com.lang.utils/find/";
     }
 
     private void assertFindResult(@Language("OCaml") @NotNull String code, String expectedFunctionName, int expectedIndex) {

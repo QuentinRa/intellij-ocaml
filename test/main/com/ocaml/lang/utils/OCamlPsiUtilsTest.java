@@ -5,7 +5,10 @@ import com.intellij.psi.PsiFile;
 import com.ocaml.OCamlBaseTest;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiLet;
+import org.intellij.lang.annotations.Language;
 import org.junit.Test;
+
+import java.util.Set;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class OCamlPsiUtilsTest extends OCamlBaseTest {
@@ -67,7 +70,7 @@ public class OCamlPsiUtilsTest extends OCamlBaseTest {
         assertSame(psiFile, file);
     }
 
-    // getNextMeaningfulSibling
+    @Test // getNextMeaningfulSibling
     public void testGetNextMeaningfulSibling() {
         PsiElement psiElement = configureCodeWithCaret("(*caret*)( (*something*)       )");
         PsiElement rparen = OCamlPsiUtils.getNextMeaningfulSibling(psiElement, OCamlTypes.RPAREN);
@@ -76,12 +79,30 @@ public class OCamlPsiUtilsTest extends OCamlBaseTest {
         assertTrue(OCamlPsiUtils.isNextMeaningfulNextSibling(psiElement, OCamlTypes.RPAREN));
     }
 
-    // getPreviousMeaningfulSibling
+    @Test // getPreviousMeaningfulSibling
     public void testGetPreviousMeaningfulSibling() {
         PsiElement psiElement = configureCodeWithCaret("( (*something*)       )(*caret*)");
         PsiElement lparen = OCamlPsiUtils.getPreviousMeaningfulSibling(psiElement, OCamlTypes.LPAREN);
         assertNotNull(lparen);
         assertEquals(OCamlTypes.LPAREN, lparen.getNode().getElementType());
+    }
+
+    // deps
+
+    private static final String FILE_NAME = "deps.ml";
+
+    @Override protected String getCustomTestDataPath() {
+        return "com.lang.utils/deps/";
+    }
+
+    @Test
+    public void testFindDependencies() {
+        @Language("OCaml") String originalMlCode = loadFile(FILE_NAME);
+        assertNotNull(originalMlCode);
+        PsiFile file = myFixture.configureByText(FILE_NAME, originalMlCode);
+        Set<String> dependencies = OCamlPsiUtils.findDependencies(file);
+        assertSize(5, dependencies);
+        assertContainsElements(dependencies, "toto", "set", "tata", "hello_world", "stdlib");
     }
 
 }

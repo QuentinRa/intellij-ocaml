@@ -17,6 +17,14 @@ import java.util.Set;
 
 public final class OCamlPsiUtils {
 
+    /**
+     * Return the name of the files that are explicit dependencies of this file, without
+     * their extensions (it's up to the caller to find them, and pick either the .ml or the .mli)
+     * @param element at first, it must be a file, then it's the element that we are exploring. It's working
+     *                if the element isn't a file, but it also means that only the dependencies starting
+     *                from this element, will be added in the set.
+     * @return a set of file names without extensions, that are the explicit dependencies of this file
+     */
     public static @NotNull Set<String> findDependencies(@NotNull PsiElement element) {
         Set<String> res = new HashSet<>();
         for (PsiElement child : element.getChildren()) {
