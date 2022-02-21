@@ -34,8 +34,13 @@ jobs:
         ocaml-compiler:
           - 4.05.x
           - 4.08.x
-          - 4.10.x
           - 4.13.x
+        platform-version:
+          - 203
+          - 211
+          - 212
+          - 213
+          - 221
 
     runs-on: ${{ matrix.os }}
 
@@ -121,6 +126,14 @@ jobs:
           /home/runner/.opam/${{ matrix.ocaml-compiler }}/bin/ocamlc -vnum
           /bin/ocaml -vnum
           /bin/ocamlc -vnum
+
+      # For each "version" of IntelliJ
+      - name: Use gradle-${{ matrix.platform-version }}.properties (Linux)
+        if: runner.os != 'Windows'
+        run: sed -i 's/platformVersion=[^\n]*/platformVersion=aza/g' ./gradle.properties
+      - name: Use gradle-${{ matrix.platform-version }}.properties (Windows)
+        if: runner.os == 'Windows'
+        run: sed -i 's/platformVersion=[^\n]*/platformVersion=aza/g' .\gradle.properties
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
