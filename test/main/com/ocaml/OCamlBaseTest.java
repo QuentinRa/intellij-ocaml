@@ -5,14 +5,20 @@ import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 public class OCamlBaseTest extends BasePlatformTestCase {
+
+    @UntilIdeVersion(release = "203")
+    @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase") @Test
+    public void testFake() {}
 
     public static String OCAML_CARET = "(*caret*)";
     public static String OCAML_SELECT_START = "(*selection*)";

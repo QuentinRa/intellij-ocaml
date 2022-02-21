@@ -128,6 +128,7 @@ test {
                 '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
                 '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED',
                 '--add-opens', 'java.base/java.io=ALL-UNNAMED',
+                '--add-exports', 'java.base/jdk.internal.vm=ALL-UNNAMED',
                 '--add-opens', 'jdk.unsupported/sun.misc=ALL-UNNAMED',
                 '--add-opens', 'java.desktop/sun.awt=ALL-UNNAMED',
                 '--add-opens', 'java.desktop/sun.font=ALL-UNNAMED',
