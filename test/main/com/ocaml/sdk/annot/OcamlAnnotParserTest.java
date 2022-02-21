@@ -367,5 +367,43 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                 "Va|1.54,1.61|Stdlib.compare|'a -> 'a -> int");
     }
 
-    // todo: add annot problems here
+    //
+    // bugs
+    //
+
+    @Test
+    public void test_IssueLongValueForType() {
+        assertParserResult("\"test.ml\" 58 763 771 \"test.ml\" 58 763 773\n" +
+                "type(\n" +
+                "  ((int -> int -> int) -> int -> int -> int) ->\n" +
+                "  (int -> int -> int) -> int -> int -> int\n" +
+                ")\n" +
+                "ident(\n" +
+                "  int_ref id \"test.ml\" 56 732 736 \"test.ml\" 56 732 738\n" +
+                ")", "Va|58.8,58.10|id|((int -> int -> int) -> int -> int -> int) -> (int -> int -> int) -> int -> int -> int");
+    }
+
+    @Test // my strategy: the last is the right one :D
+    // in fact, they can be different, but last will be the one that will be kept
+    public void test_IssueMultipleTypes() {
+        assertParserResult("\"err.ml\" 1 0 8 \"err.ml\" 1 0 9\n" +
+                "type(\n" +
+                "  'a list\n" +
+                ")\n" +
+                "type(\n" +
+                "  'a list\n" +
+                ")\n" +
+                "ident(\n" +
+                "  def l \"err.ml\" 2 20 22 \"err.ml\" 2 20 31\n" +
+                ")", "Va|1.8,1.9|l|'a list");
+    }
+
+        /*
+        // todo: one more bug
+let id s = s
+let f x y = x + y
+let _ = id (match id None with _ -> fun f x y -> y) f 0 5
+_ => 'b option
+     */
+
 }

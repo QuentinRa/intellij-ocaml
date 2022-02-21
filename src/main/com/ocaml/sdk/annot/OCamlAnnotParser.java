@@ -73,7 +73,13 @@ public class OCamlAnnotParser {
             // next is the type
             state.type = consumeLParen(readLine().trim());
 
+            // if we got multiple "types"
             line = tryReadLine();
+            while (line != null && line.startsWith(TYPE_START)) {
+                state.type = consumeLParen(readLine().trim());
+                line = tryReadLine();
+            }
+
             if (line != null && line.startsWith(IDENT_START)) { // variable
                 line = consumeLParen(readLine().trim()); // look for variable name
                 int end = line.indexOf("\"");

@@ -431,4 +431,68 @@ call(
 )
 </pre>
 </td></tr>
+
+<tr><td>14 (bug)</td><td><pre>
+
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"test.ml" 58 763 771 "test.ml" 58 763 773
+type(
+  ((int -> int -> int) -> int -> int -> int) ->
+  (int -> int -> int) -> int -> int -> int
+)
+ident(
+  int_ref id "test.ml" 56 732 736 "test.ml" 56 732 738
+)
+</pre>
+</td></tr>
+
+<tr><td>15 (bug)</td><td><pre>
+let hd (l: 'a list)
+= List.hd l
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"err.ml" 1 0 4 "err.ml" 1 0 6
+type(
+  'a list -> 'a
+)
+ident(
+  def hd "err.ml" 2 20 31 "err.ml" 0 0 -1
+)
+"err.ml" 1 0 8 "err.ml" 1 0 9
+type(
+  'a list
+)
+type(
+  'a list
+)
+ident(
+  def l "err.ml" 2 20 22 "err.ml" 2 20 31
+)
+"err.ml" 2 20 22 "err.ml" 2 20 29
+type(
+  'a list -> 'a
+)
+ident(
+  int_ref Stdlib.List.hd "list.mli" 65 2780 2780 "list.mli" 65 2780 2802
+)
+"err.ml" 2 20 30 "err.ml" 2 20 31
+type(
+  'a list
+)
+ident(
+  int_ref l "err.ml" 1 0 8 "err.ml" 1 0 9
+)
+"err.ml" 2 20 22 "err.ml" 2 20 31
+type(
+  'a
+)
+</pre>
+</td></tr>
 </table>
