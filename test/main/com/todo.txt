@@ -1,7 +1,3 @@
-OcamlAnnotParserTest
-- add new bug in the README
-- add test and fix the problem
-
 TestTypeInference
 - test the bugs in OcamlAnnotParserTest
 - test "getExpressionsAt"

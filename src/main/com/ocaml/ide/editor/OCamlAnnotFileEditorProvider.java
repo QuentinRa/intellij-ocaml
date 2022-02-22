@@ -1,4 +1,4 @@
-package com.ocaml.ide.files.editor;
+package com.ocaml.ide.editor;
 
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;

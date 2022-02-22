@@ -9,18 +9,14 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class OCamlLanguage extends Language implements ORLanguageProperties {
 
-    @NotNull
-    public static final OCamlLanguage INSTANCE = new OCamlLanguage();
-
+    public static final @NotNull OCamlLanguage INSTANCE = new OCamlLanguage();
     public static final String FUNCTION_SIGNATURE_SEPARATOR = " -> ";
 
     private OCamlLanguage() {
         super("OCAML");
     }
 
-    @NotNull
-    @Override
-    public String getDisplayName() {
+    @NotNull @Override public String getDisplayName() {
         return "OCaml";
     }
 

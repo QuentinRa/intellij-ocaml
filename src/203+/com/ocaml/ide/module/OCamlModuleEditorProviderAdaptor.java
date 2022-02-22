@@ -9,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The check in this method changed in 211 (included), but we can't handle this fine.
- * Unfortunately, in 203, the method to get the ModifiableRootModel does not exists, so
- * that why we need this class.
+ * The code in this method changed in 211, but it was easy to create a patch
+ * (ex: adding the new class in 211). Unfortunately, in 203, the method to get the*
+ * ModifiableRootModel does not exist, so that why we need this class.
  */
 public class OCamlModuleEditorProviderAdaptor {
 
     public static @Nullable Module getModuleFromState(@NotNull ModuleConfigurationState state) {
-                Module module = state.getCurrentRootModel().getModule();
+        Module module = state.getCurrentRootModel().getModule();
         ModuleType<?> moduleType = ModuleType.get(module);
 
         // We are not handling non-ocaml modules
@@ -24,6 +24,7 @@ public class OCamlModuleEditorProviderAdaptor {
                 (!GeneralModuleType.INSTANCE.equals(moduleType) || ProjectRootManager.getInstance(state.getProject()).getProjectSdk() == null)) {
             return null;
         }
+
         return module;
     }
 
