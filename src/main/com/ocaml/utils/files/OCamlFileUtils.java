@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +67,9 @@ public final class OCamlFileUtils {
         }
 
         try {
-            FileUtil.writeToFile(sourceTempFile, psiFile.getText().getBytes());
+            FileUtil.writeToFile(sourceTempFile, new String(psiFile.getText().getBytes()),
+                    // UTF-8
+                    StandardCharsets.UTF_8);
         } catch (IOException e) {
             // Sometimes, file is locked by another process, not a big deal, skip it
             logger.trace("Write failed: " + e.getLocalizedMessage());
