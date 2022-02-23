@@ -55,6 +55,7 @@ public class OCamlIcons {
         public static final Icon VAL = AllIcons.Nodes.Variable;
         public static final Icon ATTRIBUTE = AllIcons.Nodes.Property;
         public static final Icon FUNCTION = AllIcons.Nodes.Function;
+        public static final Icon VARIABLE = AllIcons.Nodes.Variable;
         public static final Icon METHOD = AllIcons.Nodes.Method;
         public static final Icon CLASS = AllIcons.Nodes.Class;
         public static final Icon EXCEPTION = AllIcons.Nodes.ExceptionClass;

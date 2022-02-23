@@ -17,6 +17,7 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.fileEditor.impl.FileDocumentManagerBase;
+import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.OnePixelDivider;
 import com.intellij.openapi.util.Disposer;
@@ -27,15 +28,21 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.ui.JBSplitter;
+import com.intellij.ui.SimpleColoredComponent;
+import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.render.RenderingUtil;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import com.intellij.util.ui.tree.TreeUtil;
 import com.ocaml.OCamlBundle;
+import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.highlight.OCamlSyntaxHighlighter;
 import com.ocaml.sdk.annot.OCamlAnnotParser;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,13 +51,11 @@ import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-
-// todo: CellRenderer -> icons?
-//  Click -> blink in editor
-//  Click from editor?
+import java.util.EventListener;
 
 /**
  * Add a tab preview, allowing the user
@@ -61,7 +66,7 @@ import java.util.ArrayList;
  * @see com.intellij.application.options.JavaDocFormattingPanel
  * @see com.intellij.application.options.colors.FontEditorPreview
  */
-public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEditor {
+public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEditor, EventListener {
 
     private final VirtualFile file;
     private final EditorEx myEditor;
@@ -98,7 +103,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         options.reset();
         options.selectScheme(scheme.getName());
 
-        EditorHighlighter highlighter = HighlighterFactory.createHighlighter(new OCamlSyntaxHighlighter(), scheme);
+        SyntaxHighlighter myHighlighter = new OCamlSyntaxHighlighter();
+        EditorHighlighter highlighter = HighlighterFactory.createHighlighter(myHighlighter, scheme);
 
         // createPreviewEditor
         EditorFactory editorFactory = EditorFactory.getInstance();
@@ -144,12 +150,16 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
 
         DefaultTreeModel model = new DefaultTreeModel(rootNode);
         final Tree optionsTree = new Tree(model);
+        // icons
+        optionsTree.setCellRenderer(new MyTreeCellRenderer());
         optionsTree.setRootVisible(false);
         optionsTree.setShowsRootHandles(true);
         optionsTree.getEmptyText().setText(OCamlBundle.message("editor.annot.annot.empty"));
         optionsTree.setBackground(UIUtil.getPanelBackground());
         // padding
         optionsTree.setBorder(JBUI.Borders.empty(10));
+        // Add actions
+        TreeUtil.installActions(optionsTree);
 
         // init mainPanel
         JScrollPane scrollPane = new JBScrollPane(optionsTree);
@@ -244,25 +254,78 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         }
 
         // todo: bundle
-        @Override public String toString() {
-            // Already grouped by line
+        public ArrayList<FragmentData> getFragments() {
+            ArrayList<FragmentData> fragments = new ArrayList<>();
+
+            // column
             int startColumn = signature.position.getStartColumn();
             int endColumn = signature.position.getEndColumn();
-            // line
             String result = " Column";
             if (startColumn != endColumn) result += "s";
             result += " "+startColumn;
             if (startColumn != endColumn) result += "-"+endColumn;
+            // add
+            fragments.add(new FragmentData(result+" "));
 
             // name, type, etc.
             switch (signature.kind) {
-                case UNKNOWN: result = "<unknown>"; break;
-                case VALUE: result += " '"+signature.type+"'"; break;
+                default: case UNKNOWN: fragments.add(new FragmentData("<unknown>")); break;
+                case VALUE: fragments.add(new FragmentData("'"+signature.type+"'")); break;
                 case VARIABLE:
                 case MODULE:
-                    result += " "+signature.name+" ('"+signature.type+"')"; break;
+                    fragments.add(new FragmentData(signature.name+" ('"+signature.type+"')")); break;
             }
-            return result;
+
+            return fragments;
+        }
+
+        @Contract(pure = true) public @Nullable Icon getIcon() {
+            switch (signature.kind) {
+                default: case UNKNOWN: return null;
+                case VALUE: return OCamlIcons.Nodes.OBJECT;
+                case VARIABLE: return OCamlIcons.Nodes.VARIABLE;
+                case MODULE: return OCamlIcons.Nodes.INNER_MODULE;
+            }
+        }
+    }
+
+    private static class FragmentData {
+        public String text;
+        public SimpleTextAttributes attributes = SimpleTextAttributes.REGULAR_ATTRIBUTES;
+        public boolean isHTML = false;
+
+        public FragmentData(String text) {
+            this.text = text;
+        }
+    }
+
+    private static class MyTreeCellRenderer implements TreeCellRenderer {
+        @Override
+        public @NotNull Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
+                                                               boolean leaf, int row, boolean hasFocus) {
+            Color background = RenderingUtil.getBackground(tree, isSelected);
+            Color foreground = RenderingUtil.getForeground(tree, isSelected);
+            SimpleColoredComponent myLabel = new SimpleColoredComponent();
+            if (value instanceof MySignatureNode) {
+                MySignatureNode treeNode = (MySignatureNode)value;
+                myLabel.setIcon(treeNode.getIcon());
+                for (FragmentData fragment : treeNode.getFragments()) {
+                    if (fragment.isHTML) {
+                        myLabel.appendHTML(fragment.text, fragment.attributes);
+                    } else {
+                        myLabel.append(fragment.text, fragment.attributes);
+                    }
+                }
+            } else if (value != null) {
+                myLabel.append(value.toString());
+            } else {
+                myLabel.append("null");
+            }
+            myLabel.setEnabled(tree.isEnabled());
+            myLabel.setForeground(foreground);
+            myLabel.setBackground(background);
+            myLabel.setOpaque(true);
+            return myLabel;
         }
     }
 }
