@@ -19,7 +19,7 @@ public class OCamlAnnotFileEditorProvider implements FileEditorProvider, DumbAwa
     }
 
     @Override public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
-        return new OCamlAnnotFileEditor(file);
+        return new OCamlAnnotFileEditor(project, file);
     }
 
     @Override public @NotNull @NonNls String getEditorTypeId() {
