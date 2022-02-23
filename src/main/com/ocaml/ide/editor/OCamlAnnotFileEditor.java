@@ -18,6 +18,7 @@ import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.fileEditor.impl.FileDocumentManagerBase;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.OnePixelDivider;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VfsUtil;
@@ -25,6 +26,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.highlight.OCamlSyntaxHighlighter;
 import org.jetbrains.annotations.Nls;
@@ -32,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
+import java.awt.*;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -45,22 +51,25 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
 
     private final VirtualFile file;
     private final EditorEx myEditor;
-    private JPanel myMainPanel;
+    private final JPanel myMainPanel = new JPanel(new GridBagLayout());
 
     public OCamlAnnotFileEditor(@NotNull Project project, @NotNull VirtualFile file) {
         this.file = file;
 
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         if (psiFile == null) throw new IllegalStateException("PsiFile was null for "+file.getName());
-        String annot = psiFile.getText();
+        String annotText = psiFile.getText();
+        // annot may be empty
 
         String nameWithoutExtension = file.getNameWithoutExtension();
         VirtualFile source = VfsUtil.findRelativeFile(file.getParent(), nameWithoutExtension + OCamlFileType.DOT_DEFAULT_EXTENSION);
         if (source == null) throw new IllegalStateException("Source not found");
         PsiFile sourcePsi = PsiManager.getInstance(project).findFile(source);
         if (sourcePsi == null) throw new IllegalStateException("Source not found (psi).");
-        String text = sourcePsi.getText();
+        String sourceText = sourcePsi.getText();
+        // source may be empty
 
+        // init editor
         EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
         ColorAndFontOptions options = new ColorAndFontOptions();
         options.reset();
@@ -70,7 +79,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
 
         // createPreviewEditor
         EditorFactory editorFactory = EditorFactory.getInstance();
-        Document editorDocument = editorFactory.createDocument(text);
+        Document editorDocument = editorFactory.createDocument(sourceText);
         FileDocumentManagerBase.registerDocument(editorDocument, new LightVirtualFile());
         myEditor = (EditorEx) editorFactory.createViewer(editorDocument); // read-only
         myEditor.setHighlighter(highlighter);
@@ -93,7 +102,47 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         markupModel.setErrorStripeRenderer(() -> new AnalyzerStatus(AllIcons.General.InspectionsOK, "", "", AnalyzerStatus::getEmptyController));
         markupModel.setErrorStripeVisible(true);
 
-        myMainPanel.add(myEditor.getComponent());
+        JPanel myAnnotView = new JPanel(new BorderLayout());
+        myAnnotView.setBorder(JBUI.Borders.emptyRight(10));
+        myAnnotView.setBackground(UIUtil.getPanelBackground());
+
+        // init mainPanel
+        JScrollPane scrollPane = new JBScrollPane(myAnnotView);
+        myMainPanel.add(scrollPane,
+                new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        JBUI.emptyInsets(), 0, 0));
+
+        JPanel previewPanel = createPreviewPanel();
+
+        myMainPanel.add(previewPanel,
+                new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        JBUI.emptyInsets(), 0, 0));
+    }
+
+    private @NotNull JPanel createPreviewPanel() {
+        JPanel previewPanel = new JPanel(new BorderLayout());
+
+        previewPanel.setLayout(new BorderLayout());
+        previewPanel.add(myEditor.getComponent(), BorderLayout.CENTER);
+        previewPanel.setBorder(new AbstractBorder() {
+            private static final int LEFT_WHITE_SPACE = 2;
+
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                g.setColor(myEditor.getBackgroundColor());
+                g.fillRect(x + 1, y, LEFT_WHITE_SPACE, height);
+                g.setColor(OnePixelDivider.BACKGROUND);
+                g.fillRect(x, y, 1, height);
+            }
+
+            @Override
+            public Insets getBorderInsets(Component c, Insets insets) {
+                insets.set(0, 1 + LEFT_WHITE_SPACE, 0, 0);
+                return insets;
+            }
+        });
+
+        return previewPanel;
     }
 
     @Override public @NotNull JComponent getComponent() {
