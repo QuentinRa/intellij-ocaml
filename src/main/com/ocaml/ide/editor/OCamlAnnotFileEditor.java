@@ -26,32 +26,46 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
+import com.intellij.ui.JBSplitter;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import com.ocaml.OCamlBundle;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.highlight.OCamlSyntaxHighlighter;
+import com.ocaml.sdk.annot.OCamlAnnotParser;
+import com.ocaml.sdk.annot.OCamlInferredSignature;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+
+// todo: CellRenderer -> icons?
+//  Click -> blink in editor
+//  Click from editor?
 
 /**
  * Add a tab preview, allowing the user
  * to preview the content of the file.
+ * <br>
+ * The code was mostly inspired by classes such as
  * @see com.intellij.application.options.colors.SimpleEditorPreview
- * @see com.intellij.application.options.JavaCodeStyleMainPanel
- * @see com.intellij.ide.JavaLanguageCodeStyleSettingsProvider
+ * @see com.intellij.application.options.JavaDocFormattingPanel
+ * @see com.intellij.application.options.colors.FontEditorPreview
  */
 public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEditor {
 
     private final VirtualFile file;
     private final EditorEx myEditor;
-    private final JPanel myMainPanel = new JPanel(new GridBagLayout());
+    private final JBSplitter myMainPanel;
 
     public OCamlAnnotFileEditor(@NotNull Project project, @NotNull VirtualFile file) {
         this.file = file;
@@ -59,7 +73,15 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         if (psiFile == null) throw new IllegalStateException("PsiFile was null for "+file.getName());
         String annotText = psiFile.getText();
-        // annot may be empty
+        ArrayList<OCamlInferredSignature> signatures;
+        String errorMessage = null;
+        try {
+            OCamlAnnotParser annotParser = new OCamlAnnotParser(annotText);
+            signatures = annotParser.get();
+        } catch (Exception e) {
+            errorMessage = e.getLocalizedMessage();
+            signatures = new ArrayList<>();
+        }
 
         String nameWithoutExtension = file.getNameWithoutExtension();
         VirtualFile source = VfsUtil.findRelativeFile(file.getParent(), nameWithoutExtension + OCamlFileType.DOT_DEFAULT_EXTENSION);
@@ -68,6 +90,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         if (sourcePsi == null) throw new IllegalStateException("Source not found (psi).");
         String sourceText = sourcePsi.getText();
         // source may be empty
+        if (sourceText.isBlank()) sourceText = "(* "+OCamlBundle.message("editor.annot.source.empty")+" *)\n" + sourceText;
 
         // init editor
         EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
@@ -84,7 +107,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         myEditor = (EditorEx) editorFactory.createViewer(editorDocument); // read-only
         myEditor.setHighlighter(highlighter);
         EditorSettings settings = myEditor.getSettings();
-        settings.setLineNumbersShown(false);
+        settings.setLineNumbersShown(true); // better 'cause we are indexing results by line number
         settings.setWhitespacesShown(true);
         settings.setLineMarkerAreaShown(false);
         settings.setIndentGuidesShown(false);
@@ -102,21 +125,41 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         markupModel.setErrorStripeRenderer(() -> new AnalyzerStatus(AllIcons.General.InspectionsOK, "", "", AnalyzerStatus::getEmptyController));
         markupModel.setErrorStripeVisible(true);
 
-        JPanel myAnnotView = new JPanel(new BorderLayout());
-        myAnnotView.setBorder(JBUI.Borders.emptyRight(10));
-        myAnnotView.setBackground(UIUtil.getPanelBackground());
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+        String groupName = "";
+        DefaultMutableTreeNode groupNode = null;
+
+        for (OCamlInferredSignature signature : signatures) {
+            String newGroupName = "Line "+signature.position.getStartLine();
+            if (!newGroupName.equals(groupName)) {
+                groupName = newGroupName;
+                groupNode = new DefaultMutableTreeNode(newGroupName);
+                rootNode.add(groupNode);
+            }
+            groupNode.add(new MySignatureNode(signature));
+        }
+
+        if (errorMessage != null)
+            rootNode.add(new DefaultMutableTreeNode(errorMessage));
+
+        DefaultTreeModel model = new DefaultTreeModel(rootNode);
+        final Tree optionsTree = new Tree(model);
+        optionsTree.setRootVisible(false);
+        optionsTree.setShowsRootHandles(true);
+        optionsTree.getEmptyText().setText(OCamlBundle.message("editor.annot.annot.empty"));
+        optionsTree.setBackground(UIUtil.getPanelBackground());
+        // padding
+        optionsTree.setBorder(JBUI.Borders.empty(10));
 
         // init mainPanel
-        JScrollPane scrollPane = new JBScrollPane(myAnnotView);
-        myMainPanel.add(scrollPane,
-                new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        JBUI.emptyInsets(), 0, 0));
-
+        JScrollPane scrollPane = new JBScrollPane(optionsTree);
         JPanel previewPanel = createPreviewPanel();
 
-        myMainPanel.add(previewPanel,
-                new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                        JBUI.emptyInsets(), 0, 0));
+        myMainPanel = new JBSplitter(false, 0.5f);
+        myMainPanel.setFirstComponent(scrollPane);
+        myMainPanel.setSecondComponent(previewPanel);
+        myMainPanel.setShowDividerControls(false);
+        myMainPanel.setHonorComponentsMinimumSize(false);
     }
 
     private @NotNull JPanel createPreviewPanel() {
@@ -154,7 +197,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     }
 
     @Override public @Nls(capitalization = Nls.Capitalization.Title) @NotNull String getName() {
-        return "Preview";
+        return OCamlBundle.message("editor.annot.name");
     }
 
     @Override public void setState(@NotNull FileEditorState state) {
@@ -191,5 +234,35 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     // A proper @NotNull implementation required
     @Override public @Nullable VirtualFile getFile() {
         return file;
+    }
+
+    private static class MySignatureNode extends DefaultMutableTreeNode {
+        private final OCamlInferredSignature signature;
+
+        public MySignatureNode(OCamlInferredSignature signature) {
+            this.signature = signature;
+        }
+
+        // todo: bundle
+        @Override public String toString() {
+            // Already grouped by line
+            int startColumn = signature.position.getStartColumn();
+            int endColumn = signature.position.getEndColumn();
+            // line
+            String result = " Column";
+            if (startColumn != endColumn) result += "s";
+            result += " "+startColumn;
+            if (startColumn != endColumn) result += "-"+endColumn;
+
+            // name, type, etc.
+            switch (signature.kind) {
+                case UNKNOWN: result = "<unknown>"; break;
+                case VALUE: result += " '"+signature.type+"'"; break;
+                case VARIABLE:
+                case MODULE:
+                    result += " "+signature.name+" ('"+signature.type+"')"; break;
+            }
+            return result;
+        }
     }
 }

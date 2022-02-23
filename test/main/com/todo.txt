@@ -2,6 +2,8 @@ TestTypeInference
 - test the bugs in OcamlAnnotParserTest
 - test "getExpressionsAt"
 
+empty .annot
+
 - Fix tests for the Windows provider
 - Test REPL
     - whole file

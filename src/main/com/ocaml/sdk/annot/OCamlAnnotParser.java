@@ -37,6 +37,7 @@ public class OCamlAnnotParser {
      */
     public ArrayList<OCamlInferredSignature> get() {
         ArrayList<OCamlInferredSignature> elements = new ArrayList<>();
+        if (this.lines.length == 0) return elements; // fix empty .annot
         AnnotParserState state = parseInstruction();
         while (state != null) {
             // add if not skipped
