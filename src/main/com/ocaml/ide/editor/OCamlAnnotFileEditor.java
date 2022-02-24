@@ -3,16 +3,16 @@ package com.ocaml.ide.editor;
 import com.intellij.application.options.colors.ColorAndFontOptions;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.HighlighterFactory;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.EditorSettings;
+import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx;
 import com.intellij.openapi.editor.ex.EditorMarkupModel;
+import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
-import com.intellij.openapi.editor.markup.AnalyzerStatus;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.fileEditor.FileEditorState;
@@ -21,12 +21,15 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.OnePixelDivider;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
+import com.intellij.ui.ClickListener;
 import com.intellij.ui.JBSplitter;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
@@ -53,7 +56,11 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
@@ -72,6 +79,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     private final VirtualFile file;
     private final EditorEx myEditor;
     private final JBSplitter myMainPanel;
+    private final PsiFile mySourcePsi;
 
     public OCamlAnnotFileEditor(@NotNull Project project, @NotNull VirtualFile file) {
         this.file = file;
@@ -92,9 +100,9 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         String nameWithoutExtension = file.getNameWithoutExtension();
         VirtualFile source = VfsUtil.findRelativeFile(file.getParent(), nameWithoutExtension + OCamlFileType.DOT_DEFAULT_EXTENSION);
         if (source == null) throw new IllegalStateException("Source not found");
-        PsiFile sourcePsi = PsiManager.getInstance(project).findFile(source);
-        if (sourcePsi == null) throw new IllegalStateException("Source not found (psi).");
-        String sourceText = sourcePsi.getText();
+        mySourcePsi = PsiManager.getInstance(project).findFile(source);
+        if (mySourcePsi == null) throw new IllegalStateException("Source not found (psi).");
+        String sourceText = mySourcePsi.getText();
         // source may be empty
         if (sourceText.isBlank()) sourceText = "(* "+OCamlBundle.message("editor.annot.source.empty")+" *)\n" + sourceText;
 
@@ -162,6 +170,27 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         // Add actions
         TreeUtil.installActions(optionsTree);
 
+        optionsTree.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (!optionsTree.isEnabled()) return;
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    TreePath treePath = optionsTree.getLeadSelectionPath();
+                    updatePreview(treePath);
+                    e.consume();
+                }
+            }
+        });
+        new ClickListener() {
+            @Override
+            public boolean onClick(@NotNull MouseEvent e, int clickCount) {
+                if (!optionsTree.isEnabled()) return false;
+                TreePath treePath = optionsTree.getPathForLocation(e.getX(), e.getY());
+                updatePreview(treePath);
+                return true;
+            }
+        }.installOn(optionsTree);
+
         // init mainPanel
         JScrollPane scrollPane = new JBScrollPane(optionsTree);
         JPanel previewPanel = createPreviewPanel();
@@ -171,6 +200,98 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         myMainPanel.setSecondComponent(previewPanel);
         myMainPanel.setShowDividerControls(false);
         myMainPanel.setHonorComponentsMinimumSize(false);
+    }
+    private void updatePreview(TreePath treePath) {
+        if (treePath == null) {
+            return;
+        }
+        Object o = treePath.getLastPathComponent();
+        if (o instanceof MySignatureNode) {
+            MySignatureNode node = (MySignatureNode) o;
+            blink(node.signature);
+        }
+    }
+
+    private void blink(OCamlInferredSignature signature) {
+        MarkupModel markupModel = myEditor.getMarkupModel();
+        markupModel.removeAllHighlighters(); // reset
+        Rectangle visibleArea = myEditor.getScrollingModel().getVisibleArea();
+        VisualPosition visualStart = myEditor.xyToVisualPosition(visibleArea.getLocation());
+        VisualPosition visualEnd = myEditor.xyToVisualPosition(new Point(visibleArea.x + visibleArea.width, visibleArea.y + visibleArea.height));
+
+        // There is a possible case that viewport is located at its most bottom position and last document symbol
+        // is located at the start of the line, hence, resulting visual end column has a small value and doesn't actually
+        // indicate target visible rectangle. Hence, we need to correct that if necessary.
+        int endColumnCandidate = visibleArea.width / EditorUtil.getSpaceWidth(Font.PLAIN, myEditor) + visualStart.column;
+        if (endColumnCandidate > visualEnd.column) {
+            visualEnd = new VisualPosition(visualEnd.line, endColumnCandidate);
+        }
+
+        int offset = myEditor.logicalPositionToOffset(new LogicalPosition(
+                signature.position.getStartLine() - 1,
+                signature.position.getStartColumn()
+        ));
+
+        int endOffset = myEditor.logicalPositionToOffset(new LogicalPosition(
+                signature.position.getEndLine() - 1,
+                signature.position.getEndColumn() - 1
+        ));
+
+        int offsetToScroll = -1;
+
+        PsiElement start = mySourcePsi.findElementAt(offset);
+        PsiElement end = mySourcePsi.findElementAt(endOffset);
+        if (start == null || end == null) return;
+        String text = mySourcePsi.getText();
+        TextRange range = new TextRange(start.getTextRange().getStartOffset(), end.getTextRange().getEndOffset());
+
+        boolean rangeVisible = isWithinBounds(myEditor.offsetToVisualPosition(range.getStartOffset()),
+                visualStart, visualEnd) || isWithinBounds(myEditor.offsetToVisualPosition(range.getEndOffset()), visualStart, visualEnd);
+        if (text.charAt(range.getStartOffset()) != '\n') {
+            offsetToScroll = range.getStartOffset();
+        } else if (range.getEndOffset() > 0 && text.charAt(range.getEndOffset() - 1) != '\n') {
+            offsetToScroll = range.getEndOffset() - 1;
+        }
+
+        TextAttributes backgroundAttributes = myEditor.getColorsScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);
+        TextAttributes borderAttributes = new TextAttributes(
+                null, null, backgroundAttributes.getBackgroundColor(), EffectType.BOXED, Font.PLAIN
+        );
+        TextAttributes attributesToUse = range.getLength() > 0 ? backgroundAttributes : borderAttributes;
+        markupModel.addRangeHighlighter(
+                range.getStartOffset(), range.getEndOffset(), HighlighterLayer.SELECTION, attributesToUse, HighlighterTargetArea.EXACT_RANGE
+        );
+
+        if (!rangeVisible) {
+            if (offsetToScroll >= 0 && offsetToScroll < text.length() - 1 && text.charAt(offsetToScroll) != '\n') {
+                // There is a possible case that target offset is located too close to the right edge. However, our point is to show
+                // highlighted region at target offset, hence, we need to scroll to the visual symbol end. Hence, we're trying to ensure
+                // that by scrolling to the symbol's end over than its start.
+                offsetToScroll++;
+            }
+
+            if (offsetToScroll >= 0 && offsetToScroll < myEditor.getDocument().getTextLength()) {
+                myEditor.getScrollingModel().scrollTo(
+                        myEditor.offsetToLogicalPosition(offsetToScroll), ScrollType.RELATIVE
+                );
+            }
+        }
+    }
+
+    /**
+     * Allows us to answer if a particular visual position belongs to visual rectangle
+     * identified by the given visual position of its top-left and bottom-right corners.
+     *
+     * @param targetPosition    position which belonging to target visual rectangle should be checked
+     * @param startPosition     visual position of top-left corner of the target visual rectangle
+     * @param endPosition       visual position of bottom-right corner of the target visual rectangle
+     * @return                  {@code true} if given visual position belongs to the target visual rectangle;
+     *                          {@code false} otherwise
+     */
+    @Contract(pure = true)
+    private static boolean isWithinBounds(@NotNull VisualPosition targetPosition, @NotNull VisualPosition startPosition, VisualPosition endPosition) {
+        return targetPosition.line >= startPosition.line && targetPosition.line <= endPosition.line
+                && targetPosition.column >= startPosition.column && targetPosition.column <= endPosition.column;
     }
 
     private @NotNull JPanel createPreviewPanel() {
