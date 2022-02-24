@@ -68,7 +68,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Add a tab preview, allowing the user
@@ -395,14 +394,12 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         }
     }
 
+    //
     // Blink
     //
-    private boolean canBeEnabled = true;
-    private long myEndHighlightPreviewChangesTimeMillis = -1L;
-    private static final long TIME_TO_HIGHLIGHT_PREVIEW_CHANGES_IN_MILLIS = TimeUnit.SECONDS.toMillis(5);
 
     private void startBlinking(@NotNull MySignatureNode node) {
-        myEndHighlightPreviewChangesTimeMillis = System.currentTimeMillis() + TIME_TO_HIGHLIGHT_PREVIEW_CHANGES_IN_MILLIS;
+        long endHighlightPreviewChangesTimeMillis = System.currentTimeMillis() + 5000;
 
         // reset
         myEditor.getMarkupModel().removeAllHighlighters();
@@ -410,27 +407,24 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         myUpdateAlarm.cancelAllRequests();
 
         myUpdateAlarm.addComponentRequest(new Runnable() {
+            private boolean canBeEnabled = true;
+
             @Override
             public void run() {
                 Project project = myEditor.getProject();
-                if (myEditor.isDisposed() || project != null && project.isDisposed()) {
-                    return;
-                }
-                if (System.currentTimeMillis() <= myEndHighlightPreviewChangesTimeMillis
-                && canBeEnabled) {
+                if (myEditor.isDisposed() || project != null && project.isDisposed()) return;
+                // Show
+                if (System.currentTimeMillis() <= endHighlightPreviewChangesTimeMillis && canBeEnabled) {
                     blink(node.signature);
-                    canBeEnabled = false;
                     myUpdateAlarm.addComponentRequest(this, 400);
-                }
-                else {
-                    canBeEnabled = true;
+                } else {
+                    // Hide
                     myEditor.getMarkupModel().removeAllHighlighters();
                     myUpdateAlarm.addComponentRequest(this, 400);
                 }
+                canBeEnabled = !canBeEnabled;
             }
         }, 300);
-
-        blink(node.signature);
     }
 
     private void blink(OCamlInferredSignature signature) {
