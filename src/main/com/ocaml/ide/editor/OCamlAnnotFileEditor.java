@@ -1,3 +1,5 @@
+// Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+// http://www.apache.org/licenses/LICENSE-2.0
 package com.ocaml.ide.editor;
 
 import com.intellij.application.options.colors.ColorAndFontOptions;
@@ -36,6 +38,7 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.render.RenderingUtil;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.Alarm;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -65,6 +68,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Add a tab preview, allowing the user
@@ -74,6 +78,7 @@ import java.util.HashMap;
  * @see com.intellij.application.options.colors.SimpleEditorPreview
  * @see com.intellij.application.options.JavaDocFormattingPanel
  * @see com.intellij.application.options.colors.FontEditorPreview
+ * @see com.intellij.application.options.CodeStyleAbstractPanel
  */
 public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEditor, EventListener {
 
@@ -81,6 +86,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     private final EditorEx myEditor;
     private final JBSplitter myMainPanel;
     private final PsiFile mySourcePsi;
+    private final Alarm myUpdateAlarm;
 
     public OCamlAnnotFileEditor(@NotNull Project project, @NotNull VirtualFile file) {
         this.file = file;
@@ -207,6 +213,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         myMainPanel.setSecondComponent(previewPanel);
         myMainPanel.setShowDividerControls(false);
         myMainPanel.setHonorComponentsMinimumSize(false);
+
+        myUpdateAlarm = new Alarm(myEditor.getComponent(), this);
     }
     private void updatePreview(TreePath treePath) {
         if (treePath == null) {
@@ -215,7 +223,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         Object o = treePath.getLastPathComponent();
         if (o instanceof MySignatureNode) {
             MySignatureNode node = (MySignatureNode) o;
-            blink(node.signature);
+            startBlinking(node);
         }
     }
 
@@ -273,6 +281,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     }
 
     @Override public void dispose() {
+        myUpdateAlarm.cancelAllRequests();
+
         // editor
         EditorFactory editorFactory = EditorFactory.getInstance();
         editorFactory.releaseEditor(myEditor);
@@ -386,10 +396,45 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     }
 
     // Blink
+    //
+    private boolean canBeEnabled = true;
+    private long myEndHighlightPreviewChangesTimeMillis = -1L;
+    private static final long TIME_TO_HIGHLIGHT_PREVIEW_CHANGES_IN_MILLIS = TimeUnit.SECONDS.toMillis(5);
+
+    private void startBlinking(@NotNull MySignatureNode node) {
+        myEndHighlightPreviewChangesTimeMillis = System.currentTimeMillis() + TIME_TO_HIGHLIGHT_PREVIEW_CHANGES_IN_MILLIS;
+
+        // reset
+        myEditor.getMarkupModel().removeAllHighlighters();
+        // stop
+        myUpdateAlarm.cancelAllRequests();
+
+        myUpdateAlarm.addComponentRequest(new Runnable() {
+            @Override
+            public void run() {
+                Project project = myEditor.getProject();
+                if (myEditor.isDisposed() || project != null && project.isDisposed()) {
+                    return;
+                }
+                if (System.currentTimeMillis() <= myEndHighlightPreviewChangesTimeMillis
+                && canBeEnabled) {
+                    blink(node.signature);
+                    canBeEnabled = false;
+                    myUpdateAlarm.addComponentRequest(this, 400);
+                }
+                else {
+                    canBeEnabled = true;
+                    myEditor.getMarkupModel().removeAllHighlighters();
+                    myUpdateAlarm.addComponentRequest(this, 400);
+                }
+            }
+        }, 300);
+
+        blink(node.signature);
+    }
 
     private void blink(OCamlInferredSignature signature) {
         MarkupModel markupModel = myEditor.getMarkupModel();
-        markupModel.removeAllHighlighters(); // reset
         Rectangle visibleArea = myEditor.getScrollingModel().getVisibleArea();
         VisualPosition visualStart = myEditor.xyToVisualPosition(visibleArea.getLocation());
         VisualPosition visualEnd = myEditor.xyToVisualPosition(new Point(visibleArea.x + visibleArea.width, visibleArea.y + visibleArea.height));
