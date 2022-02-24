@@ -37,6 +37,7 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.ocaml.OCamlBundle;
+import com.ocaml.OCamlLanguage;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.highlight.OCamlSyntaxHighlighter;
@@ -253,23 +254,20 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             this.signature = signature;
         }
 
-        // todo: bundle
-        public ArrayList<FragmentData> getFragments() {
+        public @NotNull ArrayList<FragmentData> getFragments() {
             ArrayList<FragmentData> fragments = new ArrayList<>();
 
             // column
             int startColumn = signature.position.getStartColumn();
             int endColumn = signature.position.getEndColumn();
-            String result = " Column";
-            if (startColumn != endColumn) result += "s";
-            result += " "+startColumn;
-            if (startColumn != endColumn) result += "-"+endColumn;
+            String result = OCamlBundle.message("editor.annot.indicator.columns");
+            result += " "+startColumn + "-" +endColumn;
             // add
             fragments.add(new FragmentData(result+" "));
 
             // name, type, etc.
             switch (signature.kind) {
-                default: case UNKNOWN: fragments.add(new FragmentData("<unknown>")); break;
+                default: case UNKNOWN: fragments.add(new FragmentData(OCamlBundle.message("editor.annot.indicator.unknown"))); break;
                 case VALUE: fragments.add(new FragmentData("'"+signature.type+"'")); break;
                 case VARIABLE:
                 case MODULE:
@@ -283,7 +281,9 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             switch (signature.kind) {
                 default: case UNKNOWN: return null;
                 case VALUE: return OCamlIcons.Nodes.OBJECT;
-                case VARIABLE: return OCamlIcons.Nodes.VARIABLE;
+                case VARIABLE:
+                    return signature.type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR) ?
+                        OCamlIcons.Nodes.FUNCTION : OCamlIcons.Nodes.VARIABLE;
                 case MODULE: return OCamlIcons.Nodes.INNER_MODULE;
             }
         }
@@ -317,6 +317,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
                     }
                 }
             } else if (value != null) {
+                // ex: group names
                 myLabel.append(value.toString());
             } else {
                 myLabel.append("null");
@@ -328,4 +329,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             return myLabel;
         }
     }
+
+    // Blink
+
 }
