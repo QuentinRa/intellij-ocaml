@@ -68,8 +68,8 @@ public final class OCamlFileUtils {
 
         try {
             FileUtil.writeToFile(sourceTempFile, new String(psiFile.getText().getBytes()),
-                    // UTF-8
-                    StandardCharsets.UTF_8);
+                    // use the charset of the original file
+                    psiFile.getVirtualFile().getCharset());
         } catch (IOException e) {
             // Sometimes, file is locked by another process, not a big deal, skip it
             logger.trace("Write failed: " + e.getLocalizedMessage());
