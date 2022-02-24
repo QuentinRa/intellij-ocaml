@@ -143,8 +143,9 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         // signatures are not sorted by line number
+        // we need to create/get the group
         HashMap<String, DefaultMutableTreeNode> groups = new HashMap<>();
-
+        // fill the tree
         for (OCamlInferredSignature signature : signatures) {
             String newGroupName = "Line "+signature.position.getStartLine();
             DefaultMutableTreeNode groupNode = groups.get(newGroupName);
@@ -157,8 +158,11 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         }
         groups.clear();
 
-        if (errorMessage != null)
-            rootNode.add(new DefaultMutableTreeNode(errorMessage));
+        if (errorMessage != null) {
+            rootNode.removeAllChildren();
+            rootNode.add(new ErrorMessageNode(errorMessage));
+            rootNode.add(new DefaultMutableTreeNode(OCamlBundle.message("please.submit.an.issue")));
+        }
 
         DefaultTreeModel model = new DefaultTreeModel(rootNode);
         final Tree optionsTree = new Tree(model);
@@ -331,6 +335,12 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         }
     }
 
+    private static class ErrorMessageNode extends DefaultMutableTreeNode {
+        public ErrorMessageNode(String message) {
+            super(message);
+        }
+    }
+
     private static class FragmentData {
         public String text;
         public SimpleTextAttributes attributes = SimpleTextAttributes.REGULAR_ATTRIBUTES;
@@ -358,6 +368,9 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
                         myLabel.append(fragment.text, fragment.attributes);
                     }
                 }
+            } else if (value instanceof ErrorMessageNode) {
+                myLabel.appendHTML(value.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                myLabel.setIcon(AllIcons.General.Error);
             } else if (value != null) {
                 // ex: group names
                 myLabel.append(value.toString());
