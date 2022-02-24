@@ -49,6 +49,8 @@ import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.highlight.OCamlSyntaxHighlighter;
 import com.ocaml.sdk.annot.OCamlAnnotParser;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
+import com.ocaml.utils.adaptor.AlarmAdaptor;
+import com.ocaml.utils.adaptor.ui.SimpleColoredComponentAdaptor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -233,7 +235,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         myMainPanel.setShowDividerControls(false);
         myMainPanel.setHonorComponentsMinimumSize(false);
 
-        myUpdateAlarm = new Alarm(myEditor.getComponent(), this);
+        myUpdateAlarm = AlarmAdaptor.createAlarm(myEditor.getComponent(), this);
     }
     private void updatePreview(TreePath treePath) {
         if (treePath == null) {
@@ -392,13 +394,13 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
                 myLabel.setIcon(treeNode.getIcon());
                 for (FragmentData fragment : treeNode.getFragments()) {
                     if (fragment.isHTML) {
-                        myLabel.appendHTML(fragment.text, fragment.attributes);
+                        SimpleColoredComponentAdaptor.appendHTML(myLabel, fragment.text, fragment.attributes);
                     } else {
                         myLabel.append(fragment.text, fragment.attributes);
                     }
                 }
             } else if (value instanceof ErrorMessageNode) {
-                myLabel.appendHTML(value.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+                SimpleColoredComponentAdaptor.appendHTML(myLabel, value.toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
                 myLabel.setIcon(AllIcons.General.Error);
             } else if (value != null) {
                 // ex: group names

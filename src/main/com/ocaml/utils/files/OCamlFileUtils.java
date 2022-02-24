@@ -5,12 +5,12 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,9 +67,12 @@ public final class OCamlFileUtils {
         }
 
         try {
-            FileUtil.writeToFile(sourceTempFile, new String(psiFile.getText().getBytes()),
+            @UntilIdeVersion(release = "203", note = "We can't pass the charset to writeToFile in 203.")
+            String text = new String(psiFile.getText().getBytes(
                     // use the charset of the original file
-                    psiFile.getVirtualFile().getCharset());
+                    psiFile.getVirtualFile().getCharset()
+            ));
+            FileUtil.writeToFile(sourceTempFile, text);
         } catch (IOException e) {
             // Sometimes, file is locked by another process, not a big deal, skip it
             logger.trace("Write failed: " + e.getLocalizedMessage());
