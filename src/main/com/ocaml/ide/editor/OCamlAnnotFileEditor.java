@@ -65,6 +65,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -84,13 +85,14 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     private final VirtualFile file;
     private final EditorEx myEditor;
     private final JBSplitter myMainPanel;
-    private final PsiFile mySourcePsi;
+    private final @Nullable PsiFile mySourcePsi;
     private final Alarm myUpdateAlarm;
 
     public OCamlAnnotFileEditor(@NotNull Project project, @NotNull VirtualFile file) {
         this.file = file;
 
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+        // this is an internal error
         if (psiFile == null) throw new IllegalStateException("PsiFile was null for "+file.getName());
         String annotText = psiFile.getText();
         ArrayList<OCamlInferredSignature> signatures;
@@ -103,12 +105,30 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             signatures = new ArrayList<>();
         }
 
+        // Usually, the .annot is in the same directory
+        // At least, I'm doing this when compiling
+        // So, we are checking this location first
         String nameWithoutExtension = file.getNameWithoutExtension();
-        VirtualFile source = VfsUtil.findRelativeFile(file.getParent(), nameWithoutExtension + OCamlFileType.DOT_DEFAULT_EXTENSION);
-        if (source == null) throw new IllegalStateException("Source not found");
-        mySourcePsi = PsiManager.getInstance(project).findFile(source);
-        if (mySourcePsi == null) throw new IllegalStateException("Source not found (psi).");
-        String sourceText = mySourcePsi.getText();
+        String fileName = nameWithoutExtension + OCamlFileType.DOT_DEFAULT_EXTENSION;
+        VirtualFile source = VfsUtil.findRelativeFile(file.getParent(), fileName);
+        // TOO BAD, maybe we should check the source in the signatures then
+        if (source == null && signatures.size() > 0) {
+            File f = signatures.get(0).position.getFile();
+            fileName = f.getAbsolutePath(); // if used in messages
+            source = VfsUtil.findFile(f.toPath(), false);
+        }
+
+        if (source != null) {
+            mySourcePsi = PsiManager.getInstance(project).findFile(source);
+            if (mySourcePsi == null) // again, this is an internal error
+                throw new IllegalStateException("Source (psi) not found for '"+fileName+"'.");
+        } else {
+            mySourcePsi = null;
+            // take precedence over the previous error message (if any)
+            errorMessage = "Source '"+fileName+"' not found";
+        }
+
+        @NotNull String sourceText = mySourcePsi == null ? "" : mySourcePsi.getText();
         // source may be empty
         if (sourceText.isBlank()) sourceText = "(* "+OCamlBundle.message("editor.annot.source.empty")+" *)\n" + sourceText;
 
@@ -428,6 +448,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     }
 
     private void blink(OCamlInferredSignature signature) {
+        if (mySourcePsi == null) return;
+
         MarkupModel markupModel = myEditor.getMarkupModel();
         Rectangle visibleArea = myEditor.getScrollingModel().getVisibleArea();
         VisualPosition visualStart = myEditor.xyToVisualPosition(visibleArea.getLocation());
