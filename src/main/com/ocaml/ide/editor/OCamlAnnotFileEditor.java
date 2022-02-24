@@ -64,6 +64,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.HashMap;
 
 /**
  * Add a tab preview, allowing the user
@@ -141,18 +142,20 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         markupModel.setErrorStripeVisible(true);
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
-        String groupName = "";
-        DefaultMutableTreeNode groupNode = null;
+        // signatures are not sorted by line number
+        HashMap<String, DefaultMutableTreeNode> groups = new HashMap<>();
 
         for (OCamlInferredSignature signature : signatures) {
             String newGroupName = "Line "+signature.position.getStartLine();
-            if (!newGroupName.equals(groupName)) {
-                groupName = newGroupName;
+            DefaultMutableTreeNode groupNode = groups.get(newGroupName);
+            if (!groups.containsKey(newGroupName)) {
                 groupNode = new DefaultMutableTreeNode(newGroupName);
+                groups.put(newGroupName, groupNode);
                 rootNode.add(groupNode);
             }
             groupNode.add(new MySignatureNode(signature));
         }
+        groups.clear();
 
         if (errorMessage != null)
             rootNode.add(new DefaultMutableTreeNode(errorMessage));
@@ -210,88 +213,6 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             MySignatureNode node = (MySignatureNode) o;
             blink(node.signature);
         }
-    }
-
-    private void blink(OCamlInferredSignature signature) {
-        MarkupModel markupModel = myEditor.getMarkupModel();
-        markupModel.removeAllHighlighters(); // reset
-        Rectangle visibleArea = myEditor.getScrollingModel().getVisibleArea();
-        VisualPosition visualStart = myEditor.xyToVisualPosition(visibleArea.getLocation());
-        VisualPosition visualEnd = myEditor.xyToVisualPosition(new Point(visibleArea.x + visibleArea.width, visibleArea.y + visibleArea.height));
-
-        // There is a possible case that viewport is located at its most bottom position and last document symbol
-        // is located at the start of the line, hence, resulting visual end column has a small value and doesn't actually
-        // indicate target visible rectangle. Hence, we need to correct that if necessary.
-        int endColumnCandidate = visibleArea.width / EditorUtil.getSpaceWidth(Font.PLAIN, myEditor) + visualStart.column;
-        if (endColumnCandidate > visualEnd.column) {
-            visualEnd = new VisualPosition(visualEnd.line, endColumnCandidate);
-        }
-
-        int offset = myEditor.logicalPositionToOffset(new LogicalPosition(
-                signature.position.getStartLine() - 1,
-                signature.position.getStartColumn()
-        ));
-
-        int endOffset = myEditor.logicalPositionToOffset(new LogicalPosition(
-                signature.position.getEndLine() - 1,
-                signature.position.getEndColumn() - 1
-        ));
-
-        int offsetToScroll = -1;
-
-        PsiElement start = mySourcePsi.findElementAt(offset);
-        PsiElement end = mySourcePsi.findElementAt(endOffset);
-        if (start == null || end == null) return;
-        String text = mySourcePsi.getText();
-        TextRange range = new TextRange(start.getTextRange().getStartOffset(), end.getTextRange().getEndOffset());
-
-        boolean rangeVisible = isWithinBounds(myEditor.offsetToVisualPosition(range.getStartOffset()),
-                visualStart, visualEnd) || isWithinBounds(myEditor.offsetToVisualPosition(range.getEndOffset()), visualStart, visualEnd);
-        if (text.charAt(range.getStartOffset()) != '\n') {
-            offsetToScroll = range.getStartOffset();
-        } else if (range.getEndOffset() > 0 && text.charAt(range.getEndOffset() - 1) != '\n') {
-            offsetToScroll = range.getEndOffset() - 1;
-        }
-
-        TextAttributes backgroundAttributes = myEditor.getColorsScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);
-        TextAttributes borderAttributes = new TextAttributes(
-                null, null, backgroundAttributes.getBackgroundColor(), EffectType.BOXED, Font.PLAIN
-        );
-        TextAttributes attributesToUse = range.getLength() > 0 ? backgroundAttributes : borderAttributes;
-        markupModel.addRangeHighlighter(
-                range.getStartOffset(), range.getEndOffset(), HighlighterLayer.SELECTION, attributesToUse, HighlighterTargetArea.EXACT_RANGE
-        );
-
-        if (!rangeVisible) {
-            if (offsetToScroll >= 0 && offsetToScroll < text.length() - 1 && text.charAt(offsetToScroll) != '\n') {
-                // There is a possible case that target offset is located too close to the right edge. However, our point is to show
-                // highlighted region at target offset, hence, we need to scroll to the visual symbol end. Hence, we're trying to ensure
-                // that by scrolling to the symbol's end over than its start.
-                offsetToScroll++;
-            }
-
-            if (offsetToScroll >= 0 && offsetToScroll < myEditor.getDocument().getTextLength()) {
-                myEditor.getScrollingModel().scrollTo(
-                        myEditor.offsetToLogicalPosition(offsetToScroll), ScrollType.RELATIVE
-                );
-            }
-        }
-    }
-
-    /**
-     * Allows us to answer if a particular visual position belongs to visual rectangle
-     * identified by the given visual position of its top-left and bottom-right corners.
-     *
-     * @param targetPosition    position which belonging to target visual rectangle should be checked
-     * @param startPosition     visual position of top-left corner of the target visual rectangle
-     * @param endPosition       visual position of bottom-right corner of the target visual rectangle
-     * @return                  {@code true} if given visual position belongs to the target visual rectangle;
-     *                          {@code false} otherwise
-     */
-    @Contract(pure = true)
-    private static boolean isWithinBounds(@NotNull VisualPosition targetPosition, @NotNull VisualPosition startPosition, VisualPosition endPosition) {
-        return targetPosition.line >= startPosition.line && targetPosition.line <= endPosition.line
-                && targetPosition.column >= startPosition.column && targetPosition.column <= endPosition.column;
     }
 
     private @NotNull JPanel createPreviewPanel() {
@@ -452,5 +373,87 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     }
 
     // Blink
+
+    private void blink(OCamlInferredSignature signature) {
+        MarkupModel markupModel = myEditor.getMarkupModel();
+        markupModel.removeAllHighlighters(); // reset
+        Rectangle visibleArea = myEditor.getScrollingModel().getVisibleArea();
+        VisualPosition visualStart = myEditor.xyToVisualPosition(visibleArea.getLocation());
+        VisualPosition visualEnd = myEditor.xyToVisualPosition(new Point(visibleArea.x + visibleArea.width, visibleArea.y + visibleArea.height));
+
+        // There is a possible case that viewport is located at its most bottom position and last document symbol
+        // is located at the start of the line, hence, resulting visual end column has a small value and doesn't actually
+        // indicate target visible rectangle. Hence, we need to correct that if necessary.
+        int endColumnCandidate = visibleArea.width / EditorUtil.getSpaceWidth(Font.PLAIN, myEditor) + visualStart.column;
+        if (endColumnCandidate > visualEnd.column) {
+            visualEnd = new VisualPosition(visualEnd.line, endColumnCandidate);
+        }
+
+        int offset = myEditor.logicalPositionToOffset(new LogicalPosition(
+                signature.position.getStartLine() - 1,
+                signature.position.getStartColumn()
+        ));
+
+        int endOffset = myEditor.logicalPositionToOffset(new LogicalPosition(
+                signature.position.getEndLine() - 1,
+                signature.position.getEndColumn() - 1
+        ));
+
+        int offsetToScroll = -1;
+
+        PsiElement start = mySourcePsi.findElementAt(offset);
+        PsiElement end = mySourcePsi.findElementAt(endOffset);
+        if (start == null || end == null) return;
+        String text = mySourcePsi.getText();
+        TextRange range = new TextRange(start.getTextRange().getStartOffset(), end.getTextRange().getEndOffset());
+
+        boolean rangeVisible = isWithinBounds(myEditor.offsetToVisualPosition(range.getStartOffset()),
+                visualStart, visualEnd) || isWithinBounds(myEditor.offsetToVisualPosition(range.getEndOffset()), visualStart, visualEnd);
+        if (text.charAt(range.getStartOffset()) != '\n') {
+            offsetToScroll = range.getStartOffset();
+        } else if (range.getEndOffset() > 0 && text.charAt(range.getEndOffset() - 1) != '\n') {
+            offsetToScroll = range.getEndOffset() - 1;
+        }
+
+        TextAttributes backgroundAttributes = myEditor.getColorsScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);
+        TextAttributes borderAttributes = new TextAttributes(
+                null, null, backgroundAttributes.getBackgroundColor(), EffectType.BOXED, Font.PLAIN
+        );
+        TextAttributes attributesToUse = range.getLength() > 0 ? backgroundAttributes : borderAttributes;
+        markupModel.addRangeHighlighter(
+                range.getStartOffset(), range.getEndOffset(), HighlighterLayer.SELECTION, attributesToUse, HighlighterTargetArea.EXACT_RANGE
+        );
+
+        if (!rangeVisible) {
+            if (offsetToScroll >= 0 && offsetToScroll < text.length() - 1 && text.charAt(offsetToScroll) != '\n') {
+                // There is a possible case that target offset is located too close to the right edge. However, our point is to show
+                // highlighted region at target offset, hence, we need to scroll to the visual symbol end. Hence, we're trying to ensure
+                // that by scrolling to the symbol's end over than its start.
+                offsetToScroll++;
+            }
+
+            if (offsetToScroll >= 0 && offsetToScroll < myEditor.getDocument().getTextLength()) {
+                myEditor.getScrollingModel().scrollTo(
+                        myEditor.offsetToLogicalPosition(offsetToScroll), ScrollType.RELATIVE
+                );
+            }
+        }
+    }
+
+    /**
+     * Allows us to answer if a particular visual position belongs to visual rectangle
+     * identified by the given visual position of its top-left and bottom-right corners.
+     *
+     * @param targetPosition    position which belonging to target visual rectangle should be checked
+     * @param startPosition     visual position of top-left corner of the target visual rectangle
+     * @param endPosition       visual position of bottom-right corner of the target visual rectangle
+     * @return                  {@code true} if given visual position belongs to the target visual rectangle;
+     *                          {@code false} otherwise
+     */
+    @Contract(pure = true)
+    private static boolean isWithinBounds(@NotNull VisualPosition targetPosition, @NotNull VisualPosition startPosition, VisualPosition endPosition) {
+        return targetPosition.line >= startPosition.line && targetPosition.line <= endPosition.line
+                && targetPosition.column >= startPosition.column && targetPosition.column <= endPosition.column;
+    }
 
 }
