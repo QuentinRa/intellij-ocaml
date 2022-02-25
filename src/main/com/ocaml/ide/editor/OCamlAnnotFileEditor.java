@@ -5,14 +5,15 @@ package com.ocaml.ide.editor;
 import com.intellij.application.options.colors.ColorAndFontOptions;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.HighlighterFactory;
-import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx;
 import com.intellij.openapi.editor.ex.EditorMarkupModel;
-import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -51,6 +52,7 @@ import com.ocaml.sdk.annot.OCamlAnnotParser;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
 import com.ocaml.utils.adaptor.AlarmAdaptor;
 import com.ocaml.utils.adaptor.ui.SimpleColoredComponentAdaptor;
+import com.ocaml.utils.editor.ExtendedEditorUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -171,13 +173,14 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         // signatures are not sorted by line number
         // we need to create/get the group
-        HashMap<String, DefaultMutableTreeNode> groups = new HashMap<>();
+        HashMap<String, LineNumberNode> groups = new HashMap<>();
         // fill the tree
         for (OCamlInferredSignature signature : signatures) {
-            String newGroupName = "Line "+signature.position.getStartLine();
-            DefaultMutableTreeNode groupNode = groups.get(newGroupName);
+            int line = signature.position.getStartLine();
+            String newGroupName = "Line "+line;
+            LineNumberNode groupNode = groups.get(newGroupName);
             if (!groups.containsKey(newGroupName)) {
-                groupNode = new DefaultMutableTreeNode(newGroupName);
+                groupNode = new LineNumberNode(line, newGroupName);
                 groups.put(newGroupName, groupNode);
                 rootNode.add(groupNode);
             }
@@ -245,6 +248,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         if (o instanceof MySignatureNode) {
             MySignatureNode node = (MySignatureNode) o;
             startBlinking(node);
+        } else if (o instanceof LineNumberNode) {
+            goToLine(((LineNumberNode) o).line);
         }
     }
 
@@ -366,6 +371,15 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         }
     }
 
+    private static class LineNumberNode extends DefaultMutableTreeNode {
+        public final int line;
+
+        public LineNumberNode(int line, String message) {
+            super(message);
+            this.line = line;
+        }
+    }
+
     private static class ErrorMessageNode extends DefaultMutableTreeNode {
         public ErrorMessageNode(String message) {
             super(message);
@@ -453,43 +467,14 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         if (mySourcePsi == null) return;
 
         MarkupModel markupModel = myEditor.getMarkupModel();
-        Rectangle visibleArea = myEditor.getScrollingModel().getVisibleArea();
-        VisualPosition visualStart = myEditor.xyToVisualPosition(visibleArea.getLocation());
-        VisualPosition visualEnd = myEditor.xyToVisualPosition(new Point(visibleArea.x + visibleArea.width, visibleArea.y + visibleArea.height));
 
-        // There is a possible case that viewport is located at its most bottom position and last document symbol
-        // is located at the start of the line, hence, resulting visual end column has a small value and doesn't actually
-        // indicate target visible rectangle. Hence, we need to correct that if necessary.
-        int endColumnCandidate = visibleArea.width / EditorUtil.getSpaceWidth(Font.PLAIN, myEditor) + visualStart.column;
-        if (endColumnCandidate > visualEnd.column) {
-            visualEnd = new VisualPosition(visualEnd.line, endColumnCandidate);
-        }
-
-        int offset = myEditor.logicalPositionToOffset(new LogicalPosition(
-                signature.position.getStartLine() - 1,
-                signature.position.getStartColumn()
-        ));
-
-        int endOffset = myEditor.logicalPositionToOffset(new LogicalPosition(
-                signature.position.getEndLine() - 1,
-                signature.position.getEndColumn() - 1
-        ));
-
-        int offsetToScroll = -1;
+        int offset = ExtendedEditorUtil.positionStartToOffset(myEditor, signature.position);
+        int endOffset = ExtendedEditorUtil.positionEndToOffset(myEditor, signature.position);
 
         PsiElement start = mySourcePsi.findElementAt(offset);
         PsiElement end = mySourcePsi.findElementAt(endOffset);
         if (start == null || end == null) return;
-        String text = mySourcePsi.getText();
         TextRange range = new TextRange(start.getTextRange().getStartOffset(), end.getTextRange().getEndOffset());
-
-        boolean rangeVisible = isWithinBounds(myEditor.offsetToVisualPosition(range.getStartOffset()),
-                visualStart, visualEnd) || isWithinBounds(myEditor.offsetToVisualPosition(range.getEndOffset()), visualStart, visualEnd);
-        if (text.charAt(range.getStartOffset()) != '\n') {
-            offsetToScroll = range.getStartOffset();
-        } else if (range.getEndOffset() > 0 && text.charAt(range.getEndOffset() - 1) != '\n') {
-            offsetToScroll = range.getEndOffset() - 1;
-        }
 
         TextAttributes backgroundAttributes = myEditor.getColorsScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);
         TextAttributes borderAttributes = new TextAttributes(
@@ -500,36 +485,18 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
                 range.getStartOffset(), range.getEndOffset(), HighlighterLayer.SELECTION, attributesToUse, HighlighterTargetArea.EXACT_RANGE
         );
 
-        if (!rangeVisible) {
-            if (offsetToScroll >= 0 && offsetToScroll < text.length() - 1 && text.charAt(offsetToScroll) != '\n') {
-                // There is a possible case that target offset is located too close to the right edge. However, our point is to show
-                // highlighted region at target offset, hence, we need to scroll to the visual symbol end. Hence, we're trying to ensure
-                // that by scrolling to the symbol's end over than its start.
-                offsetToScroll++;
-            }
-
-            if (offsetToScroll >= 0 && offsetToScroll < myEditor.getDocument().getTextLength()) {
-                myEditor.getScrollingModel().scrollTo(
-                        myEditor.offsetToLogicalPosition(offsetToScroll), ScrollType.RELATIVE
-                );
-            }
-        }
+        // Scroll to
+        ExtendedEditorUtil.scrollToIfNotVisible(myEditor, range, mySourcePsi);
     }
 
-    /**
-     * Allows us to answer if a particular visual position belongs to visual rectangle
-     * identified by the given visual position of its top-left and bottom-right corners.
-     *
-     * @param targetPosition    position which belonging to target visual rectangle should be checked
-     * @param startPosition     visual position of top-left corner of the target visual rectangle
-     * @param endPosition       visual position of bottom-right corner of the target visual rectangle
-     * @return                  {@code true} if given visual position belongs to the target visual rectangle;
-     *                          {@code false} otherwise
-     */
-    @Contract(pure = true)
-    private static boolean isWithinBounds(@NotNull VisualPosition targetPosition, @NotNull VisualPosition startPosition, VisualPosition endPosition) {
-        return targetPosition.line >= startPosition.line && targetPosition.line <= endPosition.line
-                && targetPosition.column >= startPosition.column && targetPosition.column <= endPosition.column;
+    private void goToLine(int line) {
+        if (mySourcePsi == null) return;
+
+        int offset = ExtendedEditorUtil.positionToOffset(myEditor, line, 0);
+        PsiElement start = mySourcePsi.findElementAt(offset);
+        if (start == null) return;
+
+        ExtendedEditorUtil.scrollToIfNotVisible(myEditor, start.getTextRange(), mySourcePsi);
     }
 
 }
