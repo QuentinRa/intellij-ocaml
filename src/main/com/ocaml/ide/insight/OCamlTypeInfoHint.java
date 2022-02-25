@@ -28,6 +28,13 @@ public class OCamlTypeInfoHint extends ExpressionTypeProvider<PsiElement> {
     }
 
     @Override public @NotNull List<PsiElement> getExpressionsAt(@NotNull final PsiElement elementAt) {
-        return OCamlAnnotUtils.findExpressionsForAnnotAt(elementAt);
+        // small optimisation: skip
+        if (OCamlInsightFilter.isWhiteSpace(elementAt)) return List.of();
+        // if we got some info for this element, then this is a valid element
+        // note: we should check list made of multiples elements
+        OCamlAnnotResultsService annot = elementAt.getProject().getService(OCamlAnnotResultsService.class);
+        if(annot.hasInfoForElement(elementAt))
+            return List.of(elementAt);
+        return List.of();
     }
 }

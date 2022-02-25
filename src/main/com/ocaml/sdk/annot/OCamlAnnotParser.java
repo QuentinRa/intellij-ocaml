@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ public class OCamlAnnotParser {
     private int pos;
 
     public OCamlAnnotParser(@NotNull String input) {
-        this.lines = input.split("\n");
+        this.lines = input.isEmpty() ? new String[0] : input.split("\n");
         this.pos = 0;
     }
 
@@ -35,17 +36,25 @@ public class OCamlAnnotParser {
      * Parse and return the result of the parsing
      * @return list of signature that were found in the file
      */
-    public ArrayList<OCamlInferredSignature> get() {
-        ArrayList<OCamlInferredSignature> elements = new ArrayList<>();
+    public HashMap<TextRange, OCamlInferredSignature> get() {
+        HashMap<TextRange, OCamlInferredSignature> elements = new HashMap<>();
         if (this.lines.length == 0) return elements; // fix empty .annot
         AnnotParserState state = parseInstruction();
         while (state != null) {
             // add if not skipped
-            if (!state.skip) elements.add(createAnnotResult(state));
+            if (!state.skip) {
+                OCamlInferredSignature res = createAnnotResult(state);
+                elements.put(res.range, res);
+            }
             // continue reading
             state = parseInstruction();
         }
         return elements;
+    }
+
+    // Backward compatibility
+    public ArrayList<OCamlInferredSignature> getAsList() {
+        return new ArrayList<>(get().values());
     }
 
     private @Nullable AnnotParserState parseInstruction() {
@@ -113,7 +122,7 @@ public class OCamlAnnotParser {
         while (line != null && line.startsWith(TYPE_START)) {
             state.type = consumeLParen(readLine().trim());
             line = tryReadLine();
-        };
+        }
         return line;
     }
 

@@ -105,7 +105,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         String errorMessage = null;
         try {
             OCamlAnnotParser annotParser = new OCamlAnnotParser(annotText);
-            signatures = annotParser.get();
+            signatures = annotParser.getAsList();
         } catch (Exception e) {
             errorMessage = e.getLocalizedMessage();
             signatures = new ArrayList<>();

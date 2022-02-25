@@ -17,7 +17,7 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
      *                       One per line (add \n).
      */
     private void assertParserResult(String input, @NotNull String expectedOutput) {
-        ArrayList<OCamlInferredSignature> res = new OCamlAnnotParser(input).get();
+        ArrayList<OCamlInferredSignature> res = new OCamlAnnotParser(input).getAsList();
         String[] lines = expectedOutput.split("\n");
         assertSize(lines.length, res);
         for (int i = 0; i < lines.length; i++) {
