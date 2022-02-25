@@ -3,6 +3,7 @@ package com.ocaml.sdk.output;
 import com.ocaml.OCamlBaseTest;
 import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class BaseOutputTest extends OCamlBaseTest {
 
     @UntilIdeVersion(release = "203")
-    @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase") @Test
+    @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase") @Test @Ignore
     public void testFake() {}
 
     protected CompilerOutputMessage parseWarning(String output) {

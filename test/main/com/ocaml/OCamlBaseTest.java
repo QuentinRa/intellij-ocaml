@@ -9,6 +9,7 @@ import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,7 +18,7 @@ import java.io.IOException;
 public class OCamlBaseTest extends BasePlatformTestCase {
 
     @UntilIdeVersion(release = "203")
-    @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase") @Test
+    @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase") @Test @Ignore
     public void testFake() {}
 
     public static String OCAML_CARET = "(*caret*)";
