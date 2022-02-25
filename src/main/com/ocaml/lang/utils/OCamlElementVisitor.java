@@ -1,7 +1,9 @@
 package com.ocaml.lang.utils;
 
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.ocaml.lang.core.PsiLetWithAnd;
 import com.or.lang.core.ORUtil;
 import com.or.lang.core.psi.PsiFunction;
 import com.or.lang.core.psi.PsiLet;
@@ -9,11 +11,14 @@ import com.or.lang.core.psi.PsiStructuredElement;
 import com.or.lang.core.psi.impl.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class OCamlElementVisitor extends PsiElementVisitor {
     private final List<PsiElement> m_treeElements;
     private final int m_elementLevel;
+
+    private final HashSet<TextRange> unique = new HashSet<>();
 
     public OCamlElementVisitor(List<PsiElement> elements, int elementLevel) {
         m_treeElements = elements;
@@ -27,14 +32,20 @@ public class OCamlElementVisitor extends PsiElementVisitor {
                 PsiLet let = (PsiLet) element;
                 if (let.isScopeIdentifier()) {
                     // it's a tuple! add each element of the tuple separately.
-                    for (PsiElement child : let.getScopeChildren()) {
-                        if (child instanceof PsiLowerIdentifier) {
+                    for (PsiElement child : let.getScopeChildren())
+                        if (child instanceof PsiLowerIdentifier)
                             m_treeElements.add(child);
-                        }
-                    }
                 }
+                PsiLetWithAnd psiLetWithAnd = new PsiLetWithAnd(element);
+                TextRange textRange = psiLetWithAnd.getTextRange();
+                if (!unique.contains(textRange)) {
+                    // this should be handled with the "and"
+                    m_treeElements.add(psiLetWithAnd);
+                    unique.add(textRange);
+                }
+            } else {
+                m_treeElements.add(element);
             }
-            m_treeElements.add(element);
         } else if (element instanceof PsiRecord) {
             m_treeElements.addAll(((PsiRecord) element).getFields());
         } else if (element instanceof PsiScopedExpr && m_elementLevel < 2) {
