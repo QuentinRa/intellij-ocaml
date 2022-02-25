@@ -8,6 +8,5 @@ empty .annot
 
 - Fix tests for the Windows provider
 - Test REPL
-    - whole file
     - choices
     - sending commands?
