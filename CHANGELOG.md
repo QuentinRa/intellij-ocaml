@@ -18,6 +18,9 @@ Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added te
 ### Internal
 - 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detected bugs easily by adding a whole set of tests for every feature (🥲)
 
+### Added
+- 🚀 Editor for .annot. (#38)
+
 ### Changed
 - ✨ Wider range of ocaml versions, but the "-" modifier isn't allowed any more. (#81)
 - ✨ Fixed sending statement with "and" to the REPL. (#80)

@@ -99,6 +99,12 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 | ✅ Show names before parameters   |
 | ✅ Show types with `CTRL+SHIFT+P` |
 
+| Editor for .annot                             |
+|-----------------------------------------------|
+| ✅ See the source next to the content          |
+| ✅ Can click in the editor ➡️ show in the tree |
+| ✅ Can click in the tree ➡️ show in the source |
+
 | Dune                                              |
 |---------------------------------------------------|
 | ✅ Import every feature in ReasonML                |
