@@ -8,9 +8,12 @@ import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.EditorSettings;
+import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
+import com.intellij.openapi.editor.event.EditorMouseEvent;
+import com.intellij.openapi.editor.event.EditorMouseListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.ex.EditorGutterComponentEx;
 import com.intellij.openapi.editor.ex.EditorMarkupModel;
@@ -60,10 +63,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -71,6 +71,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.HashMap;
 
@@ -79,6 +80,7 @@ import java.util.HashMap;
  * to preview the content of the file.
  * <br>
  * The code was mostly inspired by classes such as
+ *
  * @see com.intellij.application.options.colors.SimpleEditorPreview
  * @see com.intellij.application.options.JavaDocFormattingPanel
  * @see com.intellij.application.options.colors.FontEditorPreview
@@ -97,7 +99,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
 
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         // this is an internal error
-        if (psiFile == null) throw new IllegalStateException("PsiFile was null for "+file.getName());
+        if (psiFile == null) throw new IllegalStateException("PsiFile was null for " + file.getName());
         String annotText = psiFile.getText();
         ArrayList<OCamlInferredSignature> signatures;
         String errorMessage = null;
@@ -125,16 +127,17 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         if (source != null) {
             mySourcePsi = PsiManager.getInstance(project).findFile(source);
             if (mySourcePsi == null) // again, this is an internal error
-                throw new IllegalStateException("Source (psi) not found for '"+fileName+"'.");
+                throw new IllegalStateException("Source (psi) not found for '" + fileName + "'.");
         } else {
             mySourcePsi = null;
             // take precedence over the previous error message (if any)
-            errorMessage = "Source '"+fileName+"' not found";
+            errorMessage = "Source '" + fileName + "' not found";
         }
 
         @NotNull String sourceText = mySourcePsi == null ? "" : mySourcePsi.getText();
         // source may be empty
-        if (sourceText.isBlank()) sourceText = "(* "+OCamlBundle.message("editor.annot.source.empty")+" *)\n" + sourceText;
+        if (sourceText.isBlank())
+            sourceText = "(* " + OCamlBundle.message("editor.annot.source.empty") + " *)\n" + sourceText;
 
         // init editor
         EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
@@ -163,10 +166,10 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         settings.setGutterIconsShown(false);
         settings.setIndentGuidesShown(false);
         settings.setUseSoftWraps(true);
-        ((EditorGutterComponentEx)myEditor.getGutter()).setPaintBackground(false);
+        ((EditorGutterComponentEx) myEditor.getGutter()).setPaintBackground(false);
 
         // installTrafficLights + DumbTrafficLightRenderer
-        EditorMarkupModel markupModel = (EditorMarkupModel)myEditor.getMarkupModel();
+        EditorMarkupModel markupModel = (EditorMarkupModel) myEditor.getMarkupModel();
         markupModel.setErrorStripeRenderer(() -> new AnalyzerStatus(AllIcons.General.InspectionsOK, "", "", AnalyzerStatus::getEmptyController));
         markupModel.setErrorStripeVisible(true);
 
@@ -177,7 +180,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         // fill the tree
         for (OCamlInferredSignature signature : signatures) {
             int line = signature.position.getStartLine();
-            String newGroupName = "Line "+line;
+            String newGroupName = LineNumberNode.makeMessage(line);
             LineNumberNode groupNode = groups.get(newGroupName);
             if (!groups.containsKey(newGroupName)) {
                 groupNode = new LineNumberNode(line, newGroupName);
@@ -186,7 +189,6 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             }
             groupNode.add(new MySignatureNode(signature));
         }
-        groups.clear();
 
         if (errorMessage != null) {
             rootNode.removeAllChildren();
@@ -239,7 +241,47 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         myMainPanel.setHonorComponentsMinimumSize(false);
 
         myUpdateAlarm = AlarmAdaptor.createAlarm(myEditor.getComponent(), this);
+
+        myEditor.addEditorMouseListener(new EditorMouseListener() {
+            @Override
+            public void mouseClicked(@NotNull EditorMouseEvent event) {
+                if (mySourcePsi == null) return;
+                // find element
+                Point point = event.getMouseEvent().getPoint();
+                LogicalPosition logicalPosition = myEditor.xyToLogicalPosition(point);
+                int pos = logicalPosition.column;
+
+                // find group
+                LineNumberNode node = groups.get(LineNumberNode.makeMessage(logicalPosition.line + 1));
+                if (node == null) return;
+
+                // iterate the group, to find if we got something
+                Enumeration<TreeNode> children = node.children();
+                MySignatureNode focusNode = null;
+                while (children.hasMoreElements()) {
+                    TreeNode child = children.nextElement();
+                    if (!(child instanceof MySignatureNode)) continue;
+                    MySignatureNode treeNode = (MySignatureNode) child;
+                    OCamlInferredSignature signature = treeNode.signature;
+                    int cStart = signature.position.getStartColumn();
+                    int cEnd = signature.position.getEndColumn();
+                    // if before or after
+                    // we can't use inRange, dunno why?
+                    // well, testing if the cursor is in the range works too
+                    if (pos < cStart || pos > cEnd) continue;
+                    focusNode = treeNode;
+                    break;
+                }
+
+                if (focusNode != null) {
+                    TreePath path = new TreePath(focusNode.getPath());
+                    optionsTree.setSelectionPath(path);
+                    optionsTree.scrollPathToVisible(path);
+                }
+            }
+        });
     }
+
     private void updatePreview(TreePath treePath) {
         if (treePath == null) {
             return;
@@ -343,17 +385,18 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             int startColumn = signature.position.getStartColumn();
             int endColumn = signature.position.getEndColumn();
             String result = OCamlBundle.message("editor.annot.indicator.columns");
-            result += " "+startColumn + "-" +endColumn;
+            result += " " + startColumn + "-" + endColumn;
             // add
-            fragments.add(new FragmentData(result+" "));
+            fragments.add(new FragmentData(result + " "));
 
             // name, type, etc.
             switch (signature.kind) {
                 default: case UNKNOWN: fragments.add(new FragmentData(OCamlBundle.message("editor.annot.indicator.unknown"))); break;
-                case VALUE: fragments.add(new FragmentData("'"+signature.type+"'")); break;
+                case VALUE: fragments.add(new FragmentData("'" + signature.type + "'")); break;
                 case VARIABLE:
                 case MODULE:
-                    fragments.add(new FragmentData(signature.name+" ('"+signature.type+"')")); break;
+                    fragments.add(new FragmentData(signature.name + " ('" + signature.type + "')"));
+                    break;
             }
 
             return fragments;
@@ -365,7 +408,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
                 case VALUE: return OCamlIcons.Nodes.OBJECT;
                 case VARIABLE:
                     return signature.type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR) ?
-                        OCamlIcons.Nodes.FUNCTION : OCamlIcons.Nodes.VARIABLE;
+                            OCamlIcons.Nodes.FUNCTION : OCamlIcons.Nodes.VARIABLE;
                 case MODULE: return OCamlIcons.Nodes.INNER_MODULE;
             }
         }
@@ -377,6 +420,10 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         public LineNumberNode(int line, String message) {
             super(message);
             this.line = line;
+        }
+
+        @Contract(pure = true) public static @NotNull String makeMessage(int line) {
+            return OCamlBundle.message("editor.annot.indicator.line") + " " + line;
         }
     }
 
@@ -404,7 +451,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             Color foreground = RenderingUtil.getForeground(tree, isSelected);
             SimpleColoredComponent myLabel = new SimpleColoredComponent();
             if (value instanceof MySignatureNode) {
-                MySignatureNode treeNode = (MySignatureNode)value;
+                MySignatureNode treeNode = (MySignatureNode) value;
                 myLabel.setIcon(treeNode.getIcon());
                 for (FragmentData fragment : treeNode.getFragments()) {
                     if (fragment.isHTML) {
