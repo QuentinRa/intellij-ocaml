@@ -14,20 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0]
 
-Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added tests for most of the existing features, which is saving a lot of time while making things easier when I have to add new features. I won't be able to work on the plugin much from now on. Please provide feedback while I'm still here!
+Finally, the first version is here 🤩🚀! I fixed a lot of bugs and added tests for most of the existing features, which is saving a lot of time while making things easier when I have to add new features. I won't be able to work on the plugin much from now on. Please provide feedback while I'm still here!
 
 ### Internal
-- 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detected bugs easily by adding a whole set of tests for every feature (🥲).
+- 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detect bugs easily by adding a whole set of tests for every feature (🥲).
 
 ### Changed
 - 🪲 Invalid encoding for the compiled file (#86)
 - ✨ Remade of the auto-selection of a statement (#85)
-- ✨ Wider range of ocaml versions, but the "-" modifier isn't allowed any more. (#81)
+- ✨ Wider range of OCaml versions, but the "-" modifier isn't allowed anymore. (#81)
 - 🪲 Fixed sending statement with "and" to the REPL. (#80)
 - 🪲 Can send the selected code again! (#80)
-- 🪲 Fix issue with multilines comments in the REPL (#80)
+- 🪲 Fix issue with multiline comments in the REPL (#80)
 - ✨ Can be used outside OCaml Modules (#75)
-- 🪲 Executables are named {name}.out, fixing issue (#71)
+- 🪲 Executables are named {name}.out, fixing the issue (#71)
 - 🪲 Fix empty variable view for type option (#63)
 
 ## [0.0.8]
@@ -39,7 +39,7 @@ Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added te
 - ✨ Use "dune --version" to set value in dune-project. (#43)
 - ✨ No autocompletion in strings. No auto-completion for numbers, and floats. (#66)
 - 🚀 Fix errors when using modules. (#65)
-- ✨ Fix problems with the highlighter (#45)
+- 🪲 Fix problems with the highlighter (#45)
 
 ## [0.0.7]
 ### Added
@@ -47,7 +47,7 @@ Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added te
 - ✨ Preview auto-selected statement (CTRL-ENTER) if needed (#56)
 
 ### Changed
-- ✨ Fix issues with the REPL console (#37, #57, #60)
+- 🪲 Fix issues with the REPL console (#37, #57, #60)
 
 ## [0.0.6] - 2022-02-05
 ### Internal

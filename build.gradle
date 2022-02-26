@@ -47,12 +47,12 @@ intellij {
                 <ul>
                     <li>Remade of the auto-selection of a statement (#85)</li>
                     <li>Continuous integration (#83, internal)</li>
-                    <li>Wider range of ocaml versions (#82)</li>
+                    <li>Wider range of OCaml versions (#81)</li>
                     <li>Fixed sending statement with "and" to the REPL (#80)</li>
                     <li>Can send the selected code again! (#80)</li>
-                    <li>Fix issue with multilines comments in the REPL (#80)</li>
+                    <li>Fix issue with multiline comments in the REPL (#80)</li>
                     <li>Can be used outside OCaml Modules (#75)</li>
-                    <li>Executables are named {name}.out, fixing issue (#71)</li>
+                    <li>Executables are named {name}.out, fixing the issue (#71)</li>
                     <li>Fix empty variable view for type option (#63)</li>
                     <li>See <a href="https://github.com/QuentinRa/intellij-ocaml/blob/main/CHANGELOG.md">CHANGELOG.md</a></li>
                 <ul>
