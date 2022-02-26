@@ -43,6 +43,7 @@ public final class CygwinNativeDetectionTest extends CygwinBaseTest {
     @Test
     public void testOpamBinValid() {
         if (folders.OPAM_VALID_SDK == null) return;
+        if (folders.isCI()) return;
         assertCygwinDetectionValid(folders.OPAM_VALID_SDK);
     }
 

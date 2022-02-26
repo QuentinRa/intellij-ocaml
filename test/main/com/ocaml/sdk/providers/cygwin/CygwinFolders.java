@@ -149,6 +149,12 @@ public class CygwinFolders implements BaseFolderProvider {
         OCAML_BIN_INVALID_NO_EXE = cygwinRootFolder+"\\invalid\\bin\\ocaml";
     }
 
+    // not installed in the "right" folder on the OS used for CI testing
+    // so, functions may use this method and "disable" tests
+    public boolean isCI() {
+        return System.getenv("CI") != null;
+    }
+
     @Override public String getName() {
         return installationFolderName;
     }

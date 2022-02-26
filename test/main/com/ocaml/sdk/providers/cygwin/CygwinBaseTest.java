@@ -44,7 +44,7 @@ public class CygwinBaseTest extends BaseSdkProviderTest {
         assertTrue(true);
     }
 
-    protected void assertCygwinDetectionValid(SdkInfo info) {
+    protected void assertCygwinDetectionValid(@NotNull SdkInfo info) {
         assertCygwinDetectionValid(info.toplevel, info.comp, info.version);
     }
 
