@@ -12,17 +12,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🚀 can see the type with `CTRL+SHIFT+P` (#38)
 - 🚀 Editor for .annot. (#38)
 
-## [0.1.0-EAP]
+## [0.1.0]
 
-Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added tests for most of the existing features, which is saving a lot of time while making things easier when I have to add new features. I won't be able to work on the plugin much from now on. Please provide feedback while I'm here!
+Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added tests for most of the existing features, which is saving a lot of time while making things easier when I have to add new features. I won't be able to work on the plugin much from now on. Please provide feedback while I'm still here!
 
 ### Internal
-- 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detected bugs easily by adding a whole set of tests for every feature (🥲)
+- 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detected bugs easily by adding a whole set of tests for every feature (🥲).
 
 ### Changed
+- 🪲 Invalid encoding for the compiled file (#86)
+- ✨ Remade of the auto-selection of a statement (#85)
 - ✨ Wider range of ocaml versions, but the "-" modifier isn't allowed any more. (#81)
-- ✨ Fixed sending statement with "and" to the REPL. (#80)
-- ✨ Can send the selected code again! (#80)
+- 🪲 Fixed sending statement with "and" to the REPL. (#80)
+- 🪲 Can send the selected code again! (#80)
+- 🪲 Fix issue with multilines comments in the REPL (#80)
+- ✨ Can be used outside OCaml Modules (#75)
+- 🪲 Executables are named {name}.out, fixing issue (#71)
+- 🪲 Fix empty variable view for type option (#63)
 
 ## [0.0.8]
 ### Added
