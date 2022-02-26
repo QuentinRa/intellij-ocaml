@@ -9,11 +9,13 @@ import com.intellij.packageDependencies.ui.PackageDependenciesNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
+import com.ocaml.utils.MayNeedToBeTested;
 
 /**
  * Add an icon to the nodes in "External libraries" that
  * are inside an OCaml SDK.
  */
+@MayNeedToBeTested
 public class OCamlLibraryRootsNodeDecorator implements ProjectViewNodeDecorator {
 
     @Override public void decorate(ProjectViewNode<?> node, PresentationData data) {

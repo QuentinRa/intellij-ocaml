@@ -9,9 +9,9 @@
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
      on how to target different products -->
-    <depends optional="true" config-file="deps/platform-deps.xml">com.intellij.modules.platform</depends>
-    <depends optional="true" config-file="deps/lang-deps.xml">com.intellij.modules.lang</depends>
-    <depends optional="true" config-file="deps/java-deps.xml">com.intellij.modules.java</depends>
+    <depends optional="false" config-file="deps/platform-deps.xml">com.intellij.modules.platform</depends>
+    <depends optional="false" config-file="deps/lang-deps.xml">com.intellij.modules.lang</depends>
+    <depends optional="false" config-file="deps/java-deps.xml">com.intellij.modules.java</depends>
     <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/or.xml" xpointer="xpointer(/idea-plugin/*)"/>
 

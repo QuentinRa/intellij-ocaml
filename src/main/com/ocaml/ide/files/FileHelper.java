@@ -3,6 +3,7 @@ package com.ocaml.ide.files;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.ocaml.OCamlLanguage;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,10 @@ public final class FileHelper {
 
     public static boolean isOCaml(@Nullable FileType fileType) {
         return fileType instanceof OCamlFileType || fileType instanceof OCamlInterfaceFileType;
+    }
+
+    public static boolean isOCaml(@NotNull VirtualFile file) {
+        return isOCaml(file.getFileType());
     }
 
     public static boolean isOCamlContext(@NotNull DataContext context) {

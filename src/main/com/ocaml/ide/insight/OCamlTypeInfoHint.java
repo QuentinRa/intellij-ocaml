@@ -3,7 +3,6 @@ package com.ocaml.ide.insight;
 import com.intellij.lang.ExpressionTypeProvider;
 import com.intellij.psi.PsiElement;
 import com.ocaml.OCamlBundle;
-import com.ocaml.lang.utils.OCamlAnnotUtils;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
 import org.jetbrains.annotations.NotNull;
 

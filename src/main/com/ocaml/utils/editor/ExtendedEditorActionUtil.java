@@ -2,12 +2,16 @@ package com.ocaml.utils.editor;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.Pair;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.ocaml.lang.core.PsiLetWithAnd;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.utils.MayNeedToBeTested;
-import com.or.lang.core.psi.*;
-import com.or.lang.core.psi.impl.*;
+import com.or.lang.core.psi.PsiKlass;
+import com.or.lang.core.psi.PsiLet;
+import com.or.lang.core.psi.PsiModule;
+import com.or.lang.core.psi.PsiStructuredElement;
+import com.or.lang.core.psi.impl.PsiModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
