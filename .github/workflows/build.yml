@@ -35,12 +35,11 @@ jobs:
           - 4.05.x
           - 4.08.x
           - 4.13.x
-        platform-version:
+        platform-version: # 221?
           - 203
           - 211
           - 212
           - 213
-          - 221
 
     runs-on: ${{ matrix.os }}
 
@@ -117,6 +116,8 @@ jobs:
           echo -n "@" >> /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           chmod +x /home/runner/work/intellij-ocaml/intellij-ocaml/_opam/bin/ocamlrun
           echo "OCAMLLIB=/home/runner/.opam/${{ matrix.ocaml-compiler }}/lib/ocaml" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get upgrade
           sudo apt-get install ocaml
 
       - name: Check files (Linux)
@@ -133,7 +134,7 @@ jobs:
         run: sed -i 's/platformVersion=[^\n]*/platformVersion=${{ matrix.platform-version }}/g' ./gradle.properties
       - name: Use gradle-${{ matrix.platform-version }}.properties (Windows)
         if: runner.os == 'Windows'
-        run: sed -i 's/platformVersion=[^\n]*/platformVersion=aza/g' .\gradle.properties
+        run: sed -i 's/platformVersion=[^\n]*/platformVersion=${{ matrix.platform-version }}/g' .\gradle.properties
 
       # Run tests
       # https://github.com/gradle/gradle-build-action
