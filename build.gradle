@@ -4,6 +4,13 @@ plugins {
     id 'org.jetbrains.grammarkit' version '2021.2.1'
     id 'net.saliman.properties' version '1.5.2'
     id 'org.gradle.test-retry' version '1.3.1'
+    id 'com.adarshr.test-logger' version '3.1.0'
+}
+
+testlogger {
+    theme 'mocha'
+    showStandardStreams true
+    showSkipped false
 }
 
 // The same as `--stacktrace` param
@@ -155,15 +162,9 @@ test {
     systemProperty "log4j.debug", true
 
     if (System.getenv("CI") != null) {
-//        retry {
-//            maxRetries.set(3)
-//            maxFailures.set(5)
-//        }
-
-        doFirst {
-            testLogging {
-                events "failed"
-            }
+        retry {
+            maxRetries.set(3)
+            maxFailures.set(5)
         }
     }
 }

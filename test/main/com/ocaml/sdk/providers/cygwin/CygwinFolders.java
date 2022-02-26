@@ -7,7 +7,6 @@ import com.intellij.util.SystemProperties;
 import com.ocaml.sdk.providers.BaseFolderProvider;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.sdk.utils.SdkInfo;
-import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -123,8 +122,8 @@ public class CygwinFolders implements BaseFolderProvider {
             if (files == null || files.length == 0) throw new ExecutionException("Opam folder empty");
 
             for (File file : files) {
+                // CI: error with .x
                 String version = file.getName();
-                System.out.println("try version:"+version);
                 if (!OCamlSdkVersionManager.isValid(version)) continue;
 
                 String path = opamHome+version+"\\";
