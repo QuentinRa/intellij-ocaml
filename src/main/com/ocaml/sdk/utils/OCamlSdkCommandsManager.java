@@ -27,7 +27,7 @@ public final class OCamlSdkCommandsManager {
                 break;
             }
         }
-        if (sdk == null)
+        if (!(sdk instanceof OCamlSdkType))
             throw new IllegalStateException(OCamlBundle.message("repl.no.sdk"));
         return sdk;
     }

@@ -24,4 +24,6 @@ public interface OCamlConsoleRunner {
     boolean isVariableViewEnabled();
     void showVariableView(boolean show);
     void rebuildVariableView(String text);
+
+    boolean isNotAbleToRun();
 }

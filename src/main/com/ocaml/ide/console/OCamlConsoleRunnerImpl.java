@@ -275,6 +275,10 @@ public class OCamlConsoleRunnerImpl extends AbstractConsoleRunnerWithHistory<OCa
             myVariablesView.rebuild(text);
     }
 
+    @Override public boolean isNotAbleToRun() {
+        return getConsoleExecuteActionHandler() == null;
+    }
+
     public void updateQueue() {
         // no queued commands
         if (commands.isEmpty()) {

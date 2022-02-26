@@ -17,6 +17,7 @@ public class OCamlFakeRunner implements OCamlConsoleRunner {
     @Override public boolean isVariableViewEnabled() { return false; }
     @Override public void showVariableView(boolean show) {}
     @Override public void rebuildVariableView(String text) {}
+    @Override public boolean isNotAbleToRun() { return false; }
 
     // save commands
     public ArrayList<String> commands = new ArrayList<>();
