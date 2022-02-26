@@ -56,6 +56,7 @@ public class CygwinFolders implements BaseFolderProvider {
             cygwinRootFolder = cygwin64.toFile().getAbsolutePath();
             break;
         }
+        System.out.println("cygwin folder:"+cygwinRootFolder);
         if (cygwinRootFolder == null) {
             LOG.warn("No folder for '"+installationFolderName+"'");
             return;
@@ -104,6 +105,7 @@ public class CygwinFolders implements BaseFolderProvider {
             );
         } catch (IOException | ExecutionException | InterruptedException e) {
             LOG.warn(e.getMessage());
+            System.out.println(e.getMessage());
         }
 
         /* a valid file that is not ocaml **/
@@ -112,6 +114,7 @@ public class CygwinFolders implements BaseFolderProvider {
         try {
             String opamHome = cygwinRootFolder+"\\home\\"+ SystemProperties.getUserName() +"\\.opam\\";
             Path opamHomePath = Path.of(opamHome);
+            System.out.println("home:"+opamHome);
             if (!Files.exists(opamHomePath)) throw new ExecutionException("Opam not installed");
             /* path to the opam folder **/
             OPAM_HOME = opamHome;
@@ -121,6 +124,7 @@ public class CygwinFolders implements BaseFolderProvider {
 
             for (File file : files) {
                 String version = file.getName();
+                System.out.println("try version:"+version);
                 if (!OCamlSdkVersionManager.isValid(version)) continue;
 
                 String path = opamHome+version+"\\";
@@ -142,6 +146,7 @@ public class CygwinFolders implements BaseFolderProvider {
             }
         } catch (ExecutionException e) {
             LOG.warn(e.getMessage());
+            System.out.println(e.getMessage());
         }
 
         HOME_INVALID = cygwinRootFolder+"\\invalid";
