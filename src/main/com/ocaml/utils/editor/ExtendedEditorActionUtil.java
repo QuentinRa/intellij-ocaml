@@ -2,18 +2,18 @@ package com.ocaml.utils.editor;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.Pair;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
 import com.ocaml.lang.core.PsiLetWithAnd;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.utils.MayNeedToBeTested;
-import com.or.lang.core.psi.PsiStructuredElement;
+import com.or.lang.core.psi.*;
+import com.or.lang.core.psi.impl.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-@MayNeedToBeTested(note = "Currently, tested indirectly with the class using this one.")
+@MayNeedToBeTested(note = "Currently, tested indirectly with classes using this one.")
 public class ExtendedEditorActionUtil {
 
     /**
@@ -55,8 +55,13 @@ public class ExtendedEditorActionUtil {
 
         // go up until we found the file
         while (current != statement.second) {
-            // add every candidate
-            candidates.add(0, current);
+            // Let "includes" (not related to inheritance)
+            // Val, Method, PsiLetAnd, ...
+            if (current instanceof PsiLet || current instanceof PsiModule
+                    || current instanceof PsiModuleType || current instanceof PsiKlass) {
+                candidates.add(0, current);
+            }
+            // next
             current = current.getParent();
         }
 

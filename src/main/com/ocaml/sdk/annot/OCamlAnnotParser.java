@@ -37,22 +37,28 @@ public class OCamlAnnotParser {
      * @return list of signature that were found in the file
      */
     public ArrayList<OCamlInferredSignature> get() {
-        return new ArrayList<>(getIndexedByRange().values());
-    }
-
-    public HashMap<TextRange, OCamlInferredSignature> getIndexedByRange() {
-        HashMap<TextRange, OCamlInferredSignature> elements = new HashMap<>();
+        ArrayList<OCamlInferredSignature> elements = new ArrayList<>();
         if (this.lines.length == 0) return elements; // fix empty .annot
         AnnotParserState state = parseInstruction();
         while (state != null) {
             // add if not skipped
-            if (!state.skip) {
-                OCamlInferredSignature res = createAnnotResult(state);
-                elements.put(res.range, res);
-            }
+            if (!state.skip) elements.add(createAnnotResult(state));
             // continue reading
             state = parseInstruction();
         }
+        return elements;
+    }
+
+    public HashMap<TextRange, OCamlInferredSignature> getIndexedByRange() {
+        // Fix error, the values are not unsorted in the hashmap
+        // So, we are doing the job in "get", and indexing here.
+        HashMap<TextRange, OCamlInferredSignature> elements = new HashMap<>();
+
+        ArrayList<OCamlInferredSignature> list = get();
+        for (OCamlInferredSignature signature : list) {
+            elements.put(signature.range, signature);
+        }
+
         return elements;
     }
 

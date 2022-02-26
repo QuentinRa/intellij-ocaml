@@ -3,6 +3,7 @@ package com.ocaml.sdk.annot;
 import com.intellij.build.FilePosition;
 import com.ocaml.OCamlBaseTest;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -16,8 +17,14 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
      * @param expectedOutput 'rincewind' output format (edit: Li was added).
      *                       One per line (add \n).
      */
-    private void assertParserResult(String input, @NotNull String expectedOutput) {
+    private void assertParserResult(String input, @Nullable String expectedOutput) {
         ArrayList<OCamlInferredSignature> res = new OCamlAnnotParser(input).get();
+        // we are not expecting any result
+        if (expectedOutput == null) {
+            assertEmpty(res);
+            return;
+        }
+
         String[] lines = expectedOutput.split("\n");
         assertSize(lines.length, res);
         for (int i = 0; i < lines.length; i++) {
@@ -370,6 +377,11 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
     //
     // bugs
     //
+
+    @Test
+    public void test_IssueEmpty() {
+        assertParserResult("", null);
+    }
 
     @Test
     public void test_IssueLongValueForType() {
