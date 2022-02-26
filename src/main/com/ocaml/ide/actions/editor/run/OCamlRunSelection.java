@@ -64,8 +64,6 @@ public class OCamlRunSelection extends OCamlEditorActionBase {
                 .stream()
                 .map(element ->
                         new PsiIntroduceTarget<>(
-                                // fix of a bug: PsiLetWithAnd are not valid PsiElements
-                                //  we need to unwrap the core.
                                 element instanceof PsiLetWithAnd ?
                                         ((PsiLetWithAnd) element).getCore() :
                                         element)

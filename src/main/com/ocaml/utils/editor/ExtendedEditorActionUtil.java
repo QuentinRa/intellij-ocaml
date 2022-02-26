@@ -57,10 +57,13 @@ public class ExtendedEditorActionUtil {
         while (current != statement.second) {
             // Let "includes" (not related to inheritance)
             // Val, Method, PsiLetAnd, ...
-            if (current instanceof PsiLet || current instanceof PsiModule
-                    || current instanceof PsiModuleType || current instanceof PsiKlass) {
+            if (current instanceof PsiLet) {
                 candidates.add(0, current);
             }
+            else if (current instanceof PsiModule || current instanceof PsiModuleType || current instanceof PsiKlass) {
+                candidates.add(0, current);
+            }
+
             // next
             current = current.getParent();
         }

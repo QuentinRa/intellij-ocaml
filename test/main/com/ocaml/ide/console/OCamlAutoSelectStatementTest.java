@@ -88,7 +88,15 @@ public class OCamlAutoSelectStatementTest extends OCamlIdeTest {
                 "    object (self)\n" +
                 "      val mutable the_list(*caret*) = ([] : int list)\n" +
                 "    end",
-                "Class File.stack_of_ints", "Object", "Let File.stack_of_ints.UNKNOWN");
+                "Class File.stack_of_ints", "Let File.stack_of_ints.UNKNOWN");
+    }
+
+    // Issues
+
+    @Test
+    public void test_Issue85And() {
+        assertWasAutoSelected("let x = 5 and y(*caret*) = 7", "Let File.UNKNOWN");
+        assertWasAutoSelected("let x = 5(*caret*) and y = 7", "Let File.UNKNOWN");
     }
 
 }
