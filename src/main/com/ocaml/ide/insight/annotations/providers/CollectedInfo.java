@@ -2,7 +2,6 @@ package com.ocaml.ide.insight.annotations.providers;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

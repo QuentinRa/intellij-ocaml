@@ -10,12 +10,10 @@ import org.junit.Test;
 public final class LinuxNativeDetectionTest extends LinuxBaseTest {
 
     public void assertLinuxValid(@NotNull SdkInfo info) {
-        if (passLinuxTest()) return;
         assertLinuxValid(info.toplevel, info.version, info.sources);
     }
 
     public void assertLinuxValid(String ocamlBin, String expectedVersion, String expectedLib) {
-        if (passLinuxTest()) return;
         String root = ocamlBin.replace("/bin/ocaml", "");
         DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
         assertEquals(ocamlBin, detectionResult.ocaml);
@@ -26,7 +24,6 @@ public final class LinuxNativeDetectionTest extends LinuxBaseTest {
     }
 
     public void assertLinuxValid(String ocamlBin) {
-        if (passLinuxTest()) return;
         try {
             DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
             if (detectionResult.isError) throw new AssertionError("OK");
@@ -39,31 +36,37 @@ public final class LinuxNativeDetectionTest extends LinuxBaseTest {
 
     @Test
     public void testEmpty() {
+        if (folders.OCAML_BIN_INVALID == null) return;
         assertLinuxValid("");
     }
 
     @Test
     public void testPathInvalid() {
-        assertLinuxValid("/invalid/ocaml");
+        if (folders.OCAML_BIN_INVALID == null) return;
+        assertLinuxValid(folders.OCAML_BIN_INVALID);
     }
 
     @Test
     public void testNotOCaml() {
-        assertLinuxValid(LinuxFolders.BIN_VALID);
+        if (folders.BIN_VALID == null) return;
+        assertLinuxValid(folders.BIN_VALID);
     }
 
     @Test
     public void testBin() {
-        assertLinuxValid(LinuxFolders.BIN_VALID_SDK);
+        if (folders.BIN_VALID_SDK == null) return;
+        assertLinuxValid(folders.BIN_VALID_SDK);
     }
 
     @Test
     public void testOpamBinValid() {
-        assertLinuxValid(LinuxFolders.OPAM_VALID_SDK);
+        if (folders.OPAM_VALID_SDK == null) return;
+        assertLinuxValid(folders.OPAM_VALID_SDK);
     }
 
     @Test
     public void testOpamBinInvalid() {
-        assertLinuxValid(LinuxFolders.OPAM_INVALID_BIN);
+        if (folders.OPAM_INVALID_BIN == null) return;
+        assertLinuxValid(folders.OPAM_INVALID_BIN);
     }
 }

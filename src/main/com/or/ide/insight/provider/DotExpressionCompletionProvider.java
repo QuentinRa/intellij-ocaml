@@ -160,7 +160,6 @@ public class DotExpressionCompletionProvider {
     private static void addExpressions(@NotNull CompletionResultSet resultSet, @NotNull Collection<PsiNamedElement> expressions, @Nullable ORLanguageProperties language) {
         for (PsiNamedElement expression : expressions) {
             if (!(expression instanceof PsiOpen) && !(expression instanceof PsiInclude) && !(expression instanceof PsiAnnotation)) {
-                // TODO: if include => include
                 String name = expression.getName();
                 if (name != null) {
                     String signature = PsiSignatureUtil.getSignature(expression, language);

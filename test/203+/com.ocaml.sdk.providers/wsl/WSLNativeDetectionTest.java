@@ -10,12 +10,10 @@ import org.junit.Test;
 public final class WSLNativeDetectionTest extends WSLBaseTest {
 
     public void assertWSLValid(@NotNull SdkInfo info) {
-        if (passWSLTest()) return;
         assertWSLValid(info.toplevel, info.version, info.sources);
     }
 
-    public void assertWSLValid(String ocamlBin, String expectedVersion, String expectedLib) {
-        if (passWSLTest()) return;
+    public void assertWSLValid(@NotNull String ocamlBin, String expectedVersion, String expectedLib) {
         String root = ocamlBin.replace("\\bin\\ocaml", "");
         DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
         assertEquals(ocamlBin, detectionResult.ocaml);
@@ -26,7 +24,6 @@ public final class WSLNativeDetectionTest extends WSLBaseTest {
     }
 
     public void assertWSLInvalid(String ocamlBin) {
-        if (passWSLTest()) return;
         try {
             DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
             if (detectionResult.isError) throw new AssertionError("OK");
@@ -39,36 +36,43 @@ public final class WSLNativeDetectionTest extends WSLBaseTest {
 
     @Test
     public void testEmpty() {
+        if (folders.OCAML_BIN_INVALID == null) return;
         assertWSLInvalid("");
     }
 
     @Test
     public void testPathInvalid() {
-        assertWSLInvalid("\\\\wsl$\\Debian\\invalid\\ocaml");
+        if (folders.OCAML_BIN_INVALID == null) return;
+        assertWSLInvalid(folders.OCAML_BIN_INVALID);
     }
 
     @Test
     public void testInvalidWSLDistribution() {
-        assertWSLInvalid(WSLFolders.OPAM_INVALID_DIST.toplevel);
+        if (folders.OPAM_INVALID_DIST == null) return;
+        assertWSLInvalid(folders.OPAM_INVALID_DIST.toplevel);
     }
 
     @Test
     public void testNotOCaml() {
-        assertWSLInvalid(WSLFolders.BIN_VALID);
+        if (folders.BIN_VALID == null) return;
+        assertWSLInvalid(folders.BIN_VALID);
     }
 
     @Test
     public void testBin() {
-        assertWSLValid(WSLFolders.BIN_VALID_SDK);
+        if (folders.BIN_VALID_SDK == null) return;
+        assertWSLValid(folders.BIN_VALID_SDK);
     }
 
     @Test
     public void testOpamBinValid() {
-        assertWSLValid(WSLFolders.OPAM_VALID_SDK);
+        if (folders.OPAM_VALID_SDK == null) return;
+        assertWSLValid(folders.OPAM_VALID_SDK);
     }
 
     @Test
     public void testOpamBinInvalid() {
-        assertWSLInvalid(WSLFolders.OPAM_INVALID_BIN);
+        if (folders.OPAM_INVALID_BIN == null) return;
+        assertWSLInvalid(folders.OPAM_INVALID_BIN);
     }
 }

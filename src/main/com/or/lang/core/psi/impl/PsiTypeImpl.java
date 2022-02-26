@@ -7,6 +7,7 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import com.ocaml.icons.OCamlIcons;
+import com.or.lang.OCamlTypes;
 import com.or.lang.core.ORUtil;
 import com.or.lang.core.psi.PsiType;
 import com.or.lang.core.psi.PsiVariantDeclaration;
@@ -38,14 +39,40 @@ public class PsiTypeImpl extends PsiTokenStub<PsiType, PsiTypeStub> implements P
 
     @Override
     public @Nullable String getName() {
+        String name = "";
         PsiTypeStub stub = getGreenStub();
         if (stub != null) {
-            return stub.getName();
+            name = stub.getName();
+            if (name != null && !name.isEmpty())
+                return name;
         }
-
         PsiElement constrName = getNameIdentifier();
-        return constrName == null ? "" : constrName.getText();
-
+        name = constrName == null ? "" : constrName.getText();
+        // this code is not pretty at all
+        if (name == null || name.isEmpty()) {
+            @NotNull String declaration = getText();
+            String EQ = OCamlTypes.EQ.getSymbol();
+            String TYPE = OCamlTypes.TYPE.getSymbol();
+            int eq = declaration.indexOf(EQ);
+            int type = declaration.indexOf(TYPE);
+            // if we got "type something = ..."
+            if (eq != -1 && type != -1) {
+                // then we extract "something"
+                name = declaration.substring(type+TYPE.length()+1, eq-EQ.length())
+                        .replace("\n", "")
+                        .trim();
+                // remove every variant
+                int space = name.indexOf(" ");
+                while (space != -1) {
+                    name = name.substring(space+1).trim();
+                    space = name.indexOf(" ");
+                }
+            }
+        }
+        if (name == null || name.isEmpty()) {
+            name = "<none>";
+        }
+        return name;
     }
 
     @Override

@@ -1,20 +1,23 @@
 package com.ocaml.utils.editor;
 
-import com.intellij.openapi.editor.Caret;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.ocaml.lang.core.PsiLetWithAnd;
 import com.ocaml.lang.utils.OCamlPsiUtils;
+import com.ocaml.utils.MayNeedToBeTested;
+import com.or.lang.core.psi.PsiKlass;
+import com.or.lang.core.psi.PsiLet;
+import com.or.lang.core.psi.PsiModule;
+import com.or.lang.core.psi.PsiStructuredElement;
+import com.or.lang.core.psi.impl.PsiModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
+@MayNeedToBeTested(note = "Currently, tested indirectly with classes using this one.")
 public class ExtendedEditorActionUtil {
 
     /**
@@ -23,31 +26,16 @@ public class ExtendedEditorActionUtil {
      * @param editor the editor
      * @return null if we aren't in a situation in which we can find code to executed,
      * otherwise the selected code
-     * @deprecated this method is returning a string, we need a list of psi tags
      */
-    @Deprecated
     public static @Nullable String getSelectedCode(@NotNull Editor editor) {
         // simply returns the selected code
-        // user goal are beyond our understanding
-        String code = editor.getSelectionModel().getSelectedText();
-        if (code != null && !code.isBlank()) return code;
-        // look for the tag
-        Pair<PsiElement, PsiFile> res = findSelectedElement(editor);
-        if (res == null) return null;
-        // select
-        TextRange range = res.first.getNode().getTextRange();
-        Caret currentCaret = editor.getCaretModel().getCurrentCaret();
-        currentCaret.setSelection(range.getStartOffset(), range.getEndOffset());
-        return res.first.getText();
+        // the goal of the user is beyond our understanding
+        return editor.getSelectionModel().getSelectedText();
     }
 
+    // rip, we need to find what the user want to send to the console
     private static @Nullable Pair<PsiElement, PsiFile> findSelectedElement(@NotNull Editor editor) {
-        // rip, we need to find what the user want to send to the console
-        Project project = editor.getProject();
-        if (project == null) return null;
-        // find psiFile
-        Document document = editor.getDocument();
-        PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
+        PsiFile psiFile = OCamlPsiUtils.getPsiFile(editor);
         if (psiFile == null) return null;
         PsiElement elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         if (elementAt == null) { // did we reach the end of the file?
@@ -55,15 +43,15 @@ public class ExtendedEditorActionUtil {
             elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset()-1);
             if (elementAt == null) return null;
         }
-        PsiElement s = OCamlPsiUtils.findStatementBefore(elementAt);
+        PsiElement s = findStatementBefore(elementAt);
         if (s == null) {
-            s = OCamlPsiUtils.findStatementAfter(elementAt);
+            s = findStatementAfter(elementAt);
             if (s == null) return null;
         }
-        return new Pair<>(s, psiFile);
+        return new Pair<>(new PsiLetWithAnd(s), psiFile);
     }
 
-    public static @Nullable ArrayList<PsiElement> getSelectedElements(@NotNull Editor editor) {
+    public static @Nullable ArrayList<PsiElement> autoSelectStatements(@NotNull Editor editor) {
         Pair<PsiElement, PsiFile> statement = findSelectedElement(editor);
         if (statement == null) return null;
         PsiElement current = statement.first;
@@ -71,12 +59,36 @@ public class ExtendedEditorActionUtil {
 
         // go up until we found the file
         while (current != statement.second) {
-            // add every candidate
-            candidates.add(0, current);
+            // Let "includes" (not related to inheritance)
+            // Val, Method, PsiLetAnd, ...
+            if (current instanceof PsiLet) {
+                candidates.add(0, current);
+            }
+            else if (current instanceof PsiModule || current instanceof PsiModuleType || current instanceof PsiKlass) {
+                candidates.add(0, current);
+            }
+
+            // next
             current = current.getParent();
         }
 
         return candidates;
+    }
+
+    private static @Nullable PsiElement findStatementBefore(@Nullable PsiElement elementAt) {
+        if (elementAt == null) return null;
+        if (elementAt instanceof PsiStructuredElement) return elementAt;
+        PsiElement prevSibling = elementAt.getPrevSibling();
+        if (prevSibling == null) prevSibling = elementAt.getParent();
+        return findStatementBefore(prevSibling);
+    }
+
+    private static @Nullable PsiElement findStatementAfter(@Nullable PsiElement elementAt) {
+        if (elementAt == null) return null;
+        if (elementAt instanceof PsiStructuredElement) return elementAt;
+        PsiElement nextSibling = elementAt.getNextSibling();
+        if (nextSibling == null) nextSibling = elementAt.getParent();
+        return findStatementAfter(nextSibling);
     }
 
 }

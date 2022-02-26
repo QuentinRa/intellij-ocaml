@@ -55,6 +55,7 @@ public class OCamlIcons {
         public static final Icon VAL = AllIcons.Nodes.Variable;
         public static final Icon ATTRIBUTE = AllIcons.Nodes.Property;
         public static final Icon FUNCTION = AllIcons.Nodes.Function;
+        public static final Icon VARIABLE = AllIcons.Nodes.Variable;
         public static final Icon METHOD = AllIcons.Nodes.Method;
         public static final Icon CLASS = AllIcons.Nodes.Class;
         public static final Icon EXCEPTION = AllIcons.Nodes.ExceptionClass;
@@ -68,6 +69,7 @@ public class OCamlIcons {
     }
 
     public static final class FileTypes {
+        public static final Icon OCAML_ANNOT = loadIcon("/icons/annotFile.svg");
         public static final Icon OCAML_SOURCE = loadIcon("/icons/mlFile.svg");
         public static final Icon OCAML_INTERFACE = loadIcon("/icons/mliFile.svg");
         public static final Icon OCAML_SOURCE_AND_INTERFACE = loadIcon("/icons/ocamlFiles.svg");

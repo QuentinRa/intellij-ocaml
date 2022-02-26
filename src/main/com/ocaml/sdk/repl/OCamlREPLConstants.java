@@ -16,6 +16,13 @@ public interface OCamlREPLConstants {
      * In the toplevel, unless disabled, this is the default prompt.
      */
     String PROMPT = "#";
+    String PROMPT_COMMENT = "*";
+
+    /**
+     * Errors / Warnings may use this token (0 or more times)
+     * in errors messages.
+     */
+    String ERROR_INDICATOR = "^";
 
     /**
      * Types are starting with this symbol

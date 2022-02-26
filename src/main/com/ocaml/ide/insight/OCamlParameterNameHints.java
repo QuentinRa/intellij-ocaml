@@ -7,22 +7,21 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.ocaml.lang.core.PsiFakeLet;
-import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.or.ide.search.index.LetFqnIndex;
-import com.or.lang.OCamlTypes;
-import com.or.lang.core.psi.*;
-import com.or.lang.core.psi.PsiLiteralExpression;
 import com.or.lang.core.psi.PsiParameter;
-import com.or.lang.core.psi.impl.*;
+import com.or.lang.core.psi.*;
+import com.or.lang.core.psi.impl.PsiLowerIdentifier;
+import com.or.lang.core.psi.impl.PsiParameterImpl;
+import com.or.lang.core.psi.impl.PsiUpperIdentifier;
+import com.or.lang.core.psi.impl.PsiValImpl;
 import com.or.lang.core.psi.reference.PsiLowerSymbolReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-@SuppressWarnings("UnstableApiUsage")
+@Deprecated(forRemoval = true) @SuppressWarnings("UnstableApiUsage")
 public class OCamlParameterNameHints implements InlayParameterHintsProvider {
 
     private static final List<InlayInfo> EMPTY_COLLECTION = Collections.emptyList();
@@ -58,7 +57,7 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
         if (resolvedElement instanceof PsiParameterImpl) {
             PsiElement resolvedElementParent = resolvedElement.getParent();
             if (!(resolvedElementParent instanceof PsiParameters)) {
-                // todo: log
+                // log
                 System.out.println("warn: the cast of PsiParameters (l!=1) in function wasn't handled.");
                 return EMPTY_COLLECTION;
             }
@@ -72,7 +71,7 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
             resolvedElement = new PsiFakeLet( params );
         }
 
-        // todo: log?
+        // log?
         //System.out.println("for:"+element.getText());
         // System.out.println("  resolved:"+(resolvedElement != null ? resolvedElement.getText() : null));
         //  System.out.println("  class:"+(resolvedElement != null ? resolvedElement.getClass() : null));
@@ -100,12 +99,12 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
                 parameters = psiFunction.getParameters();
             }
         }
-        // todo: log?
+        // log?
         // System.out.println("  has params?"+parameters);
         if (parameters == null) return EMPTY_COLLECTION;
         // get the name for this value
-        int indexOfParameter = OCamlPsiUtils.findIndexOfParameter(element, functionName.getText());
-        // todo: log?
+        int indexOfParameter = findIndexOfParameter(element, functionName.getText());
+        // log?
         // System.out.println("    index is:"+indexOfParameter);
         if (indexOfParameter < parameters.size()) {
             PsiParameter psiParameter = parameters.get(indexOfParameter);
@@ -113,5 +112,25 @@ public class OCamlParameterNameHints implements InlayParameterHintsProvider {
         }
 
         return EMPTY_COLLECTION;
+    }
+
+    public static int findIndexOfParameter(@NotNull PsiElement element, String functionName) {
+        PsiElement prevSibling = element.getPrevSibling();
+        int count = 0;
+        while (prevSibling != null) {
+            // skip white spaces
+            // and comments (fix, added)
+            if (prevSibling instanceof PsiWhiteSpace || prevSibling instanceof PsiComment) {
+                prevSibling = prevSibling.getPrevSibling();
+                continue;
+            }
+            // done, we found the name of the function
+            if (prevSibling.getText().equals(functionName)) return count;
+            // pass, this is an argument (I hope so ><)
+            count++;
+            prevSibling = prevSibling.getPrevSibling();
+        }
+
+        return -1; // not found
     }
 }

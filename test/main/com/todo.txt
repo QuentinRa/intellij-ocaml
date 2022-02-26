@@ -1,0 +1,5 @@
+- Fix tests for the Windows provider
+
+Console: need tests (0.2.0) (test #*)
+Editor.annot: need tests (0.2.0)
+- OCamlFindFunction / OCamlAnnotUtils / Parser

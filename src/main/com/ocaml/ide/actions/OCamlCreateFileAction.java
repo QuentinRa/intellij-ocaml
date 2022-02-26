@@ -74,7 +74,8 @@ public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
         ;
     }
 
-    @Override protected PsiFile createFile(String name, String templateName, PsiDirectory dir) {
+    @Override protected PsiFile createFile(String name, @NotNull String templateName, PsiDirectory dir) {
+        // try creating both .mli and .mli
         if (templateName.equals(DUMMY_TEMPLATE)) {
             String ml = OCamlFileType.DOT_DEFAULT_EXTENSION;
             String mli = OCamlInterfaceFileType.DOT_DEFAULT_EXTENSION;

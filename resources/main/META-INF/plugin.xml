@@ -3,15 +3,15 @@
     <name>OCaml</name>
     <vendor email="ramsamy.ws@gmail.com" url="https://github.com/QuentinRa/">QuentinRa</vendor>
     <description><![CDATA[
-        The OCaml plugin is providing support for the OCaml language in IntelliJ IDEA, using an opam or
-        a native SDK. It is based on both ReasonML, and intellij-rust.]]>
+        The OCaml plugin is providing support for the OCaml language in IntelliJ IDEA, using opam or
+        native SDKs. Based on ReasonML.]]>
     </description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
      on how to target different products -->
-    <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.java</depends>
+    <depends optional="false" config-file="deps/platform-deps.xml">com.intellij.modules.platform</depends>
+    <depends optional="false" config-file="deps/lang-deps.xml">com.intellij.modules.lang</depends>
+    <depends optional="false" config-file="deps/java-deps.xml">com.intellij.modules.java</depends>
     <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/or.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
@@ -36,12 +36,14 @@
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
             <add-to-group group-id="EditorPopupMenu"/>
         </action>
+        <!--suppress PluginXmlCapitalization -->
         <action id="editor.api.action" class="com.ocaml.ide.actions.editor.help.OCamlEditorApiAction"
                 icon="AllIcons.General.Information" >
             <keyboard-shortcut keymap="$default" first-keystroke="F1" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="F1" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F1" replace-all="true"/>
         </action>
+        <!--suppress PluginXmlCapitalization -->
         <action id="editor.help.action" class="com.ocaml.ide.actions.editor.help.OCamlEditorHelpAction"
                 icon="AllIcons.Actions.Help" >
             <keyboard-shortcut keymap="$default" first-keystroke="F11" replace-all="true"/>
@@ -65,6 +67,8 @@
         <projectSdkSetupValidator implementation="com.ocaml.ide.files.select.OCamlSDKValidator"/>
 
         <!-- FILES -->
+        <fileType extensions="annot" hashBangs="annot" name="OCAML_ANNOT" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlAnnotFileType"/>
+<!--        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlAnnotFileEditorProvider"/>-->
         <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
         <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
         <internalFileTemplate name="OCaml File"/>

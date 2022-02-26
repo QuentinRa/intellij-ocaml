@@ -10,27 +10,14 @@ import java.util.regex.Pattern;
 
 public final class OCamlSdkVersionManager {
 
-    /**
-     * <ul>
-     * <li>something</li>
-     * <li>then a slash</li>
-     * <li>1# then the major version</li>
-     * <li>1# the two digits of the minor version</li>
-     * <li>1# an optional patch version</li>
-     * <li>1# an optional kind "+kind"</li>
-     * <li>we are allowing some text, after all of this, if the text is starting with "-v"</li>
-     * <li>then we got another slash</li>
-     * <li>something</li>
-     * </ul>
-     */
     private static final Pattern VERSION_PATH_REGEXP =
-            Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?/.*");
+            Pattern.compile(".*/[a-z-.]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)/.*");
 
     private static final Pattern VERSION_ONLY_REGEXP =
-            Pattern.compile(".*/(\\d\\.\\d\\d(\\.\\d)?)([+][^/]+)?(-v[^/]*)?/.*");
+            Pattern.compile(".*/[a-z-.]*(\\d\\.\\d\\d(\\.\\d)?)([+~][0-9a-z-]+)*/.*");
 
-    // This is the regex above, the part between the two slashes
-    private static final Pattern VERSION_REGEXP = Pattern.compile("(\\d\\.\\d\\d(\\.\\d)?([+][^/]+)?)(-v[^/]*)?");
+    // This is the first regex above, the part between the two slashes
+    private static final Pattern VERSION_REGEXP = Pattern.compile("[a-z-.]*(\\d\\.\\d\\d(\\.\\d)?([+~][0-9a-z-]+)*)");
 
     /** unknown version **/
     public static final String UNKNOWN_VERSION = OCamlBundle.message("sdk.version.unknown");
@@ -82,9 +69,14 @@ public final class OCamlSdkVersionManager {
         return parse(sdkHome, VERSION_ONLY_REGEXP);
     }
 
+    /**
+     * @param base return true if version is newer than the base version
+     * @param version the version tested with the base
+     * @return true if version is newer (or equals) than the base
+     */
     @Contract(pure = true)
     public static boolean isNewerThan(@NotNull String base, @NotNull String version) {
-        return version.compareTo(base) >= 0;
+        return compareVersions(version, base) >= 0;
     }
 
     /**
@@ -103,8 +95,20 @@ public final class OCamlSdkVersionManager {
      * </ul>
      */
     public static int comparePaths(String p1, String p2) {
-        String v1 = parse(p1);
-        String v2 = parse(p2);
-        return v1.compareTo(v2);
+        String v1 = parseWithoutModifier(p1);
+        String v2 = parseWithoutModifier(p2);
+        return compareVersions(v1, v2);
+    }
+
+    private static int compareVersions(@NotNull String v1, @NotNull String v2) {
+        // missing one '.'
+        int i1 = v1.lastIndexOf('.');
+        int i2 = v2.lastIndexOf('.');
+        if (i2 > i1) v1 += ".0";
+        if (i1 > i2) v2 += ".0";
+
+        // clamp between -1 and 1 (integers)
+        int i = v1.compareTo(v2);
+        return i == 0 ? 0 : i >= 1 ? 1 : -1;
     }
 }

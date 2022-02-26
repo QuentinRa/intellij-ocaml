@@ -5,6 +5,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +67,12 @@ public final class OCamlFileUtils {
         }
 
         try {
-            FileUtil.writeToFile(sourceTempFile, psiFile.getText().getBytes());
+            @UntilIdeVersion(release = "203", note = "We can't pass the charset to writeToFile in 203.")
+            String text = new String(psiFile.getText().getBytes(
+                    // use the charset of the original file
+                    psiFile.getVirtualFile().getCharset()
+            ));
+            FileUtil.writeToFile(sourceTempFile, text);
         } catch (IOException e) {
             // Sometimes, file is locked by another process, not a big deal, skip it
             logger.trace("Write failed: " + e.getLocalizedMessage());
@@ -76,11 +82,11 @@ public final class OCamlFileUtils {
         return sourceTempFile;
     }
 
-    public static void deleteDirectory(String file) {
+    public static void deleteDirectory(@NotNull String file) {
         deleteDirectory(new File(file));
     }
 
-    public static void deleteDirectory(File file) {
+    public static void deleteDirectory(@NotNull File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files != null) {

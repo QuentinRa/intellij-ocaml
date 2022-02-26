@@ -1,38 +1,54 @@
 package com.ocaml.sdk.providers.cygwin;
 
-import com.intellij.openapi.util.SystemInfo;
 import com.ocaml.sdk.providers.BaseSdkProviderTest;
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import com.ocaml.sdk.utils.OCamlSdkHomeManager;
 import com.ocaml.sdk.utils.SdkInfo;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 
+@RunWith(Parameterized.class)
 public class CygwinBaseTest extends BaseSdkProviderTest {
 
-    protected boolean passCygwinTest() {
-        if(!SystemInfo.isWin10OrNewer) return true;
-        // ensure cygwin is available
-        boolean canPass = new File(CygwinFolders.BIN_VALID_SDK.path).exists()
-                && new File(CygwinFolders.BIN_VALID_SDK.toplevel).exists()
-                && new File(CygwinFolders.BIN_VALID_EXE).exists()
-                && new File(CygwinFolders.OPAM_HOME).exists()
-                && new File(CygwinFolders.OPAM_VALID_SDK.path).exists()
-                && new File(CygwinFolders.OPAM_VALID_SDK.toplevel).exists()
-                && !(new File(CygwinFolders.OPAM_INVALID_BIN).exists());
-        if (!canPass) System.out.println("Cygwin: test ignored");
-        return !canPass;
+    private final String folderName;
+    protected CygwinFolders folders;
+
+    @Contract(pure = true) @Parameterized.Parameters(name= "{0}")
+    public static @NotNull Iterable<Object[]> data() {
+        return Arrays.asList(new Object[][] { { CygwinFolders.CYGWIN_FOLDER }, { CygwinFolders.OCAML64_FOLDER } });
     }
 
-    protected void assertCygwinDetectionValid(SdkInfo info) {
+    public CygwinBaseTest(String folderName) {
+        this.folderName = folderName;
+    }
+
+    @Override protected void setUp() throws Exception {
+        super.setUp();
+        folders = new CygwinFolders(folderName);
+    }
+
+    @Override protected void tearDown() throws Exception {
+        super.tearDown();
+        folders = null;
+    }
+
+    @Test
+    public void test() {
+        assertTrue(true);
+    }
+
+    protected void assertCygwinDetectionValid(@NotNull SdkInfo info) {
         assertCygwinDetectionValid(info.toplevel, info.comp, info.version);
     }
 
     protected void assertCygwinDetectionValid(String ocamlBinary, String ocamlcName, String expectedVersion) {
-        if (passCygwinTest()) return;
-
         Path bin = Path.of(ocamlBinary).getParent();
         String root = bin.getParent().toFile().getAbsolutePath();
         String ocamlc = bin.resolve(ocamlcName).toFile().getAbsolutePath();
@@ -45,7 +61,6 @@ public class CygwinBaseTest extends BaseSdkProviderTest {
     }
 
     protected void assertCygwinDetectionInvalid(String ocamlBin) {
-        if (passCygwinTest()) return;
         try {
             DetectionResult detectionResult = OCamlNativeDetector.detectNativeSdk(ocamlBin);
             if (detectionResult.isError) throw new AssertionError("OK");
@@ -57,17 +72,10 @@ public class CygwinBaseTest extends BaseSdkProviderTest {
     }
 
     protected void assertCygwinHomeValid(String homePath) {
-        if (passCygwinTest()) return;
         assertTrue(OCamlSdkHomeManager.isValid(homePath));
     }
 
     protected void assertCygwinHomeInvalid(String homePath) {
-        if (passCygwinTest()) return;
         assertFalse(OCamlSdkHomeManager.isValid(homePath));
-    }
-
-    @Override protected void assertInstallationFolderWasSuggested(String installationFolder) {
-        if (passCygwinTest()) return;
-        super.assertInstallationFolderWasSuggested(installationFolder);
     }
 }

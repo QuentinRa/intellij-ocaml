@@ -5,6 +5,7 @@ import com.or.lang.core.psi.PsiFunction;
 import com.or.lang.core.psi.PsiParameter;
 import com.or.lang.core.psi.impl.PsiFunctionImpl;
 import com.or.lang.core.psi.impl.PsiLetImpl;
+import com.or.lang.core.type.ORTokenElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +21,7 @@ public class PsiFakeLet extends PsiLetImpl {
     private final PsiFunction myFunction;
 
     public PsiFakeLet(@NotNull List<PsiParameter> params) {
-        super(new CompositePsiElement(new OCamlTokenType("PsiFakeLet")) {});
+        super(new CompositePsiElement(new ORTokenElementType("PsiFakeLet")) {});
         myFunction = params.isEmpty() ? null : new FakePsiFunction(params);
     }
 
@@ -36,7 +37,7 @@ public class PsiFakeLet extends PsiLetImpl {
         private final List<PsiParameter> myParams;
 
         private FakePsiFunction(List<PsiParameter> params) {
-            super(new OCamlTokenType("PsiFakeFunction") {});
+            super(new ORTokenElementType("PsiFakeFunction") {});
             this.myParams = params;
         }
 

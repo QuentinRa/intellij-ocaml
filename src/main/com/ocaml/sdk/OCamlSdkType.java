@@ -17,7 +17,6 @@ import com.ocaml.sdk.utils.OCamlSdkRootsManager;
 import com.ocaml.sdk.utils.OCamlSdkVersionManager;
 import com.ocaml.utils.adaptor.SinceIdeVersion;
 import org.jdom.Element;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,13 +48,17 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         return SdkType.EP_NAME.findExtension(OCamlSdkType.class);
     }
 
-    @Contract(pure = true) public static @NotNull String getApiURL(String version) {
+    public static @NotNull String getApiURL(String version) {
+        version = getMajorAndMinorVersion(version);
+        if (version == null) version = "4.12";
         if (OCamlSdkVersionManager.isNewerThan("4.12", version))
             return "https://ocaml.org/releases/" + version + "/api/index.html";
         return "https://ocaml.org/releases/" + version + "/htmlman/libref/index.html";
     }
 
-    @Contract(pure = true) public static @NotNull String getManualURL(String version) {
+    public static @NotNull String getManualURL(String version) {
+        version = getMajorAndMinorVersion(version);
+        if (version == null) version = "4.12";
         if (OCamlSdkVersionManager.isNewerThan("4.12", version))
             return "https://ocaml.org/releases/" + version + "/manual/index.html";
         return "https://ocaml.org/releases/" + version + "/htmlman/index.html";
@@ -203,21 +206,16 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     //
 
     @Override public @Nullable String getDefaultDocumentationUrl(@NotNull Sdk sdk) {
-        String version = getMajorAndMinorVersion(sdk);
-        if (version == null) return null;
-        return getManualURL(version);
+        return getManualURL(sdk.getVersionString());
     }
 
     public @Nullable String getDefaultAPIUrl(@NotNull Sdk sdk) {
-        String version = getMajorAndMinorVersion(sdk);
-        if (version == null) return null;
-        return getApiURL(version);
+        return getApiURL(sdk.getVersionString());
     }
 
-    private @Nullable String getMajorAndMinorVersion(@NotNull Sdk sdk) {
-        String homePath = sdk.getHomePath();
-        if (homePath == null) return null;
-        String version = OCamlSdkVersionManager.parseWithoutModifier(homePath);
+    public static @Nullable String getMajorAndMinorVersion(@NotNull String version) {
+        if (!OCamlSdkVersionManager.isValid(version)) return null;
+        // if we got two ".", then we trunc the patch number
         int last = version.lastIndexOf('.');
         if (last != version.indexOf('.'))
             version = version.substring(0, last);

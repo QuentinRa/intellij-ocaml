@@ -1,16 +1,17 @@
 package com.ocaml.ide.highlight;
 
-import com.intellij.lexer.*;
-import com.intellij.openapi.editor.*;
-import com.intellij.openapi.editor.colors.*;
-import com.intellij.openapi.fileTypes.*;
+import com.intellij.lexer.Lexer;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.HighlighterColors;
+import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.psi.TokenType;
-import com.intellij.psi.tree.*;
-import com.or.lang.OCamlTypes;
+import com.intellij.psi.tree.IElementType;
 import com.ocaml.lang.lexer.OCamlLexerAdapter;
-import org.jetbrains.annotations.*;
+import com.or.lang.OCamlTypes;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Set;
 
 public class OCamlSyntaxHighlighter implements SyntaxHighlighter {
     /** create Text attributes **/

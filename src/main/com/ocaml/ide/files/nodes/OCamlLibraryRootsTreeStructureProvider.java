@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.sdk.utils.OCamlSdkRootsManager;
+import com.ocaml.utils.MayNeedToBeTested;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.function.Predicate;
 /**
  * Hides files that are not ending with either .ml or .mli
  */
+@MayNeedToBeTested
 public class OCamlLibraryRootsTreeStructureProvider implements TreeStructureProvider {
 
 

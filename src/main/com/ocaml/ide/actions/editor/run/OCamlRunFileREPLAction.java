@@ -37,6 +37,10 @@ public class OCamlRunFileREPLAction extends OCamlEditorActionBase {
         if (editor == null) return;
         Project project = e.getProject();
         if (project == null) return;
+        doAction(editor, project, runner);
+    }
+
+    public static void doAction(@NotNull Editor editor, Project project, OCamlConsoleRunner runner) {
         // find psiFile
         Document document = editor.getDocument();
         PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);

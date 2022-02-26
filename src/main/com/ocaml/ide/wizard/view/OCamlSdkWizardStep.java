@@ -24,7 +24,6 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.LabeledIcon;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
 import com.ocaml.OCamlPluginConstants;
@@ -76,11 +75,11 @@ import java.awt.*;
  *     <li><b>OK</b>: if we detect an "cygwin" SDK, then update libs with /lib/ocaml ({@link OCamlNativeDetector#detectNativeSdk(String)})</li>
  *     <li><b>OK</b>: allow the user of ocaml.exe</li>
  *     <li><b>OK</b>: messages with a path (ex: expected "/bin/ocaml"), should be changed if the path was \\bin\\ocaml)</li>
- *     <li><b>KO</b>: add "?" with a message</li>
+ *     <li><b>OK</b>: add "?" with a message</li>
  * </ul>
  *
  * @see ProjectJdkForModuleStep
- * @see SimpleSdkData for the creation of an opam-lie SDK
+ * @see SimpleSdkData for the creation of an opam-like SDK
  */
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;

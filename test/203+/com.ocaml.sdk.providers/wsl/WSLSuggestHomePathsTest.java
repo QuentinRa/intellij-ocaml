@@ -7,7 +7,7 @@ public final class WSLSuggestHomePathsTest extends WSLBaseTest {
 
     @Test
     public void testCygwinOpamSdksAreSuggested() {
-        if (passWSLTest()) return;
-        assertInstallationFolderWasSuggested(WSLFolders.OPAM_HOME);
+        if (folders.OPAM_HOME == null) return;
+        assertInstallationFolderWasSuggested(folders.OPAM_HOME);
     }
 }

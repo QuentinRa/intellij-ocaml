@@ -431,4 +431,82 @@ call(
 )
 </pre>
 </td></tr>
+
+<tr><td>14 (bug)</td><td><pre>
+let id s = s
+let _ = id id id id 0
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"test.ml" 58 763 771 "test.ml" 58 763 773
+type(
+  ((int -> int -> int) -> int -> int -> int) ->
+  (int -> int -> int) -> int -> int -> int
+)
+ident(
+  int_ref id "test.ml" 56 732 736 "test.ml" 56 732 738
+)
+</pre>
+</td></tr>
+
+<tr><td>15 (bug)</td><td><pre>
+let hd (l: 'a list)
+= List.hd l
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"err.ml" 1 0 8 "err.ml" 1 0 9
+type(
+  'a list
+)
+type(
+  'a list
+)
+ident(
+  def l "err.ml" 2 20 22 "err.ml" 2 20 31
+)
+</pre>
+</td></tr>
+
+<tr><td>16 (bug)</td><td><pre>
+let bump ?(step = 1) x = x + step
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"err.ml" 1 0 18 "err.ml" 1 0 19
+type(
+  int
+)
+type(
+  int option
+)
+type(
+  int option
+)
+type(
+  int
+)
+ident(
+  int_ref *sth* "err.ml" 1 0 18 "err.ml" 1 0 19
+)
+type(
+  int
+)
+type(
+  int option
+)
+type(
+  int option
+)
+ident(
+  def *sth* "err.ml" 1 0 18 "err.ml" 1 0 19
+)
+</pre>
+</td></tr>
 </table>

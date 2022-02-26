@@ -99,6 +99,12 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 | ✅ Show names before parameters   |
 | ✅ Show types with `CTRL+SHIFT+P` |
 
+| Editor for .annot                             |
+|-----------------------------------------------|
+| ✅ See the source next to the content          |
+| ✅ Can click in the editor ➡️ show in the tree |
+| ✅ Can click in the tree ➡️ show in the source |
+
 | Dune                                              |
 |---------------------------------------------------|
 | ✅ Import every feature in ReasonML                |
@@ -167,7 +173,7 @@ I do not have a computer with a macOS, so you should submit feedback, so that I 
 [Source](https://stackoverflow.com/questions/35563263/install-opam-in-mac-os).
 </details>
 
-* **Note**: if you got the error [Unbound module Stdlib](https://discuss.ocaml.org/t/unbound-module-stdllib/5133), ensure that the path to the ocaml library is valid (`ocamlc -config`). If you need to change it, set the environment variable called `OCAMLLIB`(ex: `"C:\Users\username\Desktop\4.13.1+mingw64c\lib\ocaml"`). **THIS IS DONE BY THE PLUGIN** (if needed).
+* **Note**: if you got the error [Unbound module Stdlib](https://discuss.ocaml.org/t/unbound-module-stdllib/5133), ensure that the path to the ocaml library is valid (see `ocamlc -config`). If you need to change it, set the environment variable called `OCAMLLIB`(ex: `"C:\Users\username\Desktop\4.13.1+mingw64c\lib\ocaml"`). **THIS IS DONE BY THE PLUGIN** (only for Cygwin SDKs, fill an issue if needed for others).
 
 ## 📄 License
 

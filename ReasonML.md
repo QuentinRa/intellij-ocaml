@@ -29,7 +29,7 @@ This is the list features that I added directly into the code of the ReasonML pl
 This is a list of bugs in this version of the ReasonML plugin.
 
 * ✅ (not sure if it's a bug in ReasonML): copyToTempFile (psiFile.getText()) should be called in a RunAction
-* ❌ invalid highlight (https://github.com/QuentinRa/intellij-ocaml/issues/45)
+* ✅ invalid highlight (https://github.com/QuentinRa/intellij-ocaml/issues/45)
   * Removing ERASE_MARKER in annotator
   * Every other case was from my side of the Lexer
 * ❌ bug with the resolver (https://github.com/QuentinRa/intellij-ocaml/issues/62)

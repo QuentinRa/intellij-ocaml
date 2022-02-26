@@ -73,8 +73,16 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
             return;
         }
 
-        // trim
-        textOriginal = textOriginal.trim() + "\n";
+        // trim if not a suite of ^
+        if (!textOriginal.trim().replace(OCamlREPLConstants.ERROR_INDICATOR,"").isBlank()) {
+            textOriginal = textOriginal.trim() + "\n";
+        }
+
+        // issue 80: remove the leading stars
+        // these are "returned" by ocaml for multilines comments
+        while (textOriginal.startsWith("*")) {
+            textOriginal = textOriginal.substring(1).stripLeading();
+        }
 
         if (waitForEcho) {
             // we are waiting for the echo of the user input
@@ -96,7 +104,8 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
     }
 
     private boolean isPrompt(@NotNull String textOriginal) {
-        return textOriginal.replace(OCamlREPLConstants.PROMPT,"").trim().isEmpty();
+        return textOriginal.replace(OCamlREPLConstants.PROMPT,"")
+                .replace(OCamlREPLConstants.PROMPT_COMMENT, "").trim().isEmpty();
     }
 
     // implementation

@@ -113,7 +113,7 @@ public class OCamlFindFunction {
 
             if (elementType.equals(OCamlTypes.RPAREN)) {
                 // we are moving from ')' to before '('
-                PsiElement newPrev  = OCamlPsiUtils.getPreviousMeaningfulNextSibling(caret, OCamlTypes.LPAREN);
+                PsiElement newPrev  = OCamlPsiUtils.getPreviousMeaningfulSibling(caret, OCamlTypes.LPAREN);
                 if (newPrev != null)
                     // get out of the Scoped expression
                     // unit = value => new argument

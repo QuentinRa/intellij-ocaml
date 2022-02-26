@@ -7,6 +7,7 @@ import com.intellij.execution.wsl.WSLDistribution;
 import com.intellij.execution.wsl.WslPath;
 import com.intellij.openapi.options.ConfigurationException;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
+import com.ocaml.sdk.utils.SdkInfo;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,16 +16,18 @@ import java.util.ArrayList;
 public class WSLCreateSimpleSdkTest extends WSLBaseTest {
 
     private void assertCreate(int i) {
-        if (passWSLTest()) return;
+        SdkInfo binCreateSdk = folders.BIN_CREATE_SDK;
+        if (binCreateSdk == null) return; // cannot test
+
         ArrayList<String> homes = new ArrayList<>();
         try {
             try {
                 for (; i > 0 ; i--) {
                     SimpleSdkData simpleSdkData = new SimpleSdkData(
-                            WSLFolders.BIN_CREATE_SDK.toplevel,
-                            WSLFolders.BIN_CREATE_SDK.comp,
-                            WSLFolders.BIN_CREATE_SDK.version,
-                            WSLFolders.BIN_CREATE_SDK.sources
+                            binCreateSdk.toplevel,
+                            binCreateSdk.comp,
+                            binCreateSdk.version,
+                            binCreateSdk.sources
                     );
                     homes.add(simpleSdkData.homePath);
                     assertWSLHomeValid(simpleSdkData.homePath);
@@ -33,7 +36,7 @@ public class WSLCreateSimpleSdkTest extends WSLBaseTest {
                 fail(e.getMessage());
             }
         } finally {
-            WslPath path = WslPath.parseWindowsUncPath(WSLFolders.BIN_CREATE_SDK.toplevel);
+            WslPath path = WslPath.parseWindowsUncPath(binCreateSdk.toplevel);
             assert path != null; // it should have been not null
             WSLDistribution distribution = path.getDistribution();
             WSLCommandLineOptions options = new WSLCommandLineOptions();

@@ -43,13 +43,16 @@ public abstract class OCamlEditorActionBase extends DumbAwareAction implements O
             notification.mySubtitle = OCamlBundle.message("repl.no.started.title");
             notification.myNotificationType = NotificationType.ERROR;
             OCamlNotifications.notify(notification);
+        } else if (runner.isNotAbleToRun()) {
+            var notification = new OCamlNotificationData(OCamlBundle.message("repl.run.command.no.sdk"));
+            notification.mySubtitle = OCamlBundle.message("repl.run.command.no.sdk.info");
+            notification.myNotificationType = NotificationType.ERROR;
+            OCamlNotifications.notify(notification);
         } else {
-            // FIX - should not be called if no runner
             doActionPerformed(e, runner);
         }
     }
 
     protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
-
     }
 }

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class OCamlConsoleToolWindowFactory implements ToolWindowFactory, DumbAware {
 
-    private static OCamlConsoleRunner myOCamlConsoleRunner;
+    private static OCamlConsoleRunnerImpl myOCamlConsoleRunner;
 
     public static OCamlConsoleRunner getOCamlConsoleRunner() {
         return myOCamlConsoleRunner;
@@ -35,7 +35,7 @@ public class OCamlConsoleToolWindowFactory implements ToolWindowFactory, DumbAwa
     public void createToolWindowContent(@NotNull final Project project, @NotNull ToolWindow window) {
         // Start
         ApplicationManager.getApplication().invokeLater(() -> {
-            myOCamlConsoleRunner = new OCamlConsoleRunner(project, window);
+            myOCamlConsoleRunner = new OCamlConsoleRunnerImpl(project, window);
             myOCamlConsoleRunner.runSync();
         });
     }
@@ -45,7 +45,7 @@ public class OCamlConsoleToolWindowFactory implements ToolWindowFactory, DumbAwa
             myOCamlConsoleRunner.destroy();
             // Start again
             ApplicationManager.getApplication().invokeLater(() -> {
-                myOCamlConsoleRunner = new OCamlConsoleRunner(project, myOCamlConsoleRunner.getWindow());
+                myOCamlConsoleRunner = new OCamlConsoleRunnerImpl(project, myOCamlConsoleRunner.getWindow());
                 myOCamlConsoleRunner.runSync();
             });
         }

@@ -1,18 +1,20 @@
 package com.ocaml.ide.insight;
 
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.ocaml.sdk.annot.OCamlAnnotParser;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 public final class OCamlAnnotResultsService {
-    public final HashMap<String, List<OCamlInferredSignature>> results = new HashMap<>();
+    public final HashMap<String, HashMap<TextRange, OCamlInferredSignature>> results = new HashMap<>();
 
     /**
      * Update the list of annotation of a file, given its associated annotFile
@@ -27,7 +29,7 @@ public final class OCamlAnnotResultsService {
             while ((s = r.readLine()) != null) b.append(s).append('\n');
             // parse
             OCamlAnnotParser parser = new OCamlAnnotParser(b.toString());
-            ArrayList<OCamlInferredSignature> res = parser.get();
+            HashMap<TextRange, OCamlInferredSignature> res = parser.getIndexedByRange();
             results.put(file, res);
         } catch (IOException | IllegalStateException e) {
             // todo: log
@@ -47,16 +49,16 @@ public final class OCamlAnnotResultsService {
 
     public @Nullable OCamlInferredSignature findAnnotationFor(@NotNull PsiElement element) {
         String path = element.getContainingFile().getVirtualFile().getPath();
-        List<OCamlInferredSignature> inferredSignatures = results.get(path);
-        if (inferredSignatures == null) return null;
-        // todo: log ?
-//        System.out.println("r:"+element.getTextRange());
-        for (OCamlInferredSignature inferredSignature : inferredSignatures) {
-            // todo: log ?
-//            System.out.println("testing with "+inferredSignature);
-            if (inferredSignature.range.contains(element.getTextRange()))
-                return inferredSignature;
-        }
-        return null;
+        HashMap<TextRange, OCamlInferredSignature> rangeToSignature = results.get(path);
+        // should not occur
+        if (rangeToSignature == null) return null;
+        // return annotation
+        return rangeToSignature.get(element.getTextRange());
+    }
+
+    public boolean hasInfoForElement(@NotNull PsiElement element) {
+        String path = element.getContainingFile().getVirtualFile().getPath();
+        HashMap<TextRange, OCamlInferredSignature> rangeToSignature = results.get(path);
+        return rangeToSignature != null && rangeToSignature.containsKey(element.getTextRange());
     }
 }
