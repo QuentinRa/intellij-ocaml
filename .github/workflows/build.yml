@@ -130,7 +130,7 @@ jobs:
       # For each "version" of IntelliJ
       - name: Use gradle-${{ matrix.platform-version }}.properties (Linux)
         if: runner.os != 'Windows'
-        run: sed -i 's/platformVersion=[^\n]*/platformVersion=aza/g' ./gradle.properties
+        run: sed -i 's/platformVersion=[^\n]*/platformVersion=${{ matrix.platform-version }}/g' ./gradle.properties
       - name: Use gradle-${{ matrix.platform-version }}.properties (Windows)
         if: runner.os == 'Windows'
         run: sed -i 's/platformVersion=[^\n]*/platformVersion=aza/g' .\gradle.properties
