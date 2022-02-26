@@ -10,8 +10,11 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.ocaml.ide.files.FileHelper;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
+import com.ocaml.utils.files.OCamlProjectFilesUtils;
+import com.ocaml.utils.sdk.OCamlSdkUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +25,9 @@ public class OCamlFileEditorProvider implements DumbAware, FileEditorProvider {
     }
 
     @Override public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {
-        FileTypeRegistry fileTypeRegistry = FileTypeRegistry.getInstance();
-        // not excluded, nor ignored, and in a source folder
-        return ProjectFileIndex.getInstance(project).isInSourceContent(file)
-                && // and either .ml or .mli
-                (fileTypeRegistry.isFileOfType(file, OCamlFileType.INSTANCE)
-                        || fileTypeRegistry.isFileOfType(file, OCamlInterfaceFileType.INSTANCE));
+        return FileHelper.isOCaml(file)
+                && OCamlProjectFilesUtils.isInProject(project, file)
+                && OCamlSdkUtils.isNotExcluded(project, file);
     }
 
     @Override public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {

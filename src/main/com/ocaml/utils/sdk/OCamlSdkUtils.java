@@ -6,6 +6,7 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.ocaml.sdk.OCamlSdkType;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,13 @@ public class OCamlSdkUtils {
                 return sdk;
         }
         return null;
+    }
+
+    @SuppressWarnings("unused")
+    public static boolean isInSource(Project project, VirtualFile file) {
+        // not excluded, nor ignored, and in a source folder
+        return ProjectFileIndex.getInstance(project).isInSourceContent(file);
+
     }
 
     /** is not in a folder marked as "excluded" **/
