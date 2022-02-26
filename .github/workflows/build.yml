@@ -32,7 +32,7 @@ jobs:
           - ubuntu-latest
           - windows-latest
         ocaml-compiler:
-          - 4.05.1
+          - 4.05.0
           - 4.08.1
           - 4.13.1
         platform-version: # 221?
