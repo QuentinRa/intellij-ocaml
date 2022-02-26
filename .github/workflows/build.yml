@@ -29,16 +29,16 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+#          - ubuntu-latest
           - windows-latest
         ocaml-compiler:
           - 4.05.x
-          - 4.08.x
-          - 4.13.x
+#          - 4.08.x
+#          - 4.13.x
         platform-version: # 221?
-          - 203
-          - 211
-          - 212
+#          - 203
+#          - 211
+#          - 212
           - 213
 
     runs-on: ${{ matrix.os }}
@@ -92,6 +92,8 @@ jobs:
         run: |
           D:\\cygwin\\home\\runneradmin\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocaml -vnum
           D:\\cygwin\\home\\runneradmin\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlc -vnum
+          D:\\cygwin\\home\\runneradmin\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocaml.exe -vnum
+          D:\\cygwin\\home\\runneradmin\\.opam\\${{ matrix.ocaml-compiler }}\\bin\\ocamlc.exe -vnum
         env:
           OCAMLLIB: "D:\\cygwin\\home\\runneradmin\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml"
 
@@ -148,7 +150,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           ./gradlew build
-          ./gradlew test
+          ./gradlew -i test
         env:
           OCAMLLIB: "D:\\cygwin\\home\\runneradmin\\.opam\\${{ matrix.ocaml-compiler }}\\lib\\ocaml"
 
