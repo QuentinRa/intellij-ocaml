@@ -12,7 +12,7 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] Support for Dune (already supported in ReasonML)
 * [x] Any installation must be simple, and effortless
 * [ ] **Real-time checks for errors/warnings**, including quick fixes
-* [ ] **Real-time type inference**
+* [x] **Real-time type inference**
 * [ ] **Smart completion**
 * [x] **REPL support**: we must be able to send commands from our file, to a REPL console
 * [x] **Using a bundle** (possible support for Localization later)

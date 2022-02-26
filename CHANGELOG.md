@@ -6,11 +6,10 @@ The plugin is experimental. You should implement any feature directly in the [Re
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.2.0-EAP]
 ### Added
-- ~~🚀 parameters names are shown before parameters (#38)~~
-- 🚀 can see the type with `CTRL+SHIFT+P` (#38)
-- 🚀 Editor for .annot. (#38)
+- 🚀 can see the type with `CTRL+SHIFT+P` (#38 ➡️ #88)
+- 🚀 Editor for .annot. (#38 ➡️ #87)
 
 ## [0.1.0]
 
