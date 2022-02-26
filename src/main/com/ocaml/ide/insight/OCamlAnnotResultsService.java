@@ -13,8 +13,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
-// todo: handle empty file
-// todo: fix problem with type type?
 public final class OCamlAnnotResultsService {
     public final HashMap<String, HashMap<TextRange, OCamlInferredSignature>> results = new HashMap<>();
 
@@ -31,7 +29,7 @@ public final class OCamlAnnotResultsService {
             while ((s = r.readLine()) != null) b.append(s).append('\n');
             // parse
             OCamlAnnotParser parser = new OCamlAnnotParser(b.toString());
-            HashMap<TextRange, OCamlInferredSignature> res = parser.get();
+            HashMap<TextRange, OCamlInferredSignature> res = parser.getIndexedByRange();
             results.put(file, res);
         } catch (IOException | IllegalStateException e) {
             // todo: log

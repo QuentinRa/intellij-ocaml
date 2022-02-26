@@ -36,7 +36,11 @@ public class OCamlAnnotParser {
      * Parse and return the result of the parsing
      * @return list of signature that were found in the file
      */
-    public HashMap<TextRange, OCamlInferredSignature> get() {
+    public ArrayList<OCamlInferredSignature> get() {
+        return new ArrayList<>(getIndexedByRange().values());
+    }
+
+    public HashMap<TextRange, OCamlInferredSignature> getIndexedByRange() {
         HashMap<TextRange, OCamlInferredSignature> elements = new HashMap<>();
         if (this.lines.length == 0) return elements; // fix empty .annot
         AnnotParserState state = parseInstruction();
@@ -50,11 +54,6 @@ public class OCamlAnnotParser {
             state = parseInstruction();
         }
         return elements;
-    }
-
-    // Backward compatibility
-    public ArrayList<OCamlInferredSignature> getAsList() {
-        return new ArrayList<>(get().values());
     }
 
     private @Nullable AnnotParserState parseInstruction() {

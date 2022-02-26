@@ -8,8 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
-- 🚀 parameters names are shown before parameters (#38)
+- ~~🚀 parameters names are shown before parameters (#38)~~
 - 🚀 can see the type with `CTRL+SHIFT+P` (#38)
+- 🚀 Editor for .annot. (#38)
 
 ## [0.1.0-EAP]
 
@@ -17,9 +18,6 @@ Finally, the first version is here 🤩🚀! I fixed a lot of bugs, and added te
 
 ### Internal
 - 🚀🚀 Remade of the test infrastructure to support workflows, and fix/detected bugs easily by adding a whole set of tests for every feature (🥲)
-
-### Added
-- 🚀 Editor for .annot. (#38)
 
 ### Changed
 - ✨ Wider range of ocaml versions, but the "-" modifier isn't allowed any more. (#81)
