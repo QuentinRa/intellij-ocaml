@@ -27,19 +27,22 @@ jobs:
 
     strategy:
       fail-fast: false
+      # number of tests = card(os) * card(ocaml-compiler) * card(platform-version)
+      #                 = 20
       matrix:
         os:
           - ubuntu-latest
           - windows-latest
         ocaml-compiler:
           - 4.05.0
-          - 4.08.1
+#          - 4.08.1
           - 4.13.1
-        platform-version: # 221?
+        platform-version:
           - 203
           - 211
           - 212
           - 213
+          - 221
 
     runs-on: ${{ matrix.os }}
 

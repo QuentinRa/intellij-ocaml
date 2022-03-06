@@ -13,6 +13,12 @@ testlogger {
     showSkipped false
 }
 
+switch (platformType) {
+    case "IC": break
+    case "IU": break
+    default: throw new IllegalStateException("Unexpected IDE name '"+platformType+"'" as String)
+}
+
 // The same as `--stacktrace` param
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
 
@@ -36,8 +42,11 @@ configurations {
 group = 'com.ocaml'
 version = "$majorVersion.$minorVersion.$patchVersion-$platformVersion" as String
 
+// fallback to ideVersion
+String targetVersion = !hasProperty('ideRelease') ? ideVersion : platformType+"-"+ideRelease
+
 intellij {
-    version = ideaVersion
+    version = targetVersion
     pluginName = "intellij-ocaml"
     plugins = [
             'java',
@@ -118,7 +127,7 @@ runIde {
 
 // https://plugins.jetbrains.com/docs/intellij/api-changes-list.html
 runPluginVerifier {
-    ideVersions = [ideaVersion]
+    ideVersions = [targetVersion]
 }
 
 test {

@@ -9,6 +9,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.ocaml.lang.core.PsiFakeLet;
+import com.ocaml.utils.adaptor.RequireJavaPlugin;
 import com.or.ide.search.index.LetFqnIndex;
 import com.or.lang.core.psi.PsiParameter;
 import com.or.lang.core.psi.*;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+@RequireJavaPlugin(what = "CompilerManager")
 @Deprecated(forRemoval = true) @SuppressWarnings("UnstableApiUsage")
 public class OCamlParameterNameHints implements InlayParameterHintsProvider {
 

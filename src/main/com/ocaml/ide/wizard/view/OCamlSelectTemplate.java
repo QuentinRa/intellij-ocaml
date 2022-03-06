@@ -26,6 +26,7 @@ import com.intellij.platform.ProjectTemplate;
 import com.intellij.ui.components.JBCheckBox;
 import com.ocaml.OCamlBundle;
 import com.ocaml.ide.wizard.OCamlModuleBuilder;
+import com.ocaml.utils.adaptor.RequireJavaPlugin;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
  *
  * @see com.intellij.ide.projectWizard.ChooseTemplateStep
  */
+@RequireJavaPlugin(what = "ProjectTemplateList")
 public class OCamlSelectTemplate extends ModuleWizardStep {
     private final WizardContext myWizardContext;
     private final ArrayList<ProjectTemplate> myAvailableTemplates;

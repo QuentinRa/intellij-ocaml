@@ -9,9 +9,11 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.ocaml.sdk.OCamlSdkType;
+import com.ocaml.utils.adaptor.RequireJavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@RequireJavaPlugin(what = "CompilerManager")
 public class OCamlSdkUtils {
 
     /** Get the SDK for the module which contains this file **/

@@ -34,6 +34,7 @@ import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
+import com.ocaml.utils.adaptor.RequireJavaPlugin;
 import com.ocaml.utils.adaptor.ui.JdkComboBoxAdaptor;
 import com.ocaml.utils.listener.DeferredDocumentListener;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +82,7 @@ import java.awt.*;
  * @see ProjectJdkForModuleStep
  * @see SimpleSdkData for the creation of an opam-like SDK
  */
+@RequireJavaPlugin(what = "ProjectJdkForModuleStep, JavaUiBundle, ProjectStructureConfigurable")
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;
     @NotNull private final OCamlModuleBuilder myModuleBuilder;

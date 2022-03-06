@@ -1,5 +1,7 @@
 package com.ocaml.ide.highlight;
 
+import com.ocaml.utils.adaptor.RequireJavaPlugin;
+
 import com.intellij.ide.highlighter.JavaHighlightingColors;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -17,6 +19,7 @@ import java.util.regex.Pattern;
  * Add some brown for "parameters" (values between [], regardeless of the content)
  * in the documentation.
  */
+@RequireJavaPlugin(what = "JavaHighlightingColors")
 public class OCamlDocumentationAnnotator implements Annotator {
 
     public static final Pattern PARAMETERS_MATCHER = Pattern.compile("(\\[[^]]*])");
