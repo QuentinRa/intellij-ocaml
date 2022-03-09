@@ -62,6 +62,7 @@
         <moduleBuilder builderClass="com.ocaml.ide.wizard.OCamlModuleBuilder" order="first"/>
         <moduleType id="OCAML_MODULE" implementationClass="com.ocaml.ide.module.OCamlModuleType"/>
         <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
+        <directoryProjectGenerator implementation="com.ocaml.ide.wizard.minor.OCamlDirectoryProjectGenerator"/>
 
         <!-- SDK -->
         <sdkType implementation="com.ocaml.sdk.OCamlSdkType"/>
