@@ -27,15 +27,19 @@ public class OCamlSdkUtils {
         return null;
     }
 
-    @SuppressWarnings("unused")
-    public static boolean isInSource(Project project, VirtualFile file) {
+    private static boolean isInProject(Project project, VirtualFile file) {
         // not excluded, nor ignored, and in a source folder
-        return ProjectFileIndex.getInstance(project).isInSourceContent(file);
-
+        return ProjectFileIndex.getInstance(project).isInContent(file);
     }
 
     /** is not in a folder marked as "excluded" **/
     public static boolean isNotExcluded(Project project, VirtualFile virtualFile) {
-        return !CompilerManager.getInstance(project).isExcludedFromCompilation(virtualFile);
+        try {
+            Class.forName("CompilerManager");
+            return !CompilerManager.getInstance(project).isExcludedFromCompilation(virtualFile);
+        } catch (ClassNotFoundException e) {
+            // if not defined, check if we are in the project
+            return isInProject(project, virtualFile);
+        }
     }
 }

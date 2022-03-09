@@ -1,8 +1,8 @@
 package com.ocaml.ide.highlight;
 
-import com.ocaml.utils.adaptor.RequireJavaPlugin;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.colors.TextAttributesKey;
 
-import com.intellij.ide.highlighter.JavaHighlightingColors;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -19,8 +19,12 @@ import java.util.regex.Pattern;
  * Add some brown for "parameters" (values between [], regardeless of the content)
  * in the documentation.
  */
-@RequireJavaPlugin(what = "JavaHighlightingColors")
 public class OCamlDocumentationAnnotator implements Annotator {
+
+    // extracted from JavaHighlightingColors
+    public static final TextAttributesKey DOC_COMMENT_TAG_VALUE =
+            TextAttributesKey.createTextAttributesKey("DOC_COMMENT_TAG_VALUE",
+                    DefaultLanguageHighlighterColors.DOC_COMMENT_TAG_VALUE);
 
     public static final Pattern PARAMETERS_MATCHER = Pattern.compile("(\\[[^]]*])");
 
@@ -33,7 +37,7 @@ public class OCamlDocumentationAnnotator implements Annotator {
         while (matcher.find()) {
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                     .range(range.cutOut(new TextRange(matcher.start(), matcher.end())))
-                    .textAttributes(JavaHighlightingColors.DOC_COMMENT_TAG_VALUE).create();
+                    .textAttributes(DOC_COMMENT_TAG_VALUE).create();
         }
     }
 }

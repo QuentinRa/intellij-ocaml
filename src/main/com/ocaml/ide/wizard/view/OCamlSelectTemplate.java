@@ -38,7 +38,7 @@ import java.util.ArrayList;
  *
  * @see com.intellij.ide.projectWizard.ChooseTemplateStep
  */
-@RequireJavaPlugin(what = "ProjectTemplateList")
+@RequireJavaPlugin(what = "ProjectTemplateList -> need UI file so can't be replaced")
 public class OCamlSelectTemplate extends ModuleWizardStep {
     private final WizardContext myWizardContext;
     private final ArrayList<ProjectTemplate> myAvailableTemplates;

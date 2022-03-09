@@ -61,6 +61,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
         // output folder
         CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
+        if (compilerModuleExtension == null) return null; // was null in CLion
         VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
         String outputFolder = outputPointer.getPresentableUrl() + TEMP_COMPILATION_FOLDER;
 

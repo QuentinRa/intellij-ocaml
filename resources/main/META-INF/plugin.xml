@@ -50,6 +50,10 @@
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="F11" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F11" replace-all="true"/>
         </action>
+        <!-- setup SDK -->
+        <action id="OCaml.SelectSDK" class="com.ocaml.ide.module.select.SelectSDKAction">
+            <add-to-group group-id="ToolbarRunGroup" anchor="first" />
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
