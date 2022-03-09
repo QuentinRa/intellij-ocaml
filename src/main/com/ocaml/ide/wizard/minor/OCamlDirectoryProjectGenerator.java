@@ -1,8 +1,12 @@
 package com.ocaml.ide.wizard.minor;
 
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.ProjectJdkTable;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.impl.welcomeScreen.AbstractActionWithPanel;
@@ -22,6 +26,7 @@ import javax.swing.*;
  */
 public class OCamlDirectoryProjectGenerator extends DirectoryProjectGeneratorBase<Object>
         implements CustomStepProjectGenerator<Object>, ProjectTemplate {
+    private OCamlSdkComboBox sdkChooser;
 
     // data
 
@@ -59,6 +64,21 @@ public class OCamlDirectoryProjectGenerator extends DirectoryProjectGeneratorBas
 
     @Override
     public void generateProject(@NotNull Project project, @NotNull VirtualFile baseDir, @NotNull Object settings, @NotNull Module module) {
-        // ...
+        // add sdk
+        Sdk sdk = sdkChooser.getSelectedSdk();
+        if (sdk != null) { // todo: verify
+            var jdkTable = ProjectJdkTable.getInstance();
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                // add to the table if needed
+                if (jdkTable.findJdk(sdk.getName()) == null)
+                    jdkTable.addJdk(sdk);
+                // set
+                ProjectRootManager.getInstance(project).setProjectSdk(sdk);
+            });
+        }
+    }
+
+    public void setSdkChooser(OCamlSdkComboBox sdkChooser) {
+        this.sdkChooser = sdkChooser;
     }
 }
