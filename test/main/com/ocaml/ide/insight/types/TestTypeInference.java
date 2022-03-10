@@ -1,43 +1,51 @@
 package com.ocaml.ide.insight.types;
 
-import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.ocaml.ide.OCamlIdeTest;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.ide.insight.OCamlTypeInfoHint;
 import org.intellij.lang.annotations.Language;
-import org.junit.Ignore;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.File;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-@Ignore
 public class TestTypeInference extends OCamlIdeTest {
 
     private static final String FILE_NAME = "types.ml";
     private static final String FILE_NAME_ANNOT = "types.annot";
 
-    private void doTest(int line, int column, String expectedType) {
+    private void doTest(@NotNull String text, String expectedType) {
         @Language("OCaml") String code = loadFile(FILE_NAME);
         assertNotNull(code);
 
         // create file
         PsiFile file = myFixture.configureByText(FILE_NAME, code);
-
-        int offset = myFixture.getEditor().logicalPositionToOffset(new LogicalPosition(line-1, column-1));
-        PsiElement elementAt = file.findElementAt(offset);
-        assertNotNull(elementAt);
+        int i = file.getText().indexOf(text.replace("(*caret*)", ""));
+        i += text.indexOf("(*caret*)")-1;
+        PsiElement caret = file.findElementAt(i);
+        assertNotNull(caret);
 
         // load annotations
         OCamlAnnotResultsService annot = getProject().getService(OCamlAnnotResultsService.class);
         File annotations = new File(getTestDataPath(), FILE_NAME_ANNOT);
-        annot.updateForFile(elementAt.getContainingFile().getVirtualFile().getPath(), annotations);
+        annot.updateForFile(caret.getContainingFile().getVirtualFile().getPath(), annotations);
 
         OCamlTypeInfoHint infoHint = new OCamlTypeInfoHint();
-        String type = infoHint.getInformationHint(elementAt);
+        String type = infoHint.getInformationHint(caret);
+        if (expectedType == null) expectedType = OCamlTypeInfoHint.UNKNOWN_TYPE;
+        System.out.println("  for "+text+" exp"+expectedType+" was "+type);
         assertEquals(expectedType, type);
+    }
+
+    private void assertInvalid(String text) {
+        doTest(text, null);
+    }
+
+    private void assertValid(String text, String expectedType) {
+        doTest(text, expectedType);
     }
 
     @Override protected String getCustomTestDataPath() {
@@ -49,66 +57,70 @@ public class TestTypeInference extends OCamlIdeTest {
     // in the editor. Change the tests if that's a bother.
 
     @Test
-    public void testSimpleVariable1() {
-        doTest(1, 5, "int");
+    public void testLet() {
+        assertInvalid("let(*caret*) x = 5");
+        assertValid("let x(*caret*) = 5", "int");
+        assertValid("let _(*caret*) = 5", "int");
+        assertInvalid("let x =(*caret*) 5");
+        assertValid("let x = 5(*caret*)", "int");
     }
 
     @Test
-    public void testSimpleVariable2() {
-        doTest(4, 5, "int");
+    public void testLiterals() {
+        assertValid("true(*caret*)", "bool");
+        assertValid("false(*caret*)", "bool");
+        assertValid("5(*caret*)", "int");
+        assertValid("5.0(*caret*)", "float");
+        assertValid("\"Hello, World!\"(*caret*)", "string");
+        // todo: assertValid("()(*caret*)", "unit");
+        // todo: assertValid("{ n = 5 }(*caret*)", "s");
     }
 
     @Test
-    public void testSimpleVariable3() {
-        doTest(6, 15, "int");
+    public void testFunctions() {
+        assertValid("let f1(*caret*) x y = ()", "'a -> 'b -> unit");
+        assertValid("let f1 x y(*caret*) = ()", "'b");
+        assertValid("let f2 = fun x -> fun y(*caret*) -> ()", "'b");
+        assertInvalid("let f2 = fun(*caret*) x -> fun y -> ()");
     }
 
     @Test
-    public void testSimpleVariable4() {
-        doTest(10, 8, "int");
+    public void testFunctionFun() {
+        assertValid("let derivative dx f = fun x(*caret*) -> (f (x +. dx) -. f x) /. dx",
+                "float");
     }
 
     @Test
-    public void testFunction1() {
-        doTest(12, 5, "'a -> 'a -> 'a");
+    public void testList() {
+        // todo: fix
+        assertInvalid("let li = 1::2::3::[](*caret*)");
+        assertInvalid("[1; 2; 3](*caret*)");
     }
 
     @Test
-    public void testParam1() {
-        doTest(12, 8, "'a");
+    public void testMatch() {
+        assertInvalid("| Num(*caret*) i -> i"); // todo: ...
+        assertValid("| Num i(*caret*) -> i", "int");
+        assertValid("| Num i -> i(*caret*)", "int");
+        assertInvalid("List(*caret*).assoc x"); // todo: ...
+        assertInvalid("List.assoc(*caret*) x"); // todo: ...
+        assertValid("List.assoc x(*caret*)", "string");
+        assertValid("(x(*caret*), e1, in_e2)", "string");
+        assertValid("eval env e1(*caret*)", "expr");
+        assertValid("((x, val_x(*caret*))", "int");
+        assertValid("eval_op(*caret*) op v1 v2", "string -> int -> int -> int");
+        assertValid("eval_op(*caret*) op v1 v2", "string -> int -> int -> int");
+        assertValid("eval_op op(*caret*) v1 v2", "string");
+        assertValid("v1(*caret*) + v2", "int");
+        assertValid("v1 +(*caret*) v2", "int -> int -> int");
+        assertValid("\"-\"(*caret*) -> v1 - v2", "string");
+        assertValid("\"-\" -> v1 -(*caret*) v2", "int -> int -> int");
+        assertValid("\"*\" -> v1 *(*caret*) v2", "int -> int -> int");
+        assertValid("\"/\" -> v1 /(*caret*) v2", "int -> int -> int");
+        assertValid("(\"Unknown operator: \"(*caret*) ^ op)", "string");
+        assertValid("(\"Unknown operator: \" ^(*caret*) op)", "string -> string -> string");
+        assertValid("(\"Unknown operator: \" ^ op(*caret*))", "string");
+        assertValid("match op(*caret*) with", "string");
+        assertValid("| _(*caret*) ->", "string");
     }
-
-    @Test
-    public void testFunction2() {
-        doTest(12, 14, "'a -> 'a -> 'a");
-    }
-
-    @Test
-    public void testParam2() {
-        doTest(12, 20, "'a");
-    }
-
-    @Test
-    public void testSimpleVariable5() {
-        doTest(25, 9, "string");
-    }
-
-    @Test
-    public void testFunction3() {
-        doTest(26, 9, "'a -> 'a");
-    }
-
-    @Test
-    public void testFunction4() {
-        doTest(44, 35, "'a -> 'a -> int");
-    }
-
-    // Bugs
-
-    @Test
-    public void testBugLongType() {
-        doTest(58, 9, "((int -> int -> int) -> int -> int -> int) -> (int -> int -> int) -> int -> int -> int");
-    }
-
-    // todo: test with bugs from the parser
 }
