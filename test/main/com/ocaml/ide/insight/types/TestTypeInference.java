@@ -113,8 +113,6 @@ public class TestTypeInference extends OCamlIdeTest {
         assertInvalid("| Num(*caret*) i -> i"); // todo: ...
         assertValid("| Num i(*caret*) -> i", "int");
         assertValid("| Num i -> i(*caret*)", "int");
-        assertInvalid("List(*caret*).assoc x"); // todo: ...
-        assertInvalid("List.assoc(*caret*) x"); // todo: ...
         assertValid("List.assoc x(*caret*)", "string");
         assertValid("(x(*caret*), e1, in_e2)", "string");
         assertValid("eval env e1(*caret*)", "expr");
@@ -133,5 +131,11 @@ public class TestTypeInference extends OCamlIdeTest {
         assertValid("(\"Unknown operator: \" ^ op(*caret*))", "string");
         assertValid("match op(*caret*) with", "string");
         assertValid("| _(*caret*) ->", "string");
+    }
+
+    @Test
+    public void testWithIdentifier() {
+        assertValid("List(*caret*).assoc x", "string -> (string * int) list -> int");
+        assertValid("List.assoc(*caret*) x", "string -> (string * int) list -> int");
     }
 }
