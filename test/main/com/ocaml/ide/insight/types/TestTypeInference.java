@@ -39,15 +39,20 @@ public class TestTypeInference extends OCamlIdeTest {
         if (expectedType == null) assertEmpty(infoHint.getExpressionsAt(caret));
         else {
             List<PsiElement> expressionsAt = infoHint.getExpressionsAt(caret);
+            StringBuilder elements = new StringBuilder("[");
             boolean ok = false;
             for (PsiElement psiElement : expressionsAt) {
                 // check type
                 String type = infoHint.getInformationHint(psiElement);
+                elements.append(type).append(',');
                 if (!type.equals(expectedType)) continue;
                 ok = true;
                 break;
             }
-            assertTrue(ok);
+            elements.append("]");
+
+
+            assertTrue("Could not find type:"+expectedType+" in " +elements+" for "+text, ok);
         }
     }
 
@@ -114,13 +119,13 @@ public class TestTypeInference extends OCamlIdeTest {
 
     @Test
     public void testMatch() {
+        assertValid("| Num(*caret*) i -> i", "expr");
         assertValid("| Num i(*caret*) -> i", "int");
         assertValid("| Num i -> i(*caret*)", "int");
         assertValid("List.assoc x(*caret*)", "string");
         assertValid("(x(*caret*), e1, in_e2)", "string");
         assertValid("eval env e1(*caret*)", "expr");
         assertValid("((x, val_x(*caret*))", "int");
-        assertValid("eval_op(*caret*) op v1 v2", "string -> int -> int -> int");
         assertValid("eval_op(*caret*) op v1 v2", "string -> int -> int -> int");
         assertValid("eval_op op(*caret*) v1 v2", "string");
         assertValid("v1(*caret*) + v2", "int");
@@ -136,23 +141,16 @@ public class TestTypeInference extends OCamlIdeTest {
         assertValid("| _(*caret*) ->", "string");
     }
 
+    @Test
+    public void testFun() {
+        assertValid("let f2 = fun(*caret*) x -> fun y -> ()", "'a -> 'b -> unit");
+    }
+
     // hum, these are okay, but this was not what I was expecting
-    // like, I was expecting expr, but I'm too lazy to fix that
+    // like, I was expecting the type of List.assoc, but I'm too lazy to fix that
     // because it's finally working :3
     //
     // Note: this is behaving like in Java. PRs are welcome.
-
-    @Test
-    public void testStatement() {
-//        assertValid("| Num(*caret*) i -> i", "expr");
-        assertValid("| Num(*caret*) i -> i", "expr -> int");
-    }
-
-    @Test
-    public void testFun() {
-//        assertInvalid("let f2 = fun(*caret*) x -> fun y -> ()");
-        assertValid("let f2 = fun(*caret*) x -> fun y -> ()", "'a -> 'b -> unit");
-    }
 
     @Test
     public void testWithIdentifier() {

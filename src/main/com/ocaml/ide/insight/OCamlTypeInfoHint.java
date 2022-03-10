@@ -12,6 +12,10 @@ import java.util.List;
 // CTRL + SHIFT + P
 // expression -> type
 // _ -> getErrorHint()
+
+// Way of improvements
+// - disable or make it usable in the REPL
+// - If .annot not loaded, show a proper message
 public class OCamlTypeInfoHint extends ExpressionTypeProvider<PsiElement> {
 
     public static final String UNKNOWN_TYPE = OCamlBundle.message("ocaml.insight.unknown.type");
@@ -29,6 +33,13 @@ public class OCamlTypeInfoHint extends ExpressionTypeProvider<PsiElement> {
     @Override public @NotNull List<PsiElement> getExpressionsAt(@NotNull final PsiElement elementAt) {
         // small optimisation: skip
         if (OCamlInsightFilter.isWhiteSpace(elementAt)) return List.of();
+
+//        System.out.println("e:"+elementAt+" ("+elementAt.getText()+")");
+//        System.out.println("  range:"+ elementAt.getTextRange());
+//        System.out.println("  p:"+elementAt.getParent()+" ("+elementAt.getParent().getText().replace("\n","\\n")+")");
+//        System.out.println("  pp:"+elementAt.getParent().getParent()+" ("+elementAt.getParent().getParent().getText().replace("\n","\\n")+")");
+//        System.out.println("  next:"+elementAt.getNextSibling()+" ("+(elementAt.getNextSibling() == null? "null" : elementAt.getNextSibling().getText().replace("\n","\\n"))+")");
+//        System.out.println("  prev:"+elementAt.getPrevSibling()+" ("+(elementAt.getPrevSibling() == null? "null" : elementAt.getPrevSibling().getText().replace("\n","\\n"))+")");
 
         // if we got some info for this element, then this is a valid element
         OCamlAnnotResultsService annot = elementAt.getProject().getService(OCamlAnnotResultsService.class);
