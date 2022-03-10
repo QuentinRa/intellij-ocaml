@@ -1,7 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 // based on JdkComboBox, extracted from the Java plugin to be used in Minor IDEs such as CLion
 // some methods were removed, and a patch using "parentDisposable" was made
-package com.ocaml.ide.wizard.minor;
+package com.ocaml.ide.wizard.minor.java;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.Objects;
 
-import static com.ocaml.ide.wizard.minor.OCamlSdkComboBox.OCamlSdkComboBoxItem;
+import static com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox.OCamlSdkComboBoxItem;
 
 /**
  * @author Eugene Zhuravlev
@@ -276,11 +276,6 @@ public class OCamlSdkComboBox extends SdkComboBoxBase<OCamlSdkComboBoxItem> {
         public Sdk getJdk() {
             return null;
         }
-
-        @Nullable
-        public String getSdkName() {
-            return null;
-        }
     }
 
     private static final class InnerOCamlSdkComboBoxItem extends OCamlSdkComboBoxItem implements InnerComboBoxItem {
@@ -341,12 +336,6 @@ public class OCamlSdkComboBox extends SdkComboBoxBase<OCamlSdkComboBoxItem> {
         @Override
         public Sdk getJdk() {
             return myJdk;
-        }
-
-        @Nullable
-        @Override
-        public String getSdkName() {
-            return myJdk.getName();
         }
 
         @Override

@@ -10,10 +10,15 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.platform.DirectoryProjectGenerator;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.UIUtil;
 import com.ocaml.OCamlBundle;
+import com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox;
+import com.ocaml.ide.wizard.minor.java.ProjectTemplateList;
+import com.ocaml.ide.wizard.templates.OCamlTemplateProvider;
 import com.ocaml.sdk.OCamlSdkType;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,6 +84,31 @@ public class OCamlSimpleSettingsStep extends ProjectSettingsStepBase<Object> {
                         OCamlBundle.message("project.wizard.module.prompt.sdk", 0),
                         BorderLayout.WEST);
         jPanel.add(component);
+
+        JBCheckBox pickATemplate = new JBCheckBox();
+        ProjectTemplateList templateList = new ProjectTemplateList();
+        templateList.setTemplates(OCamlTemplateProvider.getAvailableTemplates(), false);
+
+        jPanel.add(new JLabel(" ")); // create some gap
+        jPanel.add(pickATemplate);
+        jPanel.add(templateList);
+
+        pickATemplate.addActionListener(e -> {
+            templateList.setEnabled(pickATemplate.isSelected());
+            if (pickATemplate.isSelected()) {
+                IdeFocusManager.getGlobalInstance()
+                        .doWhenFocusSettlesDown(() -> IdeFocusManager
+                                .getGlobalInstance()
+                                .requestFocus(templateList.getList(), true));
+            }
+        });
+
+        templateList.setEnabled(false);
+        pickATemplate.setText(OCamlBundle.message(
+                "project.wizard.create.from.template",0
+        ));
+
+        getProjectGenerator().setTemplateChooser(templateList);
 
         return jPanel;
     }

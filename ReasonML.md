@@ -4,6 +4,8 @@ A lot of features are from the [ReasonML](https://github.com/giraud/reasonml-ide
 
 ## Unchanged
 
+Features that were imported "as if".
+
 * File Structure menu
 * Simple autocompletion
 * Go to file, declaration, etc.

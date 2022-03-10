@@ -6,6 +6,8 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -15,6 +17,9 @@ import com.intellij.platform.DirectoryProjectGeneratorBase;
 import com.intellij.platform.ProjectTemplate;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.ide.wizard.BaseOCamlModuleBuilder;
+import com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox;
+import com.ocaml.ide.wizard.minor.java.ProjectTemplateList;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +32,7 @@ import javax.swing.*;
 public class OCamlDirectoryProjectGenerator extends DirectoryProjectGeneratorBase<Object>
         implements CustomStepProjectGenerator<Object>, ProjectTemplate {
     private OCamlSdkComboBox sdkChooser;
+    private ProjectTemplateList templateList;
 
     // data
 
@@ -76,9 +82,21 @@ public class OCamlDirectoryProjectGenerator extends DirectoryProjectGeneratorBas
                 ProjectRootManager.getInstance(project).setProjectSdk(sdk);
             });
         }
+
+        ModuleRootManager instance = ModuleRootManager.getInstance(module);
+        ModifiableRootModel rootModel = instance.getModifiableModel();
+
+        // Create the files/folders
+        new BaseOCamlModuleBuilder().setupRootModel(rootModel, () -> sdk,
+                baseDir::getPath,
+                templateList.getSelectedTemplate());
     }
 
     public void setSdkChooser(OCamlSdkComboBox sdkChooser) {
         this.sdkChooser = sdkChooser;
+    }
+
+    public void setTemplateChooser(ProjectTemplateList templateList) {
+        this.templateList = templateList;
     }
 }
