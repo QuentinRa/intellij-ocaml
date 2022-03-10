@@ -392,10 +392,10 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             // name, type, etc.
             switch (signature.kind) {
                 default: case UNKNOWN: fragments.add(new FragmentData(OCamlBundle.message("editor.annot.indicator.unknown"))); break;
-                case VALUE: fragments.add(new FragmentData("'" + signature.type + "'")); break;
+                case VALUE: fragments.add(new FragmentData(signature.type)); break;
                 case VARIABLE:
                 case MODULE:
-                    fragments.add(new FragmentData(signature.name + " ('" + signature.type + "')"));
+                    fragments.add(new FragmentData(signature.name + " (" + signature.type + ")"));
                     break;
             }
 
