@@ -3,6 +3,7 @@ package com.ocaml.ide.wizard.minor;
 import com.intellij.ide.IdeBundle;
 import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
 import com.intellij.ide.util.projectWizard.ProjectSettingsStepBase;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
@@ -66,10 +67,14 @@ public class OCamlSimpleSettingsStep extends ProjectSettingsStepBase<Object> {
         JPanel jPanel = super.createAdvancedSettings();
         if (jPanel == null) return null;
 
+        Project project = ProjectManager.getInstance().getDefaultProject();
+
         // combobox to select the SDK
         ProjectSdksModel projectSdksModel = new ProjectSdksModel();
+        projectSdksModel.reset(project); // load the sdks that were added previously
+
         Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof OCamlSdkType;
-        OCamlSdkComboBox sdkChooser = new OCamlSdkComboBox(ProjectManager.getInstance().getDefaultProject(),
+        OCamlSdkComboBox sdkChooser = new OCamlSdkComboBox(project,
                 projectSdksModel,
                 sdkTypeFilter,
                 null,

@@ -14,6 +14,7 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBoxPopupState;
 import com.intellij.openapi.util.Condition;
 import com.intellij.util.Consumer;
+import com.ocaml.OCamlBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -378,8 +379,7 @@ public class OCamlSdkComboBox extends SdkComboBoxBase<OCamlSdkComboBoxItem> {
         }
 
         public String toString() {
-            // todo: ...
-            return "JavaUiBundle.message(\"jdk.combo.box.none.item\")";
+            return OCamlBundle.message("jdk.combo.box.none.item");
         }
 
         @Override
