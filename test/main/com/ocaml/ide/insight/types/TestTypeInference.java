@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class TestTypeInference extends OCamlIdeTest {
@@ -34,10 +35,20 @@ public class TestTypeInference extends OCamlIdeTest {
         annot.updateForFile(caret.getContainingFile().getVirtualFile().getPath(), annotations);
 
         OCamlTypeInfoHint infoHint = new OCamlTypeInfoHint();
-        String type = infoHint.getInformationHint(caret);
-        if (expectedType == null) expectedType = OCamlTypeInfoHint.UNKNOWN_TYPE;
-        System.out.println("  for "+text+" exp"+expectedType+" was "+type);
-        assertEquals(expectedType, type);
+
+        if (expectedType == null) assertEmpty(infoHint.getExpressionsAt(caret));
+        else {
+            List<PsiElement> expressionsAt = infoHint.getExpressionsAt(caret);
+            boolean ok = false;
+            for (PsiElement psiElement : expressionsAt) {
+                // check type
+                String type = infoHint.getInformationHint(psiElement);
+                if (!type.equals(expectedType)) continue;
+                ok = true;
+                break;
+            }
+            assertTrue(ok);
+        }
     }
 
     private void assertInvalid(String text) {
