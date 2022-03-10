@@ -2,6 +2,7 @@ package com.ocaml.ide.insight;
 
 import com.intellij.lang.ExpressionTypeProvider;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.SyntaxTraverser;
 import com.ocaml.OCamlBundle;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
 import org.jetbrains.annotations.NotNull;
@@ -30,10 +31,19 @@ public class OCamlTypeInfoHint extends ExpressionTypeProvider<PsiElement> {
         if (OCamlInsightFilter.isWhiteSpace(elementAt)) return List.of();
 
         // if we got some info for this element, then this is a valid element
-        // note: we should check list made of multiples elements
         OCamlAnnotResultsService annot = elementAt.getProject().getService(OCamlAnnotResultsService.class);
-        if(annot.hasInfoForElement(elementAt))
-            return List.of(elementAt);
+
+        // thank you SyntaxTraverser, I love you
+        List<PsiElement> psiElements = SyntaxTraverser.psiApi().parents(elementAt).toList();
+        for (PsiElement psiElement : psiElements) {
+            if (!annot.hasInfoForElement(psiElement)) continue;
+            return List.of(psiElement);
+        }
+
         return List.of();
+    }
+
+    @Override public @NotNull String getAdvancedInformationHint(@NotNull PsiElement element) {
+        return super.getAdvancedInformationHint(element);
     }
 }
