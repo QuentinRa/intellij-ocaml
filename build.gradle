@@ -16,6 +16,7 @@ testlogger {
 switch (platformType) {
     case "IC": break
     case "IU": break
+    case "CL": break
     default: throw new IllegalStateException("Unexpected IDE name '"+platformType+"'" as String)
 }
 

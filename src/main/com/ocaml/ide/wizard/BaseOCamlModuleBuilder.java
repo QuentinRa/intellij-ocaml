@@ -36,6 +36,10 @@ public class BaseOCamlModuleBuilder extends ModuleBuilder {
         return contentEntryPath.get();
     }
 
+    @Nullable public String getDefaultContentEntryPath() {
+        return super.getContentEntryPath();
+    }
+
     public void setupRootModel(@NotNull ModifiableRootModel rootModel,
                                Supplier<Sdk> sdkSupplier, Supplier<String> contentEntryPath,
                                ProjectTemplate template) {
