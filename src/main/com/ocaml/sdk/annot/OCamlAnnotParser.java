@@ -80,47 +80,65 @@ public class OCamlAnnotParser {
                 state.name = line.substring(getStartingPosition(line), line.indexOf("\"")-1);
                 pos++; // skip )
             } else if (line.startsWith(CALL_START)) {
-                state.skip = true; // skip
-                pos+=2; // skip value and ')'
+                parseCall(state);
             } else {
                 throw new IllegalStateException("Unsupported:'"+previousLine()+"'. Please, fill a bug.");
             }
         } else {
-            // it's a variable
-            // next is the type
-            state.type = consumeLParen(readLine().trim());
-
-            // if we got multiple "types"
-            line = handleMultipleTypes(state);
-
-            if (line != null && line.startsWith(IDENT_START)) { // variable
-                line = consumeLParen(readLine().trim()); // look for variable name
-                if (!line.contains(INVALID_CHARACTER)) {
-                    int end = line.indexOf("\"");
-                    int start = getStartingPosition(line);
-                    line = line.substring(start, end-1);
-                    state.name = line;
-                    state.kind = AnnotParserState.AnnotKind.VARIABLE;
-                } else {
-                    // this is a value
-                    state.kind = AnnotParserState.AnnotKind.VALUE;
-                    // and, we may have to consume types again
-                    line = handleMultipleTypes(state);
-                    // read the other ident, and don't parse
-                    if (line != null && line.startsWith(IDENT_START))
-                        consumeLParen(readLine().trim());
-                    else if (line != null) pos--;
-                }
-            } else {
-                // this is a value
-                state.kind = AnnotParserState.AnnotKind.VALUE;
-
-                // we need to offset the "tryReadLine"
-                if (line != null) pos--; // whoops, go back
-            }
+            parseType(state);
         }
         return state;
     }
+
+    // parser
+
+    private void parseCall(@NotNull AnnotParserState state) {
+        state.skip = true; // skip
+        consumeLParen(""); // skip value and ')'
+        String line = tryReadLine();
+        // this may be a type
+        if (line != null && line.startsWith(TYPE_START)) {
+            state.skip = false;
+            parseType(state);
+        }
+    }
+
+    private void parseType(@NotNull AnnotParserState state) {
+        // it's a variable
+        // next is the type
+        state.type = consumeLParen(readLine().trim());
+
+        // if we got multiple "types"
+        String line = handleMultipleTypes(state);
+
+        if (line != null && line.startsWith(IDENT_START)) { // variable
+            line = consumeLParen(readLine().trim()); // look for variable name
+            if (!line.contains(INVALID_CHARACTER)) {
+                int end = line.indexOf("\"");
+                int start = getStartingPosition(line);
+                line = line.substring(start, end-1);
+                state.name = line;
+                state.kind = AnnotParserState.AnnotKind.VARIABLE;
+            } else {
+                // this is a value
+                state.kind = AnnotParserState.AnnotKind.VALUE;
+                // and, we may have to consume types again
+                line = handleMultipleTypes(state);
+                // read the other ident, and don't parse
+                if (line != null && line.startsWith(IDENT_START))
+                    consumeLParen(readLine().trim());
+                else if (line != null) pos--;
+            }
+        } else {
+            // this is a value
+            state.kind = AnnotParserState.AnnotKind.VALUE;
+
+            // we need to offset the "tryReadLine"
+            if (line != null) pos--; // whoops, go back
+        }
+    }
+
+    // utils
 
     private String handleMultipleTypes(AnnotParserState state) {
         String line = tryReadLine();

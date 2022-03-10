@@ -443,4 +443,16 @@ public class OcamlAnnotParserTest extends OCamlBaseTest {
                 ")", "Li|1.18,1.19|int option");
     }
 
+    @Test
+    public void test_IssueCall() {
+        assertParserResult("\"test_hello_world.ml\" 3 18 26 \"test_hello_world.ml\" 3 18 40\n" +
+                        "call(\n" +
+                        "  stack\n" +
+                        ")\n" +
+                        "type(\n" +
+                        "  unit\n" +
+                        ")",
+                "Li|3.8,3.22|unit");
+    }
+
 }

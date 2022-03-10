@@ -509,4 +509,21 @@ ident(
 )
 </pre>
 </td></tr>
+
+<tr><td>17 (bug)</td><td><pre>
+let _ = hello_world ()
+</pre>
+</td><td>
+???
+</td><td>
+<pre>
+"test_hello_world.ml" 3 18 26 "test_hello_world.ml" 3 18 40
+call(
+  stack
+)
+type(
+  unit
+)
+</pre>
+</td></tr>
 </table>
