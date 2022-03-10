@@ -1,12 +1,21 @@
 # intellij-ocaml
 
-[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/) (but, development is in progress)
+[![Checks](https://badgen.net/github/checks/QuentinRa/intellij-ocaml/)](https://github.com/QuentinRa/intellij-ocaml/actions)
+[![Version](https://img.shields.io/jetbrains/plugin/v/18531-ocaml.svg)](https://plugins.jetbrains.com/plugin/18531-ocaml)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/18531-ocaml.svg)](https://plugins.jetbrains.com/plugin/18697)
+[![License: MIT](https://badgen.net/github/license/quentinRa/intellij-ocaml?color=yellow)](LICENSE)
+![Dependabot: Active](https://badgen.net/github/dependabot/QuentinRa/intellij-ocaml/)
 
-This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. I'm only a student, after all.
+<!--
+At least for now, the repository is maintained.
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+-->
+
+This plugin is providing support for OCaml for JetBrains IDEs. It's based on both ReasonML and intellij-rust. If you are looking for a complete and maintained solution, please check out the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. I'm a student, and I'm lacking the knowledge to do something great.
 
 ## 🎯 What's my goal?
 
-* [ ] We must be able to run/compile ocaml files without having to install Dune, Esy, or BuckleScript. We must be able to enjoy most features without having to use stuff that is irrelevant for some.
+* [ ] We must be able to run/compile ocaml files (without having to install something)
 * [ ] Support for opam
 * [ ] Support for Makefile
 * [ ] Support for Dune (already supported in ReasonML)
@@ -16,22 +25,19 @@ This plugin is providing support for OCaml in IntelliJ. It's based on ReasonML a
 * [ ] **Smart completion**
 * [x] **REPL support**: we must be able to send commands from our file, to a REPL console
 * [x] **Using a bundle** (possible support for Localization later)
+* [ ] Working in minor IDEs (CLion, PHPStorm, etc.)
 
-Originally, I was planning to make things, so that we can use this plugin outside IntelliJ, but now my goal is to at least make this plugin work in IntelliJ before targeting minor IDEs.
+> Please note that some features are already available in ReasonML (ex: odoc support, dune support, etc.), and I will reuse (and hopefully improve) them. [List of features from the ReasonML plugin 🤩️](ReasonML.md)
 
-> Please note that some features are already available in ReasonML (ex: odoc support, dune support, etc.), and I will reuse (and hopefully improve) them.
+## ✨ Providers for OCaml
 
-## ✨ How will I do that?
-
-On Windows, one may use Cygwin, OCaml64, or a WSL. Both ocaml installed with, or without opam should work. For the latter, some features won't be available, as some files will be missing.
+On Windows, I will support the use of Cygwin, OCaml64, or a WSL. Both ocaml installed with, or without opam should work. For the latter, some features won't be available, as some files will be missing.
 
 On Linux, you can also use ocaml installed with, or without opam.
 
 Finally, I'm planning to allow someone to compile on a remote host. This is an experimental feature (from the classes I inspected), so I'm not sure how it will go, but I will give it a try.
 
 ## 🚀 Features
-
-[Features coming from ReasonML 🤩️](ReasonML.md)
 
 | Setup                                                      |
 |------------------------------------------------------------|
@@ -111,6 +117,16 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 | ❌ Suggest installing dune                         |
 | ❌ Show a message when updating files not targeted |
 | ❌ Show an icon to "reload" dune                   |
+
+
+| Minor IDEs                                    |
+|-----------------------------------------------|
+| ❌ Can create a project with an SDK (+check)   |
+| ❌ Can create a project from a template        |
+| ✅ Can use the REPL                            |
+| ✅ Highlight, .... (basic features)            |
+| ❌ Can change the SDK                          |
+| ❌ Warnings/Errors/... shown without compiling |
 
 ## 📖 Install ocaml and opam
 
