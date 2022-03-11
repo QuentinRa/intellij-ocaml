@@ -8,6 +8,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.ocaml.sdk.annot.OCamlAnnotParser;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
+import com.ocaml.utils.editor.LogicalSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,11 +16,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class OCamlAnnotResultsService {
-    public final HashMap<String, HashMap<LogicalPosition, OCamlInferredSignature>> results = new HashMap<>();
+    public final HashMap<String, HashMap<LogicalSection, OCamlInferredSignature>> results = new HashMap<>();
     public final HashMap<String, HashMap<TextRange, OCamlInferredSignature>> resultsAlt = new HashMap<>();
 
     /**
@@ -36,6 +36,7 @@ public final class OCamlAnnotResultsService {
             // parse
             OCamlAnnotParser parser = new OCamlAnnotParser(b.toString());
             results.put(file, parser.getIndexedByPosition());
+            resultsAlt.put(file, new HashMap<>()); // reset and create
         } catch (IOException | IllegalStateException e) {
             // todo: log
             // may occur if the file is removed because a new one will be generated
@@ -62,32 +63,34 @@ public final class OCamlAnnotResultsService {
         return rangeToSignature.get(element.getTextRange());
     }
 
-    private @Nullable LogicalPosition getLogicalPosition(@NotNull PsiElement element) {
+    private @Nullable LogicalSection getLogicalPosition(@NotNull PsiElement element) {
         Editor fileEditor = FileEditorManager.getInstance(element.getProject()).getSelectedTextEditor();
         if (!(fileEditor instanceof EditorEx)) return null;
         EditorEx editor = (EditorEx) fileEditor;
-        return editor.offsetToLogicalPosition(element.getTextOffset());
+        int textOffset = element.getTextOffset();
+        LogicalPosition start = editor.offsetToLogicalPosition(textOffset);
+        LogicalPosition end = editor.offsetToLogicalPosition(textOffset+element.getTextLength());
+        return new LogicalSection(start, end);
     }
 
     public boolean hasInfoForElement(@NotNull PsiElement element) {
         String path = element.getContainingFile().getVirtualFile().getPath();
-        HashMap<LogicalPosition, OCamlInferredSignature> rangeToSignature = results.get(path);
+        HashMap<LogicalSection, OCamlInferredSignature> rangeToSignature = results.get(path);
 
         // compiled
         if (rangeToSignature == null) return false;
 
         // get logical position
-        LogicalPosition logicalPosition = getLogicalPosition(element);
-        if (logicalPosition == null) return false;
-        logicalPosition = new LogicalPosition(logicalPosition.line+1, logicalPosition.column);
+        LogicalSection logicalSection = getLogicalPosition(element);
+        if (logicalSection == null) return false;
 
         // get signature
-        OCamlInferredSignature signature = rangeToSignature.get(logicalPosition);
+        OCamlInferredSignature signature = rangeToSignature.get(logicalSection);
         if (signature == null) return false;
 
         // re-index by range, properly this time
-        //noinspection MismatchedQueryAndUpdateOfCollection
-        HashMap<TextRange, OCamlInferredSignature> ranges = resultsAlt.getOrDefault(path, new HashMap<>());
+        HashMap<TextRange, OCamlInferredSignature> ranges = resultsAlt.get(path);
+        signature.range = element.getTextRange();
         ranges.put(element.getTextRange(), signature);
         resultsAlt.put(path, ranges);
         return true;

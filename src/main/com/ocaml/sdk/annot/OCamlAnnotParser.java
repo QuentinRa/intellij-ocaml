@@ -1,8 +1,8 @@
 package com.ocaml.sdk.annot;
 
 import com.intellij.build.FilePosition;
-import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.util.TextRange;
+import com.ocaml.utils.editor.LogicalSection;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,15 +50,14 @@ public class OCamlAnnotParser {
         return elements;
     }
 
-    public HashMap<LogicalPosition, OCamlInferredSignature> getIndexedByPosition() {
+    public HashMap<LogicalSection, OCamlInferredSignature> getIndexedByPosition() {
         // Fix error, the values are not unsorted in the hashmap
         // So, we are doing the job in "get", and indexing here.
-        HashMap<LogicalPosition, OCamlInferredSignature> elements = new HashMap<>();
+        HashMap<LogicalSection, OCamlInferredSignature> elements = new HashMap<>();
 
         ArrayList<OCamlInferredSignature> list = get();
         for (OCamlInferredSignature signature : list) {
-            elements.put(new LogicalPosition(signature.position.getStartLine(),
-                    signature.position.getStartColumn()), signature);
+            elements.put(new LogicalSection(signature.position), signature);
         }
 
         return elements;

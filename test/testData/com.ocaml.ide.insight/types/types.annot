@@ -174,7 +174,7 @@ type(
   float -> float -> float
 )
 ident(
-  int_ref Stdlib.( +. ) "stdlib.mli" 451 17476 17476 "stdlib.mli" 451 17476 17531
+  int_ref Stdlib.( +. ) "stdlib.mli" 462 17764 17764 "stdlib.mli" 462 17764 17819
 )
 "types.ml" 15 182 222 "types.ml" 15 182 224
 type(
@@ -196,7 +196,7 @@ type(
   float -> float -> float
 )
 ident(
-  int_ref Stdlib.( -. ) "stdlib.mli" 456 17641 17641 "stdlib.mli" 456 17641 17696
+  int_ref Stdlib.( -. ) "stdlib.mli" 467 17929 17929 "stdlib.mli" 467 17929 17984
 )
 "types.ml" 15 182 229 "types.ml" 15 182 230
 type(
@@ -225,7 +225,7 @@ type(
   float -> float -> float
 )
 ident(
-  int_ref Stdlib.( /. ) "stdlib.mli" 466 17980 17980 "stdlib.mli" 466 17980 18035
+  int_ref Stdlib.( /. ) "stdlib.mli" 477 18268 18268 "stdlib.mli" 477 18268 18323
 )
 "types.ml" 15 182 237 "types.ml" 15 182 239
 type(
@@ -345,7 +345,7 @@ type(
   string -> (string * int) list -> int
 )
 ident(
-  int_ref Stdlib.List.assoc "list.mli" 252 9463 9463 "list.mli" 252 9463 9501
+  int_ref Stdlib.List.assoc "list.mli" 371 12459 12459 "list.mli" 371 12459 12497
 )
 "types.ml" 24 424 446 "types.ml" 24 424 447
 type(
@@ -645,6 +645,9 @@ ident(
 type(
   string
 )
+type(
+  string
+)
 "types.ml" 33 675 688 "types.ml" 33 675 690
 type(
   int
@@ -657,7 +660,7 @@ type(
   int -> int -> int
 )
 ident(
-  int_ref Stdlib.( + ) "stdlib.mli" 338 13360 13360 "stdlib.mli" 338 13360 13406
+  int_ref Stdlib.( + ) "stdlib.mli" 347 13626 13626 "stdlib.mli" 347 13626 13672
 )
 "types.ml" 33 675 693 "types.ml" 33 675 695
 type(
@@ -674,6 +677,9 @@ type(
 type(
   string
 )
+type(
+  string
+)
 "types.ml" 34 696 709 "types.ml" 34 696 711
 type(
   int
@@ -686,7 +692,7 @@ type(
   int -> int -> int
 )
 ident(
-  int_ref Stdlib.( - ) "stdlib.mli" 343 13509 13509 "stdlib.mli" 343 13509 13555
+  int_ref Stdlib.( - ) "stdlib.mli" 352 13775 13775 "stdlib.mli" 352 13775 13821
 )
 "types.ml" 34 696 714 "types.ml" 34 696 716
 type(
@@ -703,6 +709,9 @@ type(
 type(
   string
 )
+type(
+  string
+)
 "types.ml" 35 717 730 "types.ml" 35 717 732
 type(
   int
@@ -715,7 +724,7 @@ type(
   int -> int -> int
 )
 ident(
-  int_ref Stdlib.( * ) "stdlib.mli" 348 13663 13663 "stdlib.mli" 348 13663 13709
+  int_ref Stdlib.( * ) "stdlib.mli" 357 13929 13929 "stdlib.mli" 357 13929 13975
 )
 "types.ml" 35 717 735 "types.ml" 35 717 737
 type(
@@ -732,6 +741,9 @@ type(
 type(
   string
 )
+type(
+  string
+)
 "types.ml" 36 738 751 "types.ml" 36 738 753
 type(
   int
@@ -744,7 +756,7 @@ type(
   int -> int -> int
 )
 ident(
-  int_ref Stdlib.( / ) "stdlib.mli" 353 13818 13818 "stdlib.mli" 353 13818 13864
+  int_ref Stdlib.( / ) "stdlib.mli" 362 14084 14084 "stdlib.mli" 362 14084 14130
 )
 "types.ml" 36 738 756 "types.ml" 36 738 758
 type(
@@ -758,6 +770,9 @@ type(
   int
 )
 "types.ml" 37 759 765 "types.ml" 37 759 766
+type(
+  string
+)
 type(
   string
 )
@@ -777,7 +792,7 @@ type(
   string -> string -> string
 )
 ident(
-  int_ref Stdlib.( ^ ) "stdlib.mli" 661 25349 25349 "stdlib.mli" 661 25349 25387
+  int_ref Stdlib.( ^ ) "stdlib.mli" 699 26389 26389 "stdlib.mli" 699 26389 26427
 )
 "types.ml" 37 759 803 "types.ml" 37 759 805
 type(
@@ -797,4 +812,12 @@ type(
 "types.ml" 32 638 661 "types.ml" 37 759 806
 type(
   int
+)
+"types.ml" 40 826 830 "types.ml" 40 826 831
+type(
+  string
+)
+"types.ml" 40 826 834 "types.ml" 40 826 845
+type(
+  string
 )

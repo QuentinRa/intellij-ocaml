@@ -35,3 +35,6 @@ and eval_op op v1 v2 = match op with
     | "*" -> v1 * v2
     | "/" -> v1 / v2
     | _ -> failwith ("Unknown operator: " ^ op);;
+
+(* Français *)
+let _ = "Some word"

@@ -119,14 +119,12 @@ public class TestTypeInference extends OCamlIdeTest {
 
     @Test
     public void testMatch() {
-        assertValid("| Num(*caret*) i -> i", "expr");
         assertValid("| Num i(*caret*) -> i", "int");
         assertValid("| Num i -> i(*caret*)", "int");
         assertValid("List.assoc x(*caret*)", "string");
         assertValid("(x(*caret*), e1, in_e2)", "string");
         assertValid("eval env e1(*caret*)", "expr");
         assertValid("((x, val_x(*caret*))", "int");
-        assertValid("eval_op(*caret*) op v1 v2", "string -> int -> int -> int");
         assertValid("eval_op op(*caret*) v1 v2", "string");
         assertValid("v1(*caret*) + v2", "int");
         assertValid("v1 +(*caret*) v2", "int -> int -> int");
@@ -158,5 +156,23 @@ public class TestTypeInference extends OCamlIdeTest {
 //        assertValid("List.assoc(*caret*) x", "string -> (string * int) list -> int");
         assertValid("List(*caret*).assoc x env", "int");
         assertValid("List.assoc(*caret*) x env", "int");
+    }
+
+    @Test // same, was expecting expr, but got the type of the whole statement
+    public void testStatement() {
+        assertValid("| Num(*caret*) i -> i", "expr -> int");
+    }
+
+    // Bugs
+
+    @Test
+    public void test_IssueWrong() {
+        assertValid("eval_op(*caret*) op v1 v2", "string -> int -> int -> int");
+    }
+
+    @Test // there is a comment with a non-ascii character before
+    // it was messing with the ranges
+    public void test_NonAsciiCharacter() {
+        assertValid("let _ = \"Some word\"(*caret*)", "string");
     }
 }
