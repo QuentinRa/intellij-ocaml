@@ -39,7 +39,7 @@ public class PsiTypeImpl extends PsiTokenStub<PsiType, PsiTypeStub> implements P
 
     @Override
     public @Nullable String getName() {
-        String name = "";
+        String name;
         PsiTypeStub stub = getGreenStub();
         if (stub != null) {
             name = stub.getName();
@@ -58,13 +58,13 @@ public class PsiTypeImpl extends PsiTokenStub<PsiType, PsiTypeStub> implements P
             // if we got "type something = ..."
             if (eq != -1 && type != -1) {
                 // then we extract "something"
-                name = declaration.substring(type+TYPE.length()+1, eq-EQ.length())
+                name = declaration.substring(type + TYPE.length() + 1, eq - EQ.length())
                         .replace("\n", "")
                         .trim();
                 // remove every variant
                 int space = name.indexOf(" ");
                 while (space != -1) {
-                    name = name.substring(space+1).trim();
+                    name = name.substring(space + 1).trim();
                     space = name.indexOf(" ");
                 }
             }

@@ -102,7 +102,7 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 
 | OCaml                            |
 |----------------------------------|
-| ✅ Show names before parameters   |
+| ❌ Show names before parameters   |
 | ✅ Show types with `CTRL+SHIFT+P` |
 
 | Editor for .annot                             |

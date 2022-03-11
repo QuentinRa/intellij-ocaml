@@ -288,13 +288,13 @@ public class BaseOCamlSdkProvider implements OCamlSdkProvider {
                     .readAllBytes()).trim();// remove \n
             return s.isEmpty() ? null : s;
         } catch (IOException | ExecutionException e) {
-            LOG.warn("Get dune version error:"+e.getMessage());
+            LOG.warn("Get dune version error:" + e.getMessage());
             return null;
         }
     }
 
     @Contract(pure = true)
     protected @NotNull String getDuneExecutable(String sdkHomePath) {
-        return sdkHomePath+"/bin/dune";
+        return sdkHomePath + "/bin/dune";
     }
 }

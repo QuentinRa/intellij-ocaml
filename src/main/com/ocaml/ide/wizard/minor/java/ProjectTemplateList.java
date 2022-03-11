@@ -84,7 +84,7 @@ public class ProjectTemplateList extends JPanel {
         HtmlChunk.Element fontTag = HtmlChunk.tag("font").addRaw(description);
         if (!SystemInfo.isMac) {
             fontTag = fontTag.attr("face", "Verdana")
-                    .attr("size","-1");
+                    .attr("size", "-1");
         }
         final HtmlChunk.Element descriptionHtml = new HtmlBuilder().append(fontTag).wrapWithHtmlBody();
         myDescriptionPane.setText(descriptionHtml.toString());
@@ -112,8 +112,7 @@ public class ProjectTemplateList extends JPanel {
         myList.setEnabled(enabled);
         if (!enabled) {
             myList.clearSelection();
-        }
-        else {
+        } else {
             myList.setSelectedIndex(0);
         }
         myDescriptionPane.setEnabled(enabled);

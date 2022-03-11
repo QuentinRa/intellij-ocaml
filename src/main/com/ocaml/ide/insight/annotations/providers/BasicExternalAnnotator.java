@@ -76,11 +76,11 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
         for (VirtualFile root : moduleRootManager.getSourceRoots()) {
             for (VirtualFile f : VfsUtil.getChildren(root)) {
                 // is in the list of dependencies?
-                if(!dependencies.contains(f.getNameWithoutExtension())) continue;
+                if (!dependencies.contains(f.getNameWithoutExtension())) continue;
                 // yes
                 Pair<String, VirtualFile> pair = new Pair<>(VfsUtil.getRelativePath(f, root), f);
                 // do we have the .mli?
-                if(OCamlInterfaceFileType.isFile(f.getPath())) {
+                if (OCamlInterfaceFileType.isFile(f.getPath())) {
                     String s = OCamlFileType.fromInterface(f.getPath());
                     // remove the source
                     potential.remove(s);
@@ -136,7 +136,7 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
         if (sourceTempFile == null) return null;
 
         try {
-            for (Pair<String, PsiFile> pair: collectedInfo.myDependencies) {
+            for (Pair<String, PsiFile> pair : collectedInfo.myDependencies) {
                 // target folder
                 File localTargetFolder = new File(myOutputFolder, pair.first).getParentFile();
                 if (!targetFolder.exists() && !targetFolder.mkdirs())

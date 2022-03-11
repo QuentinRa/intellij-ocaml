@@ -1,6 +1,9 @@
 package com.ocaml.ide.wizard.minor;
 
-import com.intellij.ide.util.projectWizard.*;
+import com.intellij.ide.util.projectWizard.AbstractModuleBuilder;
+import com.intellij.ide.util.projectWizard.AbstractNewProjectStep;
+import com.intellij.ide.util.projectWizard.CustomStepProjectGenerator;
+import com.intellij.ide.util.projectWizard.EmptyModuleBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -41,7 +44,7 @@ public class OCamlDirectoryProjectGenerator extends DirectoryProjectGeneratorBas
     }
 
     @Override public @Nullable @Nls(capitalization = Nls.Capitalization.Sentence) String getDescription() {
-        return  OCamlBundle.message("ocaml.project.description");
+        return OCamlBundle.message("ocaml.project.description");
     }
 
     @Override public Icon getIcon() {

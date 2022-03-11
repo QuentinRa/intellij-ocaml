@@ -99,6 +99,6 @@ public class CygwinSdkProvider extends AbstractWindowsBaseProvider {
     }
 
     @Override protected @NotNull String getDuneExecutable(String sdkHomePath) {
-        return sdkHomePath+"\\bin\\dune.exe";
+        return sdkHomePath + "\\bin\\dune.exe";
     }
 }

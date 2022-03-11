@@ -90,7 +90,7 @@ public class OCamlConsoleView extends LanguageConsoleImpl implements ObservableC
         String finalText;
         EditorHighlighter highlighter;
         if (inputEditor instanceof EditorWindow) {
-            PsiFile file = ((EditorWindow)inputEditor).getInjectedFile();
+            PsiFile file = ((EditorWindow) inputEditor).getInjectedFile();
             highlighter = HighlighterFactory.createHighlighter(file.getVirtualFile(), EditorColorsManager.getInstance().getGlobalScheme(), getProject());
             highlighter.setText(command);
             finalText = command;
@@ -98,7 +98,7 @@ public class OCamlConsoleView extends LanguageConsoleImpl implements ObservableC
             finalText = command;
             highlighter = inputEditor.getHighlighter();
         }
-        SyntaxHighlighter syntax = highlighter instanceof LexerEditorHighlighter ? ((LexerEditorHighlighter)highlighter).getSyntaxHighlighter() : null;
+        SyntaxHighlighter syntax = highlighter instanceof LexerEditorHighlighter ? ((LexerEditorHighlighter) highlighter).getSyntaxHighlighter() : null;
 
         doAddPromptToHistory();
         if (syntax != null) {
@@ -108,8 +108,7 @@ public class OCamlConsoleView extends LanguageConsoleImpl implements ObservableC
                     addPromptToHistoryImpl(identPrompt);
                 }
             });
-        }
-        else {
+        } else {
             print(finalText, ConsoleViewContentType.USER_INPUT);
         }
         print("\n", ConsoleViewContentType.NORMAL_OUTPUT);

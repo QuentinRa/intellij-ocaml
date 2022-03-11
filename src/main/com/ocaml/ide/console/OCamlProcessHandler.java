@@ -74,7 +74,7 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
         }
 
         // trim if not a suite of ^
-        if (!textOriginal.trim().replace(OCamlREPLConstants.ERROR_INDICATOR,"").isBlank()) {
+        if (!textOriginal.trim().replace(OCamlREPLConstants.ERROR_INDICATOR, "").isBlank()) {
             textOriginal = textOriginal.trim() + "\n";
         }
 
@@ -104,7 +104,7 @@ public final class OCamlProcessHandler extends KillableColoredProcessHandler {
     }
 
     private boolean isPrompt(@NotNull String textOriginal) {
-        return textOriginal.replace(OCamlREPLConstants.PROMPT,"")
+        return textOriginal.replace(OCamlREPLConstants.PROMPT, "")
                 .replace(OCamlREPLConstants.PROMPT_COMMENT, "").trim().isEmpty();
     }
 

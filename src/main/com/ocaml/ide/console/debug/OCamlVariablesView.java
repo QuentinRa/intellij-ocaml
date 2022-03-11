@@ -100,7 +100,7 @@ public class OCamlVariablesView extends SimpleToolWindowPanel implements Disposa
                 case VARIABLES: group = treeModel.variables; break;
             }
             if (group == null) {
-                LOG.error("Unknown kind:"+g.second);
+                LOG.error("Unknown kind:" + g.second);
                 continue;
             }
             // remove

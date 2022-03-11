@@ -30,7 +30,7 @@ public class LogicalSection implements Comparable<LogicalSection> {
     }
 
     public LogicalSection(@NotNull LogicalPosition start, @NotNull LogicalPosition end) {
-        this(start.line+1, start.column, end.line+1, end.column);
+        this(start.line + 1, start.column, end.line + 1, end.column);
     }
 
     @Override public boolean equals(Object o) {

@@ -64,8 +64,8 @@ public class PsiLetWithAnd extends PsiLetImpl {
     private @NotNull Pair<TextRange, String> exploreAnd(boolean isPrev) {
         AtomicReference<String> text = new AtomicReference<>("");
         ComputeMethod<String, PsiElement> appendText;
-        if (isPrev) appendText = e -> text.getAndUpdate(s -> e.getText()+s);
-        else appendText = e -> text.getAndUpdate(s -> s+e.getText());
+        if (isPrev) appendText = e -> text.getAndUpdate(s -> e.getText() + s);
+        else appendText = e -> text.getAndUpdate(s -> s + e.getText());
 
         ComputeMethod<PsiElement, PsiElement> explore;
         if (isPrev) {
@@ -75,8 +75,7 @@ public class PsiLetWithAnd extends PsiLetImpl {
                 if (prevSibling == null) prevSibling = e.getParent();
                 return prevSibling;
             };
-        }
-        else {
+        } else {
             explore = e -> {
                 if (e == null) return null;
                 PsiElement nextSibling = e.getNextSibling();

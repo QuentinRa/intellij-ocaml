@@ -24,7 +24,7 @@ public final class OCamlAnnotResultsService {
 
     /**
      * Update the list of annotation of a file, given its associated annotFile
-     * @param file the file associated with the annotFile
+     * @param file      the file associated with the annotFile
      * @param annotFile the annot file associated with the file
      */
     public void updateForFile(String file, File annotFile) {
@@ -40,13 +40,14 @@ public final class OCamlAnnotResultsService {
         } catch (IOException | IllegalStateException e) {
             // todo: log
             // may occur if the file is removed because a new one will be generated
-            System.out.println("warn:"+e);
+            System.out.println("warn:" + e);
         }
     }
 
     /**
      * Clear results for a file, for example, if they are assumed
      * to be invalid.
+
      * @param path the file that was provided in updateFile
      */
     public void clearForFile(String path) {
@@ -69,7 +70,7 @@ public final class OCamlAnnotResultsService {
         EditorEx editor = (EditorEx) fileEditor;
         int textOffset = element.getTextOffset();
         LogicalPosition start = editor.offsetToLogicalPosition(textOffset);
-        LogicalPosition end = editor.offsetToLogicalPosition(textOffset+element.getTextLength());
+        LogicalPosition end = editor.offsetToLogicalPosition(textOffset + element.getTextLength());
         return new LogicalSection(start, end);
     }
 

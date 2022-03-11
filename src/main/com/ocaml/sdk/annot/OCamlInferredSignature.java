@@ -40,8 +40,8 @@ public class OCamlInferredSignature {
                 ", kind=" + kind +
                 ", type='" + type + '\'' +
                 ", file=" + position.getFile() +
-                    "(l:" + position.getStartLine()+"-"+position.getEndLine()+", c:"
-                + position.getStartColumn()+"-"+position.getEndColumn()+")" +
+                "(l:" + position.getStartLine() + "-" + position.getEndLine() + ", c:"
+                + position.getStartColumn() + "-" + position.getEndColumn() + ")" +
                 ", range=" + range +
                 '}';
     }

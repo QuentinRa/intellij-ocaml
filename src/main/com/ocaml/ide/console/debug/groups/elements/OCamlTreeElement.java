@@ -40,7 +40,7 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement, Comp
             int length = value.length();
             if (length > MAX_VALUE_LENGTH) {
                 String end = value.substring(length - BLOC_LENGTH, length);
-                shortValuePreview = value.substring(0, BLOC_LENGTH)+"..."+end;
+                shortValuePreview = value.substring(0, BLOC_LENGTH) + "..." + end;
             } else {
                 shortValuePreview = value;
             }

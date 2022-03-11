@@ -16,7 +16,7 @@ public class OCamlInsightFilter {
         if (element instanceof PsiWhiteSpace) return true;
         // supported: literals and scope expr
         if (!(element instanceof PsiLiteralExpression) && !(element instanceof PsiScopedExpr)
-                && !(element instanceof PsiLowerSymbol)){
+                && !(element instanceof PsiLowerSymbol)) {
             boolean ok = false;
             IElementType elementType = element.getNode().getElementType();
             if (elementType.equals(OCamlTypes.FLOAT_VALUE)) ok = true;

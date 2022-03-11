@@ -1,14 +1,16 @@
 package com.ocaml.ide.module.select;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.project.*;
-import com.intellij.openapi.roots.ui.configuration.*;
-import com.intellij.openapi.ui.popup.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ui.configuration.SdkPopupBuilder;
+import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory;
+import com.intellij.openapi.ui.popup.JBPopup;
 import com.ocaml.sdk.OCamlSdkType;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.awt.event.*;
+import java.awt.event.InputEvent;
 
 /**
  * This class is using SdkPopupFactory to create

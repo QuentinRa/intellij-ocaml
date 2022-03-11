@@ -67,7 +67,7 @@ public class OCamlAnnotParser {
         if (pos == lines.length) return null;
         Matcher matcher = FILE_POSITION.matcher(readLine());
         if (!matcher.matches())
-            throw new IllegalStateException("Missing file position for:'"+previousLine()+"'.");
+            throw new IllegalStateException("Missing file position for:'" + previousLine() + "'.");
         AnnotParserState state = new AnnotParserState(matcher.group(1), matcher.group(2),
                 matcher.group(3), matcher.group(4),
                 matcher.group(5),
@@ -75,15 +75,15 @@ public class OCamlAnnotParser {
         );
         String line = readLine();
         // it's a module
-        if(!line.startsWith(TYPE_START)) {
+        if (!line.startsWith(TYPE_START)) {
             if (line.startsWith(IDENT_START)) {
                 line = readLine().trim(); // look for module name
-                state.name = line.substring(getStartingPosition(line), line.indexOf("\"")-1);
+                state.name = line.substring(getStartingPosition(line), line.indexOf("\"") - 1);
                 pos++; // skip )
             } else if (line.startsWith(CALL_START)) {
                 parseCall(state);
             } else {
-                throw new IllegalStateException("Unsupported:'"+previousLine()+"'. Please, fill a bug.");
+                throw new IllegalStateException("Unsupported:'" + previousLine() + "'. Please, fill a bug.");
             }
         } else {
             parseType(state);
@@ -117,7 +117,7 @@ public class OCamlAnnotParser {
             if (!line.contains(INVALID_CHARACTER)) {
                 int end = line.indexOf("\"");
                 int start = getStartingPosition(line);
-                line = line.substring(start, end-1);
+                line = line.substring(start, end - 1);
                 state.name = line;
                 state.kind = AnnotParserState.AnnotKind.VARIABLE;
             } else {
@@ -163,9 +163,9 @@ public class OCamlAnnotParser {
 
     private int getStartingPosition(@NotNull String line) {
         if (!line.startsWith(VARIABLE_DEF)) {
-            return line.indexOf(VARIABLE_REF)+VARIABLE_REF.length()+1; // ex: 'ref ' => 3+1
+            return line.indexOf(VARIABLE_REF) + VARIABLE_REF.length() + 1; // ex: 'ref ' => 3+1
         } else {
-            return VARIABLE_DEF.length()+1; // ex: 'def ' => 3 + 1
+            return VARIABLE_DEF.length() + 1; // ex: 'def ' => 3 + 1
         }
     }
 

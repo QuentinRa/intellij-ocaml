@@ -46,7 +46,6 @@ public class BaseOCamlModuleBuilder extends ModuleBuilder {
         this.contentEntryPath = contentEntryPath;
         // Create the files/folders
         ContentEntry contentEntry = doAddContentEntry(rootModel);
-        System.out.println("ce:"+contentEntry);
         if (contentEntry != null) {
             // Get instructions
             TemplateBuildInstructions instructions;

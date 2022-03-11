@@ -110,7 +110,7 @@ public class OCamlSimpleSettingsStep extends ProjectSettingsStepBase<Object> {
 
         templateList.setEnabled(false);
         pickATemplate.setText(OCamlBundle.message(
-                "project.wizard.create.from.template",0
+                "project.wizard.create.from.template", 0
         ));
 
         getProjectGenerator().setTemplateChooser(templateList);

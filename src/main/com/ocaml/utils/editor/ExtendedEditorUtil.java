@@ -78,11 +78,11 @@ public class ExtendedEditorUtil {
      * Allows us to answer if a particular visual position belongs to visual rectangle
      * identified by the given visual position of its top-left and bottom-right corners.
      *
-     * @param targetPosition    position which belonging to target visual rectangle should be checked
-     * @param startPosition     visual position of top-left corner of the target visual rectangle
-     * @param endPosition       visual position of bottom-right corner of the target visual rectangle
-     * @return                  {@code true} if given visual position belongs to the target visual rectangle;
-     *                          {@code false} otherwise
+     * @param targetPosition position which belonging to target visual rectangle should be checked
+     * @param startPosition  visual position of top-left corner of the target visual rectangle
+     * @param endPosition    visual position of bottom-right corner of the target visual rectangle
+     * @return {@code true} if given visual position belongs to the target visual rectangle;
+     * {@code false} otherwise
      */
     @Contract(pure = true)
     public static boolean isWithinBounds(@NotNull VisualPosition targetPosition, @NotNull VisualPosition startPosition, VisualPosition endPosition) {

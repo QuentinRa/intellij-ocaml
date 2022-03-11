@@ -54,11 +54,11 @@ import java.util.stream.Collectors;
 public class OCamlConsoleRunnerImpl extends AbstractConsoleRunnerWithHistory<OCamlConsoleView> implements OCamlConsoleRunner {
 
     private final ToolWindow myWindow;
+    private final ArrayList<String> commands = new ArrayList<>();
     private GeneralCommandLine commandLine;
     private Content myContent;
     private OCamlVariablesView myVariablesView;
     private boolean isRunning;
-    private final ArrayList<String> commands = new ArrayList<>();
     private boolean isVariableViewEnabled = true;
     private JBSplitter split;
 
@@ -292,12 +292,12 @@ public class OCamlConsoleRunnerImpl extends AbstractConsoleRunnerWithHistory<OCa
         isRunning = true;
     }
 
+    @Override public boolean isRunning() {
+        return isRunning;
+    }
+
     @Override public void setRunning(boolean running) {
         this.isRunning = running;
         if (!isRunning) ApplicationManager.getApplication().invokeLater(this::updateQueue);
-    }
-
-    @Override public boolean isRunning() {
-        return isRunning;
     }
 }
