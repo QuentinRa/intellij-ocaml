@@ -125,6 +125,10 @@ public class OCamlProjectConfigurable implements Configurable {
         });
         if (exception.get() != null) throw exception.get();
 
+        // new sdks were added or removed
+        // we need to update the view
+        myOCamlSdkComboBox.reloadModel();
+
         mySettings.outputFolderName = myCompilerOutput.getText();
     }
 

@@ -7,12 +7,17 @@ import com.intellij.openapi.options.newEditor.SettingsDialog;
 import com.intellij.openapi.project.Project;
 import com.ocaml.OCamlBundle;
 import com.ocaml.icons.OCamlIcons;
+import com.ocaml.utils.OCamlPlatformUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenOCamlProjectConfigurable extends AnAction {
 
     public OpenOCamlProjectConfigurable() {
         super(OCamlBundle.message("ocaml.project.configuration"), "", OCamlIcons.Nodes.OCAML_SDK);
+        // only for non-IntelliJ users
+        getTemplatePresentation().setEnabledAndVisible(
+                !OCamlPlatformUtils.isJavaPluginAvailable()
+        );
     }
 
     public void actionPerformed(@NotNull AnActionEvent e) {
