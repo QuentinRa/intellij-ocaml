@@ -119,6 +119,26 @@ public class OCamlSdkComboBox extends SdkComboBoxBase<OCamlSdkComboBoxItem> {
         return new InnerOCamlSdkComboBoxItem(item);
     }
 
+//    public void setEditButton(@NotNull JButton editButton,
+//                              @NotNull Project project,
+//                              @NotNull Supplier<? extends Sdk> retrieveJDK) {
+//        editButton.addActionListener(e -> {
+//            final Sdk projectJdk = retrieveJDK.get();
+//            if (projectJdk != null) {
+//                ProjectStructureConfigurable.getInstance(project).select(projectJdk, true);
+//            }
+//        });
+//        addActionListener(e -> {
+//            final OCamlSdkComboBoxItem selectedItem = getSelectedItem();
+//            if (selectedItem instanceof ProjectOCamlSdkComboBoxItem) {
+//                editButton.setEnabled(ProjectStructureConfigurable.getInstance(project).getProjectJdksModel().getProjectSdk() != null);
+//            }
+//            else {
+//                editButton.setEnabled(selectedItem != null && selectedItem.getJdk() != null);
+//            }
+//        });
+//    }
+
     @Nullable
     @Override
     public OCamlSdkComboBoxItem getSelectedItem() {
