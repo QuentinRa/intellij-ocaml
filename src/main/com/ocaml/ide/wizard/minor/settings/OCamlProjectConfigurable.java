@@ -4,6 +4,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationBundle;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class OCamlProjectConfigurable implements Configurable {
     @NotNull private final Project myProject;
@@ -45,7 +47,6 @@ public class OCamlProjectConfigurable implements Configurable {
         // sdk model
         mySdksModel = new ProjectSdksModel();
         mySdksModel.reset(myProject);
-        myProjectSdk = ProjectRootManager.getInstance(myProject).getProjectSdk();
 
         // Edit
         JButton editButton = new JButton(ApplicationBundle.message("button.edit"));
@@ -59,7 +60,7 @@ public class OCamlProjectConfigurable implements Configurable {
                 null);
         // we are not disable, so we need to fake
         myOCamlSdkComboBox.setParentDisposable(fakeDisposable);
-        myOCamlSdkComboBox.setSelectedJdk(myProjectSdk);
+        myOCamlSdkComboBox.setSelectedJdk(mySdksModel.getProjectSdk());
         myOCamlSdkComboBox.setEditButton(editButton, myOCamlSdkComboBox::getSelectedSdk, sdk -> {
             // ProjectStructureConfigurable.getInstance(project).select(projectJdk, true);
             System.out.println("select " + sdk);
@@ -78,9 +79,6 @@ public class OCamlProjectConfigurable implements Configurable {
         mySdkConfigurable = new SdkListConfigurable(this);
         mySdksPanel.add(mySdkConfigurable.createComponent());
         mySdkConfigurable.reset();
-
-        // todo: temp
-        myTabs.setSelectedIndex(1);
     }
 
     @Override public String getDisplayName() {
@@ -93,20 +91,29 @@ public class OCamlProjectConfigurable implements Configurable {
 
     @Override public boolean isModified() {
         Sdk selectedSdk = myOCamlSdkComboBox.getSelectedSdk();
-        boolean sdkSame = (selectedSdk == null && myProjectSdk == null)
+        boolean projectSdkSame = (selectedSdk == null && myProjectSdk == null)
                 || (selectedSdk != null && myProjectSdk != null &&
                 selectedSdk.getName().equals(myProjectSdk.getName()));
         boolean locationSame = myCompilerOutput.getText().equals(mySettings.outputFolderName);
-        return !sdkSame || !locationSame;
+        return !projectSdkSame || !locationSame || mySdkConfigurable.isModified();
     }
 
-    @Override public void apply() {
-        ProjectRootManager instance = ProjectRootManager.getInstance(myProject);
+    @Override public void apply() throws ConfigurationException {
+        AtomicReference<ConfigurationException> exception = new AtomicReference<>();
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            // set project SDK
+            ProjectRootManager instance = ProjectRootManager.getInstance(myProject);
+            myProjectSdk = myOCamlSdkComboBox.getSelectedSdk();
+            instance.setProjectSdk(myProjectSdk);
 
-        myProjectSdk = myOCamlSdkComboBox.getSelectedSdk();
-        ApplicationManager
-                .getApplication()
-                .runWriteAction(() -> instance.setProjectSdk(myProjectSdk));
+            // wrap sdkConfigurable#apply
+            try {
+                mySdkConfigurable.apply();
+            } catch (ConfigurationException e) {
+                exception.set(e);
+            }
+        });
+        if (exception.get() != null) throw exception.get();
 
         mySettings.outputFolderName = myCompilerOutput.getText();
     }

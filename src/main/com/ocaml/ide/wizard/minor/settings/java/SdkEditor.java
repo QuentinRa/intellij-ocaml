@@ -65,6 +65,7 @@ public class SdkEditor implements Configurable, Place.Navigator {
     private JPanel myAdditionalDataPanel;
     private JPanel myDownloadingPanel;
     private InlineProgressIndicator myDownloadProgressIndicator;
+
     // GUI components
     private JPanel myMainPanel;
     private TabbedPaneWrapper myTabbedPane;
@@ -74,6 +75,7 @@ public class SdkEditor implements Configurable, Place.Navigator {
     private String myInitialPath;
     private boolean myIsDownloading = false;
     private boolean myIsDisposed = false;
+
     public SdkEditor(@NotNull ProjectSdksModel sdkModel,
                      @NotNull History history,
                      @NotNull ProjectJdkImpl sdk) {
@@ -392,20 +394,10 @@ public class SdkEditor implements Configurable, Place.Navigator {
             configurables = new ArrayList<>();
             myAdditionalDataConfigurables.put(sdkType, configurables);
 
-
             AdditionalDataConfigurable sdkConfigurable = sdkType.createAdditionalDataConfigurable(mySdkModel, myEditedSdkModificator);
             if (sdkConfigurable != null) {
                 configurables.add(sdkConfigurable);
             }
-
-            System.out.println("ici");
-
-//            for (SdkEditorAdditionalOptionsProvider factory : SdkEditorAdditionalOptionsProvider.getSdkOptionsFactory(mySdk.getSdkType())) {
-//                AdditionalDataConfigurable options = factory.createOptions(myProject, mySdk);
-//                if (options != null) {
-//                    configurables.add(options);
-//                }
-//            }
         }
 
         return configurables;

@@ -11,6 +11,7 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.MasterDetailsComponent;
@@ -35,7 +36,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class SdkListConfigurable extends MasterDetailsComponent implements SearchableConfigurable, Disposable, Place.Navigator {
-    private final OCamlProjectConfigurable myOCamlProjectConfigurable;
+    private final ProjectSdksModel mySdksModel;
     private final Project myProject;
 
     protected boolean myUiDisposed = true;
@@ -44,8 +45,8 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
 
     public SdkListConfigurable(@NotNull OCamlProjectConfigurable ocamlProjectConfigurable) {
         super(new MasterDetailsState());
-        myOCamlProjectConfigurable = ocamlProjectConfigurable;
         myProject = ocamlProjectConfigurable.getProject();
+        mySdksModel = ocamlProjectConfigurable.getSdksModel();
     }
 
     @Override protected @Nullable MasterDetailsStateService getStateService() {
@@ -127,7 +128,18 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
     // usual
 
     @Override public void apply() throws ConfigurationException {
-        super.apply();
+        boolean modifiedJdks = false;
+        for (int i = 0; i < myRoot.getChildCount(); i++) {
+            final NamedConfigurable<?> configurable = ((MyNode)myRoot.getChildAt(i)).getConfigurable();
+            if (configurable.isModified()) {
+                configurable.apply();
+                modifiedJdks = true;
+            }
+        }
+
+        if (mySdksModel.isModified() || modifiedJdks) mySdksModel.apply(this);
+
+        mySdksModel.setProjectSdk(ProjectRootManager.getInstance(myProject).getProjectSdk());
     }
 
     @Override public void reset() {
@@ -144,11 +156,14 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
         super.reset();
     }
 
+    @Override public boolean isModified() {
+        return super.isModified() || mySdksModel.isModified();
+    }
+
     private void loadTreeNodes() {
-        ProjectSdksModel sdksModel = myOCamlProjectConfigurable.getSdksModel();
-        final Map<Sdk, Sdk> sdks = sdksModel.getProjectSdks();
+        final Map<Sdk, Sdk> sdks = mySdksModel.getProjectSdks();
         for (Sdk sdk : sdks.keySet()) {
-            final SdkConfigurable configurable = new SdkConfigurable((ProjectJdkImpl) sdks.get(sdk), sdksModel, TREE_UPDATER, myHistory);
+            final SdkConfigurable configurable = new SdkConfigurable((ProjectJdkImpl) sdks.get(sdk), mySdksModel, TREE_UPDATER, myHistory);
             addNode(new MyNode(configurable), myRoot);
         }
     }
@@ -188,7 +203,7 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             SdkPopupFactory.newBuilder().withProject(myProject)
-                    .withProjectSdksModel(myOCamlProjectConfigurable.getSdksModel())
+                    .withProjectSdksModel(mySdksModel)
                     .withSdkTypeFilter(c -> c instanceof OCamlSdkType)
                     .buildPopup()
                     .showPopup(e);
@@ -203,5 +218,10 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
 
     @Override public String getDisplayName() {
         return "OCamlProjectSdkConfigurable";
+    }
+
+    @Override protected @Nullable String getEmptySelectionString() {
+        // todo: JavaUiBundle.message("project.jdks.configurable.empty.selection.string")
+        return super.getEmptySelectionString();
     }
 }
