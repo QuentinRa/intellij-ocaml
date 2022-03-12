@@ -23,21 +23,20 @@ import java.awt.*;
 public class OCamlProjectConfigurable implements Configurable {
     @NotNull private final Project myProject;
 
-    private final Disposable fakeDisposable = Disposer.newDisposable();
+    // model
+    private final OCamlSettings mySettings;
+    private final ProjectSdksModel mySdksModel;
+    private Sdk myProjectSdk;
 
     // components
-    private JPanel myMainPanel;
+    private final Disposable fakeDisposable = Disposer.newDisposable();
     private final OCamlSdkComboBox myOCamlSdkComboBox;
+    private final SdkListConfigurable mySdkConfigurable;
+    private JPanel myMainPanel;
     private JTextField myCompilerOutput;
     private JTabbedPane myTabs;
     private JPanel mySdksPanel;
     private JPanel mySdkPanel;
-    // saves
-    private Sdk myProjectSdk;
-
-    private final OCamlSettings mySettings;
-    private final ProjectSdksModel mySdksModel;
-    private final SdkListConfigurable mySdkConfigurable;
 
     public OCamlProjectConfigurable(@NotNull Project project) {
         myProject = project;
@@ -63,7 +62,7 @@ public class OCamlProjectConfigurable implements Configurable {
         myOCamlSdkComboBox.setSelectedJdk(myProjectSdk);
         myOCamlSdkComboBox.setEditButton(editButton, myOCamlSdkComboBox::getSelectedSdk, sdk -> {
             // ProjectStructureConfigurable.getInstance(project).select(projectJdk, true);
-            System.out.println("select "+sdk);
+            System.out.println("select " + sdk);
             myTabs.setSelectedIndex(1);
         });
 

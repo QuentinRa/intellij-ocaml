@@ -39,8 +39,8 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
     private final Project myProject;
 
     protected boolean myUiDisposed = true;
-    private boolean myWasTreeInitialized;
     protected boolean myAutoScrollEnabled = true;
+    private boolean myWasTreeInitialized;
 
     public SdkListConfigurable(@NotNull OCamlProjectConfigurable ocamlProjectConfigurable) {
         super(new MasterDetailsState());
@@ -56,7 +56,7 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
         if (place == null) return ActionCallback.DONE;
 
         final Object object = place.getPath(TREE_OBJECT);
-        final String byName = (String)place.getPath(TREE_NAME);
+        final String byName = (String) place.getPath(TREE_NAME);
 
         if (object == null && byName == null) return ActionCallback.DONE;
 
@@ -86,6 +86,7 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
     }
 
     // tree
+
     @Override protected void initTree() {
         if (myWasTreeInitialized) return;
         myWasTreeInitialized = true;
@@ -93,6 +94,7 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
     }
 
     // dispose
+
     @Override public void dispose() {
     }
 
@@ -120,6 +122,41 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
         result.add(new MyRemoveAction());
         result.add(Separator.getInstance());
         return result;
+    }
+
+    // usual
+
+    @Override public void apply() throws ConfigurationException {
+        super.apply();
+    }
+
+    @Override public void reset() {
+        myUiDisposed = false;
+
+        if (!myWasTreeInitialized) {
+            initTree();
+            myTree.setShowsRootHandles(false);
+            loadTreeNodes();
+        } else {
+            reloadTreeNodes();
+        }
+
+        super.reset();
+    }
+
+    private void loadTreeNodes() {
+        ProjectSdksModel sdksModel = myOCamlProjectConfigurable.getSdksModel();
+        final Map<Sdk, Sdk> sdks = sdksModel.getProjectSdks();
+        for (Sdk sdk : sdks.keySet()) {
+            final SdkConfigurable configurable = new SdkConfigurable((ProjectJdkImpl) sdks.get(sdk), sdksModel, TREE_UPDATER, myHistory);
+            addNode(new MyNode(configurable), myRoot);
+        }
+    }
+
+    protected final void reloadTreeNodes() {
+        super.disposeUIResources();
+        myTree.setShowsRootHandles(false);
+        loadTreeNodes();
     }
 
     // todo: remove sdk
@@ -152,45 +189,10 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
         public void actionPerformed(@NotNull AnActionEvent e) {
             SdkPopupFactory.newBuilder().withProject(myProject)
                     .withProjectSdksModel(myOCamlProjectConfigurable.getSdksModel())
-                    .withSdkTypeFilter(c -> c  instanceof OCamlSdkType)
+                    .withSdkTypeFilter(c -> c instanceof OCamlSdkType)
                     .buildPopup()
                     .showPopup(e);
         }
-    }
-
-    // usual
-
-    @Override public void apply() throws ConfigurationException {
-        super.apply();
-    }
-
-    @Override public void reset() {
-        myUiDisposed = false;
-
-        if (!myWasTreeInitialized) {
-            initTree();
-            myTree.setShowsRootHandles(false);
-            loadTreeNodes();
-        } else {
-            reloadTreeNodes();
-        }
-
-        super.reset();
-    }
-
-    private void loadTreeNodes() {
-        ProjectSdksModel sdksModel = myOCamlProjectConfigurable.getSdksModel();
-        final Map<Sdk,Sdk> sdks = sdksModel.getProjectSdks();
-        for (Sdk sdk : sdks.keySet()) {
-            final SdkConfigurable configurable = new SdkConfigurable((ProjectJdkImpl)sdks.get(sdk), sdksModel, TREE_UPDATER, myHistory);
-            addNode(new MyNode(configurable), myRoot);
-        }
-    }
-
-    protected final void reloadTreeNodes() {
-        super.disposeUIResources();
-        myTree.setShowsRootHandles(false);
-        loadTreeNodes();
     }
 
     // data

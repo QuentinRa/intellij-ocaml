@@ -42,11 +42,6 @@ public class SdkConfigurable extends NamedConfigurable<Sdk> implements Place.Nav
     }
 
     @Override
-    public void setDisplayName(final String name) {
-        myProjectJdk.setName(name);
-    }
-
-    @Override
     public Sdk getEditableObject() {
         return myProjectJdk;
     }
@@ -59,6 +54,11 @@ public class SdkConfigurable extends NamedConfigurable<Sdk> implements Place.Nav
     @Override
     public String getDisplayName() {
         return myProjectJdk.getName();
+    }
+
+    @Override
+    public void setDisplayName(final String name) {
+        myProjectJdk.setName(name);
     }
 
     @Override
