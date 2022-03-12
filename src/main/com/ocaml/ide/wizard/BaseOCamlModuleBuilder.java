@@ -28,7 +28,7 @@ public class BaseOCamlModuleBuilder extends ModuleBuilder {
     private Supplier<String> contentEntryPath;
 
     @Override
-    public ModuleType<OCamlModuleBuilder> getModuleType() {
+    public ModuleType<?> getModuleType() {
         return new OCamlModuleType();
     }
 

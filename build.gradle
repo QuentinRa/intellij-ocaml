@@ -13,10 +13,12 @@ testlogger {
     showSkipped false
 }
 
+boolean useJava = true
+
 switch (platformType) {
     case "IC": break
     case "IU": break
-    case "CL": break
+    case "CL": useJava = false; break
     default: throw new IllegalStateException("Unexpected IDE name '"+platformType+"'" as String)
 }
 
@@ -50,10 +52,10 @@ intellij {
     version = targetVersion
     pluginName = "intellij-ocaml"
     plugins = [
-            'java',
             'com.jetbrains.hackathon.indices.viewer:'+indicesVersion,
             'PsiViewer:'+psiViewerPluginVersion
     ]
+    if (useJava) plugins.add('java')
     downloadSources = true
     sandboxDir = "$buildDir/idea-sandbox-$platformVersion"
 
@@ -88,6 +90,16 @@ sourceSets {
             main.java.srcDirs += ["src/$s"]
         }
     }
+    // java another root for Java-only classes
+    String name = useJava ? "src-java" : "src-non-java"
+
+    main.java.srcDirs += ["$name/$platformVersion", "$name/main"]
+    if (loadPlatform != null && !loadPlatform.isBlank()) {
+        for(String s: (loadPlatform as String).split(",")) {
+            main.java.srcDirs += ["$name/$s"]
+        }
+    }
+
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
     if (loadPlatform != null && !loadPlatform.isBlank()) {
