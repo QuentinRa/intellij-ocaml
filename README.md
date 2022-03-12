@@ -94,7 +94,7 @@ This is a console allowing the use of the ocaml interpreter more easily. For ins
 
 We are compiling the file, and parsing the output, to provide hints in the editor.
 
-| File                                                   |
+| New File                                               |
 |--------------------------------------------------------|
 | ✅ Can create .ml, .mli, or .ml and .mli                |
 | ✅ Editor > File and Code Templates for .ml and .mli    |
@@ -117,7 +117,6 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 | ❌ Suggest installing dune                         |
 | ❌ Show a message when updating files not targeted |
 | ❌ Show an icon to "reload" dune                   |
-
 
 | Minor IDEs                                    |
 |-----------------------------------------------|
