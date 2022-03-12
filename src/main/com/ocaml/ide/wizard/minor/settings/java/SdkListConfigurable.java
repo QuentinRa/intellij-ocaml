@@ -28,13 +28,14 @@ import com.intellij.util.containers.MultiMap;
 import com.ocaml.OCamlBundle;
 import com.ocaml.ide.wizard.minor.settings.OCamlProjectConfigurable;
 import com.ocaml.sdk.OCamlSdkType;
+import com.ocaml.utils.adaptor.ConvertPredicate;
+import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreePath;
 import java.util.*;
-import java.util.function.Predicate;
 
 public class SdkListConfigurable extends MasterDetailsComponent implements SearchableConfigurable, Disposable, Place.Navigator {
     private final ProjectSdksModel mySdksModel;
@@ -221,24 +222,27 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
     }
 
     final class MyRemoveAction extends MyDeleteAction {
+        @UntilIdeVersion(release = "203", note = "Condition was deprecated over Predicate.")
         MyRemoveAction() {
-            super((Predicate<Object[]>)objects -> {
-                List<MyNode> nodes = new ArrayList<>();
-                for (Object object : objects) {
-                    if (!(object instanceof MyNode)) return false;
-                    nodes.add((MyNode)object);
-                }
-                //noinspection rawtypes
-                MultiMap<RemoveConfigurableHandler, MyNode> map = groupNodes(nodes);
-                //noinspection rawtypes
-                for (Map.Entry<RemoveConfigurableHandler, Collection<MyNode>> entry : map.entrySet()) {
-                    //noinspection unchecked
-                    if (!entry.getKey().canBeRemoved(getEditableObjects(entry.getValue()))) {
-                        return false;
+            super(ConvertPredicate.cast(
+                    objects -> {
+                        List<MyNode> nodes = new ArrayList<>();
+                        for (Object object : objects) {
+                            if (!(object instanceof MyNode)) return false;
+                            nodes.add((MyNode)object);
+                        }
+                        //noinspection rawtypes
+                        MultiMap<RemoveConfigurableHandler, MyNode> map = groupNodes(nodes);
+                        //noinspection rawtypes
+                        for (Map.Entry<RemoveConfigurableHandler, Collection<MyNode>> entry : map.entrySet()) {
+                            //noinspection unchecked
+                            if (!entry.getKey().canBeRemoved(getEditableObjects(entry.getValue()))) {
+                                return false;
+                            }
+                        }
+                        return true;
                     }
-                }
-                return true;
-            });
+            ));
         }
 
         @Override

@@ -7,7 +7,7 @@ public final class OCamlPlatformUtils {
     public static boolean isJavaPluginAvailable() {
         if (isJavaAvailable == null) {
             try {
-                Class.forName("CompilerManager");
+                Class.forName("com.intellij.ide.highlighter.JavaFileType");
                 isJavaAvailable = true;
             } catch (ClassNotFoundException e) {
                 isJavaAvailable = false;

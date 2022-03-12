@@ -16,6 +16,7 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.util.Consumer;
 import com.ocaml.OCamlBundle;
 import com.ocaml.utils.Callback;
+import com.ocaml.utils.adaptor.roots.SdkListModelBuilderAdaptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +67,7 @@ public class OCamlSdkComboBox extends SdkComboBoxBase<OCamlSdkComboBoxItem> {
                        @Nullable Condition<? super SdkListItem.SuggestedItem> suggestedSdkFilter,
                        @Nullable Condition<? super SdkTypeId> creationFilter,
                        @Nullable Consumer<? super Sdk> onNewSdkAdded) {
-        this(new SdkListModelBuilder(project, sdkModel, sdkTypeFilter, SimpleJavaSdkType.notSimpleJavaSdkType(creationFilter), sdkFilter, suggestedSdkFilter, null),
+        this(SdkListModelBuilderAdaptor.create(project, sdkModel, sdkTypeFilter, SimpleJavaSdkType.notSimpleJavaSdkType(creationFilter), sdkFilter, suggestedSdkFilter, null),
                 onNewSdkAdded);
     }
 
