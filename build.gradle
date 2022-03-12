@@ -14,6 +14,7 @@ testlogger {
 }
 
 boolean useJava = true
+String suffix = "" // added for differentiate the public archive, and the others
 
 switch (platformType) {
     case "IC": break
@@ -21,6 +22,8 @@ switch (platformType) {
     case "CL": useJava = false; break
     default: throw new IllegalStateException("Unexpected IDE name '"+platformType+"'" as String)
 }
+
+suffix = useJava ? "" : "-"+platformType
 
 // The same as `--stacktrace` param
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
@@ -57,7 +60,7 @@ intellij {
     ]
     if (useJava) plugins.add('java')
     downloadSources = true
-    sandboxDir = "$buildDir/idea-sandbox-$platformVersion"
+    sandboxDir = "$buildDir/idea-sandbox-$platformVersion"+suffix
 
     patchPluginXml {
         sinceBuild = pluginSinceBuild
