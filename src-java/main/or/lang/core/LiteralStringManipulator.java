@@ -1,4 +1,4 @@
-package com.or.lang.core;
+package or.lang.core;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;

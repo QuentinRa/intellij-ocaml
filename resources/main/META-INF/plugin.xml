@@ -50,18 +50,15 @@
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="F11" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F11" replace-all="true"/>
         </action>
-        <!-- setup SDK -->
-        <action id="OCaml.SelectSDK" class="com.ocaml.ide.module.select.SelectSDKAction">
+        <!-- Open OCamlProjectConfigurable (Non-IntelliJ users only) -->
+        <action id="com.ocaml.ide.wizard.minor.settings.OpenOCamlProjectConfigurable"
+                class="com.ocaml.ide.wizard.minor.settings.OpenOCamlProjectConfigurable">
             <add-to-group group-id="ToolbarRunGroup" anchor="first" />
         </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <!-- MODULE -->
-        <moduleBuilder builderClass="com.ocaml.ide.wizard.OCamlModuleBuilder" order="first"/>
-        <moduleType id="OCAML_MODULE" implementationClass="com.ocaml.ide.module.OCamlModuleType"/>
-        <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
         <directoryProjectGenerator implementation="com.ocaml.ide.wizard.minor.OCamlDirectoryProjectGenerator"/>
 
         <!-- SDK -->
@@ -103,5 +100,8 @@
 
         <!-- HELP -->
         <webHelpProvider implementation="com.ocaml.ide.OCamlWebHelpProvider"/>
+
+        <!-- SETTINGS -->
+        <projectService serviceImplementation="com.ocaml.ide.settings.OCamlSettings"/>
     </extensions>
 </idea-plugin>

@@ -8,7 +8,6 @@
         <stubElementTypeHolder externalIdPrefix="OCaml." class="com.or.lang.core.stub.OclStubBasedElementTypes"/>
         <lang.ast.factory language="OCAML" implementationClass="com.or.lang.parser.OclASTFactory"/>
         <lang.parserDefinition language="OCAML" implementationClass="com.or.lang.parser.OclParserDefinition"/>
-        <lang.elementManipulator forClass="com.or.lang.core.psi.PsiLiteralExpression" implementationClass="com.or.lang.core.LiteralStringManipulator"/>
 
         <!-- HIGHLIGHT -->
         <colorSettingsPage implementation="com.or.ide.settings.ORColorSettingsPage"/>
