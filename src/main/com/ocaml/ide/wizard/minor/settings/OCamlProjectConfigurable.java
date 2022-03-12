@@ -9,12 +9,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
+import com.intellij.openapi.ui.MasterDetailsComponent;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.navigation.Place;
 import com.ocaml.OCamlBundle;
 import com.ocaml.ide.settings.OCamlSettings;
 import com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox;
 import com.ocaml.ide.wizard.minor.settings.java.SdkListConfigurable;
 import com.ocaml.sdk.OCamlSdkType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,11 +64,6 @@ public class OCamlProjectConfigurable implements Configurable {
         // we are not disable, so we need to fake
         myOCamlSdkComboBox.setParentDisposable(fakeDisposable);
         myOCamlSdkComboBox.setSelectedJdk(mySdksModel.getProjectSdk());
-        myOCamlSdkComboBox.setEditButton(editButton, myOCamlSdkComboBox::getSelectedSdk, sdk -> {
-            // ProjectStructureConfigurable.getInstance(project).select(projectJdk, true);
-            System.out.println("select " + sdk);
-            myTabs.setSelectedIndex(1);
-        });
 
         // Sdk Panel
         mySdkPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -79,6 +77,17 @@ public class OCamlProjectConfigurable implements Configurable {
         mySdkConfigurable = new SdkListConfigurable(this);
         mySdksPanel.add(mySdkConfigurable.createComponent());
         mySdkConfigurable.reset();
+
+        myOCamlSdkComboBox.setEditButton(editButton, myOCamlSdkComboBox::getSelectedSdk, sdk -> {
+            myTabs.setSelectedIndex(1);
+            Place place = createPlaceFor(this);
+            place.putPath(MasterDetailsComponent.TREE_NAME, sdk.getName());
+            mySdkConfigurable.navigateTo(place, true);
+        });
+    }
+
+    @NotNull @Contract("_ -> new") private static Place createPlaceFor(final Configurable configurable) {
+        return new Place().putPath("category", configurable);
     }
 
     @Override public String getDisplayName() {
