@@ -251,7 +251,7 @@ public class SdkEditor implements Configurable, Place.Navigator {
         Disposer.dispose(myDisposable);
     }
 
-    private String getHomeValue() {
+    @NotNull private String getHomeValue() {
         return myHomeComponent.getText().trim();
     }
 

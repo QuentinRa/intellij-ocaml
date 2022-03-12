@@ -50,6 +50,7 @@ public class OCamlProjectConfigurable implements Configurable {
         // sdk model
         mySdksModel = new ProjectSdksModel();
         mySdksModel.reset(myProject);
+        myProjectSdk = mySdksModel.getProjectSdk();
 
         // Edit
         JButton editButton = new JButton(ApplicationBundle.message("button.edit"));
