@@ -3,8 +3,8 @@
     <name>OCaml</name>
     <vendor email="ramsamy.ws@gmail.com" url="https://github.com/QuentinRa/">QuentinRa</vendor>
     <description><![CDATA[
-        The OCaml plugin is providing support for the OCaml language in IntelliJ IDEA, using opam or
-        native SDKs. Based on ReasonML.]]>
+        The OCaml plugin is providing support for the OCaml language in all IDEs (IntelliJ, CLion, ...),
+        using opam or native SDKs. Based on ReasonML.]]>
     </description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html

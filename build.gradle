@@ -67,7 +67,10 @@ intellij {
         untilBuild = pluginUntilBuild
         changeNotes = """
                 <ul>
-                    <li>...</li>
+                    <li>Available in all IDEs! (#90)</li>
+                    <li>Documentation for the plugin. (#89)</li>
+                    <li>Type inference with CTRL+SHIFT+P. (#88)</li>
+                    <li>Editor for .annot (#87)</li>
                     <li>See <a href="https://github.com/QuentinRa/intellij-ocaml/blob/main/CHANGELOG.md">CHANGELOG.md</a></li>
                 <ul>
             """.stripIndent()

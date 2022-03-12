@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - 🚀 can see the type with `CTRL+SHIFT+P` (#38 ➡️ #88)
 - 🚀 Editor for .annot. (#38 ➡️ #87)
-- 🚀🚀 Support for minor IDEs (#90)
+- 🚀🚀 Support for all IDEs (#90)
+- ✨ Documentation for the plugin. (#89)
 
 ## [0.1.0] - 2022-02-26
 
