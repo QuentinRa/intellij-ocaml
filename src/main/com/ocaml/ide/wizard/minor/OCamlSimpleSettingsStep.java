@@ -9,6 +9,7 @@ import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.IdeFocusManager;
@@ -20,6 +21,7 @@ import com.ocaml.OCamlBundle;
 import com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox;
 import com.ocaml.ide.wizard.minor.java.ProjectTemplateList;
 import com.ocaml.ide.wizard.templates.OCamlTemplateProvider;
+import com.ocaml.ide.wizard.view.OCamlBrowseUtil;
 import com.ocaml.sdk.OCamlSdkType;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +68,18 @@ public class OCamlSimpleSettingsStep extends ProjectSettingsStepBase<Object> {
     @Override protected @Nullable JPanel createAdvancedSettings() {
         JPanel jPanel = super.createAdvancedSettings();
         if (jPanel == null) return null;
+
+        JPanel disclaimer = new JPanel(new VerticalFlowLayout(0, 10));
+
+        disclaimer.add(new JLabel(OCamlBundle.message("support.for.minor.ide.is.experimental")));
+
+        // adding the links
+        JPanel links = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        links.add(OCamlBrowseUtil.toDocumentation());
+        links.add(OCamlBrowseUtil.toIssues());
+        disclaimer.add(links);
+
+        jPanel.add(disclaimer);
 
         Project project = ProjectManager.getInstance().getDefaultProject();
 

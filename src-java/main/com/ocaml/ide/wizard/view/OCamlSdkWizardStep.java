@@ -91,7 +91,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
     @NotNull private JPanel myPanel; // the view
     @NotNull private JLabel myWizardTitle; // title of the wizard
-    private ActionLink myActionLink; // link to the installation instructions
+    private ActionLink myPluginDocumentation; // link to the documentation
+    private ActionLink myIssueLink; // link to open an issue
 
     @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
     private boolean isUseSelected; // true if the first menu is selected, false else
@@ -334,9 +335,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         if (!myWizardContext.isCreatingNewProject()) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
-        myActionLink = new ActionLink(OCamlBundle.message("project.wizard.instruction.link"), event -> {
-            BrowserUtil.browse(OCamlPluginConstants.INSTALL_LINK);
-        });
-        myActionLink.setExternalLinkIcon();
+        myPluginDocumentation = OCamlBrowseUtil.toDocumentation();
+        myIssueLink = OCamlBrowseUtil.toIssues();
     }
 }
