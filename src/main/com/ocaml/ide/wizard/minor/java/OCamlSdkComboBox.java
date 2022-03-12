@@ -15,11 +15,13 @@ import com.intellij.openapi.ui.ComboBoxPopupState;
 import com.intellij.openapi.util.Condition;
 import com.intellij.util.Consumer;
 import com.ocaml.OCamlBundle;
+import com.ocaml.utils.Callback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import static com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox.OCamlSdkComboBoxItem;
 
@@ -119,25 +121,20 @@ public class OCamlSdkComboBox extends SdkComboBoxBase<OCamlSdkComboBoxItem> {
         return new InnerOCamlSdkComboBoxItem(item);
     }
 
-//    public void setEditButton(@NotNull JButton editButton,
-//                              @NotNull Project project,
-//                              @NotNull Supplier<? extends Sdk> retrieveJDK) {
-//        editButton.addActionListener(e -> {
-//            final Sdk projectJdk = retrieveJDK.get();
-//            if (projectJdk != null) {
-//                ProjectStructureConfigurable.getInstance(project).select(projectJdk, true);
-//            }
-//        });
-//        addActionListener(e -> {
-//            final OCamlSdkComboBoxItem selectedItem = getSelectedItem();
-//            if (selectedItem instanceof ProjectOCamlSdkComboBoxItem) {
-//                editButton.setEnabled(ProjectStructureConfigurable.getInstance(project).getProjectJdksModel().getProjectSdk() != null);
-//            }
-//            else {
-//                editButton.setEnabled(selectedItem != null && selectedItem.getJdk() != null);
-//            }
-//        });
-//    }
+    public void setEditButton(@NotNull JButton editButton,
+                              @NotNull Supplier<? extends Sdk> retrieveJDK,
+                              @NotNull Callback<Sdk> onEdit) {
+        editButton.addActionListener(e -> {
+            final Sdk projectJdk = retrieveJDK.get();
+            if (projectJdk != null) {
+                onEdit.call(projectJdk);
+            }
+        });
+        addActionListener(e -> {
+            final OCamlSdkComboBoxItem selectedItem = getSelectedItem();
+            editButton.setEnabled(selectedItem != null && selectedItem.getJdk() != null);
+        });
+    }
 
     @Nullable
     @Override

@@ -1,47 +1,87 @@
 package com.ocaml.ide.wizard.minor.settings;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationBundle;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Disposer;
 import com.ocaml.OCamlBundle;
 import com.ocaml.ide.settings.OCamlSettings;
 import com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox;
+import com.ocaml.ide.wizard.minor.settings.java.SdkListConfigurable;
 import com.ocaml.sdk.OCamlSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.File;
+import java.awt.*;
 
 public class OCamlProjectConfigurable implements Configurable {
     @NotNull private final Project myProject;
 
-    private final Disposable fakeDisposable = () -> {};
+    private final Disposable fakeDisposable = Disposer.newDisposable();
 
     // components
     private JPanel myMainPanel;
-    private OCamlSdkComboBox myOCamlSdkComboBox;
+    private final OCamlSdkComboBox myOCamlSdkComboBox;
     private JTextField myCompilerOutput;
+    private JTabbedPane myTabs;
+    private JPanel mySdksPanel;
+    private JPanel mySdkPanel;
     // saves
     private Sdk myProjectSdk;
 
     private final OCamlSettings mySettings;
+    private final ProjectSdksModel mySdksModel;
+    private final SdkListConfigurable mySdkConfigurable;
 
     public OCamlProjectConfigurable(@NotNull Project project) {
-        this.myProject = project;
-
+        myProject = project;
         mySettings = OCamlSettings.getInstance(project);
+
+        // sdk model
+        mySdksModel = new ProjectSdksModel();
+        mySdksModel.reset(myProject);
+        myProjectSdk = ProjectRootManager.getInstance(myProject).getProjectSdk();
+
+        // Edit
+        JButton editButton = new JButton(ApplicationBundle.message("button.edit"));
+
+        // combobox
+        myOCamlSdkComboBox = new OCamlSdkComboBox(myProject,
+                mySdksModel,
+                sdk -> sdk instanceof OCamlSdkType,
+                null,
+                null,
+                null);
+        // we are not disable, so we need to fake
+        myOCamlSdkComboBox.setParentDisposable(fakeDisposable);
+        myOCamlSdkComboBox.setSelectedJdk(myProjectSdk);
+        myOCamlSdkComboBox.setEditButton(editButton, myOCamlSdkComboBox::getSelectedSdk, sdk -> {
+            // ProjectStructureConfigurable.getInstance(project).select(projectJdk, true);
+            System.out.println("select "+sdk);
+            myTabs.setSelectedIndex(1);
+        });
+
+        // Sdk Panel
+        mySdkPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        mySdkPanel.add(myOCamlSdkComboBox);
+        mySdkPanel.add(editButton);
 
         // On File selected
         myCompilerOutput.setText(mySettings.outputFolderName);
+
+        // load sdk configurable
+        mySdkConfigurable = new SdkListConfigurable(this);
+        mySdksPanel.add(mySdkConfigurable.createComponent());
+        mySdkConfigurable.reset();
+
+        // todo: temp
+        myTabs.setSelectedIndex(1);
     }
 
     @Override public String getDisplayName() {
@@ -72,31 +112,19 @@ public class OCamlProjectConfigurable implements Configurable {
         mySettings.outputFolderName = myCompilerOutput.getText();
     }
 
-    // create components, needed by the ".form" since some must be created manually.
-    // called somewhat in the middle/after of the constructor
-    public void createUIComponents() {
-        Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof OCamlSdkType;
-
-        // get sdk model
-        ProjectSdksModel sdksModel = new ProjectSdksModel();
-        sdksModel.reset(myProject);
-        myProjectSdk = ProjectRootManager.getInstance(myProject).getProjectSdk();
-
-        // combobox
-        myOCamlSdkComboBox = new OCamlSdkComboBox(myProject,
-                sdksModel,
-                sdkTypeFilter,
-                null,
-                null,
-                null);
-        // we are not disable, so we need to fake
-        myOCamlSdkComboBox.setParentDisposable(fakeDisposable);
-        myOCamlSdkComboBox.setSelectedJdk(myProjectSdk);
-        // todo: edit button
-    }
-
     @Override public void disposeUIResources() {
         Configurable.super.disposeUIResources();
+        mySdkConfigurable.disposeUIResources();
         Disposer.dispose(fakeDisposable);
+    }
+
+    // new
+
+    public Project getProject() {
+        return myProject;
+    }
+
+    public ProjectSdksModel getSdksModel() {
+        return mySdksModel;
     }
 }
