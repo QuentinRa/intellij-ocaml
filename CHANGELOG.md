@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0-EAP]
+## [0.2.0] - 2022-03-14
 ### Added
-- 🚀 can see the type with `CTRL+SHIFT+P` (#38 ➡️ #88)
-- 🚀 Editor for .annot. (#38 ➡️ #87)
-- 🚀🚀 Support for all IDEs (#90)
+- 🚀🚀 Support for all IDEs. (#90)
 - ✨ Documentation for the plugin. (#89)
+- 🚀 Type inference with `CTRL+SHIFT+P` (#38 ➡️ #88)
+- 🚀 Editor for .annot. (#38 ➡️ #87)
+- 🪲 Fixing the bug when creating a new module. (#73)
 
 ## [0.1.0] - 2022-02-26
 
