@@ -14,7 +14,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
@@ -318,8 +317,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myProject = myWizardContext.getProject();
         myProject = myProject != null ? myProject : ProjectManager.getInstance().getDefaultProject();
 
-        final ProjectStructureConfigurable projectConfig = ProjectStructureConfigurable.getInstance(myProject);
-        mySdksModel = projectConfig.getProjectJdksModel();
+        mySdksModel = new ProjectSdksModel();
         mySdksModel.reset(myProject);
 
         Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof OCamlSdkType;
