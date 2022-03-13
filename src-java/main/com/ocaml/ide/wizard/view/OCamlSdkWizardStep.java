@@ -2,7 +2,6 @@ package com.ocaml.ide.wizard.view;
 
 import com.intellij.CommonBundle;
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.HelpTooltip;
 import com.intellij.ide.JavaUiBundle;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
@@ -26,7 +25,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
-import com.ocaml.OCamlPluginConstants;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.wizard.OCamlModuleBuilder;
 import com.ocaml.sdk.OCamlSdkType;
@@ -34,6 +32,7 @@ import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
+import com.ocaml.utils.OCamlBrowseUtil;
 import com.ocaml.utils.adaptor.RequireJavaPlugin;
 import com.ocaml.utils.adaptor.ui.JdkComboBoxAdaptor;
 import com.ocaml.utils.listener.DeferredDocumentListener;
@@ -91,8 +90,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
     @NotNull private JPanel myPanel; // the view
     @NotNull private JLabel myWizardTitle; // title of the wizard
-    private ActionLink myPluginDocumentation; // link to the documentation
-    private ActionLink myIssueLink; // link to open an issue
+    @SuppressWarnings("unused") private ActionLink myPluginDocumentation; // link to the documentation
+    @SuppressWarnings("unused") private ActionLink myIssueLink; // link to open an issue
 
     @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
     private boolean isUseSelected; // true if the first menu is selected, false else

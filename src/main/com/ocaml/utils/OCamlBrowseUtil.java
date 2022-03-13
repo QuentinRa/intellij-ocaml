@@ -1,4 +1,4 @@
-package com.ocaml.ide.wizard.view;
+package com.ocaml.utils;
 
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.components.ActionLink;

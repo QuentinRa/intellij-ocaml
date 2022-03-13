@@ -21,8 +21,8 @@ import com.ocaml.OCamlBundle;
 import com.ocaml.ide.wizard.minor.java.OCamlSdkComboBox;
 import com.ocaml.ide.wizard.minor.java.ProjectTemplateList;
 import com.ocaml.ide.wizard.templates.OCamlTemplateProvider;
-import com.ocaml.ide.wizard.view.OCamlBrowseUtil;
 import com.ocaml.sdk.OCamlSdkType;
+import com.ocaml.utils.OCamlBrowseUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;

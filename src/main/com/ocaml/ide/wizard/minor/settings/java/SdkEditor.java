@@ -16,6 +16,7 @@ import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.projectRoots.ui.PathEditor;
 import com.intellij.openapi.projectRoots.ui.SdkPathEditor;
 import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.ui.OrderRootTypeUIFactory;
 import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownloadTracker;
@@ -114,8 +115,9 @@ public class SdkEditor implements Configurable, Place.Navigator {
         myTabbedPane = new TabbedPaneWrapper(myDisposable);
         for (OrderRootType type : OrderRootType.getAllTypes()) {
             if (showTabForType(type)) {
-                final SdkPathEditor pathEditor = null;
-                //noinspection ConstantConditions
+                OrderRootTypeUIFactory key = OrderRootTypeUIFactory.FACTORY.getByKey(type);
+                System.out.println(key+" for "+type);
+                final SdkPathEditor pathEditor = key == null ? null : key.createPathEditor(mySdk);
                 if (pathEditor != null) {
                     pathEditor.setAddBaseDir(mySdk.getHomeDirectory());
                     myTabbedPane.addTab(pathEditor.getDisplayName(), pathEditor.createComponent());
