@@ -28,13 +28,13 @@ public class OCamlAnnotUtils {
         if (elementAt instanceof PsiScopedExpr) return getResultOk(elementAt);
         if (elementAt.getParent() instanceof PsiScopedExpr) return getResultOk(elementAt.getParent());
         // unit
-        if(elementAt.getText().equals(OCamlTypes.LPAREN.getSymbol())) {
+        if (elementAt.getText().equals(OCamlTypes.LPAREN.getSymbol())) {
             PsiElement element = OCamlPsiUtils.getNextMeaningfulSibling(elementAt, OCamlTypes.RPAREN);
             // it's crazy, but well it happens, and I don't care why
             if (element == null) element = OCamlPsiUtils.getPreviousMeaningfulSibling(elementAt, OCamlTypes.RPAREN);
             if (element != null) {
                 return elementAt.getParent() instanceof PsiParameter ?
-                        List.of(element.getParent()) :  List.of(elementAt, element);
+                        List.of(element.getParent()) : List.of(elementAt, element);
             }
         }
 

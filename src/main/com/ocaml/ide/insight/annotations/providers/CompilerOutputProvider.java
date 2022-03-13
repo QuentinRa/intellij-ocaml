@@ -9,11 +9,11 @@ import org.jetbrains.annotations.NotNull;
 public interface CompilerOutputProvider {
 
     /**
-     * @param file the psiFile associated with the current version of the file
-     * @param editor the editor
-     * @param homePath the path to the SDK home
+     * @param file              the psiFile associated with the current version of the file
+     * @param editor            the editor
+     * @param homePath          the path to the SDK home
      * @param moduleRootManager can be used to determine another output folder, or to get the sources' folders.
-     * @param outputFolder the default value for the output folder
+     * @param outputFolder      the default value for the output folder
      * @return Collected information that will be used to compile and generate annotations
      * using {@link #doAnnotate}.
      */
@@ -24,7 +24,7 @@ public interface CompilerOutputProvider {
     /**
      * Compile the files
      * @param collectedInfo the collected information
-     * @param log can be used to log warnings/errors
+     * @param log           can be used to log warnings/errors
      * @return the annotation results
      */
     AnnotationResult doAnnotate(CollectedInfo collectedInfo, Logger log);

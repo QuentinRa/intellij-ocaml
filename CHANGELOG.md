@@ -1,18 +1,18 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
-The plugin is experimental. You should implement any feature directly in the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin.
-
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.2.0] - 2022-03-14
 ### Added
-- ~~🚀 parameters names are shown before parameters (#38)~~
-- 🚀 can see the type with `CTRL+SHIFT+P` (#38)
-- 🚀 Editor for .annot. (#38)
+- 🚀🚀 Support for all IDEs. (#90)
+- ✨ Documentation for the plugin. (#89)
+- 🚀 Type inference with `CTRL+SHIFT+P` (#38 ➡️ #88)
+- 🚀 Editor for .annot. (#38 ➡️ #87)
+- 🪲 Fixing the bug when creating a new module. (#73)
 
-## [0.1.0]
+## [0.1.0] - 2022-02-26
 
 Finally, the first version is here 🤩🚀! I fixed a lot of bugs and added tests for most of the existing features, which is saving a lot of time while making things easier when I have to add new features. I won't be able to work on the plugin much from now on. Please provide feedback while I'm still here!
 
@@ -30,7 +30,7 @@ Finally, the first version is here 🤩🚀! I fixed a lot of bugs and added tes
 - 🪲 Executables are named {name}.out, fixing the issue (#71)
 - 🪲 Fix empty variable view for type option (#63)
 
-## [0.0.8]
+## [0.0.8] - 2022-02-17
 ### Added
 - 🚀🚀 Available for 203.*
 - ✨ Custom error messages if the SDK is invalid. (#42)
@@ -41,7 +41,7 @@ Finally, the first version is here 🤩🚀! I fixed a lot of bugs and added tes
 - 🚀 Fix errors when using modules. (#65)
 - 🪲 Fix problems with the highlighter (#45)
 
-## [0.0.7]
+## [0.0.7] - 2022-02-08
 ### Added
 - ✨ Can show/hide the variable view, can be docked next to the file (#40)
 - ✨ Preview auto-selected statement (CTRL-ENTER) if needed (#56)

@@ -13,6 +13,18 @@ testlogger {
     showSkipped false
 }
 
+boolean useJava = true
+String suffix = "" // added for differentiate the public archive, and the others
+
+switch (platformType) {
+    case "IC": break
+    case "IU": break
+    case "CL": useJava = false; break
+    default: throw new IllegalStateException("Unexpected IDE name '"+platformType+"'" as String)
+}
+
+suffix = useJava ? "" : "-"+platformType
+
 // The same as `--stacktrace` param
 gradle.startParameter.showStacktrace = ShowStacktrace.ALWAYS
 
@@ -36,31 +48,30 @@ configurations {
 group = 'com.ocaml'
 version = "$majorVersion.$minorVersion.$patchVersion-$platformVersion" as String
 
+// fallback to ideVersion
+String targetVersion = !hasProperty('ideRelease') ? ideVersion : platformType+"-"+ideRelease
+
 intellij {
-    version = ideaVersion
+    version = targetVersion
     pluginName = "intellij-ocaml"
     plugins = [
-            'java',
             'com.jetbrains.hackathon.indices.viewer:'+indicesVersion,
             'PsiViewer:'+psiViewerPluginVersion
     ]
+    if (useJava) plugins.add('java')
     downloadSources = true
-    sandboxDir = "$buildDir/idea-sandbox-$platformVersion"
+    sandboxDir = "$buildDir/idea-sandbox-$platformVersion"+suffix
 
     patchPluginXml {
         sinceBuild = pluginSinceBuild
         untilBuild = pluginUntilBuild
         changeNotes = """
                 <ul>
-                    <li>Remade of the auto-selection of a statement (#85)</li>
-                    <li>Continuous integration (#83, internal)</li>
-                    <li>Wider range of OCaml versions (#81)</li>
-                    <li>Fixed sending statement with "and" to the REPL (#80)</li>
-                    <li>Can send the selected code again! (#80)</li>
-                    <li>Fix issue with multiline comments in the REPL (#80)</li>
-                    <li>Can be used outside OCaml Modules (#75)</li>
-                    <li>Executables are named {name}.out, fixing the issue (#71)</li>
-                    <li>Fix empty variable view for type option (#63)</li>
+                    <li>Support for all IDEs. (#90)</li>
+                    <li>Documentation for the plugin. (#89)</li>
+                    <li>Type inference with CTRL+SHIFT+P. (#88)</li>
+                    <li>Editor for .annot. (#87)</li>
+                    <li>Fixing the bug when creating a new module. (#73)</li>
                     <li>See <a href="https://github.com/QuentinRa/intellij-ocaml/blob/main/CHANGELOG.md">CHANGELOG.md</a></li>
                 <ul>
             """.stripIndent()
@@ -86,6 +97,16 @@ sourceSets {
             main.java.srcDirs += ["src/$s"]
         }
     }
+    // java another root for Java-only classes
+    String name = useJava ? "src-java" : "src-non-java"
+
+    main.java.srcDirs += ["$name/$platformVersion", "$name/main"]
+    if (loadPlatform != null && !loadPlatform.isBlank()) {
+        for(String s: (loadPlatform as String).split(",")) {
+            main.java.srcDirs += ["$name/$s"]
+        }
+    }
+
     main.resources.srcDirs = ["resources/main", "resources/$platformVersion"]
     test.java.srcDirs = ["test/$platformVersion/", "test/main"]
     if (loadPlatform != null && !loadPlatform.isBlank()) {
@@ -126,7 +147,7 @@ runIde {
 
 // https://plugins.jetbrains.com/docs/intellij/api-changes-list.html
 runPluginVerifier {
-    ideVersions = [ideaVersion]
+    ideVersions = [targetVersion]
 }
 
 test {

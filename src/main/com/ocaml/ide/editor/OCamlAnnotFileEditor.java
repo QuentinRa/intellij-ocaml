@@ -5,6 +5,7 @@ package com.ocaml.ide.editor;
 import com.intellij.application.options.colors.ColorAndFontOptions;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.HighlighterFactory;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.EditorSettings;
@@ -27,6 +28,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.OnePixelDivider;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VfsUtil;
@@ -93,6 +95,14 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     private final JBSplitter myMainPanel;
     private final @Nullable PsiFile mySourcePsi;
     private final Alarm myUpdateAlarm;
+    private final @NotNull PsiFile myAnnotPsiFile;
+
+    private final Document myEditorDocument; // update .ml
+    private final DefaultMutableTreeNode myRootNode; // update nodes
+    private final String mySourceFileName; // show error
+    private final DefaultTreeModel myTreeModel; // reload model
+    private String myAnnotText; // check changed
+    private HashMap<String, LineNumberNode> myGroups; // used by listeners
 
     public OCamlAnnotFileEditor(@NotNull Project project, @NotNull VirtualFile file) {
         this.file = file;
@@ -100,16 +110,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         // this is an internal error
         if (psiFile == null) throw new IllegalStateException("PsiFile was null for " + file.getName());
-        String annotText = psiFile.getText();
-        ArrayList<OCamlInferredSignature> signatures;
-        String errorMessage = null;
-        try {
-            OCamlAnnotParser annotParser = new OCamlAnnotParser(annotText);
-            signatures = annotParser.get();
-        } catch (Exception e) {
-            errorMessage = e.getLocalizedMessage();
-            signatures = new ArrayList<>();
-        }
+        myAnnotPsiFile = psiFile;
+        Pair<ArrayList<OCamlInferredSignature>, String> loadedContent = loadAnnotFile();
 
         // Usually, the .annot is in the same directory
         // At least, I'm doing this when compiling
@@ -118,8 +120,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         String fileName = nameWithoutExtension + OCamlFileType.DOT_DEFAULT_EXTENSION;
         VirtualFile source = VfsUtil.findRelativeFile(file.getParent(), fileName);
         // TOO BAD, maybe we should check the source in the signatures then
-        if (source == null && signatures.size() > 0) {
-            File f = signatures.get(0).position.getFile();
+        if (source == null && loadedContent.first.size() > 0) {
+            File f = loadedContent.first.get(0).position.getFile();
             fileName = f.getAbsolutePath(); // if used in messages
             source = VfsUtil.findFile(f.toPath(), false);
         }
@@ -131,11 +133,13 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         } else {
             mySourcePsi = null;
             // take precedence over the previous error message (if any)
-            errorMessage = "Source '" + fileName + "' not found";
+            loadedContent = new Pair<>(loadedContent.first, OCamlBundle.message("source.psi.not.found", fileName));
         }
 
-        @NotNull String sourceText = mySourcePsi == null ? "" : mySourcePsi.getText();
+        mySourceFileName = fileName;
+
         // source may be empty
+        String sourceText = mySourcePsi == null ? "" : mySourcePsi.getText();
         if (sourceText.isBlank())
             sourceText = "(* " + OCamlBundle.message("editor.annot.source.empty") + " *)\n" + sourceText;
 
@@ -150,9 +154,9 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
 
         // createPreviewEditor
         EditorFactory editorFactory = EditorFactory.getInstance();
-        Document editorDocument = editorFactory.createDocument(sourceText);
-        FileDocumentManagerBase.registerDocument(editorDocument, new LightVirtualFile());
-        myEditor = (EditorEx) editorFactory.createViewer(editorDocument); // read-only
+        myEditorDocument = editorFactory.createDocument(sourceText);
+        FileDocumentManagerBase.registerDocument(myEditorDocument, new LightVirtualFile());
+        myEditor = (EditorEx) editorFactory.createViewer(myEditorDocument); // read-only
         myEditor.setHighlighter(highlighter);
         EditorSettings settings = myEditor.getSettings();
         settings.setLineNumbersShown(true); // better 'cause we are indexing results by line number
@@ -173,31 +177,11 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         markupModel.setErrorStripeRenderer(() -> new AnalyzerStatus(AllIcons.General.InspectionsOK, "", "", AnalyzerStatus::getEmptyController));
         markupModel.setErrorStripeVisible(true);
 
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
-        // signatures are not sorted by line number
-        // we need to create/get the group
-        HashMap<String, LineNumberNode> groups = new HashMap<>();
-        // fill the tree
-        for (OCamlInferredSignature signature : signatures) {
-            int line = signature.position.getStartLine();
-            String newGroupName = LineNumberNode.makeMessage(line);
-            LineNumberNode groupNode = groups.get(newGroupName);
-            if (!groups.containsKey(newGroupName)) {
-                groupNode = new LineNumberNode(line, newGroupName);
-                groups.put(newGroupName, groupNode);
-                rootNode.add(groupNode);
-            }
-            groupNode.add(new MySignatureNode(signature));
-        }
+        myRootNode = new DefaultMutableTreeNode();
+        fillRootNode(loadedContent);
 
-        if (errorMessage != null) {
-            rootNode.removeAllChildren();
-            rootNode.add(new ErrorMessageNode(errorMessage));
-            rootNode.add(new DefaultMutableTreeNode(OCamlBundle.message("please.submit.an.issue")));
-        }
-
-        DefaultTreeModel model = new DefaultTreeModel(rootNode);
-        final Tree optionsTree = new Tree(model);
+        myTreeModel = new DefaultTreeModel(myRootNode);
+        final Tree optionsTree = new Tree(myTreeModel);
         // icons
         optionsTree.setCellRenderer(new MyTreeCellRenderer());
         optionsTree.setRootVisible(false);
@@ -252,7 +236,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
                 int pos = logicalPosition.column;
 
                 // find group
-                LineNumberNode node = groups.get(LineNumberNode.makeMessage(logicalPosition.line + 1));
+                LineNumberNode node = myGroups.get(LineNumberNode.makeMessage(logicalPosition.line + 1));
                 if (node == null) return;
 
                 // iterate the group, to find if we got something
@@ -280,6 +264,45 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
                 }
             }
         });
+    }
+
+    private void fillRootNode(@NotNull Pair<ArrayList<OCamlInferredSignature>, String> loadedContent) {
+        // signatures are not sorted by line number
+        // we need to create/get the group
+        myGroups = new HashMap<>();
+        // fill the tree
+        for (OCamlInferredSignature signature : loadedContent.first) {
+            int line = signature.position.getStartLine();
+            String newGroupName = LineNumberNode.makeMessage(line);
+            LineNumberNode groupNode = myGroups.get(newGroupName);
+            if (!myGroups.containsKey(newGroupName)) {
+                groupNode = new LineNumberNode(line, newGroupName);
+                myGroups.put(newGroupName, groupNode);
+                myRootNode.add(groupNode);
+            }
+            groupNode.add(new MySignatureNode(signature));
+        }
+
+        if (loadedContent.second != null) {
+            myRootNode.removeAllChildren();
+            myRootNode.add(new ErrorMessageNode(loadedContent.second));
+            myRootNode.add(new DefaultMutableTreeNode(OCamlBundle.message("please.submit.an.issue")));
+        }
+    }
+
+    @Contract(" -> new")
+    private @NotNull Pair<ArrayList<OCamlInferredSignature>, String> loadAnnotFile() {
+        myAnnotText = myAnnotPsiFile.getText();
+        ArrayList<OCamlInferredSignature> signatures;
+        String errorMessage = null;
+        try {
+            OCamlAnnotParser annotParser = new OCamlAnnotParser(myAnnotText);
+            signatures = annotParser.get();
+        } catch (Exception e) {
+            errorMessage = e.getLocalizedMessage();
+            signatures = new ArrayList<>();
+        }
+        return new Pair<>(signatures, errorMessage);
     }
 
     private void updatePreview(TreePath treePath) {
@@ -337,11 +360,35 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
     }
 
     @Override public boolean isModified() {
-        return false;
+        // was modified if content is different
+        return !myAnnotPsiFile.getText().equals(myAnnotText);
     }
 
     @Override public boolean isValid() {
-        return true;
+        return myAnnotPsiFile.isValid();
+    }
+
+    @Override public void selectNotify() {
+        if (!isModified()) return;
+
+        // just in case, the file was changed during blinking
+        myUpdateAlarm.cancelAllRequests();
+
+        Pair<ArrayList<OCamlInferredSignature>, String> loadedContent = loadAnnotFile();
+        if (mySourcePsi == null) {
+            // take precedence over the previous error message (if any)
+            loadedContent = new Pair<>(loadedContent.first, OCamlBundle.message("source.psi.not.found", mySourceFileName));
+        }
+
+        myRootNode.removeAllChildren();
+        fillRootNode(loadedContent);
+        myTreeModel.reload();
+
+        // update the .ml shown in the editor
+        if (mySourcePsi != null) {
+            ApplicationManager.getApplication()
+                    .runWriteAction(() -> myEditorDocument.setText(mySourcePsi.getText()));
+        }
     }
 
     @Override public @Nullable FileEditorLocation getCurrentLocation() {
@@ -392,10 +439,10 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
             // name, type, etc.
             switch (signature.kind) {
                 default: case UNKNOWN: fragments.add(new FragmentData(OCamlBundle.message("editor.annot.indicator.unknown"))); break;
-                case VALUE: fragments.add(new FragmentData("'" + signature.type + "'")); break;
+                case VALUE: fragments.add(new FragmentData(signature.type)); break;
                 case VARIABLE:
                 case MODULE:
-                    fragments.add(new FragmentData(signature.name + " ('" + signature.type + "')"));
+                    fragments.add(new FragmentData(signature.name + " (" + signature.type + ")"));
                     break;
             }
 

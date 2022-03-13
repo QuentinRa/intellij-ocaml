@@ -8,7 +8,12 @@ public interface OCamlPluginConstants {
     String PLUGIN_ID = "intellij-ocaml";
 
     /**
-     * Instructions to install OCaml
+     * Link to the documentation of the plugin.
      */
-    String INSTALL_LINK = "https://github.com/QuentinRa/intellij-ocaml/blob/main/README.md#-install-ocaml-and-opam";
+    String DOCUMENTATION_LINK = "https://plugins.jetbrains.com/plugin/18531-ocaml/documentation";
+
+    /**
+     * Link to open a new issue
+     */
+    String ISSUES_LINK = "https://github.com/QuentinRa/intellij-ocaml/issues";
 }

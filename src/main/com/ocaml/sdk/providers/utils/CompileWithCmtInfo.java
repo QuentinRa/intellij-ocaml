@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 @ImplementationNote(
         since = "0.0.8",
         note = "-annot is deprecated since 4.13. An alternative is to use" +
-        "./ocamlcmt -annot file.cmt. You can generate a .cmt with -bin-annot." +
+                "./ocamlcmt -annot file.cmt. You can generate a .cmt with -bin-annot." +
                 "As this still available in 4.14, I won't update :D.")
 public final class CompileWithCmtInfo {
 
@@ -65,7 +65,7 @@ public final class CompileWithCmtInfo {
         if (file.endsWith(".mli")) cli.addParameter("-c");
         // compile everything else
         // fix #71: adding extension
-        cli.addParameters(file, "-o", outputFile+OUTPUT_EXTENSION,
+        cli.addParameters(file, "-o", outputFile + OUTPUT_EXTENSION,
                 "-I", outputDirectory,
                 "-w", "+A", "-color=never", "-annot");
         // fix issue -I is adding, so the current directory

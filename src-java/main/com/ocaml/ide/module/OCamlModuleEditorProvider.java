@@ -21,6 +21,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.util.ui.JBUI;
+import com.ocaml.utils.adaptor.RequireJavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -34,6 +35,7 @@ import java.util.List;
  * in "Project Structure" > Modules, you will be able to see some tabs when you
  * are clicking on an OCaml module. These tabs are configured here.
  */
+@RequireJavaPlugin
 public class OCamlModuleEditorProvider implements ModuleConfigurationEditorProvider {
 
     @Override

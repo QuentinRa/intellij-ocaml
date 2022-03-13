@@ -1,64 +1,40 @@
 let x = 5
+let _ = 5
+let _ = true
+let _ = false
+let _ = 5.0
+let _ = "Hello, World!"
+let _ = ()
 
-let x = 5
-let y = 5
+type s = { n : int }
+let _ = { n = 5 }
 
-let x = 5 and y = 5
+let f1 x y = ()
+let f2 = fun x -> fun y -> ()
 
-let x =
-    let y = 5
-    in y
+let derivative dx f = fun x -> (f (x +. dx) -. f x) /. dx
 
-let mx a b = max a b
+let li = 1::2::3::[]
+let _ = [1; 2; 3]
 
-module type A
+type expr = Num of int | Var of string | Let of string * expr * expr | Binop of string * expr * expr
 
-module Make1(F: A) = struct end
+let rec eval env = function
+| Num i -> i
+| Var x -> List.assoc x env
+| Let (x, e1, in_e2) ->
+   let val_x = eval env e1 in
+   eval ((x, val_x) :: env) in_e2
+| Binop (op, e1, e2) ->
+   let v1 = eval env e1 in
+   let v2 = eval env e2 in
+   eval_op op v1 v2
+and eval_op op v1 v2 = match op with
+    | "+" -> v1 + v2
+    | "-" -> v1 - v2
+    | "*" -> v1 * v2
+    | "/" -> v1 / v2
+    | _ -> failwith ("Unknown operator: " ^ op);;
 
-module Make2 = struct
-    let x = 5
-end
-
-type t = int
-exception E of int * int
-
-let _ = "Hello, world!"
-let rec f x = x
-
-let x () = function
-| _ -> ()
-
-class type name = object
-	method name : int * int
-end
-
-
-class stack_of_ints =
-    object (self)
-      val mutable the_list = ([] : int list)
-    end
-
-let s = new stack_of_ints;;
-
-module E = Set.Make(
-struct type t = int let compare = compare end
-)
-
-(* small test with a "complex" function *)
-let z = fun x ->
-    let z = fun y -> x + y
-    in z x
-
-(* adding support for lists *)
-let list = [[4],5,6,8]
-
-(* bug - long type *)
-let id s = s
-let f x y = x + y
-let _ = id (fun f x y -> f x y) f 0 5
-
-(* bug - two types 1 *)
-let x (l : float list) : float = List.hd l
-
-(* bug with a lot of types and 2 ident *)
-let bump ?(step = 1) x = x + step
+(* Français *)
+let _ = "Some word"

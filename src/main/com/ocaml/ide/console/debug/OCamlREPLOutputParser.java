@@ -81,9 +81,9 @@ public class OCamlREPLOutputParser {
     private static @NotNull List<Pair<OCamlTreeElement, TreeElementGroupKind>> parseVariables(@NotNull String text) {
         String[] declarations = text.split(OCamlREPLConstants.VARIABLE);
         List<Pair<OCamlTreeElement, TreeElementGroupKind>> variables = new ArrayList<>();
-        for (String s:declarations) {
+        for (String s : declarations) {
             if (s.isBlank()) continue;
-            var variable = parseVariable(OCamlREPLConstants.VARIABLE+s);
+            var variable = parseVariable(OCamlREPLConstants.VARIABLE + s);
             if (variable != null) variables.add(variable);
         }
         return variables;

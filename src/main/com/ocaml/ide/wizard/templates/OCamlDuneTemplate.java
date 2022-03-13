@@ -78,6 +78,6 @@ class OCamlDuneTemplate implements ProjectTemplate, TemplateBuildInstructions {
         String version = sdkHomePath != null ? OCamlSdkProvidersManager.INSTANCE.getDuneVersion(sdkHomePath) : null;
         if (version == null) version = "2.9"; // default is 2.9
         // create project file
-        OCamlFileUtils.createFile(rootFolder, "dune-project", "(lang dune "+version+")", LOG);
+        OCamlFileUtils.createFile(rootFolder, "dune-project", "(lang dune " + version + ")", LOG);
     }
 }

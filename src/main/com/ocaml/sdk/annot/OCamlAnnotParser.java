@@ -2,6 +2,7 @@ package com.ocaml.sdk.annot;
 
 import com.intellij.build.FilePosition;
 import com.intellij.openapi.util.TextRange;
+import com.ocaml.utils.editor.LogicalSection;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,14 +50,14 @@ public class OCamlAnnotParser {
         return elements;
     }
 
-    public HashMap<TextRange, OCamlInferredSignature> getIndexedByRange() {
+    public HashMap<LogicalSection, OCamlInferredSignature> getIndexedByPosition() {
         // Fix error, the values are not unsorted in the hashmap
         // So, we are doing the job in "get", and indexing here.
-        HashMap<TextRange, OCamlInferredSignature> elements = new HashMap<>();
+        HashMap<LogicalSection, OCamlInferredSignature> elements = new HashMap<>();
 
         ArrayList<OCamlInferredSignature> list = get();
         for (OCamlInferredSignature signature : list) {
-            elements.put(signature.range, signature);
+            elements.put(new LogicalSection(signature.position), signature);
         }
 
         return elements;
@@ -66,7 +67,7 @@ public class OCamlAnnotParser {
         if (pos == lines.length) return null;
         Matcher matcher = FILE_POSITION.matcher(readLine());
         if (!matcher.matches())
-            throw new IllegalStateException("Missing file position for:'"+previousLine()+"'.");
+            throw new IllegalStateException("Missing file position for:'" + previousLine() + "'.");
         AnnotParserState state = new AnnotParserState(matcher.group(1), matcher.group(2),
                 matcher.group(3), matcher.group(4),
                 matcher.group(5),
@@ -74,53 +75,71 @@ public class OCamlAnnotParser {
         );
         String line = readLine();
         // it's a module
-        if(!line.startsWith(TYPE_START)) {
+        if (!line.startsWith(TYPE_START)) {
             if (line.startsWith(IDENT_START)) {
                 line = readLine().trim(); // look for module name
-                state.name = line.substring(getStartingPosition(line), line.indexOf("\"")-1);
+                state.name = line.substring(getStartingPosition(line), line.indexOf("\"") - 1);
                 pos++; // skip )
             } else if (line.startsWith(CALL_START)) {
-                state.skip = true; // skip
-                pos+=2; // skip value and ')'
+                parseCall(state);
             } else {
-                throw new IllegalStateException("Unsupported:'"+previousLine()+"'. Please, fill a bug.");
+                throw new IllegalStateException("Unsupported:'" + previousLine() + "'. Please, fill a bug.");
             }
         } else {
-            // it's a variable
-            // next is the type
-            state.type = consumeLParen(readLine().trim());
-
-            // if we got multiple "types"
-            line = handleMultipleTypes(state);
-
-            if (line != null && line.startsWith(IDENT_START)) { // variable
-                line = consumeLParen(readLine().trim()); // look for variable name
-                if (!line.contains(INVALID_CHARACTER)) {
-                    int end = line.indexOf("\"");
-                    int start = getStartingPosition(line);
-                    line = line.substring(start, end-1);
-                    state.name = line;
-                    state.kind = AnnotParserState.AnnotKind.VARIABLE;
-                } else {
-                    // this is a value
-                    state.kind = AnnotParserState.AnnotKind.VALUE;
-                    // and, we may have to consume types again
-                    line = handleMultipleTypes(state);
-                    // read the other ident, and don't parse
-                    if (line != null && line.startsWith(IDENT_START))
-                        consumeLParen(readLine().trim());
-                    else if (line != null) pos--;
-                }
-            } else {
-                // this is a value
-                state.kind = AnnotParserState.AnnotKind.VALUE;
-
-                // we need to offset the "tryReadLine"
-                if (line != null) pos--; // whoops, go back
-            }
+            parseType(state);
         }
         return state;
     }
+
+    // parser
+
+    private void parseCall(@NotNull AnnotParserState state) {
+        state.skip = true; // skip
+        consumeLParen(""); // skip value and ')'
+        String line = tryReadLine();
+        // this may be a type
+        if (line != null && line.startsWith(TYPE_START)) {
+            state.skip = false;
+            parseType(state);
+        }
+    }
+
+    private void parseType(@NotNull AnnotParserState state) {
+        // it's a variable
+        // next is the type
+        state.type = consumeLParen(readLine().trim());
+
+        // if we got multiple "types"
+        String line = handleMultipleTypes(state);
+
+        if (line != null && line.startsWith(IDENT_START)) { // variable
+            line = consumeLParen(readLine().trim()); // look for variable name
+            if (!line.contains(INVALID_CHARACTER)) {
+                int end = line.indexOf("\"");
+                int start = getStartingPosition(line);
+                line = line.substring(start, end - 1);
+                state.name = line;
+                state.kind = AnnotParserState.AnnotKind.VARIABLE;
+            } else {
+                // this is a value
+                state.kind = AnnotParserState.AnnotKind.VALUE;
+                // and, we may have to consume types again
+                line = handleMultipleTypes(state);
+                // read the other ident, and don't parse
+                if (line != null && line.startsWith(IDENT_START))
+                    consumeLParen(readLine().trim());
+                else if (line != null) pos--;
+            }
+        } else {
+            // this is a value
+            state.kind = AnnotParserState.AnnotKind.VALUE;
+
+            // we need to offset the "tryReadLine"
+            if (line != null) pos--; // whoops, go back
+        }
+    }
+
+    // utils
 
     private String handleMultipleTypes(AnnotParserState state) {
         String line = tryReadLine();
@@ -144,9 +163,9 @@ public class OCamlAnnotParser {
 
     private int getStartingPosition(@NotNull String line) {
         if (!line.startsWith(VARIABLE_DEF)) {
-            return line.indexOf(VARIABLE_REF)+VARIABLE_REF.length()+1; // ex: 'ref ' => 3+1
+            return line.indexOf(VARIABLE_REF) + VARIABLE_REF.length() + 1; // ex: 'ref ' => 3+1
         } else {
-            return VARIABLE_DEF.length()+1; // ex: 'def ' => 3 + 1
+            return VARIABLE_DEF.length() + 1; // ex: 'def ' => 3 + 1
         }
     }
 

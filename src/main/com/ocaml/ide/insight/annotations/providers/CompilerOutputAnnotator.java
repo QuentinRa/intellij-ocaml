@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
 import com.intellij.problems.Problem;
@@ -23,8 +24,10 @@ import com.intellij.psi.PsiFile;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.ide.insight.annotations.OCamlAnnotation;
 import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.ide.settings.OCamlSettings;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
+import com.ocaml.utils.OCamlPlatformUtils;
 import com.ocaml.utils.logs.OCamlLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +41,7 @@ import java.util.ArrayList;
 public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, AnnotationResult> implements DumbAware {
 
     private static final Logger LOG = OCamlLogger.getSdkInstance("annotator");
-    private static final String TEMP_COMPILATION_FOLDER = "/tmp/";
+    private static final String TEMP_COMPILATION_FOLDER = "tmp/";
 
     /* ensure that we got an OCaml SDK */
 
@@ -53,20 +56,44 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         if (module == null) return null;
         // find sdk
         ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
-        Sdk sdk = moduleRootManager.getSdk();
-        if (sdk == null || !(sdk.getSdkType() instanceof OCamlSdkType)) return null;
         // get home path
-        String homePath = sdk.getHomePath();
+        String homePath = findHomePath(moduleRootManager, project);
         if (homePath == null) return null;
 
-        // output folder
-        CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
-        VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
-        String outputFolder = outputPointer.getPresentableUrl() + TEMP_COMPILATION_FOLDER;
+        String outputFolder = findOutputFolder(moduleRootManager, project);
 
         LOG.trace("Working on file:" + sourceFile.getPath());
 
         return findCollector(file, editor, homePath, moduleRootManager, outputFolder);
+    }
+
+    @Nullable private String findOutputFolder(ModuleRootManager moduleRootManager, Project project) {
+        if (OCamlPlatformUtils.isJavaPluginAvailable()) {
+            // output folder
+            CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
+            if (compilerModuleExtension == null) return null; // was null in CLion
+            VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
+            return outputPointer.getPresentableUrl() + "/" + TEMP_COMPILATION_FOLDER;
+        } else {
+            // get outputFolder
+            String outputFolderName = project.getService(OCamlSettings.class).outputFolderName;
+            String basePath = project.getBasePath();
+            return basePath + "/" + outputFolderName + TEMP_COMPILATION_FOLDER;
+        }
+    }
+
+    @Nullable private String findHomePath(ModuleRootManager moduleRootManager, Project project) {
+        if (OCamlPlatformUtils.isJavaPluginAvailable()) {
+            Sdk sdk = moduleRootManager.getSdk();
+            if (sdk == null || !(sdk.getSdkType() instanceof OCamlSdkType)) return null;
+            return sdk.getHomePath();
+        } else {
+            // get home path
+            ProjectRootManager projectRootManager = ProjectRootManager.getInstance(project);
+            Sdk sdk = projectRootManager.getProjectSdk();
+            if (sdk == null || !(sdk.getSdkType() instanceof OCamlSdkType)) return null;
+            return sdk.getHomePath();
+        }
     }
 
     private CollectedInfo findCollector(PsiFile file, Editor editor, String homePath, ModuleRootManager moduleRootManager, String outputFolder) {

@@ -36,12 +36,12 @@ public class OCamlModuleType extends ModuleType<OCamlModuleBuilder> {
 
     @Override
     public @NotNull @Nls(capitalization = Nls.Capitalization.Title) String getName() {
-        return OCamlBundle.message("module.name");
+        return OCamlBundle.message("ocaml.module");
     }
 
     @Override
     public @NotNull @Nls(capitalization = Nls.Capitalization.Sentence) String getDescription() {
-        return OCamlBundle.message("module.description");
+        return OCamlBundle.message("ocaml.module.description");
     }
 
     @Override

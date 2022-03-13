@@ -32,7 +32,7 @@ public class OCamlExecuteActionHandler extends ProcessBackedConsoleExecuteAction
         super.runExecuteAction(consoleView);
     }
 
-    public void runExecuteAction(@NotNull  OCamlConsoleView consoleView, String text) {
+    public void runExecuteAction(@NotNull OCamlConsoleView consoleView, String text) {
         consoleView.printWithPrompt(text);
         ConsoleHistoryController.addToHistory(consoleView, text);
         execute(text, consoleView);

@@ -2,7 +2,6 @@ package com.ocaml.ide.wizard.view;
 
 import com.intellij.CommonBundle;
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.HelpTooltip;
 import com.intellij.ide.JavaUiBundle;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
@@ -15,7 +14,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
@@ -26,7 +24,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.ActionLink;
 import com.ocaml.OCamlBundle;
-import com.ocaml.OCamlPluginConstants;
 import com.ocaml.icons.OCamlIcons;
 import com.ocaml.ide.wizard.OCamlModuleBuilder;
 import com.ocaml.sdk.OCamlSdkType;
@@ -34,6 +31,8 @@ import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
 import com.ocaml.sdk.providers.simple.DetectionResult;
 import com.ocaml.sdk.providers.simple.OCamlNativeDetector;
 import com.ocaml.sdk.providers.simple.SimpleSdkData;
+import com.ocaml.utils.OCamlBrowseUtil;
+import com.ocaml.utils.adaptor.RequireJavaPlugin;
 import com.ocaml.utils.adaptor.ui.JdkComboBoxAdaptor;
 import com.ocaml.utils.listener.DeferredDocumentListener;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +80,7 @@ import java.awt.*;
  * @see ProjectJdkForModuleStep
  * @see SimpleSdkData for the creation of an opam-like SDK
  */
+@RequireJavaPlugin(what = "ProjectJdkForModuleStep, JavaUiBundle, ProjectStructureConfigurable")
 public class OCamlSdkWizardStep extends ModuleWizardStep {
     @NotNull private final WizardContext myWizardContext;
     @NotNull private final OCamlModuleBuilder myModuleBuilder;
@@ -89,7 +89,8 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
 
     @NotNull private JPanel myPanel; // the view
     @NotNull private JLabel myWizardTitle; // title of the wizard
-    private ActionLink myActionLink; // link to the installation instructions
+    @SuppressWarnings("unused") private ActionLink myPluginDocumentation; // link to the documentation
+    @SuppressWarnings("unused") private ActionLink myIssueLink; // link to open an issue
 
     @NotNull private ButtonGroup myUseSdkChoice; // the group of two buttons
     private boolean isUseSelected; // true if the first menu is selected, false else
@@ -316,8 +317,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         myProject = myWizardContext.getProject();
         myProject = myProject != null ? myProject : ProjectManager.getInstance().getDefaultProject();
 
-        final ProjectStructureConfigurable projectConfig = ProjectStructureConfigurable.getInstance(myProject);
-        mySdksModel = projectConfig.getProjectJdksModel();
+        mySdksModel = new ProjectSdksModel();
         mySdksModel.reset(myProject);
 
         Condition<? super SdkTypeId> sdkTypeFilter = sdk -> sdk instanceof OCamlSdkType;
@@ -332,9 +332,7 @@ public class OCamlSdkWizardStep extends ModuleWizardStep {
         if (!myWizardContext.isCreatingNewProject()) myJdkChooser.showProjectSdkItem();
 
         // adding the instructions
-        myActionLink = new ActionLink(OCamlBundle.message("project.wizard.instruction.link"), event -> {
-            BrowserUtil.browse(OCamlPluginConstants.INSTALL_LINK);
-        });
-        myActionLink.setExternalLinkIcon();
+        myPluginDocumentation = OCamlBrowseUtil.toDocumentation();
+        myIssueLink = OCamlBrowseUtil.toIssues();
     }
 }

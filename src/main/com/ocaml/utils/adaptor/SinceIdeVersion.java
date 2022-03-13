@@ -16,5 +16,6 @@ import static java.lang.annotation.ElementType.*;
 @Retention(RetentionPolicy.SOURCE)
 public @interface SinceIdeVersion {
     String release();
+
     String note() default "";
 }

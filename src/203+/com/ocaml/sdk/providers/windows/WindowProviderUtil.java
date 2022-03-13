@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public class WindowProviderUtil {
 
     @Contract(" -> new")
-    public static @NotNull OCamlSdkProvider @NotNull [] createWindowsProviders() {
+    public static @NotNull OCamlSdkProvider[] createWindowsProviders() {
         return new OCamlSdkProvider[]{
                 new CygwinSdkProvider(),
                 new OCaml64SdkProvider(),

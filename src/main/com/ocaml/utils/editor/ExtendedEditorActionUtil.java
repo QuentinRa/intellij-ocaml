@@ -40,7 +40,7 @@ public class ExtendedEditorActionUtil {
         PsiElement elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         if (elementAt == null) { // did we reach the end of the file?
             // maybe we can go back a bit
-            elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset()-1);
+            elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset() - 1);
             if (elementAt == null) return null;
         }
         PsiElement s = findStatementBefore(elementAt);
@@ -63,8 +63,7 @@ public class ExtendedEditorActionUtil {
             // Val, Method, PsiLetAnd, ...
             if (current instanceof PsiLet) {
                 candidates.add(0, current);
-            }
-            else if (current instanceof PsiModule || current instanceof PsiModuleType || current instanceof PsiKlass) {
+            } else if (current instanceof PsiModule || current instanceof PsiModuleType || current instanceof PsiKlass) {
                 candidates.add(0, current);
             }
 

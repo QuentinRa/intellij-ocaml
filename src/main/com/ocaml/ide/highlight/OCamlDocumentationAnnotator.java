@@ -1,9 +1,10 @@
 package com.ocaml.ide.highlight;
 
-import com.intellij.ide.highlighter.JavaHighlightingColors;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
@@ -19,6 +20,11 @@ import java.util.regex.Pattern;
  */
 public class OCamlDocumentationAnnotator implements Annotator {
 
+    // extracted from JavaHighlightingColors
+    public static final TextAttributesKey DOC_COMMENT_TAG_VALUE =
+            TextAttributesKey.createTextAttributesKey("DOC_COMMENT_TAG_VALUE",
+                    DefaultLanguageHighlighterColors.DOC_COMMENT_TAG_VALUE);
+
     public static final Pattern PARAMETERS_MATCHER = Pattern.compile("(\\[[^]]*])");
 
     @Override public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -30,7 +36,7 @@ public class OCamlDocumentationAnnotator implements Annotator {
         while (matcher.find()) {
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                     .range(range.cutOut(new TextRange(matcher.start(), matcher.end())))
-                    .textAttributes(JavaHighlightingColors.DOC_COMMENT_TAG_VALUE).create();
+                    .textAttributes(DOC_COMMENT_TAG_VALUE).create();
         }
     }
 }

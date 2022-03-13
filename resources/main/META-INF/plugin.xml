@@ -3,15 +3,16 @@
     <name>OCaml</name>
     <vendor email="ramsamy.ws@gmail.com" url="https://github.com/QuentinRa/">QuentinRa</vendor>
     <description><![CDATA[
-        The OCaml plugin is providing support for the OCaml language in IntelliJ IDEA, using opam or
-        native SDKs. Based on ReasonML.]]>
+        The OCaml plugin is providing support for the OCaml language in all IDEs (IntelliJ, CLion, ...),
+        using opam or native SDKs. Based on ReasonML.]]>
     </description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
      on how to target different products -->
-    <depends optional="false" config-file="deps/platform-deps.xml">com.intellij.modules.platform</depends>
-    <depends optional="false" config-file="deps/lang-deps.xml">com.intellij.modules.lang</depends>
-    <depends optional="false" config-file="deps/java-deps.xml">com.intellij.modules.java</depends>
+    <depends optional="true" config-file="deps/platform-deps.xml">com.intellij.modules.platform</depends>
+    <depends optional="true" config-file="deps/lang-deps.xml">com.intellij.modules.lang</depends>
+    <depends optional="true" config-file="deps/java-deps.xml">com.intellij.modules.java</depends>
+    <depends optional="true" config-file="ide/clion.xml">com.intellij.clion</depends>
     <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/or.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
@@ -50,6 +51,11 @@
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="F11" replace-all="true"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F11" replace-all="true"/>
         </action>
+        <!-- Open OCamlProjectConfigurable (Non-IntelliJ users only) -->
+        <action id="com.ocaml.ide.wizard.minor.settings.OpenOCamlProjectConfigurable"
+                class="com.ocaml.ide.wizard.minor.settings.OpenOCamlProjectConfigurable">
+            <add-to-group group-id="ToolbarRunGroup" anchor="first" />
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -58,6 +64,7 @@
         <moduleBuilder builderClass="com.ocaml.ide.wizard.OCamlModuleBuilder" order="first"/>
         <moduleType id="OCAML_MODULE" implementationClass="com.ocaml.ide.module.OCamlModuleType"/>
         <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
+        <directoryProjectGenerator implementation="com.ocaml.ide.wizard.minor.OCamlDirectoryProjectGenerator"/>
 
         <!-- SDK -->
         <sdkType implementation="com.ocaml.sdk.OCamlSdkType"/>
@@ -68,7 +75,7 @@
 
         <!-- FILES -->
         <fileType extensions="annot" hashBangs="annot" name="OCAML_ANNOT" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlAnnotFileType"/>
-<!--        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlAnnotFileEditorProvider"/>-->
+        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlAnnotFileEditorProvider"/>
         <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
         <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
         <internalFileTemplate name="OCaml File"/>
@@ -82,7 +89,7 @@
 
         <!-- INFERENCE -->
 <!--        <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />-->
-<!--        <codeInsight.typeInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlTypeInfoHint"/>-->
+        <codeInsight.typeInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlTypeInfoHint"/>
 <!--        <codeInsight.parameterInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterInfo" />-->
         <projectService serviceImplementation="com.ocaml.ide.insight.OCamlAnnotResultsService"/>
 
@@ -98,5 +105,8 @@
 
         <!-- HELP -->
         <webHelpProvider implementation="com.ocaml.ide.OCamlWebHelpProvider"/>
+
+        <!-- SETTINGS -->
+        <projectService serviceImplementation="com.ocaml.ide.settings.OCamlSettings"/>
     </extensions>
 </idea-plugin>

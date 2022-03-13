@@ -68,10 +68,10 @@ public final class OCamlFileUtils {
 
         try {
             @UntilIdeVersion(release = "203", note = "We can't pass the charset to writeToFile in 203.")
+            // use the charset of the original file
             String text = new String(psiFile.getText().getBytes(
-                    // use the charset of the original file
                     psiFile.getVirtualFile().getCharset()
-            ));
+            ), psiFile.getVirtualFile().getCharset());
             FileUtil.writeToFile(sourceTempFile, text);
         } catch (IOException e) {
             // Sometimes, file is locked by another process, not a big deal, skip it

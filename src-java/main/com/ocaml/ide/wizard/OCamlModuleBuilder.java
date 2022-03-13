@@ -1,32 +1,22 @@
 package com.ocaml.ide.wizard;
 
-import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.ModuleType;
-import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.CompilerModuleExtension;
-import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectTemplate;
 import com.ocaml.ide.module.OCamlModuleType;
 import com.ocaml.ide.wizard.templates.OCamlTemplateProvider;
-import com.ocaml.ide.wizard.templates.TemplateBuildInstructions;
 import com.ocaml.ide.wizard.view.OCamlSdkWizardStep;
 import com.ocaml.ide.wizard.view.OCamlSelectTemplate;
 import com.ocaml.sdk.OCamlSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
 
 /**
  * Set up an OCaml module/project.
@@ -38,7 +28,7 @@ import java.io.File;
  * <br><br>---- getGroupName / getParentGroup ----<br>
  * You may use this if this module is inside a group.
  */
-public class OCamlModuleBuilder extends ModuleBuilder {
+public class OCamlModuleBuilder extends BaseOCamlModuleBuilder {
 
     private ProjectTemplate myTemplate;
 
@@ -67,30 +57,7 @@ public class OCamlModuleBuilder extends ModuleBuilder {
         if (myJdk != null) rootModel.setSdk(myJdk);
         else rootModel.inheritSdk();
 
-        // Create the files/folders
-        ContentEntry contentEntry = doAddContentEntry(rootModel);
-        if (contentEntry != null) {
-            // Get instructions
-            TemplateBuildInstructions instructions;
-            if (myTemplate instanceof TemplateBuildInstructions)
-                instructions = (TemplateBuildInstructions) myTemplate;
-            else instructions = OCamlTemplateProvider.getDefaultInstructions();
-
-            // create the source folder
-            final String sourcePath = getContentEntryPath() + File.separator + instructions.getSourceFolderName();
-            //noinspection ResultOfMethodCallIgnored
-            new File(sourcePath).mkdirs();
-            final VirtualFile sourceRoot = LocalFileSystem.getInstance()
-                    .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(sourcePath));
-            if (sourceRoot != null) {
-                contentEntry.addSourceFolder(sourceRoot, false, "");
-                // create the files
-                Sdk sdk = rootModel.getSdk();
-                instructions.createFiles(rootModel, sourceRoot, sdk == null ? null : sdk.getHomePath());
-                // refresh
-                ApplicationManager.getApplication().runWriteAction(() -> sourceRoot.refresh(true, true));
-            }
-        }
+        setupRootModel(rootModel, rootModel::getSdk, this::getDefaultContentEntryPath, myTemplate);
     }
 
     /**
