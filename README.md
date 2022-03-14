@@ -7,6 +7,7 @@
 ![Dependabot: Active](https://badgen.net/github/dependabot/QuentinRa/intellij-ocaml/)
 [![0.2.0](https://badgen.net/github/milestones/quentinra/intellij-ocaml/1)](https://github.com/QuentinRa/intellij-ocaml/milestone/1)
 [![0.3.0](https://badgen.net/github/milestones/quentinra/intellij-ocaml/2)](https://github.com/QuentinRa/intellij-ocaml/milestone/2)
+[![0.4.0](https://badgen.net/github/milestones/quentinra/intellij-ocaml/3)](https://github.com/QuentinRa/intellij-ocaml/milestone/3)
 
 <!--
 At least for now, the repository is maintained.
@@ -17,17 +18,17 @@ This plugin is providing support for OCaml for JetBrains IDEs. It's based on bot
 
 ## 🎯 What's my goal?
 
-* [ ] We must be able to run/compile ocaml files (without having to install something)
-* [ ] Support for opam
+* [ ] Can run/compile ocaml files (without having to install some external build system)
+* [ ] Support for opam (can install / update packages, ...)
 * [ ] Support for Makefile
 * [ ] Support for Dune (already supported in ReasonML)
 * [x] Any installation must be simple, and effortless
 * [ ] **Real-time checks for errors/warnings**, including quick fixes
 * [x] **Real-time type inference**
-* [ ] **Smart completion**
+* [ ] **Smart auto-completion**
 * [x] **REPL support**: we must be able to send commands from our file, to a REPL console
 * [x] **Using a bundle** (possible support for Localization later)
-* [ ] Working in minor IDEs (CLion, PHPStorm, etc.)
+* [x] Working in minor IDEs (CLion, PHPStorm, etc.)
 
 > Please note that some features are already available in ReasonML (ex: odoc support, dune support, etc.), and I will reuse (and hopefully improve) them. [List of features from the ReasonML plugin 🤩️](ReasonML.md)
 
