@@ -20,6 +20,8 @@ switch (platformType) {
     case "IC": break
     case "IU": break
     case "CL": useJava = false; break
+    case "PY": useJava = false; break
+    case "GO": useJava = false; break
     default: throw new IllegalStateException("Unexpected IDE name '"+platformType+"'" as String)
 }
 

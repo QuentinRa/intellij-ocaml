@@ -34,6 +34,7 @@ import javax.swing.*;
  */
 public class OCamlDirectoryProjectGenerator extends DirectoryProjectGeneratorBase<Object>
         implements CustomStepProjectGenerator<Object>, ProjectTemplate {
+
     private OCamlSdkComboBox sdkChooser;
     private ProjectTemplateList templateList;
 

@@ -13,18 +13,15 @@ import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
 import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.ide.insight.annotations.OCamlAnnotation;
 import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
-import com.ocaml.ide.settings.OCamlSettings;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.utils.OCamlPlatformUtils;
@@ -60,26 +57,11 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         String homePath = findHomePath(moduleRootManager, project);
         if (homePath == null) return null;
 
-        String outputFolder = findOutputFolder(moduleRootManager, project);
+        String outputFolder = OCamlPlatformUtils.findOutputFolder(moduleRootManager, project) + TEMP_COMPILATION_FOLDER;
 
         LOG.trace("Working on file:" + sourceFile.getPath());
 
         return findCollector(file, editor, homePath, moduleRootManager, outputFolder);
-    }
-
-    @Nullable private String findOutputFolder(ModuleRootManager moduleRootManager, Project project) {
-        if (OCamlPlatformUtils.isJavaPluginAvailable()) {
-            // output folder
-            CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
-            if (compilerModuleExtension == null) return null; // was null in CLion
-            VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
-            return outputPointer.getPresentableUrl() + "/" + TEMP_COMPILATION_FOLDER;
-        } else {
-            // get outputFolder
-            String outputFolderName = project.getService(OCamlSettings.class).outputFolderName;
-            String basePath = project.getBasePath();
-            return basePath + "/" + outputFolderName + TEMP_COMPILATION_FOLDER;
-        }
     }
 
     @Nullable private String findHomePath(ModuleRootManager moduleRootManager, Project project) {
