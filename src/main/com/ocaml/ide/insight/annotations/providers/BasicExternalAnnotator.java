@@ -45,8 +45,9 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
         String targetFile = null;
         Set<Pair<String, PsiFile>> dependencies = getDependencies(file, moduleRootManager);
 
+        // fix: files may not be in a source folder
         // find the file we are trying to compile
-        for (VirtualFile root : moduleRootManager.getSourceRoots()) {
+        for (VirtualFile root : moduleRootManager.getContentRoots()) {
             boolean under = VfsUtil.isUnder(sourceFile, Set.of(root));
             if (!under) continue;
             // we are asking for the parent, because we want the root inside the relative path
