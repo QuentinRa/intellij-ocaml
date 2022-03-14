@@ -63,8 +63,9 @@ public class OCamlDirectoryProjectGenerator extends DirectoryProjectGeneratorBas
     // Create
 
     @Override
-    public AbstractActionWithPanel createStep(DirectoryProjectGenerator<Object> projectGenerator, AbstractNewProjectStep.AbstractCallback<Object> callback) {
-        return new OCamlSimpleSettingsStep(projectGenerator, callback);
+    public AbstractActionWithPanel createStep(DirectoryProjectGenerator<Object> projectGenerator,
+                                              AbstractNewProjectStep.AbstractCallback<Object> callback) {
+        return new OCamlSimpleSettingsStep(projectGenerator, new AbstractNewProjectStep.AbstractCallback<>());
     }
 
     @Override public @NotNull AbstractModuleBuilder createModuleBuilder() {
