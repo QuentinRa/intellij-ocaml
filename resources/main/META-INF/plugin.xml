@@ -12,7 +12,6 @@
     <depends optional="true" config-file="deps/platform-deps.xml">com.intellij.modules.platform</depends>
     <depends optional="true" config-file="deps/lang-deps.xml">com.intellij.modules.lang</depends>
     <depends optional="true" config-file="deps/java-deps.xml">com.intellij.modules.java</depends>
-    <depends optional="true" config-file="ide/clion.xml">com.intellij.clion</depends>
     <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <xi:include href="/META-INF/or.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
@@ -109,4 +108,18 @@
         <!-- SETTINGS -->
         <projectService serviceImplementation="com.ocaml.ide.settings.OCamlSettings"/>
     </extensions>
+
+    <!-- Loading stuff not available in minor IDEs -->
+    <extensions defaultExtensionNs="com.intellij">
+        <FakeOrderRootTypeUI key="CLASSES"
+                             implementationClass="com.ocaml.ide.wizard.minor.settings.java.ClassesOrderRootTypeUIFactory"/>
+    </extensions>
+
+    <extensionPoints>
+        <extensionPoint qualifiedName="com.intellij.FakeOrderRootTypeUI"
+                        beanClass="com.intellij.openapi.extensions.KeyedFactoryEPBean"
+                        dynamic="true">
+            <with attribute="implementationClass" implements="com.ocaml.ide.wizard.minor.settings.java.FakeOrderRootTypeUIFactory"/>
+        </extensionPoint>
+    </extensionPoints>
 </idea-plugin>

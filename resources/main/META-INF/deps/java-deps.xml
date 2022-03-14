@@ -7,7 +7,7 @@
 
     <!-- or.xml -->
     <extensions defaultExtensionNs="com.intellij">
-        <lang.elementManipulator forClass="com.or.lang.core.psi.PsiLiteralExpression" implementationClass="or.lang.core.LiteralStringManipulator"/>
+        <lang.elementManipulator forClass="com.or.lang.core.psi.PsiLiteralExpression" implementationClass="com.or.lang.core.LiteralStringManipulator"/>
     </extensions>
 
 </idea-plugin>

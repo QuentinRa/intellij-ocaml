@@ -19,7 +19,7 @@ import javax.swing.*;
 /**
  * @author anna
  */
-public class ClassesOrderRootTypeUIFactory implements OrderRootTypeUIFactory {
+public class ClassesOrderRootTypeUIFactory implements FakeOrderRootTypeUIFactory {
     @Override
     public SdkPathEditor createPathEditor(Sdk sdk) {
         return new MySdkPathEditor(new FileChooserDescriptor(false, true, false, false, false, true));

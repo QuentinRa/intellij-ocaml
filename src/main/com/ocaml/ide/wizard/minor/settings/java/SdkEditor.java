@@ -115,7 +115,7 @@ public class SdkEditor implements Configurable, Place.Navigator {
         myTabbedPane = new TabbedPaneWrapper(myDisposable);
         for (OrderRootType type : OrderRootType.getAllTypes()) {
             if (showTabForType(type)) {
-                OrderRootTypeUIFactory key = OrderRootTypeUIFactory.FACTORY.getByKey(type);
+                FakeOrderRootTypeUIFactory key = FakeOrderRootTypeUIFactory.FACTORY.getByKey(type);
                 System.out.println(key+" for "+type);
                 final SdkPathEditor pathEditor = key == null ? null : key.createPathEditor(mySdk);
                 if (pathEditor != null) {
