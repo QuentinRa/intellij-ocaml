@@ -6,14 +6,15 @@ Note: you can always help me to improve the documentation by making a [Pull Requ
 
 ### 1. Run the installer
 
-Simply download the [OCaml64 installer](https://fdopen.github.io/opam-repository-mingw/installation/), that will install and configure opam on cygwin for you. 
+Simply download the [OCaml64 installer](https://fdopen.github.io/opam-repository-mingw/installation/), that will install and configure opam on cygwin for you.
 
 ### 2. Install a new version of ocaml
 
 Once you are done, you may call
 
 * Run `C:\\OCam64\\Cygwin.bat`
-* And `opam switch create 4.12.0` to install `ocaml 4.12.0`
+* `opam switch create 4.13.0` to install ocaml 4.13.0. Press "y" when prompted.
+* `eval $(opam env)`
 
 ### 3. Test
 

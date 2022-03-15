@@ -46,7 +46,7 @@ If you are using opam, you now have to download ocaml. Run **cygwin.bat** (ex: `
 * `opam switch create 4.13.0` to install ocaml 4.13.0. Press "y" when prompted.
 * `eval $(opam env)`
 
-### 6. test
+### 6. Test
 
 * Enter the command `ocaml -vnum`
 

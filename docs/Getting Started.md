@@ -45,7 +45,7 @@ To use the plugin, you will need to install ocaml first. You will need to pick w
 </tr>
 
 <tr><td>Minor IDEs (CLion, ...)</td>
-<td>❌</td><td>✅</td><td>Interface not fully re-implemented in minor IDEs yet</td>
+<td>❌*</td><td>✅</td><td></td>
 </tr>
 
 <tr><td></td></tr>
@@ -82,6 +82,8 @@ To use the plugin, you will need to install ocaml first. You will need to pick w
 
 </tbody>
 </table>
+
+**(\*)**: only the file only structure explained above can be used by the plugin. For native SDKs, the plugin will create a directory matching the expected file structure in **~/.jdks/ocaml**, linking to your files (the tilde is called HOME_FOLDER which is `C:\Users\username` on Windows). You can create such a folder by yourself, as the interface in not available in minors IDEs.
 
 ### 3. Pick your provider
 
