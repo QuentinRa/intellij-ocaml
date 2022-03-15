@@ -4,9 +4,11 @@ Note: you can always help me to improve the documentation by making a [Pull Requ
 
 </i>
 
+**WSL are only supported since 2021.1 (newer than 211)**.
+
 ### 1. Open the Windows Store
 
-<img src="https://plugins.jetbrains.comhttps://plugins.jetbrains.com/files/18531/1253-page/a3e2b688-60c2-4482-880d-2e274c62cd17" alt="" />
+<img src="https://plugins.jetbrains.com/files/18531/1253-page/a3e2b688-60c2-4482-880d-2e274c62cd17" alt="" />
 
 ### 2. Search **Ubuntu** or **Debian**
 
@@ -19,20 +21,24 @@ Note: you can always help me to improve the documentation by making a [Pull Requ
 
 <img src="https://plugins.jetbrains.com/files/18531/1253-page/17232a06-8e7b-4d79-919f-503b253e6985" alt="" />
 
-### 5. **Enter** a username, and your password
+### 5. Enter a username, and your password
 
-Note: nothing is shown on the screen ~ blind mode.
+Note: there is no "echo" of your password, so you are in "blind mode".
 
 <img src="https://plugins.jetbrains.com/files/18531/1253-page/e395b91c-b9ba-457c-a00a-33f59acdb4b7" alt="" />
 
-### 6. Update packages (note: press **Enter** to run a command)
+### 6. Update packages (note: press Enter to run a command)
+
+Note: you will have to write your password. You may use another package manager aside "apt-get".
 
 <ol>
 <li><code>sudo apt-get update</code>(update your list of packages)</li>
 <li><code>sudo apt-get upgrade</code>(upgrade your packages)</li>
 </ol>
 
-### 7. **Install** OCaml (you can install both native and opam)
+### 7. Install OCaml (you can install both native and opam)
+
+Note: you will have to write your password. You may use another package manager aside "apt-get".
 
 <ul>
 <li>native: <code>sudo apt-get install ocaml</code></li>

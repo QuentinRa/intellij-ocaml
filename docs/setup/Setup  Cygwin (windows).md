@@ -13,7 +13,7 @@ You can press "next" a lot of times. Once you need to set cygwin location, pleas
 ![](https://plugins.jetbrains.com/files/18531/1257-page/062c01d7-7a6e-4497-94be-5e4e7be6ad24)
 
 * Valid locations: `C:\cygwin64`, `D:\cygwin`
-* Invalid locations: `C:\Programs\cygwin64`, `D:\Programs\cygwin`
+* Invalid locations: `C:\Programs\cygwin64`, `D:\Programs\cygwin` (you may request for some "paths" to be allowed)
 
 ## 3. Go To Select Packages
 
@@ -38,7 +38,7 @@ You can install **a native SDK** (if you're not using opam), **opam** (**recomme
 
 You may also look for commands you may use. I'm personally picking "make", "wget", "tar", "curl", "unzip", "libclang" and "mingw[...]clang" (ex: mingw64-i686-clang), just in case.
 
-### 4. Configure opam (opam only)
+### 5. Configure opam (opam only)
 
 If you are using opam, you now have to download ocaml. Run **cygwin.bat** (ex: `C:\cygwin64\Cygwin.bat`). Enter the following commands (press enter after each command)
 
@@ -46,12 +46,12 @@ If you are using opam, you now have to download ocaml. Run **cygwin.bat** (ex: `
 * `opam switch create 4.13.0` to install ocaml 4.13.0. Press "y" when prompted.
 * `eval $(opam env)`
 
-### 5. test
+### 6. test
 
 * Enter the command `ocaml -vnum`
 
 If it outputs your ocaml version, then you are done ✅.
 
-### 6. Call cygwin commands from a PowerShell / cmd
+### 7. Call cygwin commands from a PowerShell / cmd
 
 You need to ensure that the folder C:/cygwin64/bin is in the path.
