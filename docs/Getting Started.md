@@ -6,7 +6,7 @@ Note: you can always help me to improve the documentation by making a [Pull Requ
 
 ### 1. OCaml SDK
 
-SDK stands for Software development kit. This is what you will need to compile ocaml programs, or run the interactive top level. For a SDK to be valid (by the plugin standard), the folder must be structured like this, and have at least these files
+SDK stands for Software development kit. This is what you will need to compile ocaml programs or run the interactive top level. For an SDK to be valid (by the plugin standard), the folder must be structured like this, and have at least these files (*)
 
 <pre>
 4.12.0/
@@ -22,11 +22,13 @@ SDK stands for Software development kit. This is what you will need to compile o
                 └── ...
 </pre>
 
-It means that if you do not have these files at the end of your setup, or the folder isn't named properly (4.12.0, ocaml-base-compiler.4.12.0, 4.12.0+trunk, 4.12.0~alpha1, ...), then the plugin will tell you that this folder isn't valid (**edit:**: since 0.0.8, you have a usefull error message).
+It means that if you do not have these files at the end of your setup, or the folder isn't named properly (4.12.0, ocaml-base-compiler.4.12.0, 4.12.0+trunk, 4.12.0~alpha1, ...), then the plugin will tell you that this folder isn't valid (**edit:**: since 0.0.8, you have a useful error message).
+
+**(\*)**: for opam SDKs, the folder `.opam-switch/sources/` (with the sources from the GitHub repository) is imported too if present.
 
 ### 2. Native or Opam SDK?
 
-To use the plugin, you will need to install ocaml first. You will need to pick whether you will use a **native** SDK, or an **opam** SDK. Opam is providing more complete SDKs, so some features won't be available for people using a **native SDK** (I'm doing my best so that this won't impact much your experience trough).
+To use the plugin, you will need to install ocaml first. You will need to pick whether you will use a **native** SDK or an **opam** SDK. Opam is providing more complete SDKs, so some features won't be available for people using a **native SDK** (I'm doing my best so that this won't impact much your experience trough).
 
 <table>
 <thead>
@@ -83,7 +85,7 @@ To use the plugin, you will need to install ocaml first. You will need to pick w
 </tbody>
 </table>
 
-**(\*)**: only the file only structure explained above can be used by the plugin. For native SDKs, the plugin will create a directory matching the expected file structure in **~/.jdks/ocaml**, linking to your files (the tilde is called HOME_FOLDER which is `C:\Users\username` on Windows). You can create such a folder by yourself, as the interface in not available in minors IDEs.
+**(\*)**: only the file only structure explained above can be used by the plugin. For native SDKs, the plugin will create a directory matching the expected file structure in **~/.jdks/ocaml**, linking to your files (the tilde is called HOME_FOLDER which is `C:\Users\username` on Windows). You can create such a folder by yourself, as the interface is not available in minors IDEs for now.
 
 ### 3. Pick your provider
 

@@ -21,7 +21,7 @@ You can install **a native SDK** (if you're not using opam), **opam** (**recomme
 * `opam switch create 4.13.0` to install ocaml 4.13.0. Press "y" when prompted.
 * `eval $(opam env)`
 
-### 3. test
+### 3. Test
 
 * Enter the command `ocaml -vnum`
 

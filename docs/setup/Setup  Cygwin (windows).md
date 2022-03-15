@@ -8,9 +8,9 @@ Note: you can always help me to improve the documentation by making a [Pull Requ
 
 ### 2. Run the installer
 
-You can press "next" a lot of times. Once you need to set cygwin location, please note that *cygwin folder must be located at the root of one of your hard drives**, **and must be named either `cygwin64` or `cygwin`** (**You may ask for this to be changed by opening an issue if this isn't convenient for you**).
+You can press "next" a lot of times. Once you need to set cygwin location, please note that **cygwin folder must be located at the root of one of your hard drives**, **and must be named either `cygwin64` or `cygwin`** (**You may ask for this to be changed by opening an issue if this isn't convenient for you**).
 
-![](https://plugins.jetbrains.com/files/18531/1257-page/062c01d7-7a6e-4497-94be-5e4e7be6ad24)
+![Run Cygwin Installer](https://raw.githubusercontent.com/QuentinRa/intellij-ocaml/main/docs/setup/_images/062c01d7-7a6e-4497-94be-5e4e7be6ad24.png)
 
 * Valid locations: `C:\cygwin64`, `D:\cygwin`
 * Invalid locations: `C:\Programs\cygwin64`, `D:\Programs\cygwin` (you may request for some "paths" to be allowed)
@@ -19,7 +19,7 @@ You can press "next" a lot of times. Once you need to set cygwin location, pleas
 
 Continue to press next until you are on this page, and switch the view mode to "full".
 
-![](https://plugins.jetbrains.com/files/18531/1257-page/45e14ea5-77c1-4dbd-a132-44d6f38ebe74)
+![Select Packages Cygwin](https://raw.githubusercontent.com/QuentinRa/intellij-ocaml/main/docs/setup/_images/45e14ea5-77c1-4dbd-a132-44d6f38ebe74.png)
 
 ### 4. Install OCaml
 
@@ -54,4 +54,4 @@ If it outputs your ocaml version, then you are done ✅.
 
 ### 7. Call cygwin commands from a PowerShell / cmd
 
-You need to ensure that the folder C:/cygwin64/bin is in the path.
+You need to ensure that the folder `C:/cygwin64/bin` is in the path.

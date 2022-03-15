@@ -4,28 +4,27 @@ Note: you can always help me to improve the documentation by making a [Pull Requ
 
 </i>
 
-**WSL are only supported since 2021.1 (newer than 211)**.
+**WSLs are only supported since 2021.1 (newer than 211)**.
 
 ### 1. Open the Windows Store
 
-<img src="https://plugins.jetbrains.com/files/18531/1253-page/a3e2b688-60c2-4482-880d-2e274c62cd17" alt="" />
+<img src="https://raw.githubusercontent.com/QuentinRa/intellij-ocaml/main/docs/setup/_images/a3e2b688-60c2-4482-880d-2e274c62cd17.png" alt="Start Microsoft Store" />
 
 ### 2. Search **Ubuntu** or **Debian**
 
 ### 3. Click on "install" to install your WSL
 
-
-<img src="https://plugins.jetbrains.com/files/18531/1253-page/ae490a55-fd79-4bf1-af21-16a180a2a714" alt="" />
+<img src="https://raw.githubusercontent.com/QuentinRa/intellij-ocaml/main/docs/setup/_images/ae490a55-fd79-4bf1-af21-16a180a2a714.png" alt="Install Ubuntu WSL" />
 
 ### 4. In Windows search bar, enter **Ubuntu** (resp. **Debian**)
 
-<img src="https://plugins.jetbrains.com/files/18531/1253-page/17232a06-8e7b-4d79-919f-503b253e6985" alt="" />
+<img src="https://raw.githubusercontent.com/QuentinRa/intellij-ocaml/main/docs/setup/_images/17232a06-8e7b-4d79-919f-503b253e6985.png" alt="Start Ubuntu WSL" />
 
 ### 5. Enter a username, and your password
 
 Note: there is no "echo" of your password, so you are in "blind mode".
 
-<img src="https://plugins.jetbrains.com/files/18531/1253-page/e395b91c-b9ba-457c-a00a-33f59acdb4b7" alt="" />
+<img src="https://raw.githubusercontent.com/QuentinRa/intellij-ocaml/main/docs/setup/_images/e395b91c-b9ba-457c-a00a-33f59acdb4b7.png" alt="configure new WSL" />
 
 ### 6. Update packages (note: press Enter to run a command)
 
