@@ -1,19 +1,5 @@
 # ReasonML
 
-A lot of features are from the [ReasonML](https://github.com/giraud/reasonml-idea-plugin) plugin. The packages `dune`, `odoc`, and `or` are mostly coming from the plugin "as if".
-
-## Unchanged
-
-Features that were imported "as if".
-
-* File Structure menu
-* Simple autocompletion
-* Go to file, declaration, etc.
-* Comment line/block
-* Insert matching brace, quote
-* Find usages 
-* Preview `odoc` documentation (CTRL-Q / hover)
-
 ## Changes
 ### Added
 

@@ -133,65 +133,10 @@ We are compiling the file, and parsing the output, to provide hints in the edito
 ## 📖 Install ocaml and opam
 
 <details>
-<summary>Windows (with WSL, >= 2021.3 only)</summary>
+<summary>Windows (with WSL, >= 2020.3 only)</summary>
 
 On Windows, you may use a WSL (ex: Windows Store > Debian), then follows the instruction for Linux users
 </details>
-
-<details>
-<summary>Windows (with cygwin)</summary>
-
-Download [cygwin](https://cygwin.com/install.html). In the installer, you will have to pick some packages to install. Select "full" and 
-
-* **ocaml**: simply search and select "ocaml"
-* **opam**: search and select 
-  * `opam`
-  * `make`
-  * `wget` and `curl`
-  * `tar` and `unzip`
-  * `libclang` and `mingw[...]clang` (ex: mingw64-i686-clang)
-
-To install new versions of OCaml, run `C:\cygwin64\Cygwin.bat`, then call `opam switch create 4.12.0` to install `ocaml 4.12.0`.
-
-* **Note**: to use "ocaml", "opam", "make", or "ocamlc" in a PowerShell/cmd, you need to ensure that the folder `C:/cygwin64/bin` is in the path.
-</details>
-
-<details>
-<summary>Windows (Cygwin, installer, mingw)</summary>
-
-Simply download the installer for [OCaml64](https://fdopen.github.io/opam-repository-mingw/installation/). Once installed, you will have your SDK in `C:\\OCam64\\home\\username\\.opam\\`. You will have opam installed, so you can add/versions if you want.
-
-* Run `C:\\OCam64\\Cygwin.bat`
-* `opam switch create 4.12.0` to install `ocaml 4.12.0`
-
-</details>
-
-<details>
-<summary>Linux</summary>
-
-In my case, on Linux or Debian, I'm using these commands (you may call `sudo apt-get update` first).
-
-* **ocaml**: `sudo apt-get install ocaml`
-* **opam** (recommended): 
-  * `sudo apt-get install opam` 
-  * `opam switch create 4.12.0` to install `ocaml 4.12.0`
-</details>
-
-<details>
-<summary>macOS</summary>
-
-I do not have a computer with a macOS, so you should submit feedback, so that I can update this section. From what I saw, you may only have to do
-
-* `brew update`
-* **ocaml**: `brew install ocaml`
-* **opam** (recommended):
-  * `brew install opam` (for opam)
-  * `opam switch create 4.12.0` to install `ocaml 4.12.0`
-
-[Source](https://stackoverflow.com/questions/35563263/install-opam-in-mac-os).
-</details>
-
-* **Note**: if you got the error [Unbound module Stdlib](https://discuss.ocaml.org/t/unbound-module-stdllib/5133), ensure that the path to the ocaml library is valid (see `ocamlc -config`). If you need to change it, set the environment variable called `OCAMLLIB`(ex: `"C:\Users\username\Desktop\4.13.1+mingw64c\lib\ocaml"`). **THIS IS DONE BY THE PLUGIN** (only for Cygwin SDKs, fill an issue if needed for others).
 
 ## 📄 License
 
