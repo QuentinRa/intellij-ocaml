@@ -87,22 +87,4 @@ public class OCamlPsiUtilsTest extends OCamlBaseTest {
         assertEquals(OCamlTypes.LPAREN, lparen.getNode().getElementType());
     }
 
-    // deps
-
-    private static final String FILE_NAME = "deps.ml";
-
-    @Override protected String getCustomTestDataPath() {
-        return "com.lang.utils/deps/";
-    }
-
-    @Test
-    public void testFindDependencies() {
-        @Language("OCaml") String originalMlCode = loadFile(FILE_NAME);
-        assertNotNull(originalMlCode);
-        PsiFile file = myFixture.configureByText(FILE_NAME, originalMlCode);
-        Set<String> dependencies = OCamlPsiUtils.findDependencies(file);
-        assertSize(5, dependencies);
-        assertContainsElements(dependencies, "toto", "set", "tata", "hello_world", "stdlib");
-    }
-
 }
