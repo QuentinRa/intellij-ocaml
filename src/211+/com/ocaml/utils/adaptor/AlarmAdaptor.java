@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public final class AlarmAdaptor {
 
-    @Contract("_, _ -> new") @SinceIdeVersion(release = "211")
+    @Contract("_, _ -> new") @SinceIdeVersion(release = "212")
     public static @NotNull Alarm createAlarm(JComponent component, Disposable disposable) {
         return new Alarm(component, disposable);
     }
