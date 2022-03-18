@@ -51,6 +51,12 @@ public class OCamlBaseTest extends BasePlatformTestCase {
         }
     }
 
+    protected @NotNull String loadFileNonNull(String fileName) {
+        String s = loadFile(fileName);
+        assertNotNull(s);
+        return s;
+    }
+
     protected String getCustomTestDataPath() {
         return "";
     }

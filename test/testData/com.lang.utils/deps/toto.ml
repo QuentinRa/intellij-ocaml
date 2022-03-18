@@ -1,0 +1,3 @@
+open Tata
+
+exception Ok
