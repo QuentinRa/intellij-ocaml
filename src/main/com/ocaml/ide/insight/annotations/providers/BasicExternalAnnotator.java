@@ -100,7 +100,7 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
             for (Pair<String, PsiFile> pair : collectedInfo.myDependencies) {
                 // target folder
                 File localTargetFolder = new File(myOutputFolder, pair.first).getParentFile();
-                System.out.println(localTargetFolder);
+                System.out.println("lft"+localTargetFolder);
                 if (!targetFolder.exists() && !targetFolder.mkdirs())
                     continue;
                 compileFile(collectedInfo.myHomePath, localTargetFolder, myOutputFolder, pair.second, log);
