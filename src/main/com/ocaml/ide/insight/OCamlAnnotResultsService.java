@@ -1,5 +1,7 @@
 package com.ocaml.ide.insight;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -55,13 +57,25 @@ public final class OCamlAnnotResultsService {
     }
 
     // we cannot use getLogicalPosition, so we can't use the first HashMap
+    @Deprecated(forRemoval = true)
     public @Nullable OCamlInferredSignature findAnnotationFor(@NotNull PsiElement element) {
+        return findAnnotationFor(element, true);
+    }
+
+    // we cannot use getLogicalPosition, so we can't use the first HashMap
+    public @Nullable OCamlInferredSignature findAnnotationFor(@NotNull PsiElement element, boolean shouldLoadIfNeeded) {
+        // else, use the "normal" way
         String path = element.getContainingFile().getVirtualFile().getPath();
         HashMap<TextRange, OCamlInferredSignature> rangeToSignature = resultsAlt.get(path);
         // should not occur
         if (rangeToSignature == null) return null;
         // return annotation
-        return rangeToSignature.get(element.getTextRange());
+        OCamlInferredSignature signature = rangeToSignature.get(element.getTextRange());
+        // may load
+        if (signature == null && shouldLoadIfNeeded) {
+            signature = getInfoForElement(element);
+        }
+        return signature;
     }
 
     private @Nullable LogicalSection getLogicalPosition(@NotNull PsiElement element) {
@@ -75,25 +89,57 @@ public final class OCamlAnnotResultsService {
     }
 
     public boolean hasInfoForElement(@NotNull PsiElement element) {
+        return findAnnotationFor(element, true) != null;
+    }
+
+    private @Nullable OCamlInferredSignature getInfoForElement(@NotNull PsiElement element) {
         String path = element.getContainingFile().getVirtualFile().getPath();
         HashMap<LogicalSection, OCamlInferredSignature> rangeToSignature = results.get(path);
 
-        // compiled
-        if (rangeToSignature == null) return false;
+        // compiled?
+        if (rangeToSignature == null) return null;
 
         // get logical position
-        LogicalSection logicalSection = getLogicalPosition(element);
-        if (logicalSection == null) return false;
+        LogicalSection logicalSection;
+
+        // Tricks to get the logicalSection when we can't ask the editor
+        if (!ApplicationManager.getApplication().isDispatchThread()) {
+            Document document = element.getContainingFile().getViewProvider().getDocument();
+            int textOffset = element.getTextOffset();
+            int textOffsetEnd = textOffset + element.getTextLength();
+            int lineStart = document.getLineNumber(textOffset);
+            int lineEnd = document.getLineNumber(textOffsetEnd);
+            int offsetStart = document.getLineStartOffset(lineStart);
+
+            int startColumn = textOffset-offsetStart;
+            String[] lines = element.getText().split("\n");
+            int endColumn;
+            if (lines.length <= 1) { // one line
+                endColumn = startColumn + element.getTextLength();
+            } else {
+                endColumn = lines[lines.length-1].length();
+            }
+
+            logicalSection = new LogicalSection(
+                    lineStart + 1, startColumn,
+                    lineEnd + 1, endColumn);
+        } else {
+            // get logical position
+            logicalSection = getLogicalPosition(element);
+        }
+
+        System.out.println(logicalSection);
+        if (logicalSection == null) return null;
 
         // get signature
         OCamlInferredSignature signature = rangeToSignature.get(logicalSection);
-        if (signature == null) return false;
+        if (signature == null) return null;
 
         // re-index by range, properly this time
         HashMap<TextRange, OCamlInferredSignature> ranges = resultsAlt.get(path);
         signature.range = element.getTextRange();
         ranges.put(element.getTextRange(), signature);
         resultsAlt.put(path, ranges);
-        return true;
+        return signature;
     }
 }
