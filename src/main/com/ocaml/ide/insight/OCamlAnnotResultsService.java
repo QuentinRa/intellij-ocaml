@@ -128,7 +128,7 @@ public final class OCamlAnnotResultsService {
             logicalSection = getLogicalPosition(element);
         }
 
-        System.out.println(logicalSection);
+        System.out.println("  "+logicalSection);
         if (logicalSection == null) return null;
 
         // get signature

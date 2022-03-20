@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCamlParameterInfo.ParameterInfoArgumentList> {
 
@@ -23,7 +22,8 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 
     @Override
     public @Nullable PsiElement findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
-        return findArgumentList(context, context.getParameterListStart());
+//        return findArgumentList(context, context.getParameterListStart());
+        return null;
     }
 
     @Override public @Nullable PsiElement findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
@@ -65,63 +65,61 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         ArrayList<Pair<OCamlInferredSignature, PsiElement>> elements = new ArrayList<>();
         elements.add(new Pair<>(annotation, startingElement));
 
-        PsiElement element = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
-        int index = 0;
-        int firstFunctionIndex = annotation.type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR) ? 0 : -1;
-        while (element != null) {
-            annotation = annot.findAnnotationFor(element, true);
-            if (annotation == null) break;
+        int index;
+        int firstFunctionIndex;
 
-            elements.add(0, new Pair<>(annotation, element));
-            element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
-            index++;
-            if (firstFunctionIndex != -1)
-                firstFunctionIndex++;
+        do {
+            PsiElement element = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
+            index = 0;
+            firstFunctionIndex = updateFirstFunctionIndex(annotation, -1);
 
-            // we found another function
-            if (annotation.type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR)) {
-                // fix: bypass operators i.e. Stdlib.( + ) for instance
-                String name = annotation.name;
-                System.out.println(name);
-                if (name == null) continue; // not null tho
-                int dot = name.indexOf('.');
-                if (dot != -1) name = name.substring(dot+1);
-                System.out.println(name+" "+dot);
-                // aside from operators
-                if (!name.startsWith("("))
-                    firstFunctionIndex = 0;
+            while (element != null) {
+                annotation = annot.findAnnotationFor(element, true);
+                if (annotation == null) break;
+
+                elements.add(0, new Pair<>(annotation, element));
+                element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
+                index++;
+
+                // we found another function
+                firstFunctionIndex = updateFirstFunctionIndex(annotation, firstFunctionIndex);
             }
-        }
 
-        System.out.println(elements);
+            // done
+            if (firstFunctionIndex != -1) break;
+            // try a new starting element
+            startingElement = startingElement.getParent();
+            if (startingElement == null) return null; // just in case
+            annotation = annot.findAnnotationFor(startingElement, true);
+            if (annotation == null) return null; // can't do anything
 
+            System.out.println("  *new* candidate is: '"+startingElement.getText()+"' ("+startingElement+")");
+            System.out.println("  *new* annotation found: "+annotation);
+        } while (true);
+
+        System.out.println("  "+elements);
         System.out.println("  fun is at index:"+firstFunctionIndex);
         System.out.println("  we are at index:"+index);
 
-        // first must be a function
-//        if (function.first.kind != OCamlInferredSignature.Kind.VARIABLE) return null;
-//        String type = function.first.type;
-//        if (!type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR)) return null;
-
-        // then we are checking
-//        System.out.println("  function with type:"+type);
-//        System.out.println("  we are at index:"+index);
-
-//        PsiElement psiElement = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
-//        System.out.println("    prev:"+psiElement+" ('"+(psiElement == null ? "null" : psiElement.getText()+"')"));
-//        if (psiElement != null) {
-//            psiElement = OCamlPsiUtils.skipMeaninglessPreviousSibling(psiElement);
-//            System.out.println("    prev:"+psiElement+" ('"+(psiElement == null ? "null" : psiElement.getText())+"')");
-//        }
-
         return null;
+    }
 
-//        OCamlAnnotResultsService annot = startingElement.getProject().getService(OCamlAnnotResultsService.class);
-//        OCamlInferredSignature annotation = annot.findAnnotationFor(startingElement);
-//        if (annotation == null) return null;
-//        // signature:OCamlInferredSignature{name='f', kind=VARIABLE, type=''a -> 'b -> int', range=(23,24)}
-//        System.out.println("signature:"+annotation);
-//        return startingElement;
+    private int updateFirstFunctionIndex(OCamlInferredSignature annotation, int firstFunctionIndex) {
+        if (firstFunctionIndex != -1)
+            firstFunctionIndex++;
+
+        if (annotation.type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR)) {
+            // fix: bypass operators i.e. Stdlib.( + ) for instance
+            String name = annotation.name;
+            if (name == null) return firstFunctionIndex; // not null tho
+            int dot = name.indexOf('.');
+            if (dot != -1) name = name.substring(dot+1);
+            // aside from operators
+            if (!name.startsWith("("))
+                firstFunctionIndex = 0;
+        }
+
+        return firstFunctionIndex;
     }
 
     @Override
