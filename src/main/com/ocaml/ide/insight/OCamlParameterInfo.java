@@ -25,23 +25,22 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 
     @Override
     public @Nullable PsiElement findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
-        Pair<PsiElement, List<String>> pair = findArgumentList(context, context.getParameterListStart());
+        Pair<PsiElement, ParameterInfoArgumentList> pair = findArgumentList(context, context.getParameterListStart());
+        System.out.println("update???"+pair);
         return pair == null ? null : pair.first;
     }
 
     @Override public @Nullable PsiElement findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
-        Pair<PsiElement, List<String>> element = findArgumentList(context, context.getParameterListStart());
+        Pair<PsiElement, ParameterInfoArgumentList> element = findArgumentList(context, context.getOffset() - 1);
         if (element == null) return null;
-        context.setItemsToShow(new ParameterInfoArgumentList[]{new ParameterInfoArgumentList(
-                element.second, List.of(), List.of())
-        });
+        context.setItemsToShow(new ParameterInfoArgumentList[]{ element.second });
         return element.first;
     }
 
-    private @Nullable Pair<PsiElement, List<String>> findArgumentList(@NotNull ParameterInfoContext context, int parameterListStart) {
-        System.out.println("find at("+context.getOffset()+") index ("+parameterListStart+")");
-        int offset = context.getOffset() - 1;
-        PsiElement originalElement = context.getFile().findElementAt(offset);
+    private @Nullable Pair<PsiElement, ParameterInfoArgumentList> findArgumentList(@NotNull ParameterInfoContext context, int parameterListStart) {
+        System.out.println("find at("+context.getOffset()+"/"+parameterListStart+") index ("+parameterListStart+")");
+//        int offset = context.getOffset() - 1;
+        PsiElement originalElement = context.getFile().findElementAt(parameterListStart);
         PsiElement startingElement = originalElement;
         if (startingElement == null) return null;
         System.out.println("  found '"+startingElement.getText()+"' ("+startingElement+")");
@@ -77,8 +76,15 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             index = 0;
             firstFunctionIndex = updateFirstFunctionIndex(annotation, -1);
 
+            // some elements are wrapped
+            if (element == null) {
+                element = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement.getParent());
+            }
+
             while (element != null) {
+                System.out.println("    look for element:"+element);
                 annotation = annot.findAnnotationFor(element, true);
+                System.out.println("    has this:"+annotation);
                 if (annotation == null) break;
 
                 elements.add(0, new Pair<>(annotation, element));
@@ -143,7 +149,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 
         System.out.println("  names:"+names);
 
-        return new Pair<>(originalElement, names);
+        return new Pair<>(originalElement, new ParameterInfoArgumentList(names, index, false));
     }
 
     private int updateFirstFunctionIndex(OCamlInferredSignature annotation, int firstFunctionIndex) {
@@ -167,47 +173,70 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
     @Override
     public void showParameterInfo(@NotNull PsiElement element, @NotNull CreateParameterInfoContext context) {
         context.showHint(element, element.getTextOffset(), this);
+        System.out.println("  show");
     }
 
     @Override
     public void updateParameterInfo(@NotNull PsiElement psiParameters, @NotNull UpdateParameterInfoContext context) {
-        System.out.println("update");
+        System.out.println("  update");
     }
 
     @Override public void updateUI(ParameterInfoArgumentList p, @NotNull ParameterInfoUIContext context) {
-        System.out.println("update UI");
+        System.out.println("  update UI");
 
         StringBuilder b = new StringBuilder();
+        int i = p.currentArgumentIndex == 0 ? 0 : 1;
+        int startHighLight = 0;
+        int stopHightlight = 0;
         for (String name : p.names) {
-            b.append(name).append(", ");
+            String newText = name+", ";
+            int newLength = newText.length();
+
+            // set highlight
+            if (p.currentArgumentIndex == i) {
+                startHighLight = b.length();
+                stopHightlight = startHighLight + newLength;
+            }
+
+            // update
+            b.append(newText);
+            i++;
         }
         String text = b.toString();
         text = text.substring(0, text.length() - 2);
 
         context.setupUIComponentPresentation(text,
-                0, text.length(), false,
-                false, false, context.getDefaultParameterColor());
+                startHighLight, stopHightlight, p.isDisabled,
+                p.isStrikeout, false, context.getDefaultParameterColor());
     }
 
+    // todo: ...
     public static final class ParameterInfoArgumentList {
         public final List<String> names;
         public final List<String> defaultValues;
         public final List<Integer> permutation;
         public final int currentArgumentIndex;
         public final boolean isDisabled;
+        public final boolean isStrikeout;
+
+        public ParameterInfoArgumentList(List<String> names, int currentArgumentIndex, boolean isStrikeout) {
+            this(names, List.of(), List.of(), currentArgumentIndex, false, isStrikeout);
+        }
 
         public ParameterInfoArgumentList(List<String> names, List<String> defaultValues, List<Integer> permutation) {
-            this(names, defaultValues, permutation, -1, false);
+            this(names, defaultValues, permutation, -1, false, false);
         }
 
         public ParameterInfoArgumentList(List<String> names, List<String> defaultValues,
-                                         List<Integer> permutation, int currentArgumentIndex, boolean isDisabled) {
+                                         List<Integer> permutation, int currentArgumentIndex,
+                                         boolean isDisabled, boolean isStrikeout) {
 
             this.names = names;
             this.defaultValues = defaultValues;
             this.permutation = permutation;
             this.currentArgumentIndex = currentArgumentIndex;
             this.isDisabled = isDisabled;
+            this.isStrikeout = isStrikeout;
         }
     }
 }
