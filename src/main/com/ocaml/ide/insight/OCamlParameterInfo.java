@@ -13,7 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCamlParameterInfo.ParameterInfoArgumentList> {
 
@@ -22,23 +25,24 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 
     @Override
     public @Nullable PsiElement findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
-//        return findArgumentList(context, context.getParameterListStart());
-        return null;
+        Pair<PsiElement, List<String>> pair = findArgumentList(context, context.getParameterListStart());
+        return pair == null ? null : pair.first;
     }
 
     @Override public @Nullable PsiElement findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
-        PsiElement element = findArgumentList(context, -1);
+        Pair<PsiElement, List<String>> element = findArgumentList(context, context.getParameterListStart());
         if (element == null) return null;
         context.setItemsToShow(new ParameterInfoArgumentList[]{new ParameterInfoArgumentList(
-                List.of("toto"), List.of(), List.of())
+                element.second, List.of(), List.of())
         });
-        return element;
+        return element.first;
     }
 
-    private @Nullable PsiElement findArgumentList(@NotNull ParameterInfoContext context, int parameterListStart) {
+    private @Nullable Pair<PsiElement, List<String>> findArgumentList(@NotNull ParameterInfoContext context, int parameterListStart) {
         System.out.println("find at("+context.getOffset()+") index ("+parameterListStart+")");
         int offset = context.getOffset() - 1;
-        PsiElement startingElement = context.getFile().findElementAt(offset);
+        PsiElement originalElement = context.getFile().findElementAt(offset);
+        PsiElement startingElement = originalElement;
         if (startingElement == null) return null;
         System.out.println("  found '"+startingElement.getText()+"' ("+startingElement+")");
 
@@ -101,7 +105,45 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         System.out.println("  fun is at index:"+firstFunctionIndex);
         System.out.println("  we are at index:"+index);
 
-        return null;
+        // start with the function
+        while (firstFunctionIndex != 0) {
+            elements.remove(0);
+            firstFunctionIndex--;
+            index--;
+        }
+
+//        System.out.println("  *new* "+elements);
+//        System.out.println("  *new* fun is at index:"+firstFunctionIndex);
+//        System.out.println("  *new* we are at index:"+index);
+
+        List<String> names = new ArrayList<>();
+
+        Pair<OCamlInferredSignature, PsiElement> fun = elements.remove(0);
+        String function = fun.first.type;
+
+        final String separator = OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR;
+
+        // guess the types that we got after
+        while (function.contains(separator)) {
+            int i = function.indexOf(separator);
+
+            // oh, no, this is a function
+            String substring = function.substring(0, i);
+            if (substring.startsWith("(")) {
+                i = function.indexOf(')') + 1; // the separator is after ')'
+                substring = function.substring(1, i-1); // we don't want '(' nor ')'
+            }
+
+            // handle
+            names.add(substring);
+
+            // next
+            function = function.substring(i + separator.length());
+        }
+
+        System.out.println("  names:"+names);
+
+        return new Pair<>(originalElement, names);
     }
 
     private int updateFirstFunctionIndex(OCamlInferredSignature annotation, int firstFunctionIndex) {
@@ -134,8 +176,16 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 
     @Override public void updateUI(ParameterInfoArgumentList p, @NotNull ParameterInfoUIContext context) {
         System.out.println("update UI");
-        context.setupUIComponentPresentation("one, two, ...",
-                5, 8, false,
+
+        StringBuilder b = new StringBuilder();
+        for (String name : p.names) {
+            b.append(name).append(", ");
+        }
+        String text = b.toString();
+        text = text.substring(0, text.length() - 2);
+
+        context.setupUIComponentPresentation(text,
+                0, text.length(), false,
                 false, false, context.getDefaultParameterColor());
     }
 
