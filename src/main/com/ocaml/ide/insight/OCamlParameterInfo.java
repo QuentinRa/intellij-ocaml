@@ -79,9 +79,9 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         // find our starting point
         OCamlInferredSignature annotation = null;
 
-        startingElement = handleLabel(startingElement, true);
+        startingElement = handleLabel(startingElement);
 
-        System.out.println("  found (2)'"+startingElement.getText()+"' ("+startingElement+")");
+//        System.out.println("  found (2)'"+startingElement.getText()+"' ("+startingElement+")");
 
         List<PsiElement> psiElements = SyntaxTraverser.psiApi().parents(startingElement).toList();
         for (PsiElement candidate : psiElements) {
@@ -115,12 +115,12 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             while (element != null) {
 //                System.out.println("    look for element:"+element);
                 res = findParameter(element, annot, name -> {
-                    System.out.println("    > ~name: <" + name + ">");
+//                    System.out.println("    > ~name: <" + name + ">");
                     OCamlInferredSignature first = elements.get(0).first;
-                    System.out.println("    > " + first.type);
+//                    System.out.println("    > " + first.type);
                     if (!first.type.contains(":")) first.type = name + ":" + first.type;
-                    System.out.println("    > " + first.type);
-                }, OCamlPsiUtils::skipMeaninglessPreviousSibling);
+//                    System.out.println("    > " + first.type);
+                }, OCamlPsiUtils::skipMeaninglessPreviousSibling, OCamlTypes.COLON.getSymbol(), OCamlTypes.TILDE.getSymbol());
                 if (res == null) break;
                 annotation = res.first;
                 element = res.second;
@@ -193,8 +193,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         // fill next
         AtomicReference<Integer> count = new AtomicReference<>(elements.size());
         element = startingElement;
-        // ... pffff ...
-        // I'm getting bored by your sh*t Calistro-kun
+        // unwrap LOWER IDENT
         if (element.getNode().getElementType().equals(OCamlTypes.LIDENT))
             element = element.getParent();
 
@@ -204,20 +203,22 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         while (parameters.size() < names.size()) {
             element = OCamlPsiUtils.skipMeaninglessNextSibling(element);
             if (element == null) break;
-            element = handleLabel(element, false); // do not handle ':'
-            res = findParameter(element, annot, name::set, OCamlPsiUtils::skipMeaninglessNextSibling);
+            res = findParameter(element, annot, name::set, OCamlPsiUtils::skipMeaninglessNextSibling,
+                    OCamlTypes.TILDE.getSymbol(), OCamlTypes.COLON.getSymbol());
+//            System.out.println("  -r->"+res);
             if (res == null) break;
             annotation = res.first;
             element = res.second;
+//            System.out.println("  -a->"+(annotation != null));
             if (annotation == null) break;
             // add in the list
             String n = name.getAndSet(null);
-            parameters.add((n == null ? "" : "?" + n + ":") + annotation.type);
+            parameters.add((n == null ? "" : n + ":") + annotation.type);
             count.accumulateAndGet(1, Integer::sum);
         }
 
-        System.out.println("  names:"+names);
-        System.out.println("  params:"+parameters);
+        System.out.println("  *new* names:"+names);
+        System.out.println("  *new* params:"+parameters);
 
         // #parameters <= #names
         ArrayList<String> sorted = new ArrayList<>();
@@ -269,6 +270,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
                 int commaV1 = v1.indexOf(":");
                 String nameV1 = commaV1 != -1 ? "?"+v1.substring(0, commaV1) : "";
                 Pair<Integer, String> pair = defaultValues.remove(nameV1);
+//                System.out.println("  note that '"+nameV1+"' "+pair);
                 if (pair != null) {
                     sorted.add("["+pair.second+"]");
                 } else {
@@ -296,7 +298,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         return new Pair<>(originalElement, new ParameterInfoArgumentList(sorted, index, false));
     }
 
-    private @NotNull PsiElement handleLabel(PsiElement startingElement, boolean colon) {
+    private @NotNull PsiElement handleLabel(PsiElement startingElement) {
         // ~name:
         PsiElement startElementCandidate = startingElement;
         // : => go to next
@@ -312,11 +314,10 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         // we may or not change the starting element
         if (startElementCandidate != null) {
             // if we can process the colon, and we got a colon, process
-            if (colon)
-                if (startElementCandidate.getText().equals(OCamlTypes.COLON.getSymbol()))
-                    startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
-                else
-                    startElementCandidate = null;
+            if (startElementCandidate.getText().equals(OCamlTypes.COLON.getSymbol()))
+                startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
+            else
+                startElementCandidate = null;
             // update
             if (startElementCandidate != null) {
                 startingElement = startElementCandidate;
@@ -328,16 +329,17 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
     public Pair<OCamlInferredSignature, PsiElement> findParameter(@NotNull PsiElement element,
                                                                   OCamlAnnotResultsService annot,
                                                                   Consumer<String> callback,
-                                                                  ComputeMethod<PsiElement, PsiElement> iterate) {
+                                                                  ComputeMethod<PsiElement, PsiElement> iterate,
+                                                                  String symbolStart, String symbolEnd) {
         // https://ocaml.org/manual/lablexamples.html
         // allow ~name:
-        if (element.getText().equals(OCamlTypes.COLON.getSymbol())) {
+        if (element.getText().equals(symbolStart)) {
 //            System.out.println("    > is ~name?");
             element = iterate.call(element);
             if (element == null) return null;
             String name = element.getText();
             element = iterate.call(element);
-            if (element == null || !element.getText().equals(OCamlTypes.TILDE.getSymbol())) return null;
+            if (element == null || !element.getText().equals(symbolEnd)) return null;
             element = iterate.call(element);
             if (element == null) return null;
             callback.accept(name);
