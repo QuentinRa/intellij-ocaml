@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,17 +35,41 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         return element.first;
     }
 
+    /*
+     * This method is HELL. It had a hard time writing the code, and to help anyone trying
+     * to improve this mess, I'm leaving some of my thoughts right now.
+     *
+     * findElementForParameterInfo is called before findElementForUpdatingParameterInfo.
+     * Both are calling findArgumentList, and the second argument MUST BE THE SAME (at least
+     * in the first update). Otherwise, the popup might not be shown.
+     *
+     * If the method is called on a comment / spaces, we are skipping them.
+     *
+     * If we are on ~name: ..., we are moving to "...".
+     * Then we are using the Syntax Traverser to find a starting point
+     * (ex: if we are inside parenthesis, we MAY have to go up, or we may not).
+     *
+     * Then, we are moving back starting from our starting point, in order to find
+     * the method call.
+     *
+     * If needed, we are reading values that are AFTER our starting point, in order to inspect
+     * every argument of the function.
+     *
+     * Once we got the function, we can use the annot service to have its type.
+     * We are relying on this type to show arguments, or to add [] if they aren't
+     * in the right order.
+     */
     private @Nullable Pair<PsiElement, ParameterInfoArgumentList> findArgumentList(@NotNull ParameterInfoContext context, int parameterListStart) {
-        System.out.println("find at("+context.getOffset()+"/"+parameterListStart+") index ("+parameterListStart+")");
+//        System.out.println("find at("+context.getOffset()+"/"+parameterListStart+") index ("+parameterListStart+")");
 //        int offset = context.getOffset() - 1;
         PsiElement originalElement = context.getFile().findElementAt(parameterListStart);
         PsiElement startingElement = originalElement;
         if (startingElement == null) return null;
-        System.out.println("  found '"+startingElement.getText()+"' ("+startingElement+")");
+//        System.out.println("  found '"+startingElement.getText()+"' ("+startingElement+")");
 
         OCamlAnnotResultsService annot = startingElement.getProject().getService(OCamlAnnotResultsService.class);
 
-        // find some start
+        // If the method is called on a comment / spaces, we are skipping them.
         while (startingElement instanceof PsiWhiteSpace || startingElement instanceof PsiComment)
             startingElement = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
         if (startingElement == null) return null;
@@ -78,17 +103,18 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         }
         if (annotation == null) return null;
 
-        System.out.println("  candidate is: '"+startingElement.getText()+"' ("+startingElement+")");
-        System.out.println("  annotation found: "+annotation);
+//        System.out.println("  candidate is: '"+startingElement.getText()+"' ("+startingElement+")");
+//        System.out.println("  annotation found: "+annotation);
 
         ArrayList<Pair<OCamlInferredSignature, PsiElement>> elements = new ArrayList<>();
         elements.add(new Pair<>(annotation, startingElement));
 
         int index;
         int firstFunctionIndex;
+        PsiElement element;
 
         do {
-            PsiElement element = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
+            element = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
             index = 0;
             firstFunctionIndex = updateFirstFunctionIndex(annotation, -1);
 
@@ -101,7 +127,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
                 // https://ocaml.org/manual/lablexamples.html
                 // allow ~name:
                 if (element.getText().equals(OCamlTypes.COLON.getSymbol())) {
-                    System.out.println("    > is ~name?");
+//                    System.out.println("    > is ~name?");
                     element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
                     if (element == null) break;
                     String name = element.getText();
@@ -109,16 +135,16 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
                     if (element == null || !element.getText().equals(OCamlTypes.TILDE.getSymbol())) break;
                     element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
                     if (element == null) break;
-                    System.out.println("    > ~name: <"+name+">");
+//                    System.out.println("    > ~name: <"+name+">");
                     OCamlInferredSignature first = elements.get(0).first;
-                    System.out.println("    > "+ first.type);
+//                    System.out.println("    > "+ first.type);
                     if (!first.type.contains(":")) first.type = name + ":" + first.type;
-                    System.out.println("    > "+ first.type);
+//                    System.out.println("    > "+ first.type);
                 }
 
-                System.out.println("    look for element:"+element);
+//                System.out.println("    look for element:"+element);
                 annotation = annot.findAnnotationFor(element, true);
-                System.out.println("    has this:"+annotation);
+//                System.out.println("    has this:"+annotation);
                 if (annotation == null) break;
 
                 elements.add(0, new Pair<>(annotation, element));
@@ -137,13 +163,13 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             annotation = annot.findAnnotationFor(startingElement, true);
             if (annotation == null) return null; // can't do anything
 
-            System.out.println("  *new* candidate is: '"+startingElement.getText()+"' ("+startingElement+")");
-            System.out.println("  *new* annotation found: "+annotation);
+//            System.out.println("  *new* candidate is: '"+startingElement.getText()+"' ("+startingElement+")");
+//            System.out.println("  *new* annotation found: "+annotation);
         } while (true);
 
-        System.out.println("  "+elements);
-        System.out.println("  fun is at index:"+firstFunctionIndex);
-        System.out.println("  we are at index:"+index);
+//        System.out.println("  "+elements);
+//        System.out.println("  fun is at index:"+firstFunctionIndex);
+//        System.out.println("  we are at index:"+index);
 
         // start with the function
         while (firstFunctionIndex != 0) {
@@ -181,19 +207,94 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             function = function.substring(i + separator.length());
         }
 
+//        System.out.println("  names:"+names);
+//        System.out.println("  params:"+parameters);
+
+        // fill next
+        int count = elements.size();
+        element = count == 0 ? null : elements.get(count-1).second;
+        if (element != null) {
+            while (parameters.size() < names.size()) {
+                element = OCamlPsiUtils.skipMeaninglessNextSibling(element);
+                if (element == null) break;
+                annotation = annot.findAnnotationFor(element, true);
+                if (annotation == null) break;
+                // add in the list
+                parameters.add(annotation.type);
+            }
+        }
+
         System.out.println("  names:"+names);
+        System.out.println("  params:"+parameters);
 
         // #parameters <= #names
         ArrayList<String> sorted = new ArrayList<>();
+        HashMap<String, Pair<Integer, String>> defaultValues = new HashMap<>();
         int i;
         for (i = 0; i < parameters.size(); i++) {
             String v1 = parameters.get(i);
             String v2 = names.get(i);
+
+            if (v2.startsWith("?")) {
+                int commaV1 = v1.indexOf(":");
+                int commaV2 = v2.indexOf(":");
+                String nameV1 = commaV1 != -1 ? "?"+v1.substring(0, commaV1) : "";
+                String nameV2 = commaV2 != -1 ? v2.substring(0, commaV2) : "";
+
+//                System.out.println("  !!!!"+(nameV1.isEmpty() ? "<empty>" : nameV1)+"=>"+nameV2+".");
+
+                // ?same: type should match same: 'type
+                if (nameV1.equals(nameV2)) {
+                    sorted.add(v2);
+//                    System.out.println("  found and add "+v2);
+                    continue;
+                }
+
+                // here, we may either skip this optional argument
+                // or, this argument is present, but at a different position
+                if (nameV1.isEmpty()) {
+                    defaultValues.put(nameV2, new Pair<>(i, v2));
+                    sorted.add("["+v1+"]");
+//                    System.out.println("  add "+v1+" and save "+v2);
+                    continue;
+                }
+
+                if (defaultValues.containsKey(nameV1)) {
+                    Pair<Integer, String> removed = defaultValues.remove(nameV1);
+                    sorted.add("["+removed.second+"]"); // added now
+                    defaultValues.put(nameV2, new Pair<>(i, v2));
+//                    System.out.println("  I found and added:"+removed.second);
+                    continue;
+                }
+
+//                System.out.println("  nothing, add:"+v1);
+                sorted.add(v1);
+                continue;
+            }
+
             if (v1.equals(v2)) sorted.add(v2);
             else { // got a problem
-                sorted.add("["+v1+"]");
+                int commaV1 = v1.indexOf(":");
+                String nameV1 = commaV1 != -1 ? "?"+v1.substring(0, commaV1) : "";
+                Pair<Integer, String> pair = defaultValues.remove(nameV1);
+                if (pair != null) {
+                    sorted.add("["+pair.second+"]");
+                } else {
+                    sorted.add("["+v1+"]");
+                }
+//                System.out.println("  compare:"+v1+" with "+v2);
+//                System.out.println("  but:"+defaultValues);
             }
         }
+
+        // add default values that were not given
+//        System.out.println("  remain:"+defaultValues);
+        for (Pair<Integer, String> pair : defaultValues.values()) {
+            sorted.add("["+pair.second+"]");
+            i++;
+        }
+
+        // missing
         for (; i < names.size() ; i++) {
             sorted.add(names.get(i));
         }
