@@ -10,6 +10,7 @@ import com.ocaml.OCamlLanguage;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
 import com.or.lang.OCamlTypes;
+import com.or.lang.core.psi.PsiLowerSymbol;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,6 +51,25 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 
         // find our starting point
         OCamlInferredSignature annotation = null;
+
+        // ~name:
+        PsiElement startElementCandidate = startingElement;
+        // : => go to next
+        if (startElementCandidate.getText().equals(OCamlTypes.TILDE.getSymbol())) {
+            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
+        }
+        if (startElementCandidate != null && startElementCandidate.getNode().getElementType() == OCamlTypes.LIDENT) {
+            startElementCandidate = startElementCandidate.getParent();
+        }
+        if (startElementCandidate instanceof PsiLowerSymbol) {
+            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
+        }
+        if (startElementCandidate != null && startElementCandidate.getText().equals(OCamlTypes.COLON.getSymbol())) {
+            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
+        }
+        // "replace"
+        if (startElementCandidate != null) startingElement = startElementCandidate;
+
         List<PsiElement> psiElements = SyntaxTraverser.psiApi().parents(startingElement).toList();
         for (PsiElement candidate : psiElements) {
             annotation = annot.findAnnotationFor(candidate, true);
