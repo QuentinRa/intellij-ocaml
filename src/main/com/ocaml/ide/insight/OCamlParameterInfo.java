@@ -9,19 +9,15 @@ import com.intellij.psi.SyntaxTraverser;
 import com.ocaml.OCamlLanguage;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
+import com.or.lang.OCamlTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCamlParameterInfo.ParameterInfoArgumentList> {
-
-    private static final String DOTS = "...";
-    private static final int MAX_DEFAULT_VALUE_LEN = 32;
 
     @Override
     public @Nullable PsiElement findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
@@ -82,6 +78,24 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             }
 
             while (element != null) {
+                // https://ocaml.org/manual/lablexamples.html
+                // allow ~name:
+                if (element.getText().equals(OCamlTypes.COLON.getSymbol())) {
+                    System.out.println("    > is ~name?");
+                    element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
+                    if (element == null) break;
+                    String name = element.getText();
+                    element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
+                    if (element == null || !element.getText().equals(OCamlTypes.TILDE.getSymbol())) break;
+                    element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
+                    if (element == null) break;
+                    System.out.println("    > ~name: <"+name+">");
+                    OCamlInferredSignature first = elements.get(0).first;
+                    System.out.println("    > "+ first.type);
+                    if (!first.type.contains(":")) first.type = name + ":" + first.type;
+                    System.out.println("    > "+ first.type);
+                }
+
                 System.out.println("    look for element:"+element);
                 annotation = annot.findAnnotationFor(element, true);
                 System.out.println("    has this:"+annotation);
@@ -122,9 +136,9 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 //        System.out.println("  *new* fun is at index:"+firstFunctionIndex);
 //        System.out.println("  *new* we are at index:"+index);
 
-        List<String> names = new ArrayList<>();
-
         Pair<OCamlInferredSignature, PsiElement> fun = elements.remove(0);
+        List<String> parameters = elements.stream().map(pair -> pair.first.type).collect(Collectors.toList());
+        List<String> names = new ArrayList<>();
         String function = fun.first.type;
 
         final String separator = OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR;
@@ -149,7 +163,23 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 
         System.out.println("  names:"+names);
 
-        return new Pair<>(originalElement, new ParameterInfoArgumentList(names, index, false));
+        // #parameters <= #names
+        ArrayList<String> sorted = new ArrayList<>();
+        int i;
+        for (i = 0; i < parameters.size(); i++) {
+            String v1 = parameters.get(i);
+            String v2 = names.get(i);
+            if (v1.equals(v2)) sorted.add(v2);
+            else { // got a problem
+                sorted.add("["+v1+"]");
+            }
+        }
+        for (; i < names.size() ; i++) {
+            sorted.add(names.get(i));
+        }
+        System.out.println("  sorted:"+sorted);
+
+        return new Pair<>(originalElement, new ParameterInfoArgumentList(sorted, index, false));
     }
 
     private int updateFirstFunctionIndex(OCamlInferredSignature annotation, int firstFunctionIndex) {
@@ -187,7 +217,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         StringBuilder b = new StringBuilder();
         int i = p.currentArgumentIndex == 0 ? 0 : 1;
         int startHighLight = 0;
-        int stopHightlight = 0;
+        int stopHighlight = 0;
         for (String name : p.names) {
             String newText = name+", ";
             int newLength = newText.length();
@@ -195,7 +225,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             // set highlight
             if (p.currentArgumentIndex == i) {
                 startHighLight = b.length();
-                stopHightlight = startHighLight + newLength;
+                stopHighlight = startHighLight + newLength;
             }
 
             // update
@@ -206,34 +236,27 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         text = text.substring(0, text.length() - 2);
 
         context.setupUIComponentPresentation(text,
-                startHighLight, stopHightlight, p.isDisabled,
+                startHighLight, stopHighlight, p.isDisabled,
                 p.isStrikeout, false, context.getDefaultParameterColor());
     }
 
-    // todo: ...
     public static final class ParameterInfoArgumentList {
         public final List<String> names;
         public final List<String> defaultValues;
-        public final List<Integer> permutation;
         public final int currentArgumentIndex;
         public final boolean isDisabled;
         public final boolean isStrikeout;
 
         public ParameterInfoArgumentList(List<String> names, int currentArgumentIndex, boolean isStrikeout) {
-            this(names, List.of(), List.of(), currentArgumentIndex, false, isStrikeout);
-        }
-
-        public ParameterInfoArgumentList(List<String> names, List<String> defaultValues, List<Integer> permutation) {
-            this(names, defaultValues, permutation, -1, false, false);
+            this(names, List.of(), currentArgumentIndex, false, isStrikeout);
         }
 
         public ParameterInfoArgumentList(List<String> names, List<String> defaultValues,
-                                         List<Integer> permutation, int currentArgumentIndex,
-                                         boolean isDisabled, boolean isStrikeout) {
+                                         int currentArgumentIndex, boolean isDisabled,
+                                         boolean isStrikeout) {
 
             this.names = names;
             this.defaultValues = defaultValues;
-            this.permutation = permutation;
             this.currentArgumentIndex = currentArgumentIndex;
             this.isDisabled = isDisabled;
             this.isStrikeout = isStrikeout;
