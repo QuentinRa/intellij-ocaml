@@ -9,6 +9,7 @@ import com.intellij.psi.SyntaxTraverser;
 import com.ocaml.OCamlLanguage;
 import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.sdk.annot.OCamlInferredSignature;
+import com.ocaml.utils.ComputeMethod;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiLowerSymbol;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCamlParameterInfo.ParameterInfoArgumentList> {
@@ -61,7 +64,6 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
      */
     private @Nullable Pair<PsiElement, ParameterInfoArgumentList> findArgumentList(@NotNull ParameterInfoContext context, int parameterListStart) {
 //        System.out.println("find at("+context.getOffset()+"/"+parameterListStart+") index ("+parameterListStart+")");
-//        int offset = context.getOffset() - 1;
         PsiElement originalElement = context.getFile().findElementAt(parameterListStart);
         PsiElement startingElement = originalElement;
         if (startingElement == null) return null;
@@ -77,23 +79,9 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         // find our starting point
         OCamlInferredSignature annotation = null;
 
-        // ~name:
-        PsiElement startElementCandidate = startingElement;
-        // : => go to next
-        if (startElementCandidate.getText().equals(OCamlTypes.TILDE.getSymbol())) {
-            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
-        }
-        if (startElementCandidate != null && startElementCandidate.getNode().getElementType() == OCamlTypes.LIDENT) {
-            startElementCandidate = startElementCandidate.getParent();
-        }
-        if (startElementCandidate instanceof PsiLowerSymbol) {
-            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
-        }
-        if (startElementCandidate != null && startElementCandidate.getText().equals(OCamlTypes.COLON.getSymbol())) {
-            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
-        }
-        // "replace"
-        if (startElementCandidate != null) startingElement = startElementCandidate;
+        startingElement = handleLabel(startingElement, true);
+
+        System.out.println("  found (2)'"+startingElement.getText()+"' ("+startingElement+")");
 
         List<PsiElement> psiElements = SyntaxTraverser.psiApi().parents(startingElement).toList();
         for (PsiElement candidate : psiElements) {
@@ -112,6 +100,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         int index;
         int firstFunctionIndex;
         PsiElement element;
+        Pair<OCamlInferredSignature, PsiElement> res;
 
         do {
             element = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
@@ -124,26 +113,17 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             }
 
             while (element != null) {
-                // https://ocaml.org/manual/lablexamples.html
-                // allow ~name:
-                if (element.getText().equals(OCamlTypes.COLON.getSymbol())) {
-//                    System.out.println("    > is ~name?");
-                    element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
-                    if (element == null) break;
-                    String name = element.getText();
-                    element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
-                    if (element == null || !element.getText().equals(OCamlTypes.TILDE.getSymbol())) break;
-                    element = OCamlPsiUtils.skipMeaninglessPreviousSibling(element);
-                    if (element == null) break;
-//                    System.out.println("    > ~name: <"+name+">");
-                    OCamlInferredSignature first = elements.get(0).first;
-//                    System.out.println("    > "+ first.type);
-                    if (!first.type.contains(":")) first.type = name + ":" + first.type;
-//                    System.out.println("    > "+ first.type);
-                }
-
 //                System.out.println("    look for element:"+element);
-                annotation = annot.findAnnotationFor(element, true);
+                res = findParameter(element, annot, name -> {
+                    System.out.println("    > ~name: <" + name + ">");
+                    OCamlInferredSignature first = elements.get(0).first;
+                    System.out.println("    > " + first.type);
+                    if (!first.type.contains(":")) first.type = name + ":" + first.type;
+                    System.out.println("    > " + first.type);
+                }, OCamlPsiUtils::skipMeaninglessPreviousSibling);
+                if (res == null) break;
+                annotation = res.first;
+                element = res.second;
 //                System.out.println("    has this:"+annotation);
                 if (annotation == null) break;
 
@@ -211,17 +191,29 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 //        System.out.println("  params:"+parameters);
 
         // fill next
-        int count = elements.size();
-        element = count == 0 ? null : elements.get(count-1).second;
-        if (element != null) {
-            while (parameters.size() < names.size()) {
-                element = OCamlPsiUtils.skipMeaninglessNextSibling(element);
-                if (element == null) break;
-                annotation = annot.findAnnotationFor(element, true);
-                if (annotation == null) break;
-                // add in the list
-                parameters.add(annotation.type);
-            }
+        AtomicReference<Integer> count = new AtomicReference<>(elements.size());
+        element = startingElement;
+        // ... pffff ...
+        // I'm getting bored by your sh*t Calistro-kun
+        if (element.getNode().getElementType().equals(OCamlTypes.LIDENT))
+            element = element.getParent();
+
+//        System.out.println("  fill starting from:"+startingElement);
+
+        AtomicReference<String> name = new AtomicReference<>();
+        while (parameters.size() < names.size()) {
+            element = OCamlPsiUtils.skipMeaninglessNextSibling(element);
+            if (element == null) break;
+            element = handleLabel(element, false); // do not handle ':'
+            res = findParameter(element, annot, name::set, OCamlPsiUtils::skipMeaninglessNextSibling);
+            if (res == null) break;
+            annotation = res.first;
+            element = res.second;
+            if (annotation == null) break;
+            // add in the list
+            String n = name.getAndSet(null);
+            parameters.add((n == null ? "" : "?" + n + ":") + annotation.type);
+            count.accumulateAndGet(1, Integer::sum);
         }
 
         System.out.println("  names:"+names);
@@ -298,9 +290,63 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         for (; i < names.size() ; i++) {
             sorted.add(names.get(i));
         }
+
         System.out.println("  sorted:"+sorted);
 
         return new Pair<>(originalElement, new ParameterInfoArgumentList(sorted, index, false));
+    }
+
+    private @NotNull PsiElement handleLabel(PsiElement startingElement, boolean colon) {
+        // ~name:
+        PsiElement startElementCandidate = startingElement;
+        // : => go to next
+        if (startElementCandidate.getText().equals(OCamlTypes.TILDE.getSymbol())) {
+            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
+        }
+        if (startElementCandidate != null && startElementCandidate.getNode().getElementType() == OCamlTypes.LIDENT) {
+            startElementCandidate = startElementCandidate.getParent();
+        }
+        if (startElementCandidate instanceof PsiLowerSymbol) {
+            startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
+        }
+        // we may or not change the starting element
+        if (startElementCandidate != null) {
+            // if we can process the colon, and we got a colon, process
+            if (colon)
+                if (startElementCandidate.getText().equals(OCamlTypes.COLON.getSymbol()))
+                    startElementCandidate = OCamlPsiUtils.skipMeaninglessNextSibling(startElementCandidate);
+                else
+                    startElementCandidate = null;
+            // update
+            if (startElementCandidate != null) {
+                startingElement = startElementCandidate;
+            }
+        }
+        return startingElement;
+    }
+
+    public Pair<OCamlInferredSignature, PsiElement> findParameter(@NotNull PsiElement element,
+                                                                  OCamlAnnotResultsService annot,
+                                                                  Consumer<String> callback,
+                                                                  ComputeMethod<PsiElement, PsiElement> iterate) {
+        // https://ocaml.org/manual/lablexamples.html
+        // allow ~name:
+        if (element.getText().equals(OCamlTypes.COLON.getSymbol())) {
+//            System.out.println("    > is ~name?");
+            element = iterate.call(element);
+            if (element == null) return null;
+            String name = element.getText();
+            element = iterate.call(element);
+            if (element == null || !element.getText().equals(OCamlTypes.TILDE.getSymbol())) return null;
+            element = iterate.call(element);
+            if (element == null) return null;
+            callback.accept(name);
+        }
+
+//        System.out.println("    look for element:"+element);
+        OCamlInferredSignature annotation = annot.findAnnotationFor(element, true);
+//        System.out.println("    has this:"+annotation);
+        return new Pair<>(annotation, element);
     }
 
     private int updateFirstFunctionIndex(OCamlInferredSignature annotation, int firstFunctionIndex) {
@@ -324,16 +370,16 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
     @Override
     public void showParameterInfo(@NotNull PsiElement element, @NotNull CreateParameterInfoContext context) {
         context.showHint(element, element.getTextOffset(), this);
-        System.out.println("  show");
+//        System.out.println("  show");
     }
 
     @Override
     public void updateParameterInfo(@NotNull PsiElement psiParameters, @NotNull UpdateParameterInfoContext context) {
-        System.out.println("  update");
+//        System.out.println("  update");
     }
 
     @Override public void updateUI(ParameterInfoArgumentList p, @NotNull ParameterInfoUIContext context) {
-        System.out.println("  update UI");
+//        System.out.println("  update UI");
 
         StringBuilder b = new StringBuilder();
         int i = p.currentArgumentIndex == 0 ? 0 : 1;
