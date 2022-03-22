@@ -17,7 +17,6 @@ import com.intellij.psi.PsiManager;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
-import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.lang.utils.OCamlResolveDependencies;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
@@ -31,8 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -100,7 +97,7 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
             for (Pair<String, PsiFile> pair : collectedInfo.myDependencies) {
                 // target folder
                 File localTargetFolder = new File(myOutputFolder, pair.first).getParentFile();
-                System.out.println("lft"+localTargetFolder);
+//               todo: System.out.println("lft" + localTargetFolder);
                 if (!targetFolder.exists() && !targetFolder.mkdirs())
                     continue;
                 compileFile(collectedInfo.myHomePath, localTargetFolder, myOutputFolder, pair.second, log);

@@ -25,21 +25,6 @@ public class OCamlRunFileREPLAction extends OCamlEditorActionBase {
 
     public static final String ACTION_ID = "editor.repl.run.action";
 
-    @Override public void update(@NotNull AnActionEvent e) {
-        super.update(e);
-        VirtualFile data = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        if (data != null)
-            e.getPresentation().setText(OCamlBundle.message("action.editor.repl.run.action", data.getName()));
-    }
-
-    @Override protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        if (editor == null) return;
-        Project project = e.getProject();
-        if (project == null) return;
-        doAction(editor, project, runner);
-    }
-
     public static void doAction(@NotNull Editor editor, Project project, OCamlConsoleRunner runner) {
         // find psiFile
         Document document = editor.getDocument();
@@ -57,5 +42,20 @@ public class OCamlRunFileREPLAction extends OCamlEditorActionBase {
             String text = document.getText();
             runner.processCommand(text);
         }
+    }
+
+    @Override public void update(@NotNull AnActionEvent e) {
+        super.update(e);
+        VirtualFile data = e.getData(CommonDataKeys.VIRTUAL_FILE);
+        if (data != null)
+            e.getPresentation().setText(OCamlBundle.message("action.editor.repl.run.action", data.getName()));
+    }
+
+    @Override protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
+        Editor editor = e.getData(CommonDataKeys.EDITOR);
+        if (editor == null) return;
+        Project project = e.getProject();
+        if (project == null) return;
+        doAction(editor, project, runner);
     }
 }

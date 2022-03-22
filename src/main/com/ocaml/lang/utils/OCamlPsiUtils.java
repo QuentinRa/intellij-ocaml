@@ -4,16 +4,9 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
-import com.or.lang.OCamlTypes;
-import com.or.lang.core.psi.PsiInclude;
-import com.or.lang.core.psi.PsiOpen;
-import com.or.lang.core.psi.PsiUpperSymbol;
 import com.or.lang.core.type.ORTokenElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public final class OCamlPsiUtils {
 

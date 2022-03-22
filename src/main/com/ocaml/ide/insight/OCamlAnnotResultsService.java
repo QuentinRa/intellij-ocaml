@@ -49,7 +49,6 @@ public final class OCamlAnnotResultsService {
     /**
      * Clear results for a file, for example, if they are assumed
      * to be invalid.
-
      * @param path the file that was provided in updateFile
      */
     public void clearForFile(String path) {
@@ -113,13 +112,13 @@ public final class OCamlAnnotResultsService {
             int lineEnd = document.getLineNumber(textOffsetEnd);
             int offsetStart = document.getLineStartOffset(lineStart);
 
-            int startColumn = textOffset-offsetStart;
+            int startColumn = textOffset - offsetStart;
             String[] lines = element.getText().split("\n");
             int endColumn;
             if (lines.length <= 1) { // one line
                 endColumn = startColumn + element.getTextLength();
             } else {
-                endColumn = lines[lines.length-1].length();
+                endColumn = lines[lines.length - 1].length();
             }
 
             logicalSection = new LogicalSection(

@@ -22,8 +22,8 @@ public class OCamlBrowseUtil {
     public static @NotNull ActionLink toIssues() {
         ActionLink bugTracker = new ActionLink(OCamlBundle.message("project.wizard.issues.link"),
                 event -> {
-            BrowserUtil.browse(OCamlPluginConstants.ISSUES_LINK);
-        });
+                    BrowserUtil.browse(OCamlPluginConstants.ISSUES_LINK);
+                });
         bugTracker.setExternalLinkIcon();
         return bugTracker;
     }

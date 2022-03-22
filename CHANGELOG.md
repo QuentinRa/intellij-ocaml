@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - Unreleased
+### Added
+- 🚀 Can use CTRL-P to display parameters given a function. (#38)
+- 🪲 Can use type inference with ocaml modules. (#98)
+- 🪲 Fixing class not found when using a String (🥲)
+
 ## [0.2.0] - 2022-03-14
 ### Added
 - 🚀🚀 Support for all IDEs. (#90)

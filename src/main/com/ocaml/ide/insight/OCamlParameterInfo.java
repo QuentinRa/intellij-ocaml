@@ -34,7 +34,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
     @Override public @Nullable PsiElement findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
         Pair<PsiElement, ParameterInfoArgumentList> element = findArgumentList(context, context.getOffset() - 1);
         if (element == null) return null;
-        context.setItemsToShow(new ParameterInfoArgumentList[]{ element.second });
+        context.setItemsToShow(new ParameterInfoArgumentList[]{element.second});
         return element.first;
     }
 
@@ -67,7 +67,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         PsiElement originalElement = context.getFile().findElementAt(parameterListStart);
         PsiElement startingElement = originalElement;
         if (startingElement == null) return null;
-        System.out.println("  found '"+startingElement.getText()+"' ("+startingElement+")");
+        System.out.println("  found '" + startingElement.getText() + "' (" + startingElement + ")");
 
         OCamlAnnotResultsService annot = startingElement.getProject().getService(OCamlAnnotResultsService.class);
 
@@ -179,7 +179,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             String substring = function.substring(0, i);
             if (substring.startsWith("(")) {
                 i = function.indexOf(')') + 1; // the separator is after ')'
-                substring = function.substring(1, i-1); // we don't want '(' nor ')'
+                substring = function.substring(1, i - 1); // we don't want '(' nor ')'
             }
 
             // handle
@@ -219,8 +219,8 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             count.accumulateAndGet(1, Integer::sum);
         }
 
-        System.out.println("  *new* names:"+names);
-        System.out.println("  *new* params:"+parameters);
+        System.out.println("  *new* names:" + names);
+        System.out.println("  *new* params:" + parameters);
 
         // #parameters <= #names
         ArrayList<String> sorted = new ArrayList<>();
@@ -233,7 +233,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             if (v2.startsWith("?")) {
                 int commaV1 = v1.indexOf(":");
                 int commaV2 = v2.indexOf(":");
-                String nameV1 = commaV1 != -1 ? "?"+v1.substring(0, commaV1) : "";
+                String nameV1 = commaV1 != -1 ? "?" + v1.substring(0, commaV1) : "";
                 String nameV2 = commaV2 != -1 ? v2.substring(0, commaV2) : "";
 
 //                System.out.println("  !!!!"+(nameV1.isEmpty() ? "<empty>" : nameV1)+"=>"+nameV2+".");
@@ -249,14 +249,14 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
                 // or, this argument is present, but at a different position
                 if (nameV1.isEmpty()) {
                     defaultValues.put(nameV2, new Pair<>(i, v2));
-                    sorted.add("["+v1+"]");
+                    sorted.add("[" + v1 + "]");
 //                    System.out.println("  add "+v1+" and save "+v2);
                     continue;
                 }
 
                 if (defaultValues.containsKey(nameV1)) {
                     Pair<Integer, String> removed = defaultValues.remove(nameV1);
-                    sorted.add("["+removed.second+"]"); // added now
+                    sorted.add("[" + removed.second + "]"); // added now
                     defaultValues.put(nameV2, new Pair<>(i, v2));
 //                    System.out.println("  I found and added:"+removed.second);
                     continue;
@@ -270,13 +270,13 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             if (v1.equals(v2)) sorted.add(v2);
             else { // got a problem
                 int commaV1 = v1.indexOf(":");
-                String nameV1 = commaV1 != -1 ? "?"+v1.substring(0, commaV1) : "";
+                String nameV1 = commaV1 != -1 ? "?" + v1.substring(0, commaV1) : "";
                 Pair<Integer, String> pair = defaultValues.remove(nameV1);
 //                System.out.println("  note that '"+nameV1+"' "+pair);
                 if (pair != null) {
-                    sorted.add("["+pair.second+"]");
+                    sorted.add("[" + pair.second + "]");
                 } else {
-                    sorted.add("["+v1+"]");
+                    sorted.add("[" + v1 + "]");
                 }
 //                System.out.println("  compare:"+v1+" with "+v2);
 //                System.out.println("  but:"+defaultValues);
@@ -286,7 +286,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         // add default values that were not given
 //        System.out.println("  remain:"+defaultValues);
         for (Pair<Integer, String> pair : defaultValues.values()) {
-            sorted.add("["+pair.second+"]");
+            sorted.add("[" + pair.second + "]");
             i++;
         }
 
@@ -295,17 +295,17 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         names.removeIf(s -> {
             // delete if in
 //             System.out.println("  sorted contains:"+s+"?"+(sorted.contains("["+s+"]") || sorted.contains(s)));
-            return sorted.contains("["+s+"]") || sorted.contains(s);
+            return sorted.contains("[" + s + "]") || sorted.contains(s);
         });
 
         // missing names are added
         for (i = 0; i < names.size(); i++) {
             String n = names.get(i);
             String original = originalNames.get(i);
-            sorted.add(n.equals(original) ? n : "["+n+"]");
+            sorted.add(n.equals(original) ? n : "[" + n + "]");
         }
 
-        System.out.println("  sorted:"+sorted);
+        System.out.println("  sorted:" + sorted);
 
         return new Pair<>(originalElement, new ParameterInfoArgumentList(sorted, index, false));
     }
@@ -371,7 +371,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             String name = annotation.name;
             if (name == null) return firstFunctionIndex; // not null tho
             int dot = name.indexOf('.');
-            if (dot != -1) name = name.substring(dot+1);
+            if (dot != -1) name = name.substring(dot + 1);
             // fix: bypass operators i.e. Stdlib.( + ) for instance
             if (!name.startsWith("("))
                 firstFunctionIndex = 0;
@@ -399,7 +399,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         int startHighLight = 0;
         int stopHighlight = 0;
         for (String name : p.names) {
-            String newText = name+", ";
+            String newText = name + ", ";
             int newLength = newText.length();
 
             // set highlight

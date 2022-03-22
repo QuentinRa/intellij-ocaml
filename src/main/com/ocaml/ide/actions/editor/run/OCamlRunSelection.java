@@ -36,12 +36,6 @@ public class OCamlRunSelection extends OCamlEditorActionBase {
         templatePresentation.setIcon(OCamlIcons.External.ExecuteSelection);
     }
 
-    @Override protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        if (editor == null) return;
-        doAction(editor, runner);
-    }
-
     public static void doAction(Editor editor, OCamlConsoleRunner runner) {
         // look for selected code
         String selectedCode = ExtendedEditorActionUtil.getSelectedCode(editor);
@@ -75,5 +69,11 @@ public class OCamlRunSelection extends OCamlEditorActionBase {
                 runner.processCommand(choice.getPlace().getText());
             }
         }, OCamlBundle.message("repl.select.a.statement"), 0);
+    }
+
+    @Override protected void doActionPerformed(@NotNull AnActionEvent e, OCamlConsoleRunner runner) {
+        Editor editor = e.getData(CommonDataKeys.EDITOR);
+        if (editor == null) return;
+        doAction(editor, runner);
     }
 }
