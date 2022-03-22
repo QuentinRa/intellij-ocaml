@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.utils.adaptor.UntilIdeVersion;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -43,12 +44,30 @@ public class OCamlBaseTest extends BasePlatformTestCase {
         return elementAt;
     }
 
+    protected @NotNull PsiElement configureCodeWithCaret(String filename, @NotNull String text) {
+        @Language("OCaml") String code = loadFile(filename);
+        assertNotNull(code);
+
+        PsiFile file = myFixture.configureByText(filename, code);
+        int i = file.getText().indexOf(text.replace("(*caret*)", ""));
+        i += text.indexOf("(*caret*)")-1;
+        PsiElement caret = file.findElementAt(i);
+        assertNotNull(caret);
+        return caret;
+    }
+
     protected @Nullable String loadFile(@NotNull String fileName) {
         try {
             return FileUtil.loadFile(new File(getTestDataPath(), fileName), CharsetToolkit.UTF8, true);
         } catch (IOException e) {
             return null;
         }
+    }
+
+    protected void configureAnnotResultsService(@NotNull PsiElement caret, String filename) {
+        OCamlAnnotResultsService annot = getProject().getService(OCamlAnnotResultsService.class);
+        File annotations = new File(getTestDataPath(), filename);
+        annot.updateForFile(caret.getContainingFile().getVirtualFile().getPath(), annotations);
     }
 
     protected @NotNull String loadFileNonNull(String fileName) {

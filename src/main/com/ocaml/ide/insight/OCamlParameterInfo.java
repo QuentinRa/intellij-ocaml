@@ -440,5 +440,15 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             this.isDisabled = isDisabled;
             this.isStrikeout = isStrikeout;
         }
+
+        @Override public String toString() {
+            return "ParameterInfoArgumentList{" +
+                    "names=" + names +
+                    ", defaultValues=" + defaultValues +
+                    ", currentArgumentIndex=" + currentArgumentIndex +
+                    ", isDisabled=" + isDisabled +
+                    ", isStrikeout=" + isStrikeout +
+                    '}';
+        }
     }
 }

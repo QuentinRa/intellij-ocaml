@@ -103,6 +103,8 @@ public final class OCamlAnnotResultsService {
         LogicalSection logicalSection;
 
         // Tricks to get the logicalSection when we can't ask the editor
+        // todo: the class OCamlParameterInfo can provide an editor
+        //  should we do something or the code bellow is enough?
         if (!ApplicationManager.getApplication().isDispatchThread()) {
             Document document = element.getContainingFile().getViewProvider().getDocument();
             int textOffset = element.getTextOffset();
