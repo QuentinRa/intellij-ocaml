@@ -42,7 +42,7 @@ public class ParameterInfoTest extends OCamlIdeTest {
 
         // assert names
         List<String> expected = Arrays.asList(values);
-        assertEquals(expected+" != "+p.names, expected, p.names);
+        assertEquals(expected, p.names);
 
         // assert index
         assertEquals("Expected index, ", expectedIndex, p.currentArgumentIndex);
@@ -84,4 +84,46 @@ public class ParameterInfoTest extends OCamlIdeTest {
         doTest("let _ = max (5(*caret*) + max 5 7) (7 + 3)", 1, "int", "int");
     }
 
+    @Test
+    public void testFunctionAsArgument() {
+        String[] types = { "int -> int -> int", "int", "int" };
+        doTest("let id v(*caret*) = v", -1);
+        doTest("let _ = id max 0(*caret*) 5", 2, types);
+        doTest("let _ = id max (*caret*)0 5", 1, types);
+        doTest("let _ = id m(*caret*)ax 0 5", 1, types);
+        doTest("let _ = id (*caret*)max 0 5", 0, types);
+        doTest("let _ = id max 0 5(*caret*)", 3, types);
+    }
+
+    @Test
+    public void testLabelsOnlyNormalOrder() {
+        String[] types = { "x:int", "y:float" };
+        doTest("let _ = f ~x:3 ~y:2.0(*caret*)", 2, types);
+        doTest("let _ = f ~x:3(*caret*) ~y:2.0", 1, types);
+        doTest("let _ = f (*caret*)~x:3 ~y:2.0", 0, types);
+
+        // x and y are inverted
+        types = new String[]{"[y:float]", "[x:int]"};
+        doTest("let _ = f ~y:2.0 ~x:3(*caret*)", 2, types);
+        doTest("let _ = f ~y:2.0 (*caret*)~x:3", 1, types);
+        doTest("let _ = f (*caret*)~y:2.0 ~x:3", 0, types);
+    }
+
+    // why so many tests? because the code is <s>shit</s> a mess.
+    @Test
+    public void testLabelsAndNormal() {
+        // normal order
+        String[] types = { "x:int", "y:float", "int" };
+        doTest("let _ = f ~x:3 ~y:2.0 3(*caret*)", 3, types);
+        doTest("let _ = f ~x:3 ~y:2.0(*caret*) 3", 2, types);
+        doTest("let _ = f ~x:3(*caret*) ~y:2.0 3", 1, types);
+        doTest("let _ = f (*caret*)~x:3 ~y:2.0 3", 0, types);
+
+        // we got a third parameter, that is not a label
+        types = new String[]{"[int]", "[x:int]", "[y:float]"};
+        doTest("let _ = f 3 ~x:3 ~y:2.0(*caret*)", 3, types);
+        doTest("let _ = f 3 ~x:3 (*caret*)~y:2.0", 2, types);
+        doTest("let _ = f 3 (*caret*)~x:3 ~y:2.0", 1, types);
+        doTest("let _ = f (*caret*)3 ~x:3 ~y:2.0", 0, types);
+    }
 }
