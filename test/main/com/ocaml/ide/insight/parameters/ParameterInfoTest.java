@@ -51,7 +51,7 @@ public class ParameterInfoTest extends OCamlIdeTest {
 
     @Test
     public void testBeforeFunctionFull() {
-        doTest("let _ = (*caret*) max 5 7", -1);
+        doTest("let _ =(*caret*) max 5 7", -1);
     }
 
     @Test
