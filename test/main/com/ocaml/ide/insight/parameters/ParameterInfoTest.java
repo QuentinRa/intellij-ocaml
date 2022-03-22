@@ -35,17 +35,18 @@ public class ParameterInfoTest extends OCamlIdeTest {
             return;
         }
         // or, not
-        assertNotNull(context.toShow);
+        String message = "Failed for "+text;
+        assertNotNull(message, context.toShow);
         assertSize(1, context.toShow);
         assertInstanceOf(context.toShow[0], OCamlParameterInfo.ParameterInfoArgumentList.class);
         var p = (OCamlParameterInfo.ParameterInfoArgumentList) context.toShow[0];
 
         // assert names
         List<String> expected = Arrays.asList(values);
-        assertEquals(expected, p.names);
+        assertEquals(message, expected, p.names);
 
         // assert index
-        assertEquals("Expected index, ", expectedIndex, p.currentArgumentIndex);
+        assertEquals(message+". Expected index, ", expectedIndex, p.currentArgumentIndex);
     }
 
     @Test
@@ -125,5 +126,50 @@ public class ParameterInfoTest extends OCamlIdeTest {
         doTest("let _ = f 3 ~x:3 (*caret*)~y:2.0", 2, types);
         doTest("let _ = f 3 (*caret*)~x:3 ~y:2.0", 1, types);
         doTest("let _ = f (*caret*)3 ~x:3 ~y:2.0", 0, types);
+    }
+
+    // why so many tests? because the code is <s>shit</s> a mess.
+    @Test
+    public void testOptional() {
+        // step missing
+        String[] types = { "?step:int", "int" };
+        doTest("let _ = bump ~step:2 3(*caret*)", 2, types);
+        doTest("let _ = bump ~step:2(*caret*) 3", 1, types);
+        doTest("let _ = bump (*caret*)~step:2 3", 0, types);
+
+        // normal
+        types = new String[]{"[int]", "[?step:int]"};
+        doTest("let _ = bump 3(*caret*)", 1, types);
+        doTest("let _ = bump(*caret*) 3", 0, types);
+
+        // inverted
+        doTest("let _ = bump 3 ~step: 2(*caret*)", 2, types);
+        doTest("let _ = bump 3(*caret*) ~step: 2", 1, types);
+        doTest("let _ = bump (*caret*)3 ~step: 2", 0, types);
+
+        // advanced
+        String[] t1 = { "?s1:int", "?s2:int", "int" };
+        String[] t2 = { "[int]", "[?s1:int]", "[?s2:int]" };
+        String[] t3 = { "?s1:int", "[int]", "[?s2:int]" };
+        String[] t4 = { "[?s2:int]", "[int]", "[?s1:int]" };
+
+        doTest("let _ = bump 3 ~s1: 2 ~s2: 2(*caret*)", 3, t2);
+        doTest("let _ = bump 3 ~s1: 2(*caret*) ~s2: 2", 2, t2);
+        doTest("let _ = bump 3(*caret*) ~s1: 2 ~s2: 2", 1, t2);
+        doTest("let _ = bump (*caret*)3 ~s1: 2 ~s2: 2", 0, t2);
+
+        doTest("let _ = bump ~s1: 2 ~s2: 2 5(*caret*)", 3, t1);
+        doTest("let _ = bump ~s1: 2 ~s2: 2(*caret*) 5", 2, t1);
+        doTest("let _ = bump ~s1: 2(*caret*) ~s2: 2 5", 1, t1);
+        doTest("let _ = bump (*caret*)~s1: 2 ~s2: 2 5", 0, t1);
+
+        doTest("let _ = bump ~s1: 2 55 ~s2: 2(*caret*)", 3, t3);
+        doTest("let _ = bump ~s1: 2 55(*caret*) ~s2: 2", 2, t3);
+        doTest("let _ = bump ~s1: 2(*caret*) 55 ~s2: 2", 1, t3);
+        doTest("let _ = bump (*caret*)~s1: 2 55 ~s2: 2", 0, t3);
+
+        doTest("let _ = bump(*caret*)\n", 0, t1);
+        doTest("let _ = bump (*caret*)42", 0, t2);
+        doTest("let _ = bump 42(*caret*)", 1, t2);
     }
 }

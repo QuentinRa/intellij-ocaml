@@ -50,6 +50,8 @@ public class OCamlBaseTest extends BasePlatformTestCase {
 
         PsiFile file = myFixture.configureByText(filename, code);
         int i = file.getText().indexOf(text.replace("(*caret*)", ""));
+        assertTrue("Caret missing in '"+text+"'", text.contains("(*caret*)"));
+        assertTrue("Matching code not found for '"+text+"'", i != -1);
         i += text.indexOf("(*caret*)")-1;
         PsiElement caret = file.findElementAt(i);
         assertNotNull(caret);
