@@ -27,7 +27,6 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
     @Override
     public @Nullable PsiElement findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
         Pair<PsiElement, ParameterInfoArgumentList> pair = findArgumentList(context, context.getParameterListStart());
-        System.out.println("update???"+pair);
         return pair == null ? null : pair.first;
     }
 
@@ -67,7 +66,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         PsiElement originalElement = context.getFile().findElementAt(parameterListStart);
         PsiElement startingElement = originalElement;
         if (startingElement == null) return null;
-//        System.out.println("  found '"+startingElement.getText()+"' ("+startingElement+")");
+        System.out.println("  found '"+startingElement.getText()+"' ("+startingElement+")");
 
         OCamlAnnotResultsService annot = startingElement.getProject().getService(OCamlAnnotResultsService.class);
 
@@ -288,9 +287,20 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             i++;
         }
 
-        // missing
-        for (; i < names.size() ; i++) {
-            sorted.add(names.get(i));
+        // remove arguments that were moved
+        ArrayList<String> originalNames = new ArrayList<>(names);
+        names.removeIf(s -> {
+            // delete if in
+            boolean contains = sorted.contains("["+s+"]") || sorted.contains(s);
+//            System.out.println("  sorted contains:"+s+"?"+contains);
+            return contains;
+        });
+
+        // missing names are added
+        for (i = 0; i < names.size(); i++) {
+            String n = names.get(i);
+            String original = originalNames.get(i);
+            sorted.add(n.equals(original) ? n : "["+n+"]");
         }
 
         System.out.println("  sorted:"+sorted);

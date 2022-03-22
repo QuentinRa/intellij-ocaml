@@ -64,4 +64,8 @@ let _ = bump ~s1: 2(*cursor*) 55 ~s2: 2
 let _ = bump(*cursor*) 3 ~s1: 2 ~s2: 2
 let _ = bump(*cursor*) ~s1: 2 ~s2: 2 5
 let _ = bump(*cursor*) ~s1: 2 55 ~s2: 2
+
+let _ = bump(*cursor*)
+let _ = bump (*cursor*)5
+let _ = bump 5(*cursor*)
 ```
