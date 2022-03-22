@@ -151,7 +151,6 @@ public class ParameterInfoTest extends OCamlIdeTest {
         String[] t1 = { "?s1:int", "?s2:int", "int" };
         String[] t2 = { "[int]", "[?s1:int]", "[?s2:int]" };
         String[] t3 = { "?s1:int", "[int]", "[?s2:int]" };
-        String[] t4 = { "[?s2:int]", "[int]", "[?s1:int]" };
 
         doTest("let _ = bump 3 ~s1: 2 ~s2: 2(*caret*)", 3, t2);
         doTest("let _ = bump 3 ~s1: 2(*caret*) ~s2: 2", 2, t2);
@@ -171,5 +170,32 @@ public class ParameterInfoTest extends OCamlIdeTest {
         doTest("let _ = bump(*caret*)\n", 0, t1);
         doTest("let _ = bump (*caret*)42", 0, t2);
         doTest("let _ = bump 42(*caret*)", 1, t2);
+    }
+
+    @Test
+    public void testLabelSpecial(){
+        String[] types = { "x:int", "y:float" };
+        doTest("let _ = f ~x:3 ~y:(*caret*)2.0", 2, types);
+        doTest("let _ = f ~x:(*caret*)3 ~y:2.0", 1, types);
+
+        doTest("let _ = f ~x:3 ~y(*caret*):2.0", 2, types);
+        doTest("let _ = f ~x(*caret*):3 ~y:2.0", 1, types);
+
+        doTest("let _ = f ~x:3 ~(*caret*)y:2.0", 2, types);
+        doTest("let _ = f ~(*caret*)x:3 ~y:2.0", 1, types);
+
+        // spaces
+        doTest("let _ = f ~x:3 ~y: 2.0(*caret*)", 2, types);
+        doTest("let _ = f ~x: 3 ~y:2.0(*caret*)", 2, types);
+        doTest("let _ = f ~x: 3 ~y: 2.0(*caret*)", 2, types);
+    }
+
+    @Test
+    public void testMultilines(){
+        String[] types = { "[int]", "[?s1:int]", "[?s2:int]" };
+        doTest("let _ = bump 3 ~s1: 2\n" + "\n" + "(*caret*)\n" + "~s2: 2",
+                2, types);
+        doTest("let _ = bump 3 ~s1: 2\n" + "(* ELRaphik loves Mari *)\n" + "(*caret*)\n" + "~s2: 2",
+                2, types);
     }
 }

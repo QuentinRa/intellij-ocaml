@@ -26,3 +26,20 @@ let _ = bump ~s1: 2 ~s2: 2 5
 let _ = bump ~s1: 2 55 ~s2: 2
 let _ = bump
 let _ = bump 42
+
+(* spaces *)
+let _ = f ~x:3 ~y: 2.0(*caret*)
+let _ = f ~x: 3 ~y:2.0(*caret*)
+let _ = f ~x: 3 ~y: 2.0(*caret*)
+
+(* multiline *)
+let _ = bump 3 ~s1: 2
+
+
+~s2: 2
+
+(* multiline with comment *)
+let _ = bump 3 ~s1: 2
+(* ELRaphik loves Mari *)
+
+~s2: 2
