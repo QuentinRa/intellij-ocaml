@@ -291,9 +291,8 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         ArrayList<String> originalNames = new ArrayList<>(names);
         names.removeIf(s -> {
             // delete if in
-            boolean contains = sorted.contains("["+s+"]") || sorted.contains(s);
-//            System.out.println("  sorted contains:"+s+"?"+contains);
-            return contains;
+            // System.out.println("  sorted contains:"+s+"?"+contains);
+            return sorted.contains("["+s+"]") || sorted.contains(s);
         });
 
         // missing names are added
