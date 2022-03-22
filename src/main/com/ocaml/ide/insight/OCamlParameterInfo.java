@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+// todo: I believe that using Logs would be better than println
 public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCamlParameterInfo.ParameterInfoArgumentList> {
 
     @Override
@@ -94,7 +95,6 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
 //        System.out.println("  annotation found: "+annotation);
 
         ArrayList<Pair<OCamlInferredSignature, PsiElement>> elements = new ArrayList<>();
-        elements.add(new Pair<>(annotation, startingElement));
 
         int index;
         int firstFunctionIndex;
@@ -102,9 +102,12 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         Pair<OCamlInferredSignature, PsiElement> res;
 
         do {
+            // reset everything
             element = OCamlPsiUtils.skipMeaninglessPreviousSibling(startingElement);
             index = 0;
             firstFunctionIndex = updateFirstFunctionIndex(annotation, -1);
+            elements.clear();
+            elements.add(new Pair<>(annotation, startingElement));
 
             // some elements are wrapped
             if (element == null) {
@@ -291,7 +294,7 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
         ArrayList<String> originalNames = new ArrayList<>(names);
         names.removeIf(s -> {
             // delete if in
-            // System.out.println("  sorted contains:"+s+"?"+contains);
+//             System.out.println("  sorted contains:"+s+"?"+(sorted.contains("["+s+"]") || sorted.contains(s)));
             return sorted.contains("["+s+"]") || sorted.contains(s);
         });
 
@@ -365,12 +368,11 @@ public class OCamlParameterInfo implements ParameterInfoHandler<PsiElement, OCam
             firstFunctionIndex++;
 
         if (annotation.type.contains(OCamlLanguage.FUNCTION_SIGNATURE_SEPARATOR)) {
-            // fix: bypass operators i.e. Stdlib.( + ) for instance
             String name = annotation.name;
             if (name == null) return firstFunctionIndex; // not null tho
             int dot = name.indexOf('.');
             if (dot != -1) name = name.substring(dot+1);
-            // aside from operators
+            // fix: bypass operators i.e. Stdlib.( + ) for instance
             if (!name.startsWith("("))
                 firstFunctionIndex = 0;
         }

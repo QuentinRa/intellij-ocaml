@@ -69,4 +69,19 @@ public class ParameterInfoTest extends OCamlIdeTest {
         doTest("let _ = max(*caret*) 5 7", 0,"int", "int");
     }
 
+    @Test
+    public void testCoupleFull() {
+        doTest("let _ = max (5 + max 5 7) (7 + 3)(*caret*)", 2,"int", "int");
+        doTest("let _ = max (5 + max 5 7)(*caret*) (7 + 3)", 1,"int", "int");
+        doTest("let _ = max(*caret*) (5 + max 5 7) (7 + 3)", 0,"int", "int");
+    }
+
+    @Test
+    public void testInCoupleFull() {
+        doTest("let _ = max (5 + max 5 7) (7 + 3(*caret*))", 2, "int", "int");
+        doTest("let _ = max (5 + max 5 7(*caret*)) (7 + 3)", 2, "int", "int");
+        doTest("let _ = max (5 +(*caret*) max 5 7) (7 + 3)", 1, "int", "int");
+        doTest("let _ = max (5(*caret*) + max 5 7) (7 + 3)", 1, "int", "int");
+    }
+
 }
