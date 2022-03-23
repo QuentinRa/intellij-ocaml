@@ -18,7 +18,9 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.ocaml.ide.highlight.intentions.IntentionActionBuilder;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.ide.insight.annotations.OCamlAnnotation;
 import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
@@ -97,7 +99,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         ArrayList<Problem> problems = new ArrayList<>();
 
         for (CompilerOutputMessage m : annotationResult.myOutputInfo) {
-            OCamlAnnotation message = OCamlMessageAdaptor.temper(m, file, editor);
+            OCamlAnnotation message = OCamlMessageAdaptor.temper(m);
+//            System.out.println("for "+message.header.replace("\n", "\\n"));
 
             // type
             HighlightSeverity t;
@@ -106,7 +109,16 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
             else t = HighlightSeverity.INFORMATION;
 
-            TextRangeInterval range = message.computePosition();
+            TextRangeInterval range = message.computePosition(editor);
+            PsiElement start = null;
+            PsiElement end = null;
+            if (range != null && !message.fileLevel) {
+                start = file.findElementAt(range.intervalStart());
+                end = file.findElementAt(range.intervalEnd()-1);
+//                System.out.println(" was found-s:"+start+" ("+(start == null ? "<null>" : start.getText())+")");
+//                System.out.println(" was found-e:"+end+" ("+(end == null ? "<null>" : end.getText())+")");
+                if (start == end) end = null;
+            }
 
             // create
             if (message.fileLevel) {
@@ -122,8 +134,10 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
                 if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
                 builder = builder.tooltip(message.content);
                 builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
-                for (IntentionAction fix : message.fixes) {
-                    builder = builder.withFix(fix); // fix
+                for (IntentionActionBuilder fix : message.fixes) {
+                    IntentionAction action = fix.build(start, end, file);
+                    if (action == null) continue;
+                    builder = builder.withFix(action); // fix
                 }
                 builder.create();
             }

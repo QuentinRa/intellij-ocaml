@@ -1,15 +1,14 @@
 package com.ocaml.ide.insight.annotations;
 
 import com.intellij.build.FilePosition;
-import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
-import com.intellij.psi.PsiFile;
+import com.ocaml.ide.highlight.intentions.IntentionActionBuilder;
+import com.ocaml.ide.highlight.intentions.fixes.RenameVariableFix;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -20,30 +19,23 @@ public class OCamlAnnotation {
     public String header;
     public String content;
 
-    public @Nullable PsiFile psiFile;
-    public @Nullable Editor editor;
-
     public String file;
     public int startLine;
     public int startColumn;
     public int endLine;
     public int endColumn;
 
-    public final ArrayList<IntentionAction> fixes = new ArrayList<>();
+    public final ArrayList<IntentionActionBuilder> fixes = new ArrayList<>();
     public ProblemHighlightType highlightType;
     public boolean fileLevel;
     // must be true, otherwise, not shown in the console
     // nor in the top-right icon
     public boolean normalLevel = true;
 
-    public OCamlAnnotation(@NotNull CompilerOutputMessage currentState,
-                           @Nullable PsiFile psi,
-                           @Nullable Editor e) {
+    public OCamlAnnotation(@NotNull CompilerOutputMessage currentState) {
         kind = currentState.kind;
         context = currentState.context;
         header = content = currentState.content;
-        psiFile = psi;
-        editor = e;
 
         // easier access
         FilePosition filePosition = currentState.filePosition;
@@ -57,7 +49,7 @@ public class OCamlAnnotation {
         if (endColumn == -1) endColumn = 1;
     }
 
-    public TextRangeInterval computePosition() {
+    public TextRangeInterval computePosition(Editor editor) {
         if (editor == null) return null; // no editor, no job
         // position
         LogicalPosition start = new LogicalPosition(startLine, startColumn);
@@ -112,10 +104,8 @@ public class OCamlAnnotation {
     // 27
     public void toUnusedVariable() {
         toUnused();
-        // rename variable
-        // warning: if the variable 'x' is like this Some(x),
-        // then '(x)' or '( x )' is matched by 'unused', so we can't naively
-        // replace the given position with _ (we need to find the name of the variable)
+        // rename variable to '_'
+        fixes.add(new RenameVariableFix("_"));
     }
 
     // 70

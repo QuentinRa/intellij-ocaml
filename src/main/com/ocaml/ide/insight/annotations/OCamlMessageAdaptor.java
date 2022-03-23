@@ -1,12 +1,9 @@
 package com.ocaml.ide.insight.annotations;
 
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.psi.PsiFile;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,13 +18,7 @@ public final class OCamlMessageAdaptor {
     }
 
     public static @NotNull OCamlAnnotation temper(CompilerOutputMessage currentState) {
-        return temper(currentState, null, null);
-    }
-
-    public static @NotNull OCamlAnnotation temper(CompilerOutputMessage currentState,
-                                                  @Nullable PsiFile file,
-                                                  @Nullable Editor editor) {
-        OCamlAnnotation annotation = new OCamlAnnotation(currentState, file, editor);
+        OCamlAnnotation annotation = new OCamlAnnotation(currentState);
         String c = annotation.content;
 
         if (annotation.isAlert()) {
