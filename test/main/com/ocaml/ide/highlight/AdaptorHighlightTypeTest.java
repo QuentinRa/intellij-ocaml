@@ -3,7 +3,7 @@ package com.ocaml.ide.highlight;
 import com.intellij.build.FilePosition;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.ocaml.OCamlBaseTest;
-import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.ide.highlight.intentions.OCamlMessageAdaptor;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;

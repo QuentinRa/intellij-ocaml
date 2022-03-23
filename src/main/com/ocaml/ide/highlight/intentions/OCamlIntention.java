@@ -1,4 +1,4 @@
-package com.ocaml.ide.insight.annotations;
+package com.ocaml.ide.highlight.intentions;
 
 import com.intellij.build.FilePosition;
 import com.intellij.codeInspection.ProblemHighlightType;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class OCamlAnnotation {
+public class OCamlIntention {
     /* see CompilerOutputMessage */
     public @NotNull CompilerOutputMessage.Kind kind;
     public String context;
@@ -32,7 +32,7 @@ public class OCamlAnnotation {
     // nor in the top-right icon
     public boolean normalLevel = true;
 
-    public OCamlAnnotation(@NotNull CompilerOutputMessage currentState) {
+    public OCamlIntention(@NotNull CompilerOutputMessage currentState) {
         kind = currentState.kind;
         context = currentState.context;
         header = content = currentState.content;

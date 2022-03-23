@@ -1,7 +1,7 @@
 package com.ocaml.sdk.providers.utils;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.ide.highlight.intentions.OCamlMessageAdaptor;
 import com.ocaml.utils.ImplementationNote;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

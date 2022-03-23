@@ -16,7 +16,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
-import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.ide.highlight.intentions.OCamlMessageAdaptor;
 import com.ocaml.ide.highlight.intentions.CompilerOutputProvider;
 import com.ocaml.lang.utils.OCamlResolveDependencies;
 import com.ocaml.sdk.output.CompilerOutputMessage;

@@ -21,8 +21,6 @@ import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
-import com.ocaml.ide.insight.annotations.OCamlAnnotation;
-import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
 import com.ocaml.compiler.BasicExternalAnnotator;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
@@ -99,7 +97,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputPro
         ArrayList<Problem> problems = new ArrayList<>();
 
         for (CompilerOutputMessage m : externalCompilerResult.myOutputInfo) {
-            OCamlAnnotation message = OCamlMessageAdaptor.temper(m);
+            OCamlIntention message = OCamlMessageAdaptor.temper(m);
 //            System.out.println("for "+message.header.replace("\n", "\\n"));
 
             // type

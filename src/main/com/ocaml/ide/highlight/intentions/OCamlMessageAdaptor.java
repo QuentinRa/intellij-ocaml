@@ -1,4 +1,4 @@
-package com.ocaml.ide.insight.annotations;
+package com.ocaml.ide.highlight.intentions;
 
 import com.intellij.openapi.util.io.FileUtil;
 import com.ocaml.sdk.output.CompilerOutputMessage;
@@ -17,8 +17,8 @@ public final class OCamlMessageAdaptor {
     private OCamlMessageAdaptor() {
     }
 
-    public static @NotNull OCamlAnnotation temper(CompilerOutputMessage currentState) {
-        OCamlAnnotation annotation = new OCamlAnnotation(currentState);
+    public static @NotNull OCamlIntention temper(CompilerOutputMessage currentState) {
+        OCamlIntention annotation = new OCamlIntention(currentState);
         String c = annotation.content;
 
         if (annotation.isAlert()) {

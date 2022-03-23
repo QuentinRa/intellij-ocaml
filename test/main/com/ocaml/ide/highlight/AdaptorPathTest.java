@@ -1,7 +1,7 @@
 package com.ocaml.ide.highlight;
 
 import com.ocaml.OCamlBaseTest;
-import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.ide.highlight.intentions.OCamlMessageAdaptor;
 import org.junit.Test;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
