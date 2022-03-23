@@ -83,7 +83,7 @@
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
         <annotator language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlDocumentationAnnotator"/>
-        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.insight.annotations.providers.CompilerOutputAnnotator" />
+        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.highlight.intentions.CompilerOutputAnnotator" />
         <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
 
         <!-- INFERENCE -->

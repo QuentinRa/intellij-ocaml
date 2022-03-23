@@ -1,4 +1,4 @@
-package com.ocaml.ide.insight.annotations.providers;
+package com.ocaml.compiler;
 
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessHandlerFactory;
@@ -17,6 +17,7 @@ import com.intellij.psi.PsiManager;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.ide.highlight.intentions.CompilerOutputProvider;
 import com.ocaml.lang.utils.OCamlResolveDependencies;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
@@ -33,6 +34,12 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * I originally named this class StupidExternalAnnotator, or DummyExternalAnnotator.
+ * This one is used when no build system is present. Basically, I'm manually looking
+ * for dependencies, and compiling everything using 'ocamlc' (one call per file,
+ * .mli are compiled, not .ml, aside from the targetFile).
+ */
 public class BasicExternalAnnotator implements CompilerOutputProvider {
 
     public CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
@@ -65,7 +72,7 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
         return new CollectedInfo(this, file, editor, homePath, targetFile, mli, dependencies, outputFolder);
     }
 
-    @Override public AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo, Logger log) {
+    @Override public ExternalCompilerResult doAnnotate(@NotNull CollectedInfo collectedInfo, Logger log) {
         // build/out folder
         File myOutputFolder = new File(collectedInfo.myOutputFolder);
         if (!myOutputFolder.exists() && !myOutputFolder.mkdirs()) {
@@ -156,7 +163,7 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
 
             String nameWithoutExtension = sourceFile.getNameWithoutExtension();
             File annotFile = new File(targetFolder, nameWithoutExtension + "." + compiler.getAnnotationFileExtension());
-            return new AnnotationResult(info, collectedInfo.myEditor, annotFile);
+            return new ExternalCompilerResult(info, collectedInfo.myEditor, annotFile);
         } catch (Exception e) {
             if (!(e instanceof ProcessCanceledException))
                 log.error("Error while processing annotations", e);

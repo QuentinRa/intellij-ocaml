@@ -1,4 +1,4 @@
-package com.ocaml.ide.insight.annotations.providers;
+package com.ocaml.ide.highlight.intentions;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.AnnotationBuilder;
@@ -20,10 +20,10 @@ import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.ocaml.ide.highlight.intentions.IntentionActionBuilder;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.ide.insight.annotations.OCamlAnnotation;
 import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.compiler.BasicExternalAnnotator;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.utils.OCamlPlatformUtils;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
  * Relies on the ocaml compiler (ocamlc) to provide warnings, errors, and alerts
  * in real-time, in the editor.
  */
-public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, AnnotationResult> implements DumbAware {
+public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputProvider.CollectedInfo, CompilerOutputProvider.ExternalCompilerResult> implements DumbAware {
 
     private static final Logger LOG = OCamlLogger.getSdkInstance("annotator");
     private static final String TEMP_COMPILATION_FOLDER = "tmp/";
@@ -45,8 +45,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
     /* ensure that we got an OCaml SDK */
 
     @Override
-    public @Nullable CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
-                                                      boolean hasErrors) {
+    public CompilerOutputProvider.@Nullable CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
+                                                                             boolean hasErrors) {
         Project project = file.getProject();
         VirtualFile sourceFile = file.getVirtualFile();
 
@@ -80,25 +80,25 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         }
     }
 
-    private CollectedInfo findCollector(PsiFile file, Editor editor, String homePath, ModuleRootManager moduleRootManager, String outputFolder) {
+    private CompilerOutputProvider.CollectedInfo findCollector(PsiFile file, Editor editor, String homePath, ModuleRootManager moduleRootManager, String outputFolder) {
         return new BasicExternalAnnotator().collectInformation(file, editor, homePath, moduleRootManager, outputFolder);
     }
 
-    @Override public @Nullable AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo) {
+    @Override public @Nullable CompilerOutputProvider.ExternalCompilerResult doAnnotate(@NotNull CompilerOutputProvider.CollectedInfo collectedInfo) {
         return collectedInfo.myAnnotator.doAnnotate(collectedInfo, LOG);
     }
 
     @Override
-    public void apply(@NotNull PsiFile file, @NotNull AnnotationResult annotationResult,
+    public void apply(@NotNull PsiFile file, @NotNull CompilerOutputProvider.ExternalCompilerResult externalCompilerResult,
                       @NotNull AnnotationHolder holder) {
         VirtualFile virtualFile = file.getVirtualFile();
         Project project = file.getProject();
-        Editor editor = annotationResult.myEditor;
+        Editor editor = externalCompilerResult.myEditor;
 
         WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(project);
         ArrayList<Problem> problems = new ArrayList<>();
 
-        for (CompilerOutputMessage m : annotationResult.myOutputInfo) {
+        for (CompilerOutputMessage m : externalCompilerResult.myOutputInfo) {
             OCamlAnnotation message = OCamlMessageAdaptor.temper(m);
 //            System.out.println("for "+message.header.replace("\n", "\\n"));
 
@@ -156,7 +156,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             annotResultsService.clearForFile(virtualFile.getPath());
         } else {
             wolfTheProblemSolver.clearProblems(virtualFile);
-            annotResultsService.updateForFile(virtualFile.getPath(), annotationResult.myAnnotFile);
+            annotResultsService.updateForFile(virtualFile.getPath(), externalCompilerResult.myAnnotFile);
         }
     }
 }
