@@ -14,6 +14,7 @@ import java.io.File;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 @Ignore
+@Deprecated
 public class OCamlFindFunctionTest extends OCamlIdeTest {
 
     private static final String FILE_NAME = "call.ml";

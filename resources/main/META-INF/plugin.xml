@@ -89,7 +89,7 @@
         <!-- INFERENCE -->
 <!--        <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />-->
         <codeInsight.typeInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlTypeInfoHint"/>
-<!--        <codeInsight.parameterInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterInfo" />-->
+        <codeInsight.parameterInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterInfo" />
         <projectService serviceImplementation="com.ocaml.ide.insight.OCamlAnnotResultsService"/>
 
         <!-- REPL -->

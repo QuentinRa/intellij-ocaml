@@ -44,13 +44,6 @@ public final class CompileWithCmtInfo {
     }
 
     /**
-     * @return the extension of the annotation file, without the dot (".").
-     */
-    @Contract(pure = true) public @NotNull String getAnnotationFileExtension() {
-        return "annot";
-    }
-
-    /**
      * ocamlc
      * -c $file
      * -o $outputDirectory/$executableName+OUTPUT_EXTENSION
@@ -76,5 +69,12 @@ public final class CompileWithCmtInfo {
         // needed otherwise the input stream ~~may be~~~ is empty
         cli.setRedirectErrorStream(true);
         return cli;
+    }
+
+    /**
+     * @return the extension of the annotation file, without the dot (".").
+     */
+    @Contract(pure = true) public @NotNull String getAnnotationFileExtension() {
+        return "annot";
     }
 }

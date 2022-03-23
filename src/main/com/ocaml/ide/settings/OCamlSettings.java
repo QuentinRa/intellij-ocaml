@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * This file is only created if the user defined values that are
  * different of the default ones.
  */
-@State(name = "OCamlSettings", storages = { @Storage("ocaml.xml") })
+@State(name = "OCamlSettings", storages = {@Storage("ocaml.xml")})
 public class OCamlSettings implements PersistentStateComponent<OCamlSettings> {
 
     public static OCamlSettings getInstance(@NotNull Project project) {

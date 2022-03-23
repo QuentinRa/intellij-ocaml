@@ -16,7 +16,6 @@ import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.projectRoots.ui.PathEditor;
 import com.intellij.openapi.projectRoots.ui.SdkPathEditor;
 import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.roots.ui.OrderRootTypeUIFactory;
 import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownloadTracker;
@@ -77,6 +76,10 @@ public class SdkEditor implements Configurable, Place.Navigator {
     private boolean myIsDownloading = false;
     private boolean myIsDisposed = false;
 
+    private final Consumer<Boolean> myResetCallback = __ -> {
+        if (!myIsDisposed) reset();
+    };
+
     public SdkEditor(@NotNull ProjectSdksModel sdkModel,
                      @NotNull History history,
                      @NotNull ProjectJdkImpl sdk) {
@@ -90,9 +93,7 @@ public class SdkEditor implements Configurable, Place.Navigator {
             additionalDataConfigurable.setSdk(sdk);
         }
         reset();
-    }    private final Consumer<Boolean> myResetCallback = __ -> {
-        if (!myIsDisposed) reset();
-    };
+    }
 
     @Override
     public String getDisplayName() {
@@ -116,7 +117,7 @@ public class SdkEditor implements Configurable, Place.Navigator {
         for (OrderRootType type : OrderRootType.getAllTypes()) {
             if (showTabForType(type)) {
                 FakeOrderRootTypeUIFactory key = FakeOrderRootTypeUIFactory.FACTORY.getByKey(type);
-                System.out.println(key+" for "+type);
+                System.out.println(key + " for " + type);
                 final SdkPathEditor pathEditor = key == null ? null : key.createPathEditor(mySdk);
                 if (pathEditor != null) {
                     pathEditor.setAddBaseDir(mySdk.getHomeDirectory());
@@ -497,6 +498,4 @@ public class SdkEditor implements Configurable, Place.Navigator {
             return true;
         }
     }
-
-
 }

@@ -1,11 +1,9 @@
 package com.ocaml.ide.insight.types;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.ocaml.ide.OCamlIdeTest;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.ide.insight.OCamlTypeInfoHint;
-import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -13,26 +11,13 @@ import java.io.File;
 import java.util.List;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
-public class TestTypeInference extends OCamlIdeTest {
-
-    private static final String FILE_NAME = "types.ml";
-    private static final String FILE_NAME_ANNOT = "types.annot";
+public class TypeInferenceTest extends OCamlIdeTest {
 
     private void doTest(@NotNull String text, String expectedType) {
-        @Language("OCaml") String code = loadFile(FILE_NAME);
-        assertNotNull(code);
-
-        // create file
-        PsiFile file = myFixture.configureByText(FILE_NAME, code);
-        int i = file.getText().indexOf(text.replace("(*caret*)", ""));
-        i += text.indexOf("(*caret*)")-1;
-        PsiElement caret = file.findElementAt(i);
-        assertNotNull(caret);
-
+        // load file
+        PsiElement caret = configureCodeWithCaret("types.ml", text);
         // load annotations
-        OCamlAnnotResultsService annot = getProject().getService(OCamlAnnotResultsService.class);
-        File annotations = new File(getTestDataPath(), FILE_NAME_ANNOT);
-        annot.updateForFile(caret.getContainingFile().getVirtualFile().getPath(), annotations);
+        configureAnnotResultsService(caret, "types.annot");
 
         OCamlTypeInfoHint infoHint = new OCamlTypeInfoHint();
 
@@ -50,7 +35,6 @@ public class TestTypeInference extends OCamlIdeTest {
                 break;
             }
             elements.append("]");
-
 
             assertTrue("Could not find type:"+expectedType+" in " +elements+" for "+text, ok);
         }

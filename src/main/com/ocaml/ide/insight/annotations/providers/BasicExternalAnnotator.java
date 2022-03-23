@@ -17,7 +17,7 @@ import com.intellij.psi.PsiManager;
 import com.ocaml.ide.files.OCamlFileType;
 import com.ocaml.ide.files.OCamlInterfaceFileType;
 import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
-import com.ocaml.lang.utils.OCamlPsiUtils;
+import com.ocaml.lang.utils.OCamlResolveDependencies;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.sdk.output.CompilerOutputParser;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
@@ -30,8 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -43,7 +41,8 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
         Project project = file.getProject();
         VirtualFile sourceFile = file.getVirtualFile();
         String targetFile = null;
-        Set<Pair<String, PsiFile>> dependencies = getDependencies(file, moduleRootManager);
+
+        Set<Pair<String, PsiFile>> dependencies = OCamlResolveDependencies.resolveForFile(file, moduleRootManager);
 
         // fix: files may not be in a source folder
         // find the file we are trying to compile
@@ -64,48 +63,6 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
             if (mliV != null) mli = PsiManager.getInstance(project).findFile(mliV);
         }
         return new CollectedInfo(this, file, editor, homePath, targetFile, mli, dependencies, outputFolder);
-    }
-
-    private @NotNull Set<Pair<String, PsiFile>> getDependencies(@NotNull PsiFile file, @NotNull ModuleRootManager moduleRootManager) {
-        Set<String> dependencies = OCamlPsiUtils.findDependencies(file);
-        // small optimisation
-        if (dependencies.isEmpty()) return Set.of();
-
-        Set<Pair<String, VirtualFile>> deps = new HashSet<>();
-        // look into every source folder
-        HashMap<String, Pair<String, VirtualFile>> potential = new HashMap<>();
-        for (VirtualFile root : moduleRootManager.getSourceRoots()) {
-            for (VirtualFile f : VfsUtil.getChildren(root)) {
-                // is in the list of dependencies?
-                if (!dependencies.contains(f.getNameWithoutExtension())) continue;
-                // yes
-                Pair<String, VirtualFile> pair = new Pair<>(VfsUtil.getRelativePath(f, root), f);
-                // do we have the .mli?
-                if (OCamlInterfaceFileType.isFile(f.getPath())) {
-                    String s = OCamlFileType.fromInterface(f.getPath());
-                    // remove the source
-                    potential.remove(s);
-                    // we are adding the interface instead
-                    deps.add(pair);
-                } else { // ensure that we do not have the .mli already in
-                    // should not happen since they are sorted alphabetically
-                    // but, ...
-                    potential.put(f.getPath(), pair);
-                }
-            }
-        }
-        deps.addAll(potential.values());
-        // there is no dependency graph
-        // they should be sorted by dependency
-        // is it needed trough? (we are using -c)
-        Set<Pair<String, PsiFile>> psiDeps = new HashSet<>();
-        for (Pair<String, VirtualFile> dep : deps) {
-            PsiFile psiFile = PsiManager.getInstance(file.getProject()).findFile(dep.second);
-            if (psiFile == null) continue;
-            psiDeps.add(new Pair<>(dep.first, psiFile));
-            psiDeps.addAll(getDependencies(psiFile, moduleRootManager));
-        }
-        return psiDeps;
     }
 
     @Override public AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo, Logger log) {
@@ -140,6 +97,7 @@ public class BasicExternalAnnotator implements CompilerOutputProvider {
             for (Pair<String, PsiFile> pair : collectedInfo.myDependencies) {
                 // target folder
                 File localTargetFolder = new File(myOutputFolder, pair.first).getParentFile();
+//               todo: System.out.println("lft" + localTargetFolder);
                 if (!targetFolder.exists() && !targetFolder.mkdirs())
                     continue;
                 compileFile(collectedInfo.myHomePath, localTargetFolder, myOutputFolder, pair.second, log);
