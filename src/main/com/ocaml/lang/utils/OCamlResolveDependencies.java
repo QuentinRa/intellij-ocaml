@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class OCamlResolveDependencies {
+
     /**
      * Return the name of the files that are explicit dependencies of this file, without
      * their extensions (it's up to the caller to find them, and pick either the .ml or the .mli)
@@ -56,7 +57,7 @@ public class OCamlResolveDependencies {
     }
 
     /**
-     * @param file the file for which we need the dependencies
+     * @param file              the file for which we need the dependencies
      * @param moduleRootManager used to get the content roots
      * @return a set of paths and the psiFile, that are the dependencies of the given file
      */

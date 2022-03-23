@@ -16,7 +16,6 @@ public class LogicalSection implements Comparable<LogicalSection> {
     public final int endLine;
     public final int endColumn;
 
-
     public LogicalSection(int startLine, int startColumn, int endLine, int endColumn) {
         this.startLine = startLine;
         this.startColumn = startColumn;

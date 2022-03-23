@@ -22,7 +22,7 @@ public class OCamlTypeInfoHint extends ExpressionTypeProvider<PsiElement> {
 
     @Override public @NotNull String getInformationHint(@NotNull PsiElement element) {
         OCamlAnnotResultsService annot = element.getProject().getService(OCamlAnnotResultsService.class);
-        OCamlInferredSignature annotation = annot.findAnnotationFor(element);
+        OCamlInferredSignature annotation = annot.findAnnotationFor(element, true);
         return annotation == null || annotation.type.isEmpty() ? UNKNOWN_TYPE : annotation.type;
     }
 

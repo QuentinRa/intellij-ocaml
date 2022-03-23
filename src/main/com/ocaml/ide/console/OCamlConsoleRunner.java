@@ -6,12 +6,14 @@ import com.intellij.openapi.wm.ToolWindow;
 public interface OCamlConsoleRunner {
 
     ToolWindow getWindow();
+
     ProcessHandler getProcessHandler();
 
     /**
      * @return true if running a command
      */
     boolean isRunning();
+
     void setRunning(boolean running);
 
     /**
@@ -22,7 +24,9 @@ public interface OCamlConsoleRunner {
     void processCommand(String s);
 
     boolean isVariableViewEnabled();
+
     void showVariableView(boolean show);
+
     void rebuildVariableView(String text);
 
     boolean isNotAbleToRun();

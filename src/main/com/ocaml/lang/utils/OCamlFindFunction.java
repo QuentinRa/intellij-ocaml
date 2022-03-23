@@ -24,6 +24,7 @@ import java.util.ArrayList;
  * so I have to do this :(. This parser is quite bugged, sorry for that. I through
  * of relying on the .annot file to do this easily, but I can't think of something ><'.
  */
+@Deprecated
 public class OCamlFindFunction {
 
     private final OCamlAnnotResultsService annot;
