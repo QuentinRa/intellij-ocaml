@@ -98,7 +98,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputPro
 
         for (CompilerOutputMessage m : externalCompilerResult.myOutputInfo) {
             OCamlIntention message = OCamlMessageAdaptor.temper(m);
-//            System.out.println("for "+message.header.replace("\n", "\\n"));
+            System.out.println("for "+message.header.replace("\n", "\\n")+" at "+message.startLine);
 
             // type
             HighlightSeverity t;
@@ -113,8 +113,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputPro
             if (range != null && !message.fileLevel) {
                 start = file.findElementAt(range.intervalStart());
                 end = file.findElementAt(range.intervalEnd()-1);
-//                System.out.println(" was found-s:"+start+" ("+(start == null ? "<null>" : start.getText())+")");
-//                System.out.println(" was found-e:"+end+" ("+(end == null ? "<null>" : end.getText())+")");
+                System.out.println(" was found-s:"+start+" ("+(start == null ? "<null>" : start.getText())+")");
+                System.out.println(" was found-e:"+end+" ("+(end == null ? "<null>" : end.getText())+")");
                 if (start == end) end = null;
             }
 

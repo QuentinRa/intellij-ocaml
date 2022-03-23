@@ -137,7 +137,9 @@ public class OCamlIntention {
 
     public void toUnusedValue() {
         toUnused();
-        // may be a value (ex: 'x') or a definition (ex: 'val t : int')
+        // may be a value (ex: 'x') or
+        // todo: a definition (ex: 'val t : int')
+        fixes.add(new RenameVariableFix("_"));
     }
 
     public void toUnusedType() {

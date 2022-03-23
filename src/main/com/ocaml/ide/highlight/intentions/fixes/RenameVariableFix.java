@@ -28,10 +28,22 @@ public class RenameVariableFix implements IntentionActionBuilder {
     @Override @Nullable public IntentionAction build(@Nullable PsiElement start, @Nullable PsiElement end,
                                                      @NotNull PsiFile file) {
         if (start == null) return null;
-        // skip
+        // skip 'spaces*'
+        PsiElement newStart = OCamlPsiUtils.skipMeaninglessNextSibling(start);
+        if (newStart != null) start = newStart;
+//        System.out.println("  start1:"+start+" ("+ start.getText() +")");
+
+        // skip '(spaces*'
         if (start.getText().equals(OCamlTypes.LPAREN.getSymbol()))
             start = OCamlPsiUtils.skipMeaninglessNextSibling(start);
-        if (start == null) return null; // not happening at this point
+        if (start == null) return null; // not happening
+
+        // unwrap
+        if (start.getNode().getElementType().equals(OCamlTypes.LIDENT))
+            start = start.getParent();
+
+//        System.out.println("  start2:"+start+" ("+ start.getText() +")");
+
         // I can foresee a bug here one day (3-23-2022)
         // We should log this, shouldn't occur, but can occur...
         if (!(start instanceof PsiNamedElement)) return null;

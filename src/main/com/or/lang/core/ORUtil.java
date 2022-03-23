@@ -3,8 +3,10 @@ package com.or.lang.core;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.tree.TreeElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
 import com.or.ide.files.FileBase;
 import com.or.lang.OCamlTypes;
 import com.or.lang.core.psi.PsiModule;
@@ -320,4 +322,11 @@ public class ORUtil {
         return ORUtil.findImmediateChildrenOfClass(element, clazz).stream().filter(item -> name.equals(item.getName())).findFirst().orElse(null);
     }
 
+
+    public static void renameNodeWithLIDENT(@NotNull CompositeTypePsiElement e, String newName) {
+        TreeElement firstChildNode = e.getFirstChildNode();
+        PsiElement renamed = ORCodeFactory.createLowerSymbol(e.getProject(), newName);
+        if (renamed == null) throw new IncorrectOperationException("Can't rename variable to "+newName+".");
+        e.getNode().replaceChild(firstChildNode, renamed.getNode());
+    }
 }

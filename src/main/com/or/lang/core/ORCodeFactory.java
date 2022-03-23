@@ -9,6 +9,7 @@ import com.or.ide.files.FileBase;
 import com.or.lang.core.psi.PsiInnerModule;
 import com.or.lang.core.psi.PsiLet;
 import com.or.lang.core.psi.PsiLetBinding;
+import com.or.lang.core.psi.PsiLowerSymbol;
 import com.or.lang.core.psi.impl.PsiLowerIdentifier;
 import com.or.lang.core.psi.impl.PsiUpperIdentifier;
 import org.jetbrains.annotations.NotNull;
@@ -26,15 +27,19 @@ public class ORCodeFactory {
     }
 
     @Nullable
-    public static PsiLowerIdentifier createLetName(@NotNull Project project, @NotNull String name) {
+    public static PsiElement createLetName(@NotNull Project project, @NotNull String name) {
         FileBase file = createFileFromText(project, OCamlLanguage.INSTANCE, "let " + name + " = 1;");
         PsiLet let = ORUtil.findImmediateFirstChildOfClass(file, PsiLet.class);
-        return ORUtil.findImmediateFirstChildOfClass(let, PsiLowerIdentifier.class);
+        return let == null ? null : ORUtil.nextSibling(let.getFirstChild());
     }
 
     @Nullable
     public static PsiElement createLowerSymbol(@NotNull Project project, @NotNull String name) {
         FileBase file = createFileFromText(project, OCamlLanguage.INSTANCE, "let _ = " + name);
+        return extractLetBinding(file);
+    }
+
+    private static PsiElement extractLetBinding(FileBase file) {
         PsiLet let = ORUtil.findImmediateFirstChildOfClass(file, PsiLet.class);
         PsiLetBinding letBinding = ORUtil.findImmediateFirstChildOfClass(let, PsiLetBinding.class);
         if (letBinding != null) {
