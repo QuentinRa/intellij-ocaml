@@ -6,6 +6,8 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface IntentionActionBuilder {
 
     /**
@@ -15,7 +17,7 @@ public interface IntentionActionBuilder {
      * @param file the file
      * @return an intention action or null if failed to create one
      */
-    @Nullable IntentionAction build(@Nullable PsiElement start, @Nullable PsiElement end,
-                                    @NotNull PsiFile file);
+    @Nullable List<IntentionAction> build(@Nullable PsiElement start, @Nullable PsiElement end,
+                                          @NotNull PsiFile file);
 
 }

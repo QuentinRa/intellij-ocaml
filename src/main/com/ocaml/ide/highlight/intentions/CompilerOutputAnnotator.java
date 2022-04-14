@@ -7,7 +7,6 @@ import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.impl.TextRangeInterval;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.DumbAware;
@@ -18,7 +17,6 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
 import com.ocaml.compiler.BasicExternalAnnotator;
@@ -30,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Relies on the ocaml compiler (ocamlc) to provide warnings, errors, and alerts
@@ -98,7 +97,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputPro
 
         for (CompilerOutputMessage m : externalCompilerResult.myOutputInfo) {
             OCamlIntention message = OCamlMessageAdaptor.temper(m);
-            System.out.println("for "+message.header.replace("\n", "\\n")+" at "+message.startLine);
+//            System.out.println("for "+message.header.replace("\n", "\\n")+" at "+message.startLine);
 
             // type
             HighlightSeverity t;
@@ -107,16 +106,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputPro
             else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
             else t = HighlightSeverity.INFORMATION;
 
-            TextRangeInterval range = message.computePosition(editor);
-            PsiElement start = null;
-            PsiElement end = null;
-            if (range != null && !message.fileLevel) {
-                start = file.findElementAt(range.intervalStart());
-                end = file.findElementAt(range.intervalEnd()-1);
-                System.out.println(" was found-s:"+start+" ("+(start == null ? "<null>" : start.getText())+")");
-                System.out.println(" was found-e:"+end+" ("+(end == null ? "<null>" : end.getText())+")");
-                if (start == end) end = null;
-            }
+            OCamlIntention.Position position = message.getPosition(editor, file);
 
             // create
             if (message.fileLevel) {
@@ -129,13 +119,16 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputPro
 
             if (message.normalLevel) {
                 AnnotationBuilder builder = holder.newAnnotation(t, message.header);
-                if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
+                if (!message.fileLevel) builder = position.range == null ? builder.afterEndOfLine() : builder.range(position.range);
                 builder = builder.tooltip(message.content);
                 builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
                 for (IntentionActionBuilder fix : message.fixes) {
-                    IntentionAction action = fix.build(start, end, file);
-                    if (action == null) continue;
-                    builder = builder.withFix(action); // fix
+                    List<IntentionAction> actions = fix.build(position.start, position.end, file);
+                    if (actions == null) continue;
+                    // fix
+                    for (IntentionAction action : actions) {
+                        builder = builder.withFix(action);
+                    }
                 }
                 builder.create();
             }

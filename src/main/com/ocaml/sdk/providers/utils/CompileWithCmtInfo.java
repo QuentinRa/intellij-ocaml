@@ -77,4 +77,11 @@ public final class CompileWithCmtInfo {
     @Contract(pure = true) public @NotNull String getAnnotationFileExtension() {
         return "annot";
     }
+
+    @Override public String toString() {
+        return "CompileWithCmtInfo{" +
+                "cli=" + cli.getCommandLineString() +
+                ", rootFolderForTempering='" + rootFolderForTempering + '\'' +
+                '}';
+    }
 }

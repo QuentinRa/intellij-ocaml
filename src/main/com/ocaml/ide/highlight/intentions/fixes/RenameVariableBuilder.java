@@ -11,27 +11,28 @@ import com.or.lang.OCamlTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * Rename a variable
  */
-public class RenameVariableFix implements IntentionActionBuilder {
+public class RenameVariableBuilder implements IntentionActionBuilder {
 
     public final String newName;
 
-    public RenameVariableFix(String newName) {
+    public RenameVariableBuilder(String newName) {
         this.newName = newName;
     }
 
     // if the variable 'x' is like this Some(x),
     // then '(x)' or '( x )' is matched by 'unused', so we can't naively
     // replace the given position with _ (we need to find the name of the variable)
-    @Override @Nullable public IntentionAction build(@Nullable PsiElement start, @Nullable PsiElement end,
-                                                     @NotNull PsiFile file) {
+    @Override @Nullable public List<IntentionAction> build(@Nullable PsiElement start, @Nullable PsiElement end,
+                                                           @NotNull PsiFile file) {
         if (start == null) return null;
         // skip 'spaces*'
         PsiElement newStart = OCamlPsiUtils.skipMeaninglessNextSibling(start);
         if (newStart != null) start = newStart;
-//        System.out.println("  start1:"+start+" ("+ start.getText() +")");
 
         // skip '(spaces*'
         if (start.getText().equals(OCamlTypes.LPAREN.getSymbol()))
@@ -42,13 +43,15 @@ public class RenameVariableFix implements IntentionActionBuilder {
         if (start.getNode().getElementType().equals(OCamlTypes.LIDENT))
             start = start.getParent();
 
-//        System.out.println("  start2:"+start+" ("+ start.getText() +")");
-
         // I can foresee a bug here one day (3-23-2022)
         // We should log this, shouldn't occur, but can occur...
         if (!(start instanceof PsiNamedElement)) return null;
 
+        // we are not handling 'val t : int'
+        if (start.getText().equals(OCamlTypes.VAL.getSymbol()))
+            return null;
+
         // there is already a fix for this
-        return new RenameElementFix((PsiNamedElement) start, newName);
+        return List.of(new RenameElementFix((PsiNamedElement) start, newName));
     }
 }
