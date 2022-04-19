@@ -25,6 +25,10 @@ This is a list of bugs in this version of the ReasonML plugin.
 * ❌ highlight for todo (https://github.com/QuentinRa/intellij-ocaml/issues/64)
 * ❌ empty type in variable view (https://github.com/QuentinRa/intellij-ocaml/issues/63)
 
+## Minor
+
+* PsiLowerSymbol is now a "PsiNameIdentifierOwner" (allow renaming)
+
 ## To be merged
 
 This is the list a changes that are planned to be merged with the ReasonML plugin.

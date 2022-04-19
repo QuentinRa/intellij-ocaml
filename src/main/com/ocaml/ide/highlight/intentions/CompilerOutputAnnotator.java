@@ -1,4 +1,4 @@
-package com.ocaml.ide.insight.annotations.providers;
+package com.ocaml.ide.highlight.intentions;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.AnnotationBuilder;
@@ -7,7 +7,6 @@ import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.impl.TextRangeInterval;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.DumbAware;
@@ -20,8 +19,7 @@ import com.intellij.problems.Problem;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiFile;
 import com.ocaml.ide.insight.OCamlAnnotResultsService;
-import com.ocaml.ide.insight.annotations.OCamlAnnotation;
-import com.ocaml.ide.insight.annotations.OCamlMessageAdaptor;
+import com.ocaml.compiler.BasicExternalAnnotator;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.output.CompilerOutputMessage;
 import com.ocaml.utils.OCamlPlatformUtils;
@@ -30,12 +28,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Relies on the ocaml compiler (ocamlc) to provide warnings, errors, and alerts
  * in real-time, in the editor.
  */
-public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, AnnotationResult> implements DumbAware {
+public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputProvider.CollectedInfo, CompilerOutputProvider.ExternalCompilerResult> implements DumbAware {
 
     private static final Logger LOG = OCamlLogger.getSdkInstance("annotator");
     private static final String TEMP_COMPILATION_FOLDER = "tmp/";
@@ -43,8 +42,8 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
     /* ensure that we got an OCaml SDK */
 
     @Override
-    public @Nullable CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
-                                                      boolean hasErrors) {
+    public CompilerOutputProvider.@Nullable CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
+                                                                             boolean hasErrors) {
         Project project = file.getProject();
         VirtualFile sourceFile = file.getVirtualFile();
 
@@ -78,26 +77,27 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
         }
     }
 
-    private CollectedInfo findCollector(PsiFile file, Editor editor, String homePath, ModuleRootManager moduleRootManager, String outputFolder) {
+    private CompilerOutputProvider.CollectedInfo findCollector(PsiFile file, Editor editor, String homePath, ModuleRootManager moduleRootManager, String outputFolder) {
         return new BasicExternalAnnotator().collectInformation(file, editor, homePath, moduleRootManager, outputFolder);
     }
 
-    @Override public @Nullable AnnotationResult doAnnotate(@NotNull CollectedInfo collectedInfo) {
+    @Override public @Nullable CompilerOutputProvider.ExternalCompilerResult doAnnotate(@NotNull CompilerOutputProvider.CollectedInfo collectedInfo) {
         return collectedInfo.myAnnotator.doAnnotate(collectedInfo, LOG);
     }
 
     @Override
-    public void apply(@NotNull PsiFile file, @NotNull AnnotationResult annotationResult,
+    public void apply(@NotNull PsiFile file, @NotNull CompilerOutputProvider.ExternalCompilerResult externalCompilerResult,
                       @NotNull AnnotationHolder holder) {
         VirtualFile virtualFile = file.getVirtualFile();
         Project project = file.getProject();
-        Editor editor = annotationResult.myEditor;
+        Editor editor = externalCompilerResult.myEditor;
 
         WolfTheProblemSolver wolfTheProblemSolver = WolfTheProblemSolver.getInstance(project);
         ArrayList<Problem> problems = new ArrayList<>();
 
-        for (CompilerOutputMessage m : annotationResult.myOutputInfo) {
-            OCamlAnnotation message = OCamlMessageAdaptor.temper(m, file, editor);
+        for (CompilerOutputMessage m : externalCompilerResult.myOutputInfo) {
+            OCamlIntention message = OCamlMessageAdaptor.temper(m);
+//            System.out.println("for "+message.header.replace("\n", "\\n")+" at "+message.startLine);
 
             // type
             HighlightSeverity t;
@@ -106,7 +106,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             else if (message.isAlert()) t = HighlightSeverity.WEAK_WARNING;
             else t = HighlightSeverity.INFORMATION;
 
-            TextRangeInterval range = message.computePosition();
+            OCamlIntention.Position position = message.getPosition(editor, file);
 
             // create
             if (message.fileLevel) {
@@ -119,11 +119,16 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
 
             if (message.normalLevel) {
                 AnnotationBuilder builder = holder.newAnnotation(t, message.header);
-                if (!message.fileLevel) builder = range == null ? builder.afterEndOfLine() : builder.range(range);
+                if (!message.fileLevel) builder = position.range == null ? builder.afterEndOfLine() : builder.range(position.range);
                 builder = builder.tooltip(message.content);
                 builder = message.hasCustomHighLightType() ? builder.highlightType(message.highlightType) : builder;
-                for (IntentionAction fix : message.fixes) {
-                    builder = builder.withFix(fix); // fix
+                for (IntentionActionBuilder fix : message.fixes) {
+                    List<IntentionAction> actions = fix.build(position.start, position.end, file);
+                    if (actions == null) continue;
+                    // fix
+                    for (IntentionAction action : actions) {
+                        builder = builder.withFix(action);
+                    }
                 }
                 builder.create();
             }
@@ -142,7 +147,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CollectedInfo, An
             annotResultsService.clearForFile(virtualFile.getPath());
         } else {
             wolfTheProblemSolver.clearProblems(virtualFile);
-            annotResultsService.updateForFile(virtualFile.getPath(), annotationResult.myAnnotFile);
+            annotResultsService.updateForFile(virtualFile.getPath(), externalCompilerResult.myAnnotFile);
         }
     }
 }

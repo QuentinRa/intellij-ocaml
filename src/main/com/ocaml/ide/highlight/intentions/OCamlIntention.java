@@ -1,27 +1,28 @@
-package com.ocaml.ide.insight.annotations;
+package com.ocaml.ide.highlight.intentions;
 
 import com.intellij.build.FilePosition;
-import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.impl.TextRangeInterval;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.ocaml.ide.highlight.intentions.fixes.DeleteElementBuilder;
+import com.ocaml.ide.highlight.intentions.fixes.RenameVariableBuilder;
+import com.ocaml.lang.utils.OCamlPsiUtils;
 import com.ocaml.sdk.output.CompilerOutputMessage;
+import com.ocaml.utils.ComputeMethod;
+import com.or.lang.OCamlTypes;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public class OCamlAnnotation {
+public class OCamlIntention {
     /* see CompilerOutputMessage */
     public @NotNull CompilerOutputMessage.Kind kind;
     public String context;
     public String header;
     public String content;
-
-    public @Nullable PsiFile psiFile;
-    public @Nullable Editor editor;
 
     public String file;
     public int startLine;
@@ -29,21 +30,18 @@ public class OCamlAnnotation {
     public int endLine;
     public int endColumn;
 
-    public final ArrayList<IntentionAction> fixes = new ArrayList<>();
+    public final ArrayList<IntentionActionBuilder> fixes = new ArrayList<>();
     public ProblemHighlightType highlightType;
     public boolean fileLevel;
     // must be true, otherwise, not shown in the console
     // nor in the top-right icon
     public boolean normalLevel = true;
+    private ComputeMethod<Position, Position> temperPosition = v -> v;
 
-    public OCamlAnnotation(@NotNull CompilerOutputMessage currentState,
-                           @Nullable PsiFile psi,
-                           @Nullable Editor e) {
+    public OCamlIntention(@NotNull CompilerOutputMessage currentState) {
         kind = currentState.kind;
         context = currentState.context;
         header = content = currentState.content;
-        psiFile = psi;
-        editor = e;
 
         // easier access
         FilePosition filePosition = currentState.filePosition;
@@ -57,7 +55,7 @@ public class OCamlAnnotation {
         if (endColumn == -1) endColumn = 1;
     }
 
-    public TextRangeInterval computePosition() {
+    private TextRangeInterval computePosition(Editor editor) {
         if (editor == null) return null; // no editor, no job
         // position
         LogicalPosition start = new LogicalPosition(startLine, startColumn);
@@ -69,6 +67,10 @@ public class OCamlAnnotation {
         // after the end of the file
         if (startOffset == endOffset) return null;
         return new TextRangeInterval(startOffset, endOffset);
+    }
+
+    public Position getPosition(Editor editor, PsiFile file) {
+        return temperPosition.call(new Position(file, computePosition(editor)));
     }
 
     public boolean isError() {
@@ -112,10 +114,8 @@ public class OCamlAnnotation {
     // 27
     public void toUnusedVariable() {
         toUnused();
-        // rename variable
-        // warning: if the variable 'x' is like this Some(x),
-        // then '(x)' or '( x )' is matched by 'unused', so we can't naively
-        // replace the given position with _ (we need to find the name of the variable)
+        // rename variable to '_'
+        fixes.add(new RenameVariableBuilder("_"));
     }
 
     // 70
@@ -143,11 +143,32 @@ public class OCamlAnnotation {
     public void toUnusedRec() {
         toUnused();
         // the cursor is on the variable, not on the rec
+        // Hence we need to move the cursor on the rec
+        temperPosition = position -> {
+            PsiElement psiElement = position.start;
+            // unwrap
+            if (psiElement != null && psiElement.getNode().getElementType() == OCamlTypes.LIDENT)
+                psiElement = psiElement.getParent();
+            // search
+            while (psiElement != null && psiElement.getNode().getElementType() != OCamlTypes.REC) {
+                psiElement = OCamlPsiUtils.skipMeaninglessPreviousSibling(psiElement);
+            }
+            // move
+            if (psiElement != null) {
+                int start = psiElement.getTextOffset();
+                int len = psiElement.getTextLength();
+                return new Position(position.file, new TextRangeInterval(start, start+len));
+            }
+            return position;
+        };
+
+        // delete rec
+        fixes.add(new DeleteElementBuilder());
     }
 
     public void toUnusedValue() {
         toUnused();
-        // may be a value (ex: 'x') or a definition (ex: 'val t : int')
+        fixes.add(new RenameVariableBuilder("_"));
     }
 
     public void toUnusedType() {
@@ -169,5 +190,33 @@ public class OCamlAnnotation {
     public void toUnusedOpen() {
         toUnused();
         // 'open Name'
+    }
+
+    /**
+     * Position of the start/end
+     */
+    public final class Position {
+        public final TextRangeInterval range;
+        public final PsiElement start;
+        public final PsiElement end;
+        public final PsiFile file;
+
+        public Position(PsiFile f, TextRangeInterval r) {
+            PsiElement s = null;
+            PsiElement e = null;
+
+            if (r != null && !fileLevel) {
+                s = f.findElementAt(r.intervalStart());
+                e = f.findElementAt(r.intervalEnd()-1);
+//                System.out.println(" was found-s:"+s+" ("+(s == null ? "<null>" : s.getText())+")");
+//                System.out.println(" was found-e:"+e+" ("+(e == null ? "<null>" : e.getText())+")");
+                if (s == e) e = null;
+            }
+
+            range = r;
+            start = s;
+            end = e;
+            file = f;
+        }
     }
 }
