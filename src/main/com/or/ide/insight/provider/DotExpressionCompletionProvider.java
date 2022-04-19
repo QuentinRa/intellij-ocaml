@@ -2,7 +2,7 @@ package com.or.ide.insight.provider;
 
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.psi.PsiClass;
+import com.or.lang.core.psi.PsiKlass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -123,7 +123,7 @@ public class DotExpressionCompletionProvider {
         modules.remove(modules.size() - 1);
         expressions.addAll(modules);
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(element, PsiFunctor.class));
-        expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(element, PsiClass.class));
+        expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(element, PsiKlass.class));
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(element, PsiExternal.class));
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(element, PsiException.class));
     }
@@ -152,7 +152,7 @@ public class DotExpressionCompletionProvider {
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(body, PsiVal.class));
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(body, PsiModule.class));
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(body, PsiFunctor.class));
-        expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(body, PsiClass.class));
+        expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(body, PsiKlass.class));
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(body, PsiExternal.class));
         expressions.addAll(PsiTreeUtil.getStubChildrenOfTypeAsList(body, PsiException.class));
     }
