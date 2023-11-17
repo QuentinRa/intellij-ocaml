@@ -1,0 +1,18 @@
+{
+  parserClass="com.ocaml.language.parser.OCamlParser"
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="OCaml"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.ocaml.language.psi"
+  psiImplPackage="com.ocaml.language.psi.impl"
+  psiImplUtilClass="com.ocaml.language.parser.OCamlParserUtils"
+
+  elementTypeHolderClass="com.ocaml.language.psi.OCamlTypes"
+  elementTypeClass="com.ocaml.language.psi.api.OCamlElementType"
+  tokenTypeClass="com.ocaml.language.psi.api.OCamlTokenType"
+}
+
+file ::= empty
+
+empty ::=
