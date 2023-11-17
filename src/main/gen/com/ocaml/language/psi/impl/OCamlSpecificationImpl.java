@@ -10,16 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.ocaml.language.psi.OCamlTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.ocaml.language.psi.*;
-import com.ocaml.language.parser.OCamlParserUtils;
 
-public class OCamlEmptyImpl extends ASTWrapperPsiElement implements OCamlEmpty {
+public class OCamlSpecificationImpl extends ASTWrapperPsiElement implements OCamlSpecification {
 
-  public OCamlEmptyImpl(@NotNull ASTNode node) {
+  public OCamlSpecificationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull OCamlVisitor visitor) {
-    visitor.visitEmpty(this);
+    visitor.visitSpecification(this);
   }
 
   @Override

@@ -56,6 +56,8 @@ intellij {
     "com.jetbrains.hackathon.indices.viewer:$indicesVersion",
     "PsiViewer:$psiViewerPluginVersion"
   ))
+
+  sourceSets["main"].java.srcDirs("src/main/gen")
 }
 
 tasks {

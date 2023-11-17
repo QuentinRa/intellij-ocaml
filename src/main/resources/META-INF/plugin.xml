@@ -73,12 +73,13 @@
         <projectSdkSetupValidator implementation="com.ocaml.ide.files.select.OCamlSDKValidator"/>
 
         <!-- FILES -->
-        <fileType extensions="annot" hashBangs="annot" name="OCAML_ANNOT" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlAnnotFileType"/>
-        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlAnnotFileEditorProvider"/>
-        <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
-        <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
-        <internalFileTemplate name="OCaml File"/>
-        <internalFileTemplate name="OCaml Interface"/>
+        <fileType extensions="ml" hashBangs="ml" name="OCaml File" language="OCaml"
+                  fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
+        <fileType extensions="mli" hashBangs="mli" name="OCaml Interface File" language="OCaml"
+                  fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
+
+        <!-- PARSER -->
+        <lang.parserDefinition language="OCaml" implementationClass="com.ocaml.language.parser.OCamlParserImplementationDefinition"/>
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>

@@ -1,17 +1,4 @@
 {
-  parserClass="com.ocaml.language.parser.OCamlParser"
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
-
-  psiClassPrefix="OCaml"
-  psiImplClassSuffix="Impl"
-  psiPackage="com.ocaml.language.psi"
-  psiImplPackage="com.ocaml.language.psi.impl"
-  psiImplUtilClass="com.ocaml.language.parser.OCamlParserUtils"
-
-  elementTypeHolderClass="com.ocaml.language.psi.OCamlTypes"
-  elementTypeClass="com.ocaml.language.psi.api.OCamlElementType"
-  tokenTypeClass="com.ocaml.language.psi.api.OCamlTokenType"
-
   tokens = [
         AND = "and"
         AS = "as"
@@ -161,12 +148,6 @@ directive-argument ::= string-literal
   |  integer-literal
   |  value-path
   |  TRUE | FALSE
-
-// https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
-//noinspection BnfUnusedRule
-unit-interface ::=  { specification [SEMISEMI] }
-//noinspection BnfUnusedRule
-unit-implementation ::=  [ module-items ]
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
 //IDENT ::=  (letter | UNDERSCORE) { letter | DIGIT | UNDERSCORE | SINGLE_QUOTE }*

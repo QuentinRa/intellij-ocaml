@@ -7,7 +7,11 @@ import com.intellij.psi.PsiElement;
 
 public class OCamlVisitor extends PsiElementVisitor {
 
-  public void visitEmpty(@NotNull OCamlEmpty o) {
+  public void visitModuleItems(@NotNull OCamlModuleItems o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSpecification(@NotNull OCamlSpecification o) {
     visitPsiElement(o);
   }
 

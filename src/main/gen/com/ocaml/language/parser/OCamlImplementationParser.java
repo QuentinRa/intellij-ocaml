@@ -4,7 +4,7 @@ package com.ocaml.language.parser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
 import static com.ocaml.language.psi.OCamlTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
+import static com.ocaml.language.parser.OCamlParserUtils.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;
@@ -12,7 +12,7 @@ import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
-public class OCamlParser implements PsiParser, LightPsiParser {
+public class OCamlImplementationParser implements PsiParser, LightPsiParser {
 
   public ASTNode parse(IElementType t, PsiBuilder b) {
     parseLight(t, b);
@@ -32,20 +32,26 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   }
 
   static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
-    return file(b, l + 1);
+    return unit_implementation(b, l + 1);
   }
 
   /* ********************************************************** */
-  public static boolean empty(PsiBuilder b, int l) {
-    Marker m = enter_section_(b);
-    exit_section_(b, m, EMPTY, true);
+  // "A"
+  public static boolean module_items(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "module_items")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, MODULE_ITEMS, "<module items>");
+    r = consumeToken(b, "A");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // [ module-items ]
+  static boolean unit_implementation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "unit_implementation")) return false;
+    module_items(b, l + 1);
     return true;
-  }
-
-  /* ********************************************************** */
-  // empty
-  static boolean file(PsiBuilder b, int l) {
-    return empty(b, l + 1);
   }
 
 }

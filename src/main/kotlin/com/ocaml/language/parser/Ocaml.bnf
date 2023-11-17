@@ -1,12 +1,14 @@
 {
-  parserClass="com.ocaml.language.parser.OCamlParser"
+  parserClass="com.ocaml.language.parser.OCamlImplementationParser"
+//  parserClass="com.ocaml.language.parser.OCamlInterfaceParser"
+  parserUtilClass="com.ocaml.language.parser.OCamlParserUtils"
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
   psiClassPrefix="OCaml"
   psiImplClassSuffix="Impl"
   psiPackage="com.ocaml.language.psi"
   psiImplPackage="com.ocaml.language.psi.impl"
-  psiImplUtilClass="com.ocaml.language.parser.OCamlParserUtils"
+  psiImplUtilClass="com.ocaml.language.psi.OCamlImplUtils"
 
   // generateTokens=false
   // generateTokenAccessors=true
@@ -14,8 +16,129 @@
   elementTypeHolderClass="com.ocaml.language.psi.OCamlTypes"
   elementTypeClass="com.ocaml.language.psi.api.OCamlElementType"
   tokenTypeClass="com.ocaml.language.psi.api.OCamlTokenType"
+
+  tokens = [
+          AND = "and"
+          AS = "as"
+          ASSERT = "assert"
+          BEGIN = "begin"
+          CLASS = "class"
+          CONSTRAINT = "constraint"
+          DO = "do"
+          DONE = "done"
+          DOWNTO = "downto"
+          ELSE = "else"
+          END = "end"
+          EXCEPTION = "exception"
+          EXTERNAL = "external"
+          FOR = "for"
+          FUN = "fun"
+          FUNCTION = "function"
+          FUNCTOR = "functor"
+          IF = "if"
+          IN = "in"
+          INCLUDE = "include"
+          INHERIT = "inherit"
+          INITIALIZER = "initializer"
+          LAZY = "lazy"
+          LET = "let"
+          MODULE = "module"
+          MUTABLE = "mutable"
+          NEW = "new"
+          NONREC = "nonrec"
+          OBJECT = "object"
+          OF = "of"
+          OPEN = "open"
+          OR = "or"
+          REC = "rec"
+          SIG = "sig"
+          STRUCT = "struct"
+          THEN = "then"
+          TO = "to"
+          TRY = "try"
+          TYPE = "type"
+          VAL = "val"
+          VIRTUAL = "virtual"
+          WHEN = "when"
+          WHILE = "while"
+          WITH = "with"
+          LBRACELESS = "{<"
+          GREATERRBRACE = ">}"
+
+          MOD = "mod"
+          LAND = "land"
+          LOR = "lor"
+          LXOR = "lxor"
+          LSL = "lsl"
+          LSR = "lsr"
+          ASR = "asr"
+
+          TRUE = "true"
+          FALSE = "false"
+
+          METHOD = "method"
+          PRIVATE = "private"
+          MATCH = "match"
+
+          UNDERSCORE = "_"
+
+          SHORTCUT = "::"
+          RIGHT_ARROW = "->"
+          LEFT_ARROW = "<-"
+          LARRAY = "[|"
+          RARRAY = "|]"
+
+          EQ = "="
+          NOT_EQ = "!="
+          COLON_EQ = ":="
+          COLON_GT = ":>"
+          SEMISEMI = ";;"
+          L_OR = "||"
+          L_AND = "&&"
+
+          CARRET = "^"
+          MINUSDOT = "-."
+          PLUS = "+"
+          MINUS = "-"
+          SLASH = "/"
+          STAR = "*"
+
+          COMMA = ","
+          COLON = ":"
+          SEMI = ";"
+          SINGLE_QUOTE = "'"
+          DOTDOT = ".."
+          DOT = "."
+          PIPE = "|"
+          LPAREN = "("
+          RPAREN = ")"
+          LBRACE = "{"
+          RBRACE = "}"
+          LBRACKET = "["
+          RBRACKET = "]"
+          ARROBASE = "@"
+          SHARP = "#"
+          QUESTION_MARK = "?"
+          EXCLAMATION_MARK = "!"
+          DOLLAR = "$"
+          BACKTICK = "`"
+          TILDE = "~"
+          AMPERSAND = "&"
+
+          PERCENT = "%"
+
+          LT = "<"
+          GT = ">"
+
+          LBRACKETGREATER = "[>"
+          LBRACKETLESS = "[<"
+    ]
 }
 
-file ::= empty
+// https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
+//unit-interface ::=  { specification [SEMISEMI] }*
+unit-implementation ::= [ module-items ]
 
-empty ::=
+//module-items ::= "A"
+
+//specification ::= "A"
