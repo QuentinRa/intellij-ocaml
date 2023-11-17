@@ -151,25 +151,19 @@ directive-argument ::= string-literal
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
 // fixme: ranges are incorrect
-integer-literal ::= [MINUS] (DIGIT) { DIGIT | UNDERSCORE }*
-  |  [MINUS] ("0x" | "0X") (DIGIT | UCHAR | LCHAR) { DIGIT | UCHAR | LCHAR | UNDERSCORE }*
-  |  [MINUS] ("0o" | "0O") (DIGIT) { DIGIT | UNDERSCORE }*
-  |  [MINUS] ("0b" | "0B") (DIGIT) { DIGIT | UNDERSCORE }*
-
-int32-literal ::=  integer-literal "l"
-
-int64-literal ::=  integer-literal "L"
-
-nativeint-literal ::=  integer-literal "n"
+integer-literal ::= (DIGIT) { DIGIT | UNDERSCORE }*
+  |  ("0x" | "0X") (DIGIT | UCHAR | LCHAR) { DIGIT | UCHAR | LCHAR | UNDERSCORE }*
+  |  ("0o" | "0O") (DIGIT) { DIGIT | UNDERSCORE }*
+  |  ("0b" | "0B") (DIGIT) { DIGIT | UNDERSCORE }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
 // fixme: ranges are incorrect
 // Add to change the expression as the parser would parse an "int" as a "float" otherwise
 // (it doesn't follow the rule of the longest)
 float-literal ::=
-  [MINUS] (DIGIT) { DIGIT | UNDERSCORE }* DOT { DIGIT | UNDERSCORE }*
-  | [MINUS] (DIGIT) { DIGIT | UNDERSCORE }* DOT { DIGIT | UNDERSCORE }* ("e" | "E") [PLUS | MINUS] (DIGIT) { DIGIT | UNDERSCORE }*
-  | [MINUS] ("0x" | "0X") (DIGIT | UCHAR | LCHAR) { DIGIT | UCHAR | LCHAR | UNDERSCORE }*  [DOT { DIGIT | UCHAR | LCHAR | UNDERSCORE }*] [("p" | "P") [PLUS | MINUS] (DIGIT) { DIGIT | UNDERSCORE }*]
+  (DIGIT) { DIGIT | UNDERSCORE }* DOT { DIGIT | UNDERSCORE }*
+  | (DIGIT) { DIGIT | UNDERSCORE }* DOT { DIGIT | UNDERSCORE }* ("e" | "E") [PLUS | MINUS] (DIGIT) { DIGIT | UNDERSCORE }*
+  | ("0x" | "0X") (DIGIT | UCHAR | LCHAR) { DIGIT | UCHAR | LCHAR | UNDERSCORE }*  [DOT { DIGIT | UCHAR | LCHAR | UNDERSCORE }*] [("p" | "P") [PLUS | MINUS] (DIGIT) { DIGIT | UNDERSCORE }*]
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:character-literals
 // fixme: ranges are incorrect

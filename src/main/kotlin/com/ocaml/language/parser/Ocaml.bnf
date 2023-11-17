@@ -151,58 +151,71 @@ private internal_ident ::= IDENT | LOWERCASE_IDENT | CAPITALIZED_IDENT
 unit-interface ::=  { specification [SEMISEMI] }+
 unit-implementation ::= [ module-items ]
 
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
+integer-literal ::= [MINUS] INTEGER_VALUE
+int32-literal ::=  integer-literal "l"
+int64-literal ::=  integer-literal "L"
+nativeint-literal ::=  integer-literal "n"
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
+float-literal ::= [MINUS] FLOAT_VALUE
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:character-literals
+char-literal ::= CHAR_VALUE
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
+string-literal ::= STRING_VALUE
+
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
-private label-name ::= LOWERCASE_IDENT
-
-private label ::=  TILDE label-name COLON
-
-private optlabel ::=  QUESTION_MARK label-name COLON
+label-name ::= LOWERCASE_IDENT
+label ::=  TILDE label-name COLON
+optlabel ::=  QUESTION_MARK label-name COLON
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
 // [CHANGE]: removed PIPE from core-operator-char
 // [CHANGE]: removed linenum-directive
-private infix-symbol ::= (core-operator-char | PERCENT | LT) { operator-char }*
+infix-symbol ::= (core-operator-char | PERCENT | LT) { operator-char }*
   |  SHARP { operator-char }+
 
-private prefix-symbol ::= EXCLAMATION_MARK { operator-char }*
+prefix-symbol ::= EXCLAMATION_MARK { operator-char }*
   |  (QUESTION_MARK | TILDE) { operator-char }+
 
-private operator-char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core-operator-char | PERCENT | LT | COLON | DOT
+operator-char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core-operator-char | PERCENT | LT | COLON | DOT
 
-private core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
+core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
 
 //linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
-private value-name ::= LOWERCASE_IDENT
+value-name ::= LOWERCASE_IDENT
   |  LPAREN operator-name RPAREN
 
-private operator-name ::= prefix-symbol | infix-op
+operator-name ::= prefix-symbol | infix-op
 
-private infix-op ::= infix-symbol
+infix-op ::= infix-symbol
   |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
   |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
 
-private constr-name ::= CAPITALIZED_IDENT
+constr-name ::= CAPITALIZED_IDENT
 
-private tag-name ::= CAPITALIZED_IDENT
+tag-name ::= CAPITALIZED_IDENT
 
-private typeconstr-name ::= LOWERCASE_IDENT
+typeconstr-name ::= LOWERCASE_IDENT
 
-private field-name ::= LOWERCASE_IDENT
+field-name ::= LOWERCASE_IDENT
 
-private module-name ::= CAPITALIZED_IDENT
+module-name ::= CAPITALIZED_IDENT
 
-private modtype-name ::= IDENT
+modtype-name ::= IDENT
 
-private class-name ::= LOWERCASE_IDENT
+class-name ::= LOWERCASE_IDENT
 
-private inst-var-name ::= LOWERCASE_IDENT
+inst-var-name ::= LOWERCASE_IDENT
 
-private method-name ::= LOWERCASE_IDENT
+method-name ::= LOWERCASE_IDENT
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
-private value-path ::= [ module-path DOT ] value-name
+value-path ::= [ module-path DOT ] value-name
 
 constr ::= [ module-path DOT ] constr-name
 
@@ -274,15 +287,13 @@ tag-spec-full ::= BACKTICK tag-name [ OF [AMPERSAND] typexpr { AMPERSAND typexpr
   |  typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
-// fixme: It seems order is important (float -> int)
-private constant ::=
-     float-literal
-  |  char-literal
-  |  string-literal
-  |  integer-literal
+private constant ::= integer-literal
   |  int32-literal
   |  int64-literal
   |  nativeint-literal
+  |  float-literal
+  |  char-literal
+  |  string-literal
   |  constr
   |  FALSE
   |  TRUE
