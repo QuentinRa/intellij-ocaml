@@ -244,7 +244,6 @@ public interface OCamlTypes {
   IElementType FUNCTOR = new OCamlTokenType("functor");
   IElementType GREATERRBRACE = new OCamlTokenType(">}");
   IElementType GT = new OCamlTokenType(">");
-  IElementType IDENT = new OCamlTokenType("ident");
   IElementType IF = new OCamlTokenType("if");
   IElementType IN = new OCamlTokenType("in");
   IElementType INCLUDE = new OCamlTokenType("include");

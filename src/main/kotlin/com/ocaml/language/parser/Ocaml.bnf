@@ -152,7 +152,7 @@ file ::= COMMENT
 
 // INTERNAL TOKENS THAT WERE NOT IN THE  DOCUMENTATION
 // otherwise lowercase and capitalized are not recognized as ident
-private internal_ident ::= IDENT | LOWERCASE_IDENT | CAPITALIZED_IDENT
+private ident ::= LOWERCASE_IDENT | CAPITALIZED_IDENT
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-interface ::=  { specification [SEMISEMI] }+
@@ -213,7 +213,7 @@ field-name ::= LOWERCASE_IDENT
 
 module-name ::= CAPITALIZED_IDENT
 
-modtype-name ::= IDENT
+modtype-name ::= ident
 
 class-name ::= LOWERCASE_IDENT
 
@@ -275,7 +275,7 @@ typexpr ::= ident_typexpr
 | polymorphic-variant-type_typexpr
 
 poly-typexpr ::= typexpr
-  |  { SINGLE_QUOTE internal_ident }+ DOT typexpr
+  |  { SINGLE_QUOTE ident }+ DOT typexpr
 
 method-type ::= method-name COLON poly-typexpr
 
@@ -498,7 +498,7 @@ type-representation ::=
 type-params ::= type-param
   |  LPAREN type-param { COMMA type-param } RPAREN
 
-type-param ::= [ext-variance] SINGLE_QUOTE internal_ident
+type-param ::= [ext-variance] SINGLE_QUOTE ident
 
 ext-variance ::= variance [injectivity]
   |  injectivity [variance]
@@ -582,7 +582,7 @@ class-definition ::= CLASS class-binding { AND class-binding }*
 
 class-binding ::= [VIRTUAL] [[ type-parameters ]] class-name { parameter } [ COLON class-type] EQ class_expr
 
-type-parameters ::= SINGLE_QUOTE internal_ident { COMMA SINGLE_QUOTE internal_ident }
+type-parameters ::= SINGLE_QUOTE ident { COMMA SINGLE_QUOTE ident }
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-spec
 class-specification ::= CLASS class-spec { AND class-spec }*

@@ -2063,6 +2063,17 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // LOWERCASE_IDENT | CAPITALIZED_IDENT
+  static boolean ident(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ident")) return false;
+    if (!nextTokenIs(b, "", CAPITALIZED_IDENT, LOWERCASE_IDENT)) return false;
+    boolean r;
+    r = consumeToken(b, LOWERCASE_IDENT);
+    if (!r) r = consumeToken(b, CAPITALIZED_IDENT);
+    return r;
+  }
+
+  /* ********************************************************** */
   // infix-symbol
   //   |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
   //   |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
@@ -2254,17 +2265,6 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "integer_literal_0")) return false;
     consumeToken(b, MINUS);
     return true;
-  }
-
-  /* ********************************************************** */
-  // IDENT | LOWERCASE_IDENT | CAPITALIZED_IDENT
-  static boolean internal_ident(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "internal_ident")) return false;
-    boolean r;
-    r = consumeToken(b, IDENT);
-    if (!r) r = consumeToken(b, LOWERCASE_IDENT);
-    if (!r) r = consumeToken(b, CAPITALIZED_IDENT);
-    return r;
   }
 
   /* ********************************************************** */
@@ -2591,14 +2591,14 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENT
+  // ident
   public static boolean modtype_name(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modtype_name")) return false;
-    if (!nextTokenIs(b, IDENT)) return false;
+    if (!nextTokenIs(b, "<modtype name>", CAPITALIZED_IDENT, LOWERCASE_IDENT)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, IDENT);
-    exit_section_(b, m, MODTYPE_NAME, r);
+    Marker m = enter_section_(b, l, _NONE_, MODTYPE_NAME, "<modtype name>");
+    r = ident(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
@@ -2606,7 +2606,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   // [ extended-module-path DOT ] modtype-name
   public static boolean modtype_path(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modtype_path")) return false;
-    if (!nextTokenIs(b, "<modtype path>", CAPITALIZED_IDENT, IDENT)) return false;
+    if (!nextTokenIs(b, "<modtype path>", CAPITALIZED_IDENT, LOWERCASE_IDENT)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MODTYPE_PATH, "<modtype path>");
     r = modtype_path_0(b, l + 1);
@@ -3146,7 +3146,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // typexpr
-  //   |  { SINGLE_QUOTE internal_ident }+ DOT typexpr
+  //   |  { SINGLE_QUOTE ident }+ DOT typexpr
   public static boolean poly_typexpr(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "poly_typexpr")) return false;
     boolean r;
@@ -3157,7 +3157,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // { SINGLE_QUOTE internal_ident }+ DOT typexpr
+  // { SINGLE_QUOTE ident }+ DOT typexpr
   private static boolean poly_typexpr_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "poly_typexpr_1")) return false;
     boolean r;
@@ -3169,7 +3169,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // { SINGLE_QUOTE internal_ident }+
+  // { SINGLE_QUOTE ident }+
   private static boolean poly_typexpr_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "poly_typexpr_1_0")) return false;
     boolean r;
@@ -3184,13 +3184,13 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // SINGLE_QUOTE internal_ident
+  // SINGLE_QUOTE ident
   private static boolean poly_typexpr_1_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "poly_typexpr_1_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, SINGLE_QUOTE);
-    r = r && internal_ident(b, l + 1);
+    r = r && ident(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -4101,14 +4101,14 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [ext-variance] SINGLE_QUOTE internal_ident
+  // [ext-variance] SINGLE_QUOTE ident
   public static boolean type_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_param")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, TYPE_PARAM, "<type param>");
     r = type_param_0(b, l + 1);
     r = r && consumeToken(b, SINGLE_QUOTE);
-    r = r && internal_ident(b, l + 1);
+    r = r && ident(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -4121,26 +4121,26 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SINGLE_QUOTE internal_ident { COMMA SINGLE_QUOTE internal_ident }
+  // SINGLE_QUOTE ident { COMMA SINGLE_QUOTE ident }
   public static boolean type_parameters(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_parameters")) return false;
     if (!nextTokenIs(b, SINGLE_QUOTE)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, SINGLE_QUOTE);
-    r = r && internal_ident(b, l + 1);
+    r = r && ident(b, l + 1);
     r = r && type_parameters_2(b, l + 1);
     exit_section_(b, m, TYPE_PARAMETERS, r);
     return r;
   }
 
-  // COMMA SINGLE_QUOTE internal_ident
+  // COMMA SINGLE_QUOTE ident
   private static boolean type_parameters_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_parameters_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, COMMA, SINGLE_QUOTE);
-    r = r && internal_ident(b, l + 1);
+    r = r && ident(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -6233,7 +6233,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   // modtype-path
   public static boolean modtype_module_type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modtype_module_type")) return false;
-    if (!nextTokenIsSmart(b, CAPITALIZED_IDENT, IDENT)) return false;
+    if (!nextTokenIsSmart(b, CAPITALIZED_IDENT, LOWERCASE_IDENT)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, MODTYPE_MODULE_TYPE, "<modtype module type>");
     r = modtype_path(b, l + 1);
@@ -6977,7 +6977,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
         r = true;
         exit_section_(b, l, m, TYPECONSTR_TYPEXPR, r, true, null);
       }
-      else if (g < 8 && parseTokensSmart(b, 0, AS, SINGLE_QUOTE, IDENT)) {
+      else if (g < 8 && as_typexpr_0(b, l + 1)) {
         r = true;
         exit_section_(b, l, m, AS_TYPEXPR, r, true, null);
       }
@@ -6999,7 +6999,8 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     if (!nextTokenIsSmart(b, SINGLE_QUOTE)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokensSmart(b, 0, SINGLE_QUOTE, IDENT);
+    r = consumeTokenSmart(b, SINGLE_QUOTE);
+    r = r && ident(b, l + 1);
     exit_section_(b, m, IDENT_TYPEXPR, r);
     return r;
   }
@@ -7073,6 +7074,17 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeTokenSmart(b, COMMA);
     r = r && typexpr(b, l + 1, -1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // AS SINGLE_QUOTE ident
+  private static boolean as_typexpr_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "as_typexpr_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokensSmart(b, 0, AS, SINGLE_QUOTE);
+    r = r && ident(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
