@@ -193,34 +193,6 @@ private string-character ::= regular-string-char
   |  "\\u" { { DIGIT | UCHAR | LCHAR }+ }
   |  "\\newline" { "space" | "tab" }
 
-// https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
-private pattern_terminal ::= value-name
-    |  UNDERSCORE
-    |  constant
-    |  LPAREN pattern RPAREN
-    |  LPAREN pattern COLON typexpr RPAREN
-    |  constr pattern
-    |  BACKTICK tag-name pattern
-    |  SHARP typeconstr
-    |  LBRACE field [COLON typexpr] [EQ pattern] { SEMI field [COLON typexpr] [EQ pattern]}* [SEMI UNDERSCORE ] [ SEMI ] RBRACE
-    |  LBRACKET pattern { SEMI pattern } [ SEMI ] RBRACKET
-    |  LARRAY pattern { SEMI pattern } [ SEMI ] RARRAY
-    |  char-literal DOTDOT char-literal
-    |  LAZY pattern
-    |  EXCEPTION pattern
-    |  module-path DOT LPAREN pattern RPAREN
-    |  module-path DOT LBRACKET pattern RBRACKET
-    |  module-path DOT LARRAY pattern RARRAY
-    |  module-path DOT LBRACE pattern RBRACE
-
-private pattern_non_terminal ::=
-    AS value-name
-    | PIPE pattern
-    | { COMMA pattern }+
-    | SHORTCUT pattern
-
-private pattern ::= pattern_terminal pattern* [pattern_non_terminal]
-
 // https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
 if_condition ::= expr
 then_expr ::= expr

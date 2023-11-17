@@ -1,3 +1,4 @@
+//noinspection BnfUnusedRuleForFile
 {
   parserClass="com.ocaml.language.parser.OCamlParser"
   parserUtilClass="com.ocaml.language.parser.OCamlParserUtils"
@@ -134,6 +135,7 @@
     ]
 
   extends(".*typexpr")=typexpr
+  extends(".*pattern")=pattern
 }
 
 // See also: https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:keywords
@@ -147,23 +149,6 @@ private internal_ident ::= IDENT | LOWERCASE_IDENT | CAPITALIZED_IDENT
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-interface ::=  { specification [SEMISEMI] }+
 unit-implementation ::= [ module-items ]
-
-// https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
-private specification ::=
-    VAL value-name COLON typexpr
-  | EXTERNAL value-name COLON typexpr EQ external-declaration
-  | type-definition
-  | EXCEPTION constr-decl
-  | class-specification
-  | classtype-definition
-  | MODULE module-name COLON module-type
-  | MODULE module-name { ( module-name COLON module-type ) }* COLON module-type
-  | MODULE TYPE modtype-name
-  | MODULE type modtype-name EQ module-type
-  | open_stmt
-  | INCLUDE module-type
-  | recursive_module_extension_spec
-  | generalized_open_statements_spec
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
 private label-name ::= LOWERCASE_IDENT
@@ -297,7 +282,7 @@ private constant ::=
   |  int32-literal
   |  int64-literal
   |  nativeint-literal
-  |  constr
+  | constr
   |  FALSE
   |  TRUE
   |  LPAREN RPAREN
@@ -307,3 +292,48 @@ private constant ::=
   |  BACKTICK tag-name
 
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
+value_pattern ::= value-name
+underscore_pattern ::= UNDERSCORE
+constant_pattern ::= constant
+as_pattern ::= pattern as value-name
+brace_pattern ::= LPAREN pattern RPAREN
+brace_type_pattern ::= LPAREN pattern COLON typexpr RPAREN
+pattern_pipe_pattern ::= pattern PIPE pattern
+constr_pattern ::= constr pattern
+backtick_pattern ::= BACKTICK tag-name pattern
+sharp_pattern ::= SHARP typeconstr
+comma_pattern ::= pattern { COMMA pattern }+
+brace_field_pattern ::= LBRACE field [COLON typexpr] [EQ pattern]{ SEMI field [COLON typexpr] [EQ pattern]}* [SEMI UNDERSCORE] [ SEMI ] RBRACE
+bracket_pattern ::= LBRACKET pattern { SEMI pattern }* [ SEMI ] RBRACKET
+shortcut_pattern ::= pattern SHORTCUT pattern
+larray_pattern ::= LARRAY pattern { SEMI pattern }* [ SEMI ] RARRAY
+lazy_pattern ::= LAZY pattern
+exception_pattern ::= EXCEPTION pattern
+module_path_paren_pattern ::= module-path DOT LPAREN pattern RPAREN
+module_path_bracket_pattern ::= module-path DOT LBRACKET pattern RBRACKET
+module_path_array_pattern ::= module-path DOT LARRAY pattern RARRAY
+module_path_brace_pattern ::= module-path DOT LBRACE pattern RBRACE
+char-literal_pattern ::= char-literal DOTDOT char-literal
+
+pattern ::= value_pattern
+  |  underscore_pattern
+  |  constant_pattern
+  |  as_pattern
+  |  brace_pattern
+  |  brace_type_pattern
+  |  pattern_pipe_pattern
+  |  constr_pattern
+  |  backtick_pattern
+  |  sharp_pattern
+  |  comma_pattern
+  |  brace_field_pattern
+  |  bracket_pattern
+  |  shortcut_pattern
+  |  larray_pattern
+  |  char-literal_pattern
+  |  lazy_pattern
+  |  exception_pattern
+  |  module_path_paren_pattern
+  |  module_path_bracket_pattern
+  |  module_path_array_pattern
+  |  module_path_brace_pattern
