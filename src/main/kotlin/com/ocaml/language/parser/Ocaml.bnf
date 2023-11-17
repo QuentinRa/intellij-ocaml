@@ -520,6 +520,31 @@ class-field-spec ::= INHERIT class-body-type
   |   CONSTRAINT typexpr EQ typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-expr
+class-expr ::=
+    class-path
+  | [ typexpr { COMMA typexpr }* ] class-path
+  | LPAREN class-expr RPAREN
+  | LPAREN class-expr COLON class-type RPAREN
+  | class-expr { argument }+
+  | FUN { parameter }+ RIGHT_ARROW class-expr
+  | LET [REC] let-binding { AND let-binding }* IN class-expr
+  | OBJECT class-body END
+  | LET OPEN module-path IN class-expr
+
+class-field ::= INHERIT class-expr [AS LOWERCASE_IDENT]
+  |   INHERIT EXCLAMATION_MARK class-expr [AS LOWERCASE_IDENT]
+  |   VAL [MUTABLE] inst-var-name [COLON typexpr] EQ expr
+  |   VAL EXCLAMATION_MARK [MUTABLE] inst-var-name [COLON typexpr] EQ expr
+  |   VAL [MUTABLE] VIRTUAL inst-var-name COLON typexpr
+  |   VAL VIRTUAL MUTABLE inst-var-name COLON typexpr
+  |   METHOD [PRIVATE] method-name { parameter }* [COLON typexpr] EQ expr
+  |   METHOD EXCLAMATION_MARK [PRIVATE] method-name { parameter }* [COLON typexpr] EQ expr
+  |   METHOD [PRIVATE] method-name COLON poly-typexpr EQ expr
+  |   METHOD EXCLAMATION_MARK [PRIVATE] method-name COLON poly-typexpr EQ expr
+  |   METHOD [PRIVATE] VIRTUAL method-name COLON poly-typexpr
+  |   METHOD VIRTUAL PRIVATE method-name COLON poly-typexpr
+  |   CONSTRAINT typexpr EQ typexpr
+  |   INITIALIZER expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
 class-body ::=   [( pattern [COLON typexpr] )] { class-field }*
@@ -540,3 +565,74 @@ class-spec ::= [VIRTUAL] [[ type-parameters ]] class-name COLON class-type
 classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
 
 classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type
+
+// https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
+module-type ::= modtype-path
+  |  SIG { specification [SEMISEMI] }* END
+  |  FUNCTOR ( module-name COLON module-type ) RIGHT_ARROW module-type
+  |  module-type RIGHT_ARROW module-type
+  |  module-type WITH mod-constraint { AND mod-constraint }*
+  |  LPAREN module-type RPAREN
+
+mod-constraint ::= TYPE [type-params] typeconstr type-equation { type-constraint }
+  |  MODULE module-path EQ extended-module-path
+
+specification ::= VAL value-name COLON typexpr
+  | EXTERNAL value-name COLON typexpr EQ external-declaration
+  | type-definition
+  | EXCEPTION constr-decl
+  | class-specification
+  | classtype-definition
+  | MODULE module-name COLON module-type
+  | MODULE module-name { ( module-name COLON module-type ) }* COLON module-type
+  | MODULE TYPE modtype-name
+  | MODULE type modtype-name EQ module-type
+  | OPEN module-path
+  | INCLUDE module-type
+  | recursive_module_extension_spec
+  | generalized_open_statements_spec
+
+// https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
+module-expr ::= module-path
+  |  STRUCT [ module-items ] END
+  |  FUNCTOR ( module-name COLON module-type ) RIGHT_ARROW module-expr
+  |  module-expr LPAREN module-expr RPAREN
+  |  LPAREN module-expr RPAREN
+  |  LPAREN module-expr COLON module-type RPAREN
+
+module-items ::= { SEMISEMI }* ( definition | expr ) { { SEMISEMI }* ( definition | SEMISEMI expr) }* { SEMISEMI }*
+
+definition ::= LET [REC] let-binding { AND let-binding }*
+  | EXTERNAL value-name COLON typexpr EQ external-declaration
+  | type-definition
+  | exception-definition
+  | class-definition
+  | classtype-definition
+  | MODULE module-name { ( module-name COLON module-type ) }* [ COLON module-type ] EQ module-expr
+  | MODULE TYPE modtype-name EQ module-type
+  | OPEN module-path
+  | INCLUDE module-expr
+  | recursive_module_extension_def
+  | generalized_open_statements_def
+
+external-declaration ::= string-literal [ string-literal [ string-literal ] ]
+
+// https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
+recursive_module_extension_def ::=
+    MODULE REC module-name COLON module-type EQ module-expr { AND module-name COLON module-type EQ module-expr } *
+
+recursive_module_extension_spec ::=
+    MODULE REC module-name COLON module-type { AND module-name COLON module-type } *
+
+// https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
+private generalized_open_statements_def ::=
+  OPEN module-expr
+  |   OPEN! module-expr
+
+private generalized_open_statements_spec ::=
+  OPEN extended-module-path
+  | OPEN! extended-module-path
+
+private generalized_open_statements_expr ::=
+  LET OPEN module-expr IN expr
+ | LET OPEN EXCLAMATION_MARK module-expr IN expr
