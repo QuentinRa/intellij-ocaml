@@ -283,7 +283,7 @@ private constant ::=
   |  int32-literal
   |  int64-literal
   |  nativeint-literal
-  | constr
+  |  constr
   |  FALSE
   |  TRUE
   |  LPAREN RPAREN
@@ -364,7 +364,6 @@ assert_expr ::= ASSERT expr
 match_expr ::= MATCH expr WITH pattern-matching
 infix_op_expr ::= expr infix-op expr
 local-open_expr ::= local-open
-object-expr_expr ::= object-expr
 dot_field_left_arrow_expr ::= expr DOT field LEFT_ARROW expr
 dot_field_expr ::= expr DOT field
 dot_paren_expr ::= DOT LPAREN expr RPAREN
@@ -421,7 +420,7 @@ expr ::= value_path_expr
   |  assert_expr
   |  lazy_expr
   |  local-open_expr
-  |  object-expr_expr
+  |  object_expr_internal_rec_expr | object_expr_internal_expr
 
 argument ::= expr
   |  TILDE label-name
@@ -431,6 +430,10 @@ argument ::= expr
 
 pattern_expr ::= pattern [WHEN expr] RIGHT_ARROW expr
 pattern-matching ::= [ PIPE ] pattern_expr { PIPE pattern_expr }*
+
+let-binding ::= pattern EQ expr
+  |  value-name { parameter }* [COLON typexpr] [COLON_GT typexpr] EQ expr
+  |  value-name COLON poly-typexpr EQ expr
 
 parameter ::= pattern
   |  TILDE label-name
@@ -449,11 +452,91 @@ local-open ::=
   |  module-path DOT LBRACE expr RBRACE
   |  module-path DOT LBRACELESS expr GREATERRBRACE
 
-object-expr ::=
-  NEW class-path
-  |  OBJECT class-body END
-// fixme: ...
-//  |  SHARP method-name
-  |  inst-var-name
-  |  inst-var-name LEFT_ARROW expr
-  |  LBRACELESS [ inst-var-name [EQ expr] { SEMI inst-var-name [EQ expr] } [SEMI] ] GREATERRBRACE
+object_expr_internal_rec_expr ::= expr SHARP method-name
+object_expr_internal_expr ::= NEW class-path
+  | OBJECT class-body END
+  | inst-var-name
+  | inst-var-name LEFT_ARROW expr
+  | LBRACELESS [ inst-var-name [EQ expr] { SEMI inst-var-name [EQ expr] } [SEMI] ] GREATERRBRACE
+
+// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
+type-definition ::= TYPE [NONREC] typedef { and_types }*
+
+typedef ::= [type-params] type_name type-information
+
+type_name ::= typeconstr-name
+
+and_types ::= AND typedef
+
+type-information ::= [type-equation] [type-representation] { type-constraint }*
+
+type-equation ::= EQ typexpr
+
+type-representation ::=
+  EQ [PIPE] constr-decl { PIPE constr-decl }*
+  | EQ record-decl
+  | EQ PIPE
+
+type-params ::= type-param
+  |  LPAREN type-param { COMMA type-param } RPAREN
+
+type-param ::= [ext-variance] SINGLE_QUOTE internal_ident
+
+ext-variance ::= variance [injectivity]
+  |  injectivity [variance]
+
+variance ::= PLUS
+  | MINUS
+
+injectivity ::=  EXCLAMATION_MARK
+
+record-decl ::= LBRACE field-decl { SEMI field-decl }* [SEMI] RBRACE
+
+constr-decl ::= (constr-name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [ OF constr-args ]
+
+constr-args ::= typexpr { STAR typexpr }*
+
+field-decl ::= [MUTABLE] field-name COLON poly-typexpr
+
+type-constraint ::= CONSTRAINT typexpr EQ typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
+exception-definition ::= EXCEPTION constr-decl
+  |  EXCEPTION constr-name EQ constr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classes:class-types
+class-type ::= [[QUESTION_MARK] label-name COLON] typexpr RIGHT_ARROW class-type
+  |    class-body-type
+
+class-body-type ::= OBJECT [( typexpr )] { class-field-spec } END
+  | [[ typexpr { COMMA typexpr } ]] classtype-path
+  | LET OPEN module-path IN class-body-type
+
+class-field-spec ::= INHERIT class-body-type
+  |   VAL [MUTABLE] [VIRTUAL] inst-var-name COLON typexpr
+  |   VAL VIRTUAL MUTABLE inst-var-name COLON typexpr
+  |   METHOD [PRIVATE] [VIRTUAL] method-name COLON poly-typexpr
+  |   METHOD VIRTUAL PRIVATE method-name COLON poly-typexpr
+  |   CONSTRAINT typexpr EQ typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-expr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
+class-body ::=   [( pattern [COLON typexpr] )] { class-field }*
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-def
+class-definition ::= CLASS class-binding { AND class-binding }*
+
+class-binding ::= [VIRTUAL] [[ type-parameters ]] class-name { parameter } [ COLON class-type] EQ class-expr
+
+type-parameters ::= SINGLE_QUOTE internal_ident { COMMA SINGLE_QUOTE internal_ident }
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-spec
+class-specification ::= CLASS class-spec { AND class-spec }*
+
+class-spec ::= [VIRTUAL] [[ type-parameters ]] class-name COLON class-type
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
+classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
+
+classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type

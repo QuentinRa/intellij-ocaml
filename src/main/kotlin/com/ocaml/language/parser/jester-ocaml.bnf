@@ -193,71 +193,11 @@ private string-character ::= regular-string-char
   |  "\\u" { { DIGIT | UCHAR | LCHAR }+ }
   |  "\\newline" { "space" | "tab" }
 
-// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
-type-definition ::= TYPE [NONREC] typedef { and_types }*
-
-typedef ::= [type-params] type_name type-information
-
-type_name ::= typeconstr-name
-
-and_types ::= AND typedef
-
-type-information ::= [type-equation] [type-representation] { type-constraint }*
-
-type-equation ::= EQ typexpr
-
-type-representation ::=
-  EQ [PIPE] constr-decl { PIPE constr-decl }*
-  | EQ record-decl
-  | EQ PIPE
-
-type-params ::= type-param
-  |  LPAREN type-param { COMMA type-param } RPAREN
-
-type-param ::= [ext-variance] SINGLE_QUOTE internal_ident
-
-ext-variance ::= variance [injectivity]
-  |  injectivity [variance]
-
-variance ::= PLUS
-  | MINUS
-
-injectivity ::=  EXCLAMATION_MARK
-
-record-decl ::= LBRACE field-decl { SEMI field-decl }* [SEMI] RBRACE
-
-constr-decl ::= (constr-name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [ OF constr-args ]
-
-constr-args ::= typexpr { STAR typexpr }*
-
-field-decl ::= [MUTABLE] field-name COLON poly-typexpr
-
-type-constraint ::= CONSTRAINT typexpr EQ typexpr
-
-// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
-exception-definition ::= EXCEPTION constr-decl
-  |  EXCEPTION constr-name EQ constr
-
-// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classes:class-types
-class-type ::= [[QUESTION_MARK] label-name COLON] typexpr RIGHT_ARROW class-type
-  |    class-body-type
-
-class-body-type ::= OBJECT [( typexpr )] { class-field-spec } END
-  | [[ typexpr { COMMA typexpr } ]] classtype-path
-  | LET OPEN module-path IN class-body-type
-
-class-field-spec ::= INHERIT class-body-type
-  |   VAL [MUTABLE] [VIRTUAL] inst-var-name COLON typexpr
-  |   VAL VIRTUAL MUTABLE inst-var-name COLON typexpr
-  |   METHOD [PRIVATE] [VIRTUAL] method-name COLON poly-typexpr
-  |   METHOD VIRTUAL PRIVATE method-name COLON poly-typexpr
-  |   CONSTRAINT typexpr EQ typexpr
-
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-expr
 private internal_class-expr_rec ::= class-expr_terminal class-expr_non_terminal*
 
 private class-expr_terminal ::= class-path
-  | [ typexpr { COMMA typexpr } ] class-path
+  | [ typexpr { COMMA typexpr }* ] class-path
   | LPAREN class-expr RPAREN
   | LPAREN class-expr COLON class-type RPAREN
   | FUN { parameter }+ RIGHT_ARROW class-expr
@@ -283,26 +223,6 @@ class-field ::= INHERIT class-expr [AS LOWERCASE_IDENT]
   |   METHOD VIRTUAL PRIVATE method-name COLON poly-typexpr
   |   CONSTRAINT typexpr EQ typexpr
   |   INITIALIZER expr
-
-// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
-class-body ::=   [( pattern [COLON typexpr] )] { class-field }*
-
-// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-def
-class-definition ::= CLASS class-binding { AND class-binding }*
-
-class-binding ::= [VIRTUAL] [[ type-parameters ]] class-name { parameter } [ COLON class-type] EQ class-expr
-
-type-parameters ::= SINGLE_QUOTE internal_ident { COMMA SINGLE_QUOTE internal_ident }
-
-// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-spec
-class-specification ::= CLASS class-spec { AND class-spec }*
-
-class-spec ::= [VIRTUAL] [[ type-parameters ]] class-name COLON class-type
-
-// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
-classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
-
-classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
 private internal_module-type_rec ::= module-type_terminal module-type_non_terminal*
