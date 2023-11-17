@@ -121,16 +121,10 @@
   ]
 }
 
-implementation ::= statement*
-
 // I want to remove these, it's stupid
 private regular-string-char ::= regular-char
 private regular-char ::= LCHAR | UCHAR | DIGIT
 private any-char ::= regular-char
-// otherwise lowercase and capitalized are not recognized as ident
-private internal_ident ::= IDENT | LOWERCASE_IDENT | CAPITALIZED_IDENT
-
-// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:keywords
 
 // https://v2.ocaml.org/releases/4.14/htmlman/toplevel.html
 private statement ::=
@@ -198,147 +192,6 @@ private string-character ::= regular-string-char
   |  escape-sequence
   |  "\\u" { { DIGIT | UCHAR | LCHAR }+ }
   |  "\\newline" { "space" | "tab" }
-
-// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
-label-name ::=  LOWERCASE_IDENT
-
-//noinspection BnfUnusedRule
-label ::=  TILDE label-name COLON
-
-//noinspection BnfUnusedRule
-optlabel ::=  QUESTION_MARK label-name COLON
-
-// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
-private infix-symbol ::= (core-operator-char | PERCENT | LT) { operator-char }*
-  |  SHARP { operator-char }+
-
-private prefix-symbol ::= EXCLAMATION_MARK { operator-char }
-  |  (QUESTION_MARK | TILDE) { operator-char }+
-
-private operator-char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core-operator-char | PERCENT | LT | COLON | DOT
-
-// fixme: ??
-//core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET | PIPE
-private core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
-
-//noinspection BnfUnusedRule
-linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
-
-// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
-private value-name ::= LOWERCASE_IDENT
-  |  LPAREN operator-name RPAREN
-
-private operator-name ::= prefix-symbol | infix-op
-
-private infix-op ::= infix-symbol
-  |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
-  |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
-
-constr-name ::= CAPITALIZED_IDENT
-  {
-    methods = [getName setName]
-    implements = "com.intellij.psi.PsiNamedElement"
-  }
-
-tag-name ::= CAPITALIZED_IDENT
-
-typeconstr-name ::= LOWERCASE_IDENT
-
-field-name ::= LOWERCASE_IDENT
-
-module-name ::= CAPITALIZED_IDENT
-  {
-    methods = [getName setName]
-    implements = "com.intellij.psi.PsiNamedElement"
-  }
-
-modtype-name ::= IDENT
-
-class-name ::= LOWERCASE_IDENT
-
-inst-var-name ::= LOWERCASE_IDENT
-
-method-name ::= LOWERCASE_IDENT
-
-// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
-private value-path ::= [ module-path DOT ] value-name
-
-constr ::= [ module-path DOT ] constr-name
-
-typeconstr ::= [ extended-module-path DOT ] typeconstr-name
-
-field ::= [ module-path DOT ] field-name
-
-modtype-path ::= [ extended-module-path DOT ] modtype-name
-
-class-path ::= [ module-path DOT ] class-name
-
-classtype-path ::= [ extended-module-path DOT ] class-name
-
-module-path ::= module-name { DOT module-name }*
-
-extended-module-path ::= extended-module-name { DOT extended-module-name }*
-
-extended-module-name ::= module-name { ( extended-module-path ) }*
-
-// https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
-private typexpr_terminal ::=
-  SINGLE_QUOTE internal_ident                                           // 'ident
-  | UNDERSCORE                                                          // _
-  | LPAREN typexpr RPAREN                                               // (typexpr)
-  | typeconstr                                                          // typeconstr
-  | LPAREN typexpr { COMMA typexpr }* RPAREN typeconstr                 // (typexpr { , typexpr }) typeconstr
-  | polymorphic-variant-type                                            // polymorphic-variant-type
-  | LT [DOTDOT] GT                                                      // < [..] >
-  | LT method-type { SEMI method-type }* [SEMI PIPE SEMI DOTDOT] GT     // < method-type { ; method-type } [; | ; ..] >
-  | SHARP classtype-path                                                // #classtype-path
-  | LPAREN typexpr { COMMA typexpr }* RPAREN SHARP class-path           // (typexpr { , typexpr } ) #class-path
-
-private typexpr_non_terminal ::=
-    { STAR typexpr }+                                                  // typexpr { * typexpr } +
-    | typeconstr                                                       // typexpr typeconstr
-    | AS SINGLE_QUOTE internal_ident                                   // typexpr as 'ident
-    | RIGHT_ARROW typexpr                                              // [[?] label-name:] typexpr -> typexpr
-    | SHARP class-path                                                 // typexpr #class-path
-
-typexpr ::= [[QUESTION_MARK] label-name COLON] typexpr_terminal typexpr* [typexpr_non_terminal]
-
-poly-typexpr ::= typexpr
-  |  { SINGLE_QUOTE internal_ident }+ DOT typexpr
-
-method-type ::= method-name COLON poly-typexpr
-
-// https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
-polymorphic-variant-type ::= LBRACKET tag-spec-first { PIPE tag-spec } RBRACKET
-  |  LBRACKETGREATER [ tag-spec ] { PIPE tag-spec } RBRACKET
-  |  LBRACKETLESS [PIPE] tag-spec-full { PIPE tag-spec-full } [ GT { BACKTICK tag-name }+ ] RBRACKET
-
-tag-spec-first ::= BACKTICK tag-name [ OF typexpr ]
-  |  [ typexpr ] PIPE tag-spec
-
-tag-spec ::= BACKTICK tag-name [ OF typexpr ]
-  |  typexpr
-
-tag-spec-full ::= BACKTICK tag-name [ OF [AMPERSAND] typexpr { AMPERSAND typexpr } ]
-  |  typexpr
-
-// https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
-// It seems order is important (float -> int).
-private constant ::= float-literal
-  |  char-literal
-  |  string-literal
-  |  integer-literal
-  |  int32-literal
-  |  int64-literal
-  |  nativeint-literal
-  |  constr
-  |  FALSE
-  |  TRUE
-  |  LPAREN RPAREN
-  |  BEGIN END
-  |  LBRACKET RBRACKET
-  |  LARRAY RARRAY
-  |  BACKTICK tag-name
 
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
 private pattern_terminal ::= value-name

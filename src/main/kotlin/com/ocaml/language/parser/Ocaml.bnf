@@ -9,8 +9,8 @@
   psiImplPackage="com.ocaml.language.psi.impl"
   psiImplUtilClass="com.ocaml.language.psi.OCamlImplUtils"
 
-  // generateTokens=false
-  // generateTokenAccessors=true
+  generateTokens=true
+  generateTokenAccessors=false
 
   elementTypeHolderClass="com.ocaml.language.psi.OCamlTypes"
   elementTypeClass="com.ocaml.language.psi.api.OCamlElementType"
@@ -132,13 +132,178 @@
           LBRACKETGREATER = "[>"
           LBRACKETLESS = "[<"
     ]
+
+  extends(".*typexpr")=typexpr
 }
 
-file ::= unit-interface | unit-implementation
+// See also: https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:keywords
+
+file ::= unit-interface //| unit-implementation
+
+// INTERNAL TOKENS THAT WERE NOT IN THE  DOCUMENTATION
+// otherwise lowercase and capitalized are not recognized as ident
+private internal_ident ::= IDENT | LOWERCASE_IDENT | CAPITALIZED_IDENT
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-interface ::=  { specification [SEMISEMI] }+
 unit-implementation ::= [ module-items ]
 
-module-items ::= "A"
-specification ::= "A"
+// https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
+private specification ::=
+    VAL value-name COLON typexpr
+  | EXTERNAL value-name COLON typexpr EQ external-declaration
+  | type-definition
+  | EXCEPTION constr-decl
+  | class-specification
+  | classtype-definition
+  | MODULE module-name COLON module-type
+  | MODULE module-name { ( module-name COLON module-type ) }* COLON module-type
+  | MODULE TYPE modtype-name
+  | MODULE type modtype-name EQ module-type
+  | open_stmt
+  | INCLUDE module-type
+  | recursive_module_extension_spec
+  | generalized_open_statements_spec
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
+private label-name ::= LOWERCASE_IDENT
+
+private label ::=  TILDE label-name COLON
+
+private optlabel ::=  QUESTION_MARK label-name COLON
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
+// [CHANGE]: removed PIPE from core-operator-char
+// [CHANGE]: removed linenum-directive
+private infix-symbol ::= (core-operator-char | PERCENT | LT) { operator-char }*
+  |  SHARP { operator-char }+
+
+private prefix-symbol ::= EXCLAMATION_MARK { operator-char }*
+  |  (QUESTION_MARK | TILDE) { operator-char }+
+
+private operator-char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core-operator-char | PERCENT | LT | COLON | DOT
+
+private core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
+
+//linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
+
+// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
+private value-name ::= LOWERCASE_IDENT
+  |  LPAREN operator-name RPAREN
+
+private operator-name ::= prefix-symbol | infix-op
+
+private infix-op ::= infix-symbol
+  |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
+  |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
+
+private constr-name ::= CAPITALIZED_IDENT
+
+private tag-name ::= CAPITALIZED_IDENT
+
+private typeconstr-name ::= LOWERCASE_IDENT
+
+private field-name ::= LOWERCASE_IDENT
+
+private module-name ::= CAPITALIZED_IDENT
+
+private modtype-name ::= IDENT
+
+private class-name ::= LOWERCASE_IDENT
+
+private inst-var-name ::= LOWERCASE_IDENT
+
+private method-name ::= LOWERCASE_IDENT
+
+// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
+private value-path ::= [ module-path DOT ] value-name
+
+constr ::= [ module-path DOT ] constr-name
+
+typeconstr ::= [ extended-module-path DOT ] typeconstr-name
+
+field ::= [ module-path DOT ] field-name
+
+modtype-path ::= [ extended-module-path DOT ] modtype-name
+
+class-path ::= [ module-path DOT ] class-name
+
+classtype-path ::= [ extended-module-path DOT ] class-name
+
+module-path ::= module-name { DOT module-name }*
+
+extended-module-path ::= extended-module-name { DOT extended-module-name }*
+
+extended-module-name ::= module-name { LPAREN extended-module-path RPAREN }*
+
+// https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
+ident_typexpr ::= SINGLE_QUOTE ident
+underscore_typexpr ::= UNDERSCORE
+parenthesis_typexpr ::= LPAREN typexpr RPAREN
+label_typexpr ::= typexpr RIGHT_ARROW typexpr
+label_opt_typexpr ::= [QUESTION_MARK] label-name COLON typexpr RIGHT_ARROW typexpr
+star_typexpr ::= typexpr { STAR typexpr }+
+typeconstr_typexpr ::= typexpr typeconstr
+comma_typexpr ::= LPAREN typexpr { COMMA typexpr } RPAREN typeconstr
+as_typexpr ::= typexpr AS SINGLE_QUOTE ident
+ltgt_typexpr ::= LT [DOTDOT] GT
+ltgt_method_typexpr ::= LT method-type { SEMI method-type } [SEMI PIPE SEMI DOTDOT] GT
+classtype_typexpr ::= SHARP classtype-path
+classpath_typexpr ::= typexpr SHARP class-path
+paren_sharp_typexpr ::= LPAREN typexpr { COMMA typexpr } RPAREN SHARP class-path
+polymorphic-variant-type_typexpr ::= polymorphic-variant-type
+
+typexpr ::= ident_typexpr
+| underscore_typexpr
+| parenthesis_typexpr
+| label_typexpr | label_opt_typexpr
+| star_typexpr
+| typeconstr_typexpr
+| comma_typexpr
+| as_typexpr
+| ltgt_typexpr
+| ltgt_method_typexpr
+| classtype_typexpr
+| classpath_typexpr
+| paren_sharp_typexpr
+| polymorphic-variant-type_typexpr
+
+poly-typexpr ::= typexpr
+  |  { SINGLE_QUOTE internal_ident }+ DOT typexpr
+
+method-type ::= method-name COLON poly-typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
+polymorphic-variant-type ::= LBRACKET tag-spec-first { PIPE tag-spec }* RBRACKET
+  |  LBRACKETGREATER [ tag-spec ] { PIPE tag-spec }* RBRACKET
+  |  LBRACKETLESS [PIPE] tag-spec-full { PIPE tag-spec-full }* [ GT { BACKTICK tag-name }+ ] RBRACKET
+
+tag-spec-first ::= BACKTICK tag-name [ OF typexpr ]
+  |  [ typexpr ] PIPE tag-spec
+
+tag-spec ::= BACKTICK tag-name [ OF typexpr ]
+  |  typexpr
+
+tag-spec-full ::= BACKTICK tag-name [ OF [AMPERSAND] typexpr { AMPERSAND typexpr }* ]
+  |  typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
+// fixme: It seems order is important (float -> int)
+private constant ::=
+     float-literal
+  |  char-literal
+  |  string-literal
+  |  integer-literal
+  |  int32-literal
+  |  int64-literal
+  |  nativeint-literal
+  |  constr
+  |  FALSE
+  |  TRUE
+  |  LPAREN RPAREN
+  |  BEGIN END
+  |  LBRACKET RBRACKET
+  |  LARRAY RARRAY
+  |  BACKTICK tag-name
+
+// https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
