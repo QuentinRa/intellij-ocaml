@@ -41,46 +41,25 @@ import static com.ocaml.language.psi.OCamlTypes.*;
 
 EOL=\R
 WHITE_SPACE=\s+
-
 NEWLINE=("\r"* "\n")
 
-LCHAR=[a-z]
-UCHAR=[A-Z]
+// basic
+UNDERSCORE="_"
 DIGIT=[0-9]
-
+DIGIT_7=[0-7]
+DIGIT_3=[0-3]
+DIGIT_1=[0-1]
+HEXA_LETTER=[A-Fa-f]
 LOWERCASE=[a-z]
 UPPERCASE=[A-Z]
 IDENTCHAR=[A-Za-z_0-9']
 
-//SYMBOLCHAR= [!$%&*+-./:<=>?@\^|~]
-
-DECIMAL=[0-9]
-DECIMAL_SEP=[0-9_]
-HEXA=[0-9A-Fa-f]
-HEXA_SEP=[0-9A-Fa-f_]
-OCTAL=[0-7]
-OCTAL_SEP=[0-7_]
-
-DECIMAL_LITERAL={DECIMAL} {DECIMAL_SEP}*
-HEXA_LITERAL="0" [xX] {HEXA} {HEXA_SEP}*
-OCT_LITERAL="0" [oO] {OCTAL} {OCTAL_SEP}*
-BIN_LITERAL="0" [bB] [0-1] [0-1_]*
-INT_LITERAL= {DECIMAL_LITERAL} | {HEXA_LITERAL} | {OCT_LITERAL} | {BIN_LITERAL}
-FLOAT_LITERAL={DECIMAL} {DECIMAL_SEP}* ("." {DECIMAL_SEP}* )? ([eE] [+-]? {DECIMAL} {DECIMAL_SEP}* )?
-HEXA_FLOAT_LITERAL="0" [xX] {HEXA} {HEXA_SEP}* ("." {HEXA_SEP}* )? ([pP] [+-]? {DECIMAL} {DECIMAL_SEP}* )?
-LITERAL_MODIFIER=[G-Zg-z]
-
-ESCAPE_BACKSLASH="\\\\"
-ESCAPE_SINGLE_QUOTE="\\'"
-ESCAPE_LF="\\n"
-ESCAPE_TAB="\\t"
-ESCAPE_BACKSPACE="\\b"
-ESCAPE_CR="\\r"
-ESCAPE_QUOTE="\\\""
-ESCAPE_DECIMAL="\\" {DECIMAL} {DECIMAL} {DECIMAL}
-ESCAPE_HEXA="\\x" {HEXA} {HEXA}
-ESCAPE_OCTAL="\\o" [0-3] {OCTAL} {OCTAL}
-ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_TAB} | {ESCAPE_BACKSPACE } | { ESCAPE_CR } | { ESCAPE_QUOTE } | {ESCAPE_DECIMAL} | {ESCAPE_HEXA} | {ESCAPE_OCTAL}
+// aliases
+DIGIT_UNDERSCORE=({DIGIT}|{UNDERSCORE})
+DIGIT_HEXA=({DIGIT}|{HEXA_LETTER})
+DIGIT_HEXA_UNDERSCORE=({DIGIT_HEXA}|{UNDERSCORE})
+DIGIT_1_UNDERSCORE=({DIGIT_1}|{UNDERSCORE})
+DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
 
 %state WAITING_VALUE
 %state INITIAL
@@ -203,6 +182,35 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
   "[<"                { return LBRACKETLESS; }
 
   "\"" { yybegin(IN_STRING); tokenStart(); }
+
+  // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
+  {DIGIT} {DIGIT_UNDERSCORE}* "." {DIGIT_UNDERSCORE} ("e"|"E") ("+"|"-") {DIGIT} {DIGIT_UNDERSCORE}* { return FLOAT_VALUE; }
+  {DIGIT} {DIGIT_UNDERSCORE}* "." {DIGIT_UNDERSCORE} { return FLOAT_VALUE; }
+  ("0x"|"0X") {DIGIT_HEXA} {DIGIT_HEXA_UNDERSCORE} "." {DIGIT_HEXA_UNDERSCORE} ("p"|"P")
+    ("+"|"-") {DIGIT} {DIGIT_UNDERSCORE} { return FLOAT_VALUE; }
+  ("0x"|"0X") {DIGIT_HEXA} {DIGIT_HEXA_UNDERSCORE} "." {DIGIT_HEXA_UNDERSCORE} { return FLOAT_VALUE; }
+
+  // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
+  {DIGIT} {DIGIT_UNDERSCORE}* { return INTEGER_VALUE; }
+  ("0x"|"0X") {DIGIT_HEXA} {DIGIT_HEXA_UNDERSCORE}* { return INTEGER_VALUE; }
+  ("0o"|"0O") {DIGIT_7} {DIGIT_7_UNDERSCORE}* { return INTEGER_VALUE; }
+  ("0b"|"0B") {DIGIT_1} {DIGIT_1_UNDERSCORE}* { return INTEGER_VALUE; }
+
+  // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:character-literals
+  "'" .  "'" { return CHAR_VALUE; }
+  "'" [\\] ([\\\"'nbtr]|space)  "'" { return CHAR_VALUE; }
+  "'" [\\] {DIGIT} {DIGIT} {DIGIT}  "'" { return CHAR_VALUE; }
+  "'" [\\] "x" {DIGIT_HEXA} {DIGIT_HEXA} {DIGIT_HEXA}  "'" { return CHAR_VALUE; }
+  "'" [\\] "o" {DIGIT_3} {DIGIT_7} {DIGIT_7}  "'" { return CHAR_VALUE; }
+
+  // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
+  ({ LOWERCASE } | "_") { IDENTCHAR } * { return LOWERCASE_IDENT; }
+  { UPPERCASE } { IDENTCHAR } * { return CAPITALIZED_IDENT; }
+  ({ UPPERCASE } | { LOWERCASE } | "_") { IDENTCHAR } * { return IDENT; }
+
+  // todo: missing quoted strings
+
+  // todo: these are not valid yet
   "(*" { yybegin(IN_OCAML_ML_COMMENT); inCommentString = false; commentDepth = 1; tokenStart(); }
   // not a normal, empty, comment nor a (*** kind of comment
   "(**" [^*)] { yybegin(IN_OCAML_DOC_COMMENT); inCommentString = false; commentDepth = 1; tokenStart(); }
@@ -210,16 +218,16 @@ ESCAPE_CHAR= {ESCAPE_BACKSLASH} | {ESCAPE_SINGLE_QUOTE} | {ESCAPE_LF} | {ESCAPE_
   "[@" { yybegin(IN_OCAML_ANNOT); inAnnotationDetails = false; tokenStart(); }
 }
 
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
 <IN_STRING> {
     "\"" { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
-    "\\" { NEWLINE } ([ \t] *) { }
-    "\\" [\\\'\"ntbr ] { }
-    "\\" [0-9] [0-9] [0-9] { }
-    "\\" "o" [0-3] [0-7] [0-7] { }
-    "\\" "x" [0-9a-fA-F] [0-9a-fA-F] { }
-    "\\" . { }
-    { NEWLINE } { }
-    . { }
+    [\\] "u{" {DIGIT_HEXA}* "}" { }
+    [\\] "newline" ("space"|"tab") { }
+    [\\] "newline" { }
+    [\\] ([\\\"'nbtr]|space) { }
+    [\\] {DIGIT} {DIGIT} {DIGIT} { }
+    [\\] "x" {DIGIT_HEXA} {DIGIT_HEXA} {DIGIT_HEXA} { }
+    [\\] "o" {DIGIT_3} {DIGIT_7} {DIGIT_7} { }
     <<EOF>> { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
 }
 
