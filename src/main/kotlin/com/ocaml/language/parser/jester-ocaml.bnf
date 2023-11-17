@@ -193,123 +193,12 @@ private string-character ::= regular-string-char
   |  "\\u" { { DIGIT | UCHAR | LCHAR }+ }
   |  "\\newline" { "space" | "tab" }
 
-// https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
-if_condition ::= expr
-then_expr ::= expr
-else_expr ::= expr
-if_else_expr ::= IF if_condition THEN then_expr [ ELSE else_expr ]
-
-while_expr ::= WHILE expr DO expr DONE
-
-assert_condition ::= expr
-assert_expr ::= ASSERT assert_condition
-
-match_expr ::= MATCH expr WITH pattern-matching
-
-private expr_terminal ::= value-path
-  |  constant
-  |  LPAREN expr RPAREN
-  |  BEGIN expr [SEMI] END        // edited while it a problem on my side
-  |  LPAREN expr COLON typexpr RPAREN
-  |  constr expr
-  |  BACKTICK tag-name expr
-  |  LBRACKET expr { SEMI expr } [SEMI] RBRACKET
-  |  LARRAY expr { SEMI expr } [SEMI] RARRAY
-  |  LBRACE field [COLON typexpr] [EQ expr] { SEMI field [COLON typexpr] [EQ expr] }* [SEMI] RBRACE
-  |  LBRACE expr WITH field [ COLON typexpr] [EQ expr] { SEMI field [COLON typexpr] [EQ expr]}* [SEMI] RBRACE
-  |  prefix-symbol expr
-  |  MINUS expr
-  |  MINUSDOT expr
-  |  if_else_expr
-  |  while_expr
-  |  FOR value-name EQ expr ( TO | DOWNTO ) expr DO expr DONE
-  |  match_expr
-  |  FUNCTION pattern-matching
-  |  FUN { parameter }+ [ COLON typexpr ] RIGHT_ARROW expr
-  |  TRY expr WITH pattern-matching
-  |  LET [REC] let-binding { AND let-binding }* IN expr
-  |  LET EXCEPTION constr-decl IN expr
-  |  LET MODULE module-name { ( module-name COLON module-type ) }* [COLON module-type ] EQ module-expr IN expr
-  |  LPAREN expr COLON_GT typexpr RPAREN
-  |  LPAREN expr COLON typexpr COLON_GT typexpr RPAREN
-  |  assert_expr
-  |  LAZY expr
-  |  local-open
-  |  object-expr
-  |  generalized_open_statements_expr
-
-private expr_non_terminal ::=
-  { argument }+
-  | { COMMA expr }+
-  | SHORTCUT expr
-  | infix-op expr
-  | DOT field
-  | DOT field LEFT_ARROW expr
-  | DOT LPAREN expr RPAREN
-  | DOT LPAREN expr RPAREN LEFT_ARROW expr
-  | DOT LBRACKET expr RBRACKET
-  | DOT LBRACKET expr RBRACKET LEFT_ARROW expr
-  | SEMI expr
-
-private expr ::= expr_terminal expr* [expr_non_terminal]
-
-argument ::= expr
-  |  TILDE label-name
-  |  TILDE label-name COLON expr
-  |  QUESTION_MARK label-name
-  |  QUESTION_MARK label-name COLON expr
-
-pattern_expr ::= pattern [WHEN expr] RIGHT_ARROW expr
-pattern-matching ::= [ PIPE ] pattern_expr { PIPE pattern_expr }*
-
-let_binding_name ::= pattern | value-name
-
-private internal_let_binding ::= EQ expr
-    |  { parameter }* [COLON typexpr] [ COLON_GT typexpr] EQ expr
-    |  COLON poly-typexpr EQ expr
-
-let-binding ::= let_binding_name internal_let_binding
-  {
-    methods = [getName setName]
-    implements = ["com.intellij.psi.PsiNamedElement"; "com.intellij.psi.NavigatablePsiElement"]
-  }
-
-parameter ::= pattern
-  |  TILDE label-name
-  |  TILDE ( label-name [COLON typexpr] )
-  |  TILDE label-name COLON pattern
-  |  QUESTION_MARK label-name
-  |  QUESTION_MARK ( label-name [COLON typexpr] [EQ expr] )
-  |  QUESTION_MARK label-name COLON pattern
-  |  QUESTION_MARK label-name COLON ( pattern [COLON typexpr] [EQ expr] )
-
-local-open ::=
-  LET OPEN module-path IN expr
-  |  module-path DOT LPAREN expr RPAREN
-  |  module-path DOT LBRACKET expr RBRACKET
-  |  module-path DOT LARRAY expr RARRAY
-  |  module-path DOT LBRACE expr RBRACE
-  |  module-path DOT LBRACELESS expr GREATERRBRACE
-
-object-expr ::=
-  NEW class-path
-  |  OBJECT class-body END
-// fixme: ...
-//  |  SHARP method-name
-  |  inst-var-name
-  |  inst-var-name LEFT_ARROW expr
-  |  LBRACELESS [ inst-var-name [EQ expr] { SEMI inst-var-name [EQ expr] } [SEMI] ] GREATERRBRACE
-
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
 type-definition ::= TYPE [NONREC] typedef { and_types }*
 
 typedef ::= [type-params] type_name type-information
 
 type_name ::= typeconstr-name
-  {
-    methods = [getName setName]
-    implements = "com.intellij.psi.PsiNamedElement"
-  }
 
 and_types ::= AND typedef
 
