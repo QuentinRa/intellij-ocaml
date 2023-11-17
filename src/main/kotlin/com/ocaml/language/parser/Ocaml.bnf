@@ -1,6 +1,5 @@
 {
-  parserClass="com.ocaml.language.parser.OCamlImplementationParser"
-//  parserClass="com.ocaml.language.parser.OCamlInterfaceParser"
+  parserClass="com.ocaml.language.parser.OCamlParser"
   parserUtilClass="com.ocaml.language.parser.OCamlParserUtils"
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -135,10 +134,11 @@
     ]
 }
 
+file ::= unit-interface | unit-implementation
+
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
-//unit-interface ::=  { specification [SEMISEMI] }*
+unit-interface ::=  { specification [SEMISEMI] }+
 unit-implementation ::= [ module-items ]
 
-//module-items ::= "A"
-
-//specification ::= "A"
+module-items ::= "A"
+specification ::= "A"

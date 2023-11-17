@@ -12,6 +12,8 @@ public interface OCamlTypes {
 
   IElementType MODULE_ITEMS = new OCamlElementType("MODULE_ITEMS");
   IElementType SPECIFICATION = new OCamlElementType("SPECIFICATION");
+  IElementType UNIT_IMPLEMENTATION = new OCamlElementType("UNIT_IMPLEMENTATION");
+  IElementType UNIT_INTERFACE = new OCamlElementType("UNIT_INTERFACE");
 
   IElementType AMPERSAND = new OCamlTokenType("&");
   IElementType AND = new OCamlTokenType("and");
@@ -125,6 +127,12 @@ public interface OCamlTypes {
       }
       else if (type == SPECIFICATION) {
         return new OCamlSpecificationImpl(node);
+      }
+      else if (type == UNIT_IMPLEMENTATION) {
+        return new OCamlUnitImplementationImpl(node);
+      }
+      else if (type == UNIT_INTERFACE) {
+        return new OCamlUnitInterfaceImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

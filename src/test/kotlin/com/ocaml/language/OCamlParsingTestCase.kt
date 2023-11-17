@@ -3,14 +3,14 @@ package com.ocaml.language
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.testFramework.ParsingTestCase
-import com.ocaml.language.parser.OCamlParserImplementationDefinition
+import com.ocaml.language.parser.OCamlParserDefinition
 import com.ocaml.language.psi.file.OCamlFile
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 // PsiErrorElement
 @RunWith(JUnit4::class)
-abstract class OCamlParsingTestCase protected constructor() : ParsingTestCase("", "ml", OCamlParserImplementationDefinition()) {
+abstract class OCamlParsingTestCase protected constructor() : ParsingTestCase("", "ml", OCamlParserDefinition()) {
     protected object TestVariables {
         const val FILE_NAME = "dummy"
         const val OCAML_FILE_QUALIFIED_NAME = "Dummy"

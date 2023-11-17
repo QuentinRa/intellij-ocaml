@@ -12,7 +12,7 @@ import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
-public class OCamlInterfaceParser implements PsiParser, LightPsiParser {
+public class OCamlParser implements PsiParser, LightPsiParser {
 
   public ASTNode parse(IElementType t, PsiBuilder b) {
     parseLight(t, b);
@@ -32,7 +32,17 @@ public class OCamlInterfaceParser implements PsiParser, LightPsiParser {
   }
 
   static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
-    return unit_interface(b, l + 1);
+    return file(b, l + 1);
+  }
+
+  /* ********************************************************** */
+  // unit-interface | unit-implementation
+  static boolean file(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "file")) return false;
+    boolean r;
+    r = unit_interface(b, l + 1);
+    if (!r) r = unit_implementation(b, l + 1);
+    return r;
   }
 
   /* ********************************************************** */
@@ -58,15 +68,29 @@ public class OCamlInterfaceParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // { specification [SEMISEMI] }*
-  static boolean unit_interface(PsiBuilder b, int l) {
+  // [ module-items ]
+  public static boolean unit_implementation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "unit_implementation")) return false;
+    Marker m = enter_section_(b, l, _NONE_, UNIT_IMPLEMENTATION, "<unit implementation>");
+    module_items(b, l + 1);
+    exit_section_(b, l, m, true, false, null);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // { specification [SEMISEMI] }+
+  public static boolean unit_interface(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unit_interface")) return false;
-    while (true) {
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, UNIT_INTERFACE, "<unit interface>");
+    r = unit_interface_0(b, l + 1);
+    while (r) {
       int c = current_position_(b);
       if (!unit_interface_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "unit_interface", c)) break;
     }
-    return true;
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   // specification [SEMISEMI]

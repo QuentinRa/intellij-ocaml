@@ -79,7 +79,7 @@
                   fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
 
         <!-- PARSER -->
-        <lang.parserDefinition language="OCaml" implementationClass="com.ocaml.language.parser.OCamlParserImplementationDefinition"/>
+        <lang.parserDefinition language="OCaml" implementationClass="com.ocaml.language.parser.OCamlParserDefinition"/>
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>

@@ -15,6 +15,14 @@ public class OCamlVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitUnitImplementation(@NotNull OCamlUnitImplementation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitUnitInterface(@NotNull OCamlUnitInterface o) {
+    visitPsiElement(o);
+  }
+
   public void visitPsiElement(@NotNull PsiElement o) {
     visitElement(o);
   }
