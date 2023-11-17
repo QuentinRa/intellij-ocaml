@@ -8,17 +8,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.ocaml.language.psi.OCamlTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.ocaml.language.psi.*;
 
-public class OCamlUnitImplementationImpl extends ASTWrapperPsiElement implements OCamlUnitImplementation {
+public class OCamlTypeExprconstrTypexprImpl extends OCamlTypexprImpl implements OCamlTypeExprconstrTypexpr {
 
-  public OCamlUnitImplementationImpl(@NotNull ASTNode node) {
+  public OCamlTypeExprconstrTypexprImpl(@NotNull ASTNode node) {
     super(node);
   }
 
+  @Override
   public void accept(@NotNull OCamlVisitor visitor) {
-    visitor.visitUnitImplementation(this);
+    visitor.visitTypeExprconstrTypexpr(this);
   }
 
   @Override
@@ -29,8 +29,14 @@ public class OCamlUnitImplementationImpl extends ASTWrapperPsiElement implements
 
   @Override
   @NotNull
-  public List<OCamlModuleItems> getModuleItemsList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, OCamlModuleItems.class);
+  public OCamlTypeconstr getTypeconstr() {
+    return findNotNullChildByClass(OCamlTypeconstr.class);
+  }
+
+  @Override
+  @NotNull
+  public OCamlTypexpr getTypexpr() {
+    return findNotNullChildByClass(OCamlTypexpr.class);
   }
 
 }

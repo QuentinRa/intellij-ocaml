@@ -47,7 +47,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
       IDENT_TYPEXPR, LABEL_OPT_TYPEXPR, LABEL_TYPEXPR, LTGT_METHOD_TYPEXPR,
       LTGT_TYPEXPR, PARENTHESIS_TYPEXPR, PAREN_SHARP_TYPEXPR, POLYMORPHIC_VARIANT_TYPE_TYPEXPR,
       POLY_TYPEXPR, STAR_TYPEXPR, TYPECONSTR_TYPEXPR, TYPEXPR,
-      UNDERSCORE_TYPEXPR),
+      TYPE_EXPRCONSTR_TYPEXPR, UNDERSCORE_TYPEXPR),
     create_token_set_(AS_PATTERN, BACKTICK_PATTERN, BRACE_FIELD_PATTERN, BRACE_PATTERN,
       BRACE_TYPE_PATTERN, BRACKET_PATTERN, CHAR_LITERAL_PATTERN, COMMA_PATTERN,
       CONSTANT_PATTERN, CONSTR_PATTERN, EXCEPTION_PATTERN, LARRAY_PATTERN,
@@ -4327,11 +4327,15 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [ module-items ]
+  // module-items*
   public static boolean unit_implementation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unit_implementation")) return false;
     Marker m = enter_section_(b, l, _NONE_, UNIT_IMPLEMENTATION, "<unit implementation>");
-    module_items(b, l + 1);
+    while (true) {
+      int c = current_position_(b);
+      if (!module_items(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "unit_implementation", c)) break;
+    }
     exit_section_(b, l, m, true, false, null);
     return true;
   }
@@ -6927,15 +6931,16 @@ public class OCamlParser implements PsiParser, LightPsiParser {
   // 3: BINARY(label_typexpr)
   // 4: ATOM(label_opt_typexpr)
   // 5: N_ARY(star_typexpr)
-  // 6: POSTFIX(typeconstr_typexpr)
-  // 7: ATOM(comma_typexpr)
-  // 8: POSTFIX(as_typexpr)
-  // 9: ATOM(ltgt_typexpr)
-  // 10: ATOM(ltgt_method_typexpr)
-  // 11: ATOM(classtype_typexpr)
-  // 12: POSTFIX(classpath_typexpr)
-  // 13: ATOM(paren_sharp_typexpr)
-  // 14: ATOM(polymorphic-variant-type_typexpr)
+  // 6: ATOM(typeconstr_typexpr)
+  // 7: POSTFIX(type_exprconstr_typexpr)
+  // 8: ATOM(comma_typexpr)
+  // 9: POSTFIX(as_typexpr)
+  // 10: ATOM(ltgt_typexpr)
+  // 11: ATOM(ltgt_method_typexpr)
+  // 12: ATOM(classtype_typexpr)
+  // 13: POSTFIX(classpath_typexpr)
+  // 14: ATOM(paren_sharp_typexpr)
+  // 15: ATOM(polymorphic-variant-type_typexpr)
   public static boolean typexpr(PsiBuilder b, int l, int g) {
     if (!recursion_guard_(b, l, "typexpr")) return false;
     addVariant(b, "<typexpr>");
@@ -6945,6 +6950,7 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     if (!r) r = underscore_typexpr(b, l + 1);
     if (!r) r = parenthesis_typexpr(b, l + 1);
     if (!r) r = label_opt_typexpr(b, l + 1);
+    if (!r) r = typeconstr_typexpr(b, l + 1);
     if (!r) r = comma_typexpr(b, l + 1);
     if (!r) r = ltgt_typexpr(b, l + 1);
     if (!r) r = ltgt_method_typexpr(b, l + 1);
@@ -6973,15 +6979,15 @@ public class OCamlParser implements PsiParser, LightPsiParser {
         }
         exit_section_(b, l, m, STAR_TYPEXPR, r, true, null);
       }
-      else if (g < 6 && typeconstr(b, l + 1)) {
+      else if (g < 7 && typeconstr(b, l + 1)) {
         r = true;
-        exit_section_(b, l, m, TYPECONSTR_TYPEXPR, r, true, null);
+        exit_section_(b, l, m, TYPE_EXPRCONSTR_TYPEXPR, r, true, null);
       }
-      else if (g < 8 && as_typexpr_0(b, l + 1)) {
+      else if (g < 9 && as_typexpr_0(b, l + 1)) {
         r = true;
         exit_section_(b, l, m, AS_TYPEXPR, r, true, null);
       }
-      else if (g < 12 && classpath_typexpr_0(b, l + 1)) {
+      else if (g < 13 && classpath_typexpr_0(b, l + 1)) {
         r = true;
         exit_section_(b, l, m, CLASSPATH_TYPEXPR, r, true, null);
       }
@@ -7050,6 +7056,17 @@ public class OCamlParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "label_opt_typexpr_0")) return false;
     consumeTokenSmart(b, QUESTION_MARK);
     return true;
+  }
+
+  // typeconstr
+  public static boolean typeconstr_typexpr(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typeconstr_typexpr")) return false;
+    if (!nextTokenIsSmart(b, CAPITALIZED_IDENT, LOWERCASE_IDENT)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, TYPECONSTR_TYPEXPR, "<typeconstr typexpr>");
+    r = typeconstr(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   // LPAREN typexpr { COMMA typexpr } RPAREN typeconstr

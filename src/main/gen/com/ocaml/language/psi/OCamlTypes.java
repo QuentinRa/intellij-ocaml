@@ -186,6 +186,7 @@ public interface OCamlTypes {
   IElementType TYPE_CONSTRAINT = new OCamlElementType("TYPE_CONSTRAINT");
   IElementType TYPE_DEFINITION = new OCamlElementType("TYPE_DEFINITION");
   IElementType TYPE_EQUATION = new OCamlElementType("TYPE_EQUATION");
+  IElementType TYPE_EXPRCONSTR_TYPEXPR = new OCamlElementType("TYPE_EXPRCONSTR_TYPEXPR");
   IElementType TYPE_INFORMATION = new OCamlElementType("TYPE_INFORMATION");
   IElementType TYPE_NAME = new OCamlElementType("TYPE_NAME");
   IElementType TYPE_PARAM = new OCamlElementType("TYPE_PARAM");
@@ -829,6 +830,9 @@ public interface OCamlTypes {
       }
       else if (type == TYPE_EQUATION) {
         return new OCamlTypeEquationImpl(node);
+      }
+      else if (type == TYPE_EXPRCONSTR_TYPEXPR) {
+        return new OCamlTypeExprconstrTypexprImpl(node);
       }
       else if (type == TYPE_INFORMATION) {
         return new OCamlTypeInformationImpl(node);

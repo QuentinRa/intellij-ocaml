@@ -10,7 +10,4 @@ public interface OCamlTypeconstrTypexpr extends OCamlTypexpr {
   @NotNull
   OCamlTypeconstr getTypeconstr();
 
-  @NotNull
-  OCamlTypexpr getTypexpr();
-
 }

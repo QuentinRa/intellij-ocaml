@@ -707,6 +707,10 @@ public class OCamlVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitTypeExprconstrTypexpr(@NotNull OCamlTypeExprconstrTypexpr o) {
+    visitTypexpr(o);
+  }
+
   public void visitTypeName(@NotNull OCamlTypeName o) {
     visitPsiElement(o);
   }

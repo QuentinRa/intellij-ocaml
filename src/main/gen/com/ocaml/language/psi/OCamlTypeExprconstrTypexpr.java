@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface OCamlUnitImplementation extends PsiElement {
+public interface OCamlTypeExprconstrTypexpr extends OCamlTypexpr {
 
   @NotNull
-  List<OCamlModuleItems> getModuleItemsList();
+  OCamlTypeconstr getTypeconstr();
+
+  @NotNull
+  OCamlTypexpr getTypexpr();
 
 }

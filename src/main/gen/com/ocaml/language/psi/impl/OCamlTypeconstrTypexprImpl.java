@@ -33,10 +33,4 @@ public class OCamlTypeconstrTypexprImpl extends OCamlTypexprImpl implements OCam
     return findNotNullChildByClass(OCamlTypeconstr.class);
   }
 
-  @Override
-  @NotNull
-  public OCamlTypexpr getTypexpr() {
-    return findNotNullChildByClass(OCamlTypexpr.class);
-  }
-
 }

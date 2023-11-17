@@ -206,7 +206,6 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
   ({ LOWERCASE } | "_") { IDENTCHAR } * { return LOWERCASE_IDENT; }
   { UPPERCASE } { IDENTCHAR } * { return CAPITALIZED_IDENT; }
-  ({ UPPERCASE } | { LOWERCASE } | "_") { IDENTCHAR } * { return IDENT; }
 
   // todo: missing quoted strings
 
@@ -228,6 +227,7 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
     [\\] {DIGIT} {DIGIT} {DIGIT} { }
     [\\] "x" {DIGIT_HEXA} {DIGIT_HEXA} {DIGIT_HEXA} { }
     [\\] "o" {DIGIT_3} {DIGIT_7} {DIGIT_7} { }
+    . {}
     <<EOF>> { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
 }
 

@@ -156,7 +156,7 @@ private ident ::= LOWERCASE_IDENT | CAPITALIZED_IDENT
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-interface ::=  { specification [SEMISEMI] }+
-unit-implementation ::= [ module-items ]
+unit-implementation ::= module-items*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
 integer-literal ::= [MINUS] INTEGER_VALUE
@@ -249,7 +249,8 @@ parenthesis_typexpr ::= LPAREN typexpr RPAREN
 label_typexpr ::= typexpr RIGHT_ARROW typexpr
 label_opt_typexpr ::= [QUESTION_MARK] label-name COLON typexpr RIGHT_ARROW typexpr
 star_typexpr ::= typexpr { STAR typexpr }+
-typeconstr_typexpr ::= typexpr typeconstr
+typeconstr_typexpr ::= typeconstr
+type_exprconstr_typexpr ::= typexpr typeconstr
 comma_typexpr ::= LPAREN typexpr { COMMA typexpr } RPAREN typeconstr
 as_typexpr ::= typexpr AS SINGLE_QUOTE ident
 ltgt_typexpr ::= LT [DOTDOT] GT
@@ -264,7 +265,7 @@ typexpr ::= ident_typexpr
 | parenthesis_typexpr
 | label_typexpr | label_opt_typexpr
 | star_typexpr
-| typeconstr_typexpr
+| typeconstr_typexpr | type_exprconstr_typexpr
 | comma_typexpr
 | as_typexpr
 | ltgt_typexpr
