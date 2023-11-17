@@ -1,0 +1,719 @@
+{
+  parserClass="com.ocaml.language.parser.OCamlParser"
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="OCaml"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.ocaml.language.psi"
+  psiImplPackage="com.ocaml.language.psi.impl"
+  psiImplUtilClass="com.ocaml.language.parser.OCamlParserUtils"
+
+  elementTypeHolderClass="com.ocaml.language.psi.OCamlTypes"
+  elementTypeClass="com.ocaml.language.psi.api.OCamlElementType"
+  tokenTypeClass="com.ocaml.language.psi.api.OCamlTokenType"
+
+  tokens = [
+        AND = "and"
+        AS = "as"
+        ASSERT = "assert"
+        BEGIN = "begin"
+        CLASS = "class"
+        CONSTRAINT = "constraint"
+        DO = "do"
+        DONE = "done"
+        DOWNTO = "downto"
+        ELSE = "else"
+        END = "end"
+        EXCEPTION = "exception"
+        EXTERNAL = "external"
+        FOR = "for"
+        FUN = "fun"
+        FUNCTION = "function"
+        FUNCTOR = "functor"
+        IF = "if"
+        IN = "in"
+        INCLUDE = "include"
+        INHERIT = "inherit"
+        INITIALIZER = "initializer"
+        LAZY = "lazy"
+        LET = "let"
+        MODULE = "module"
+        MUTABLE = "mutable"
+        NEW = "new"
+        NONREC = "nonrec"
+        OBJECT = "object"
+        OF = "of"
+        OPEN = "open"
+        OR = "or"
+        REC = "rec"
+        SIG = "sig"
+        STRUCT = "struct"
+        THEN = "then"
+        TO = "to"
+        TRY = "try"
+        TYPE = "type"
+        VAL = "val"
+        VIRTUAL = "virtual"
+        WHEN = "when"
+        WHILE = "while"
+        WITH = "with"
+        LBRACELESS = "{<"
+        GREATERRBRACE = ">}"
+
+        MOD = "mod"
+        LAND = "land"
+        LOR = "lor"
+        LXOR = "lxor"
+        LSL = "lsl"
+        LSR = "lsr"
+        ASR = "asr"
+
+        TRUE = "true"
+        FALSE = "false"
+
+        METHOD = "method"
+        PRIVATE = "private"
+        MATCH = "match"
+
+        UNDERSCORE = "_"
+
+        SHORTCUT = "::"
+        RIGHT_ARROW = "->"
+        LEFT_ARROW = "<-"
+        LARRAY = "[|"
+        RARRAY = "|]"
+
+        EQ = "="
+        NOT_EQ = "!="
+        COLON_EQ = ":="
+        COLON_GT = ":>"
+        SEMISEMI = ";;"
+        L_OR = "||"
+        L_AND = "&&"
+
+        CARRET = "^"
+        MINUSDOT = "-."
+        PLUS = "+"
+        MINUS = "-"
+        SLASH = "/"
+        STAR = "*"
+
+        COMMA = ","
+        COLON = ":"
+        SEMI = ";"
+        SINGLE_QUOTE = "'"
+        DOTDOT = ".."
+        DOT = "."
+        PIPE = "|"
+        LPAREN = "("
+        RPAREN = ")"
+        LBRACE = "{"
+        RBRACE = "}"
+        LBRACKET = "["
+        RBRACKET = "]"
+        ARROBASE = "@"
+        SHARP = "#"
+        QUESTION_MARK = "?"
+        EXCLAMATION_MARK = "!"
+        DOLLAR = "$"
+        BACKTICK = "`"
+        TILDE = "~"
+        AMPERSAND = "&"
+
+        PERCENT = "%"
+
+        LT = "<"
+        GT = ">"
+
+        LBRACKETGREATER = "[>"
+        LBRACKETLESS = "[<"
+
+        LCHAR = "regexp:[a-z]"
+        UCHAR = "regexp:[A-Z]"
+        DIGIT = "regexp:[0-9]"
+  ]
+}
+
+implementation ::= statement*
+
+// I want to remove these, it's stupid
+private regular-string-char ::= regular-char
+private regular-char ::= LCHAR | UCHAR | DIGIT
+private any-char ::= regular-char
+// otherwise lowercase and capitalized are not recognized as ident
+private internal_ident ::= IDENT | LOWERCASE_IDENT | CAPITALIZED_IDENT
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:keywords
+
+// https://v2.ocaml.org/releases/4.14/htmlman/toplevel.html
+private statement ::=
+  { definition }+ [SEMISEMI]
+  | expr [SEMISEMI]
+  // | directive // todo
+  | SEMISEMI
+  | COMMENT | DOC_COMMENT | ANNOTATION // fixme: ++ parser definition
+  // fixme: different parser for a .mli
+  | { specification }+ [SEMISEMI]
+
+directive ::= SHARP IDENT [ directive-argument ] [SEMISEMI]
+
+directive-argument ::= string-literal
+  |  integer-literal
+  |  value-path
+  |  TRUE | FALSE
+
+// https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
+//noinspection BnfUnusedRule
+unit-interface ::=  { specification [SEMISEMI] }
+//noinspection BnfUnusedRule
+unit-implementation ::=  [ module-items ]
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
+//IDENT ::=  (letter | UNDERSCORE) { letter | DIGIT | UNDERSCORE | SINGLE_QUOTE }*
+//CAPITALIZED_IDENT ::=  (UCHAR) { letter | DIGIT | UNDERSCORE | SINGLE_QUOTE }*
+//LOWERCASE_IDENT ::= (LCHAR | UNDERSCORE) { letter | DIGIT | UNDERSCORE | SINGLE_QUOTE }*
+//letter ::=  UCHAR | LCHAR
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
+// fixme: ranges are incorrect
+integer-literal ::= [MINUS] (DIGIT) { DIGIT | UNDERSCORE }*
+  |  [MINUS] ("0x" | "0X") (DIGIT | UCHAR | LCHAR) { DIGIT | UCHAR | LCHAR | UNDERSCORE }*
+  |  [MINUS] ("0o" | "0O") (DIGIT) { DIGIT | UNDERSCORE }*
+  |  [MINUS] ("0b" | "0B") (DIGIT) { DIGIT | UNDERSCORE }*
+
+int32-literal ::=  integer-literal "l"
+
+int64-literal ::=  integer-literal "L"
+
+nativeint-literal ::=  integer-literal "n"
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
+// fixme: ranges are incorrect
+// Add to change the expression as the parser would parse an "int" as a "float" otherwise
+// (it doesn't follow the rule of the longest)
+float-literal ::=
+  [MINUS] (DIGIT) { DIGIT | UNDERSCORE }* DOT { DIGIT | UNDERSCORE }*
+  | [MINUS] (DIGIT) { DIGIT | UNDERSCORE }* DOT { DIGIT | UNDERSCORE }* ("e" | "E") [PLUS | MINUS] (DIGIT) { DIGIT | UNDERSCORE }*
+  | [MINUS] ("0x" | "0X") (DIGIT | UCHAR | LCHAR) { DIGIT | UCHAR | LCHAR | UNDERSCORE }*  [DOT { DIGIT | UCHAR | LCHAR | UNDERSCORE }*] [("p" | "P") [PLUS | MINUS] (DIGIT) { DIGIT | UNDERSCORE }*]
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:character-literals
+// fixme: ranges are incorrect
+char-literal ::= CHAR_VALUE
+  |  SINGLE_QUOTE escape-sequence SINGLE_QUOTE
+
+private escape-sequence ::= "\\" ("\\" | '"' | SINGLE_QUOTE | "n" | "t" | "b" | "r" | "space")
+  |  "\\" (DIGIT) (DIGIT) (DIGIT)
+  |  "\\x" (DIGIT | UCHAR | LCHAR) (DIGIT | UCHAR | LCHAR)
+  |  "\\o" (DIGIT) (DIGIT) (DIGIT)
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
+// Strings are handled in the lexer (to avoid keywords parsed in strings etc.)
+string-literal ::= STRING_VALUE
+  |  LBRACE quoted-string-id PIPE { any-char } PIPE quoted-string-id RBRACE
+
+private quoted-string-id ::= { LCHAR | UNDERSCORE }
+
+private string-character ::= regular-string-char
+  |  escape-sequence
+  |  "\\u" { { DIGIT | UCHAR | LCHAR }+ }
+  |  "\\newline" { "space" | "tab" }
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
+label-name ::=  LOWERCASE_IDENT
+
+//noinspection BnfUnusedRule
+label ::=  TILDE label-name COLON
+
+//noinspection BnfUnusedRule
+optlabel ::=  QUESTION_MARK label-name COLON
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
+private infix-symbol ::= (core-operator-char | PERCENT | LT) { operator-char }*
+  |  SHARP { operator-char }+
+
+private prefix-symbol ::= EXCLAMATION_MARK { operator-char }
+  |  (QUESTION_MARK | TILDE) { operator-char }+
+
+private operator-char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core-operator-char | PERCENT | LT | COLON | DOT
+
+// fixme: ??
+//core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET | PIPE
+private core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
+
+//noinspection BnfUnusedRule
+linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
+
+// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
+private value-name ::= LOWERCASE_IDENT
+  |  LPAREN operator-name RPAREN
+
+private operator-name ::= prefix-symbol | infix-op
+
+private infix-op ::= infix-symbol
+  |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
+  |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
+
+constr-name ::= CAPITALIZED_IDENT
+  {
+    methods = [getName setName]
+    implements = "com.intellij.psi.PsiNamedElement"
+  }
+
+tag-name ::= CAPITALIZED_IDENT
+
+typeconstr-name ::= LOWERCASE_IDENT
+
+field-name ::= LOWERCASE_IDENT
+
+module-name ::= CAPITALIZED_IDENT
+  {
+    methods = [getName setName]
+    implements = "com.intellij.psi.PsiNamedElement"
+  }
+
+modtype-name ::= IDENT
+
+class-name ::= LOWERCASE_IDENT
+
+inst-var-name ::= LOWERCASE_IDENT
+
+method-name ::= LOWERCASE_IDENT
+
+// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
+private value-path ::= [ module-path DOT ] value-name
+
+constr ::= [ module-path DOT ] constr-name
+
+typeconstr ::= [ extended-module-path DOT ] typeconstr-name
+
+field ::= [ module-path DOT ] field-name
+
+modtype-path ::= [ extended-module-path DOT ] modtype-name
+
+class-path ::= [ module-path DOT ] class-name
+
+classtype-path ::= [ extended-module-path DOT ] class-name
+
+module-path ::= module-name { DOT module-name }*
+
+extended-module-path ::= extended-module-name { DOT extended-module-name }*
+
+extended-module-name ::= module-name { ( extended-module-path ) }*
+
+// https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
+private typexpr_terminal ::=
+  SINGLE_QUOTE internal_ident                                           // 'ident
+  | UNDERSCORE                                                          // _
+  | LPAREN typexpr RPAREN                                               // (typexpr)
+  | typeconstr                                                          // typeconstr
+  | LPAREN typexpr { COMMA typexpr }* RPAREN typeconstr                 // (typexpr { , typexpr }) typeconstr
+  | polymorphic-variant-type                                            // polymorphic-variant-type
+  | LT [DOTDOT] GT                                                      // < [..] >
+  | LT method-type { SEMI method-type }* [SEMI PIPE SEMI DOTDOT] GT     // < method-type { ; method-type } [; | ; ..] >
+  | SHARP classtype-path                                                // #classtype-path
+  | LPAREN typexpr { COMMA typexpr }* RPAREN SHARP class-path           // (typexpr { , typexpr } ) #class-path
+
+private typexpr_non_terminal ::=
+    { STAR typexpr }+                                                  // typexpr { * typexpr } +
+    | typeconstr                                                       // typexpr typeconstr
+    | AS SINGLE_QUOTE internal_ident                                   // typexpr as 'ident
+    | RIGHT_ARROW typexpr                                              // [[?] label-name:] typexpr -> typexpr
+    | SHARP class-path                                                 // typexpr #class-path
+
+typexpr ::= [[QUESTION_MARK] label-name COLON] typexpr_terminal typexpr* [typexpr_non_terminal]
+
+poly-typexpr ::= typexpr
+  |  { SINGLE_QUOTE internal_ident }+ DOT typexpr
+
+method-type ::= method-name COLON poly-typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
+polymorphic-variant-type ::= LBRACKET tag-spec-first { PIPE tag-spec } RBRACKET
+  |  LBRACKETGREATER [ tag-spec ] { PIPE tag-spec } RBRACKET
+  |  LBRACKETLESS [PIPE] tag-spec-full { PIPE tag-spec-full } [ GT { BACKTICK tag-name }+ ] RBRACKET
+
+tag-spec-first ::= BACKTICK tag-name [ OF typexpr ]
+  |  [ typexpr ] PIPE tag-spec
+
+tag-spec ::= BACKTICK tag-name [ OF typexpr ]
+  |  typexpr
+
+tag-spec-full ::= BACKTICK tag-name [ OF [AMPERSAND] typexpr { AMPERSAND typexpr } ]
+  |  typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
+// It seems order is important (float -> int).
+private constant ::= float-literal
+  |  char-literal
+  |  string-literal
+  |  integer-literal
+  |  int32-literal
+  |  int64-literal
+  |  nativeint-literal
+  |  constr
+  |  FALSE
+  |  TRUE
+  |  LPAREN RPAREN
+  |  BEGIN END
+  |  LBRACKET RBRACKET
+  |  LARRAY RARRAY
+  |  BACKTICK tag-name
+
+// https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
+private pattern_terminal ::= value-name
+    |  UNDERSCORE
+    |  constant
+    |  LPAREN pattern RPAREN
+    |  LPAREN pattern COLON typexpr RPAREN
+    |  constr pattern
+    |  BACKTICK tag-name pattern
+    |  SHARP typeconstr
+    |  LBRACE field [COLON typexpr] [EQ pattern] { SEMI field [COLON typexpr] [EQ pattern]}* [SEMI UNDERSCORE ] [ SEMI ] RBRACE
+    |  LBRACKET pattern { SEMI pattern } [ SEMI ] RBRACKET
+    |  LARRAY pattern { SEMI pattern } [ SEMI ] RARRAY
+    |  char-literal DOTDOT char-literal
+    |  LAZY pattern
+    |  EXCEPTION pattern
+    |  module-path DOT LPAREN pattern RPAREN
+    |  module-path DOT LBRACKET pattern RBRACKET
+    |  module-path DOT LARRAY pattern RARRAY
+    |  module-path DOT LBRACE pattern RBRACE
+
+private pattern_non_terminal ::=
+    AS value-name
+    | PIPE pattern
+    | { COMMA pattern }+
+    | SHORTCUT pattern
+
+private pattern ::= pattern_terminal pattern* [pattern_non_terminal]
+
+// https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
+if_condition ::= expr
+then_expr ::= expr
+else_expr ::= expr
+if_else_expr ::= IF if_condition THEN then_expr [ ELSE else_expr ]
+
+while_expr ::= WHILE expr DO expr DONE
+
+assert_condition ::= expr
+assert_expr ::= ASSERT assert_condition
+
+match_expr ::= MATCH expr WITH pattern-matching
+
+private expr_terminal ::= value-path
+  |  constant
+  |  LPAREN expr RPAREN
+  |  BEGIN expr [SEMI] END        // edited while it a problem on my side
+  |  LPAREN expr COLON typexpr RPAREN
+  |  constr expr
+  |  BACKTICK tag-name expr
+  |  LBRACKET expr { SEMI expr } [SEMI] RBRACKET
+  |  LARRAY expr { SEMI expr } [SEMI] RARRAY
+  |  LBRACE field [COLON typexpr] [EQ expr] { SEMI field [COLON typexpr] [EQ expr] }* [SEMI] RBRACE
+  |  LBRACE expr WITH field [ COLON typexpr] [EQ expr] { SEMI field [COLON typexpr] [EQ expr]}* [SEMI] RBRACE
+  |  prefix-symbol expr
+  |  MINUS expr
+  |  MINUSDOT expr
+  |  if_else_expr
+  |  while_expr
+  |  FOR value-name EQ expr ( TO | DOWNTO ) expr DO expr DONE
+  |  match_expr
+  |  FUNCTION pattern-matching
+  |  FUN { parameter }+ [ COLON typexpr ] RIGHT_ARROW expr
+  |  TRY expr WITH pattern-matching
+  |  LET [REC] let-binding { AND let-binding }* IN expr
+  |  LET EXCEPTION constr-decl IN expr
+  |  LET MODULE module-name { ( module-name COLON module-type ) }* [COLON module-type ] EQ module-expr IN expr
+  |  LPAREN expr COLON_GT typexpr RPAREN
+  |  LPAREN expr COLON typexpr COLON_GT typexpr RPAREN
+  |  assert_expr
+  |  LAZY expr
+  |  local-open
+  |  object-expr
+  |  generalized_open_statements_expr
+
+private expr_non_terminal ::=
+  { argument }+
+  | { COMMA expr }+
+  | SHORTCUT expr
+  | infix-op expr
+  | DOT field
+  | DOT field LEFT_ARROW expr
+  | DOT LPAREN expr RPAREN
+  | DOT LPAREN expr RPAREN LEFT_ARROW expr
+  | DOT LBRACKET expr RBRACKET
+  | DOT LBRACKET expr RBRACKET LEFT_ARROW expr
+  | SEMI expr
+
+private expr ::= expr_terminal expr* [expr_non_terminal]
+
+argument ::= expr
+  |  TILDE label-name
+  |  TILDE label-name COLON expr
+  |  QUESTION_MARK label-name
+  |  QUESTION_MARK label-name COLON expr
+
+pattern_expr ::= pattern [WHEN expr] RIGHT_ARROW expr
+pattern-matching ::= [ PIPE ] pattern_expr { PIPE pattern_expr }*
+
+let_binding_name ::= pattern | value-name
+
+private internal_let_binding ::= EQ expr
+    |  { parameter }* [COLON typexpr] [ COLON_GT typexpr] EQ expr
+    |  COLON poly-typexpr EQ expr
+
+let-binding ::= let_binding_name internal_let_binding
+  {
+    methods = [getName setName]
+    implements = ["com.intellij.psi.PsiNamedElement"; "com.intellij.psi.NavigatablePsiElement"]
+  }
+
+parameter ::= pattern
+  |  TILDE label-name
+  |  TILDE ( label-name [COLON typexpr] )
+  |  TILDE label-name COLON pattern
+  |  QUESTION_MARK label-name
+  |  QUESTION_MARK ( label-name [COLON typexpr] [EQ expr] )
+  |  QUESTION_MARK label-name COLON pattern
+  |  QUESTION_MARK label-name COLON ( pattern [COLON typexpr] [EQ expr] )
+
+local-open ::=
+  LET OPEN module-path IN expr
+  |  module-path DOT LPAREN expr RPAREN
+  |  module-path DOT LBRACKET expr RBRACKET
+  |  module-path DOT LARRAY expr RARRAY
+  |  module-path DOT LBRACE expr RBRACE
+  |  module-path DOT LBRACELESS expr GREATERRBRACE
+
+object-expr ::=
+  NEW class-path
+  |  OBJECT class-body END
+// fixme: ...
+//  |  SHARP method-name
+  |  inst-var-name
+  |  inst-var-name LEFT_ARROW expr
+  |  LBRACELESS [ inst-var-name [EQ expr] { SEMI inst-var-name [EQ expr] } [SEMI] ] GREATERRBRACE
+
+// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
+type-definition ::= TYPE [NONREC] typedef { and_types }*
+
+typedef ::= [type-params] type_name type-information
+
+type_name ::= typeconstr-name
+  {
+    methods = [getName setName]
+    implements = "com.intellij.psi.PsiNamedElement"
+  }
+
+and_types ::= AND typedef
+
+type-information ::= [type-equation] [type-representation] { type-constraint }*
+
+type-equation ::= EQ typexpr
+
+type-representation ::=
+  EQ [PIPE] constr-decl { PIPE constr-decl }*
+  | EQ record-decl
+  | EQ PIPE
+
+type-params ::= type-param
+  |  LPAREN type-param { COMMA type-param } RPAREN
+
+type-param ::= [ext-variance] SINGLE_QUOTE internal_ident
+
+ext-variance ::= variance [injectivity]
+  |  injectivity [variance]
+
+variance ::= PLUS
+  | MINUS
+
+injectivity ::=  EXCLAMATION_MARK
+
+record-decl ::= LBRACE field-decl { SEMI field-decl }* [SEMI] RBRACE
+
+constr-decl ::= (constr-name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [ OF constr-args ]
+
+constr-args ::= typexpr { STAR typexpr }*
+
+field-decl ::= [MUTABLE] field-name COLON poly-typexpr
+
+type-constraint ::= CONSTRAINT typexpr EQ typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
+exception-definition ::= EXCEPTION constr-decl
+  |  EXCEPTION constr-name EQ constr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classes:class-types
+class-type ::= [[QUESTION_MARK] label-name COLON] typexpr RIGHT_ARROW class-type
+  |    class-body-type
+
+class-body-type ::= OBJECT [( typexpr )] { class-field-spec } END
+  | [[ typexpr { COMMA typexpr } ]] classtype-path
+  | LET OPEN module-path IN class-body-type
+
+class-field-spec ::= INHERIT class-body-type
+  |   VAL [MUTABLE] [VIRTUAL] inst-var-name COLON typexpr
+  |   VAL VIRTUAL MUTABLE inst-var-name COLON typexpr
+  |   METHOD [PRIVATE] [VIRTUAL] method-name COLON poly-typexpr
+  |   METHOD VIRTUAL PRIVATE method-name COLON poly-typexpr
+  |   CONSTRAINT typexpr EQ typexpr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-expr
+private internal_class-expr_rec ::= class-expr_terminal class-expr_non_terminal*
+
+private class-expr_terminal ::= class-path
+  | [ typexpr { COMMA typexpr } ] class-path
+  | LPAREN class-expr RPAREN
+  | LPAREN class-expr COLON class-type RPAREN
+  | FUN { parameter }+ RIGHT_ARROW class-expr
+  | LET [REC] let-binding { AND let-binding }* IN class-expr
+  | OBJECT class-body END
+  | LET OPEN module-path IN class-expr
+
+private class-expr_non_terminal ::= internal_class-expr_rec { argument }+
+
+class-expr ::= class-expr_terminal | class-expr_non_terminal
+
+class-field ::= INHERIT class-expr [AS LOWERCASE_IDENT]
+  |   INHERIT EXCLAMATION_MARK class-expr [AS LOWERCASE_IDENT]
+  |   VAL [MUTABLE] inst-var-name [COLON typexpr] EQ expr
+  |   VAL EXCLAMATION_MARK [MUTABLE] inst-var-name [COLON typexpr] EQ expr
+  |   VAL [MUTABLE] VIRTUAL inst-var-name COLON typexpr
+  |   VAL VIRTUAL MUTABLE inst-var-name COLON typexpr
+  |   METHOD [PRIVATE] method-name { parameter }* [COLON typexpr] EQ expr
+  |   METHOD EXCLAMATION_MARK [PRIVATE] method-name { parameter }* [COLON typexpr] EQ expr
+  |   METHOD [PRIVATE] method-name COLON poly-typexpr EQ expr
+  |   METHOD EXCLAMATION_MARK [PRIVATE] method-name COLON poly-typexpr EQ expr
+  |   METHOD [PRIVATE] VIRTUAL method-name COLON poly-typexpr
+  |   METHOD VIRTUAL PRIVATE method-name COLON poly-typexpr
+  |   CONSTRAINT typexpr EQ typexpr
+  |   INITIALIZER expr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
+class-body ::=   [( pattern [COLON typexpr] )] { class-field }*
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-def
+class-definition ::= CLASS class-binding { AND class-binding }*
+
+class-binding ::= [VIRTUAL] [[ type-parameters ]] class-name { parameter } [ COLON class-type] EQ class-expr
+
+type-parameters ::= SINGLE_QUOTE internal_ident { COMMA SINGLE_QUOTE internal_ident }
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-spec
+class-specification ::= CLASS class-spec { AND class-spec }*
+
+class-spec ::= [VIRTUAL] [[ type-parameters ]] class-name COLON class-type
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
+classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
+
+classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type
+
+// https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
+private internal_module-type_rec ::= module-type_terminal module-type_non_terminal*
+
+private module-type_terminal ::= modtype-path
+  |  SIG { specification [SEMISEMI] }* END
+  |  FUNCTOR ( module-name COLON module-type ) RIGHT_ARROW module-type
+  |  LPAREN module-type RPAREN
+
+private module-type_non_terminal ::=
+  internal_module-type_rec RIGHT_ARROW module-type
+  | internal_module-type_rec WITH mod-constraint { AND mod-constraint }*
+
+module-type ::= module-type_terminal | module-type_non_terminal
+
+mod-constraint ::= TYPE [type-params] typeconstr type-equation { type-constraint }
+  |  MODULE module-path EQ extended-module-path
+
+specification ::= VAL value-name COLON typexpr
+  | EXTERNAL value-name COLON typexpr EQ external-declaration
+  | type-definition
+  | EXCEPTION constr-decl
+  | class-specification
+  | classtype-definition
+  | MODULE module-name COLON module-type
+  | MODULE module-name { ( module-name COLON module-type ) }* COLON module-type
+  | MODULE TYPE modtype-name
+  | MODULE type modtype-name EQ module-type
+  | open_stmt
+  | INCLUDE module-type
+  | recursive_module_extension_spec
+  | generalized_open_statements_spec
+
+// https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
+private internal_module-expr_rec ::= module-expr_terminal module-expr_non_terminal*
+
+private module-expr_terminal ::= module-path
+  |  STRUCT [ module-items ] END
+  |  FUNCTOR ( module-name COLON module-type ) RIGHT_ARROW module-expr
+  |  LPAREN module-expr RPAREN
+  |  LPAREN module-expr COLON module-type RPAREN
+
+private module-expr_non_terminal ::= internal_module-expr_rec ( module-expr )
+
+module-expr ::= module-expr_terminal|module-expr_non_terminal
+
+module-items ::= { SEMISEMI }* ( definition | expr ) { { SEMISEMI }* ( definition | SEMISEMI expr) }* { SEMISEMI }*
+
+definition ::= LET [REC] let-binding { AND let-binding }*
+  | EXTERNAL value-name COLON typexpr EQ external-declaration
+  | type-definition
+  | exception-definition
+  | class-definition
+  | classtype-definition
+  | MODULE module-name { ( module-name COLON module-type ) }* [ COLON module-type ] EQ module-expr
+  | MODULE TYPE modtype-name EQ module-type
+  | open_stmt
+  | INCLUDE module-expr
+  | recursive_module_extension_def
+  | generalized_open_statements_def
+
+open_stmt ::= OPEN module-path {
+  methods=[
+    modulePath="/expr[1]"
+  ]
+}
+
+external-declaration ::= string-literal [ string-literal [ string-literal ] ]
+
+// https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
+// todo: access to "and" modules is not generic
+recursive_module_extension_def ::=
+    MODULE REC module-name COLON module-type EQ module-expr { recursive_module_extension_def_and } *
+    {
+        implements = "com.ocaml.language.psi.api.OCamlModule"
+    }
+
+recursive_module_extension_def_and ::= AND module-name COLON module-type EQ module-expr
+    {
+        implements = "com.ocaml.language.psi.api.OCamlModule"
+    }
+
+recursive_module_extension_spec ::=
+    MODULE REC module-name COLON module-type { recursive_module_extension_spec_and } *
+    {
+        implements = "com.ocaml.language.psi.api.OCamlModule"
+        mixin = "com.ocaml.language.psi.mixin.OCamlModuleMixin"
+    }
+
+recursive_module_extension_spec_and ::= AND module-name COLON module-type
+    {
+        implements = "com.ocaml.language.psi.api.OCamlModule"
+        mixin = "com.ocaml.language.psi.mixin.OCamlModuleMixin"
+    }
+
+// https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html#start-section
+
+// https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
+private generalized_open_statements_def ::=
+  OPEN module-expr
+  |   OPEN! module-expr
+
+private generalized_open_statements_spec ::=
+  OPEN extended-module-path
+  | OPEN! extended-module-path
+
+private generalized_open_statements_expr ::=
+  LET OPEN module-expr IN expr
+ | LET OPEN EXCLAMATION_MARK module-expr IN expr

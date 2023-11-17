@@ -8,6 +8,9 @@
   psiImplPackage="com.ocaml.language.psi.impl"
   psiImplUtilClass="com.ocaml.language.parser.OCamlParserUtils"
 
+  // generateTokens=false
+  // generateTokenAccessors=true
+
   elementTypeHolderClass="com.ocaml.language.psi.OCamlTypes"
   elementTypeClass="com.ocaml.language.psi.api.OCamlElementType"
   tokenTypeClass="com.ocaml.language.psi.api.OCamlTokenType"
