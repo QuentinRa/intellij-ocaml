@@ -1,30 +1,125 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
-<idea-plugin>
-    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
     <id>intellij-ocaml</id>
-
-    <!-- Public plugin name should be written in Title Case.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
     <name>OCaml</name>
-
-    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="ramsamy.ws@gmail.com" url="https://github.com/QuentinRa/">QuentinRa</vendor>
-
-    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
         The OCaml plugin is providing support for the OCaml language in all IDEs (IntelliJ, CLion, ...),
         using opam or native SDKs. Based on ReasonML.]]>
     </description>
 
-    <!-- Product and plugin compatibility requirements.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-    <depends>com.intellij.modules.platform</depends>
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+     on how to target different products -->
+    <depends optional="true" config-file="deps/platform-deps.xml">com.intellij.modules.platform</depends>
+    <depends optional="true" config-file="deps/lang-deps.xml">com.intellij.modules.lang</depends>
+    <depends optional="true" config-file="deps/java-deps.xml">com.intellij.modules.java</depends>
+    <xi:include href="/META-INF/dune.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <xi:include href="/META-INF/or.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-    <!-- Extension points defined by the plugin.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <resource-bundle>messages.OCamlBundle</resource-bundle>
+
+    <actions>
+        <!-- Add your actions here -->
+        <!-- Create file -->
+        <action id="NewOCamlFile" class="com.ocaml.ide.actions.OCamlCreateFileAction">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+        </action>
+        <!-- Editor - REPL -->
+        <action id="editor.repl.run.action" class="com.ocaml.ide.actions.editor.run.OCamlRunFileREPLAction" icon="AllIcons.Actions.Execute" >
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift ENTER" replace-all="true"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
+        <action id="editor.repl.run.selection.action" class="com.ocaml.ide.actions.editor.run.OCamlRunSelection">
+            <keyboard-shortcut keymap="$default" first-keystroke="control ENTER"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta ENTER" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta ENTER" replace-all="true"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
+        <!--suppress PluginXmlCapitalization -->
+        <action id="editor.api.action" class="com.ocaml.ide.actions.editor.help.OCamlEditorApiAction"
+                icon="AllIcons.General.Information" >
+            <keyboard-shortcut keymap="$default" first-keystroke="F1" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="F1" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F1" replace-all="true"/>
+        </action>
+        <!--suppress PluginXmlCapitalization -->
+        <action id="editor.help.action" class="com.ocaml.ide.actions.editor.help.OCamlEditorHelpAction"
+                icon="AllIcons.Actions.Help" >
+            <keyboard-shortcut keymap="$default" first-keystroke="F11" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="F11" replace-all="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="F11" replace-all="true"/>
+        </action>
+        <!-- Open OCamlProjectConfigurable (Non-IntelliJ users only) -->
+        <action id="com.ocaml.ide.wizard.minor.settings.OpenOCamlProjectConfigurable"
+                class="com.ocaml.ide.wizard.minor.settings.OpenOCamlProjectConfigurable">
+            <add-to-group group-id="ToolbarRunGroup" anchor="first" />
+        </action>
+    </actions>
+
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <!-- MODULE -->
+        <moduleBuilder builderClass="com.ocaml.ide.wizard.OCamlModuleBuilder" order="first"/>
+        <moduleType id="OCAML_MODULE" implementationClass="com.ocaml.ide.module.OCamlModuleType"/>
+        <moduleConfigurationEditorProvider order="first" implementation="com.ocaml.ide.module.OCamlModuleEditorProvider"/>
+        <directoryProjectGenerator implementation="com.ocaml.ide.wizard.minor.OCamlDirectoryProjectGenerator"/>
 
+        <!-- SDK -->
+        <sdkType implementation="com.ocaml.sdk.OCamlSdkType"/>
+        <sdkDownload implementation="com.ocaml.sdk.OCamlSdkType"/>
+        <projectViewNodeDecorator implementation="com.ocaml.ide.files.nodes.OCamlLibraryRootsNodeDecorator"/>
+        <treeStructureProvider implementation="com.ocaml.ide.files.nodes.OCamlLibraryRootsTreeStructureProvider"/>
+        <projectSdkSetupValidator implementation="com.ocaml.ide.files.select.OCamlSDKValidator"/>
+
+        <!-- FILES -->
+        <fileType extensions="annot" hashBangs="annot" name="OCAML_ANNOT" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlAnnotFileType"/>
+        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlAnnotFileEditorProvider"/>
+        <fileType extensions="ml" hashBangs="ml" name="OCAML" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlFileType"/>
+        <fileType extensions="mli" hashBangs="mli" name="OCAML_INTERFACE" language="OCAML" fieldName="INSTANCE" implementationClass="com.ocaml.ide.files.OCamlInterfaceFileType"/>
+        <internalFileTemplate name="OCaml File"/>
+        <internalFileTemplate name="OCaml Interface"/>
+
+        <!-- HIGHLIGHT -->
+        <lang.syntaxHighlighterFactory language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
+        <annotator language="OCAML" implementationClass="com.ocaml.ide.highlight.OCamlDocumentationAnnotator"/>
+        <externalAnnotator language="OCAML" implementationClass="com.ocaml.ide.highlight.intentions.CompilerOutputAnnotator" />
+        <problemFileHighlightFilter implementation="com.ocaml.ide.highlight.ErrorFileHighlighter"/>
+
+        <!-- INFERENCE -->
+<!--        <codeInsight.parameterNameHints language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterNameHints" />-->
+        <codeInsight.typeInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlTypeInfoHint"/>
+        <codeInsight.parameterInfo language="OCAML" implementationClass="com.ocaml.ide.insight.OCamlParameterInfo" />
+        <projectService serviceImplementation="com.ocaml.ide.insight.OCamlAnnotResultsService"/>
+
+        <!-- REPL -->
+        <toolWindow factoryClass="com.ocaml.ide.console.OCamlConsoleToolWindowFactory" id="ocaml" anchor="bottom"/>
+        <scratch.rootType implementation="com.ocaml.ide.console.OCamlConsoleRootType"/>
+        <actionPromoter implementation="com.ocaml.ide.actions.editor.OCamlActionPromoter"/>
+        <fileEditorProvider implementation="com.ocaml.ide.editor.OCamlFileEditorProvider"/>
+
+        <!-- NOTIFICATIONS -->
+        <notificationGroup id="OCaml Plugin" displayType="BALLOON"/>
+        <notificationGroup id="OCaml Build Log" displayType="NONE"/>
+
+        <!-- HELP -->
+        <webHelpProvider implementation="com.ocaml.ide.OCamlWebHelpProvider"/>
+
+        <!-- SETTINGS -->
+        <projectService serviceImplementation="com.ocaml.ide.settings.OCamlSettings"/>
     </extensions>
+
+    <!-- Loading stuff not available in minor IDEs -->
+    <extensions defaultExtensionNs="com.intellij">
+        <FakeOrderRootTypeUI key="CLASSES"
+                             implementationClass="com.ocaml.ide.wizard.minor.settings.java.ClassesOrderRootTypeUIFactory"/>
+    </extensions>
+
+    <extensionPoints>
+        <extensionPoint qualifiedName="com.intellij.FakeOrderRootTypeUI"
+                        beanClass="com.intellij.openapi.extensions.KeyedFactoryEPBean"
+                        dynamic="true">
+            <with attribute="implementationClass" implements="com.ocaml.ide.wizard.minor.settings.java.FakeOrderRootTypeUIFactory"/>
+        </extensionPoint>
+    </extensionPoints>
 </idea-plugin>
