@@ -177,6 +177,8 @@ unit-implementation ::= [ module-items ]
 // tocheck: was UIDENT | UNDERSCORE
 module_name ::= CAPITALIZED_IDENT
 
+constr_name ::= CAPITALIZED_IDENT
+
 modtype_name ::= ident
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
@@ -196,6 +198,23 @@ extended_module_name ::= module_name { LPAREN extended_module_path RPAREN }*
 // https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
+type_params ::= type_param
+  |  LPAREN type_param { COMMA type_param }* RPAREN
+
+type_param ::= [ext_variance] SINGLE_QUOTE ident
+
+ext_variance ::= variance [injectivity]
+  |  injectivity [variance]
+
+variance ::= PLUS
+  | MINUS
+
+injectivity ::= EXCLAMATION_MARK
+
+// tocheck: was also: LPAREN RPAREN (unit) and true|false
+//constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [ OF constr_args ]
+//
+//constr_args ::= typexpr { STAR typexpr } *
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
 
@@ -215,8 +234,8 @@ extended_module_name ::= module_name { LPAREN extended_module_path RPAREN }*
 private base_module_type ::= modtype_path
   | SIG [SEMISEMI] { specification [SEMISEMI] }* END // tocheck: added [SEMISEMI]
   | FUNCTOR LPAREN module_name COLON module_type RPAREN RIGHT_ARROW module_type
-  //| MODULE TYPE OF module_expr // fixme; not found
   | LPAREN module_type RPAREN
+  | module_type_ext_modtypeof
 
 // todo: mod_constraint
 private module_type_suffix ::=
@@ -224,6 +243,16 @@ private module_type_suffix ::=
     | WITH mod_constraint { AND mod_constraint }*
 
 module_type ::= base_module_type [module_type_suffix]
+
+//mod_constraint ::= TYPE [type_params] typeconstr type_equation { type_constraint }
+//  |  MODULE module_path EQ extended_module_path
+mod_constraint ::= // fixme: full
+    TYPE [type_params] label_longident (EQ PRIVATE | EQ) core_type_no_attr [(CONSTRAINT core_type EQ core_type) *]
+    /* used label_longident instead of type_longident to disallow
+       functor applications in type path */
+  | TYPE [type_params] label COLON_EQ core_type_no_attr
+  | MODULE mod_longident EQ mod_ext_longident
+  | MODULE CAPITALIZED_IDENT COLON_EQ mod_ext_longident
 
 specification ::= // todo
     value_description
@@ -240,15 +269,15 @@ specification ::= // todo
   | class_descriptions
   | class_type_declarations
 
+value_description ::= VAL val_ident COLON core_type
+
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
-module-items ::= // todo: seq_expr
-{ SEMISEMI }* (definition|seq_expr)? { { SEMISEMI }* ( definition | SEMISEMI seq_expr) }* { SEMISEMI }*
+module-items ::= // todo: seq_expr // fixme: definition|specification
+{ SEMISEMI }* (definition|specification|seq_expr)? { { SEMISEMI }* ( definition | specification | SEMISEMI seq_expr) }* { SEMISEMI }*
 
 definition ::= // todo
     let_bindings
   | primitive_declaration
-  | value_description
-  | str_type_extension
   | type_declarations
   | str_exception_declaration
   | module_binding
@@ -258,9 +287,30 @@ definition ::= // todo
   | class_declarations
   | class_type_declarations
   | str_include_statement
+  | str_type_extension
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
 
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
+
+// https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html todo: ...
+str_type_extension ::=
+  TYPE NONREC ? optional_type_parameters ? type_longident type_extension_def
+
+sig_type_extension ::=
+  TYPE NONREC ? optional_type_parameters ? type_longident type_extension_spec
+
+// todo
+constr_decl ::= constr_ident generalized_constructor_arguments ?
+
+type_extension_spec ::= PLUSEQ [PRIVATE] [PIPE] constr_decl { PIPE constr_decl } *
+type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
+
+// todo
+constr_def ::= constr_decl | constr_ident EQ constr_longident
+//constr_def ::= constr_decl | constr_name EQ constr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
+module_type_ext_modtypeof ::= MODULE TYPE OF module_expr
 
 // [CHANGE]: added all 4 below
 private INFIXOP3 ::= LOR | LXOR | MOD | LAND
@@ -405,7 +455,7 @@ class_fun_binding ::=
   | labeled_simple_pattern class_fun_binding
 
 class_type_parameters ::=
-    LBRACKET type_parameter_list RBRACKET
+    LBRACKET type_param ( COMMA type_param ) * RBRACKET
 
 class_fun_def ::=
     labeled_simple_pattern + RIGHT_ARROW class_expr
@@ -497,9 +547,6 @@ value_type ::=
     VIRTUAL MUTABLE ? label COLON core_type
   | MUTABLE VIRTUAL ? label COLON core_type
   | label COLON core_type
-
-constrain ::=
-        core_type EQ core_type
 
 constrain_field ::=
         core_type EQ core_type
@@ -1032,11 +1079,6 @@ lbl_pattern ::=
 opt_pattern_type_constraint ::=
     COLON core_type
 
-
-///* Value descriptions */
-//
-value_description ::= VAL val_ident COLON core_type
-
 /* Primitive declarations */
 
 primitive_declaration_body ::=
@@ -1067,7 +1109,7 @@ and_type_declaration ::=
     AND optional_type_parameters ? type_name type_alias_handler? constraints ?
 
 constraints ::=
-      (CONSTRAINT constrain) *
+      (CONSTRAINT core_type EQ core_type) *
 
 type_kind ::=
         core_type
@@ -1085,7 +1127,7 @@ optional_type_parameters ::=
   | LPAREN optional_type_parameter_list RPAREN
 
 optional_type_parameter ::=
-    EXCLAMATION_MARK ? type_variance ? optional_type_variable
+    EXCLAMATION_MARK ? variance ? optional_type_variable
 
 optional_type_parameter_list ::=
     optional_type_parameter (COMMA optional_type_parameter) *
@@ -1094,23 +1136,7 @@ optional_type_variable ::=
     SINGLE_QUOTE ident
   | UNDERSCORE
 
-type_parameters ::=
-    type_parameter
-  | LPAREN type_parameter_list RPAREN
 //
-type_parameter ::=
-    type_variance ? type_variable
-
-type_variance ::=
-    PLUS
-  | MINUS
-
-type_variable ::=
-    SINGLE_QUOTE ident
-
-type_parameter_list ::=
-    type_parameter ( COMMA type_parameter ) *
-
 constructor_declarations ::=
     PIPE ? constructor_declaration (PIPE constructor_declaration) *
     // can have "type v = |" but not
@@ -1144,46 +1170,6 @@ label_declarations ::=
 //
 label_declaration ::=
     MUTABLE ? label COLON poly_type_no_attr
-
-///* Type Extensions */
-
-str_type_extension ::=
-  TYPE NONREC ? optional_type_parameters ? type_longident
-  PLUSEQ PRIVATE ? str_extension_constructors
-
-sig_type_extension ::=
-  TYPE NONREC ? optional_type_parameters ? type_longident
-  PLUSEQ PRIVATE ? sig_extension_constructors
-
-
-str_extension_constructors ::=
-    PIPE ? (extension_constructor_rebind | extension_constructor_declaration ) (PIPE (extension_constructor_rebind | extension_constructor_declaration ))*
-
-sig_extension_constructors ::=
-    PIPE ? extension_constructor_declaration (PIPE extension_constructor_declaration) *
-
-
-extension_constructor_declaration ::=
-    constr_ident generalized_constructor_arguments ?
-
-extension_constructor_rebind ::=
-    constr_ident EQ constr_longident
-
-///* "with" constraints ? (additional type equations over signature components) */
-mod_constraint ::=
-    TYPE type_parameters ? label_longident with_type_binder core_type_no_attr
-    constraints ?
-    /* used label_longident instead of type_longident to disallow
-       functor applications in type path */
-  | TYPE type_parameters ? label COLON_EQ core_type_no_attr
-  | MODULE mod_longident EQ mod_ext_longident
-
-  | MODULE CAPITALIZED_IDENT COLON_EQ mod_ext_longident
-
-with_type_binder ::=
-    EQ PRIVATE
-  | EQ
-
 
 ///* Polymorphic types */
 

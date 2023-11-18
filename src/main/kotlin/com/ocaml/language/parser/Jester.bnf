@@ -44,8 +44,6 @@ infix-op ::= infix-symbol
   |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
   |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
 
-constr-name ::= CAPITALIZED_IDENT
-
 tag-name ::= CAPITALIZED_IDENT
 
 typeconstr-name ::= LOWERCASE_IDENT
@@ -329,22 +327,7 @@ type-representation ::=
   | EQ record-decl
   | EQ PIPE
 
-type-params ::= type-param
-  |  LPAREN type-param { COMMA type-param } RPAREN
-
-type-param ::= [ext-variance] SINGLE_QUOTE ident
-
-ext-variance ::= variance [injectivity]
-  |  injectivity [variance]
-
-variance ::= PLUS
-  | MINUS
-
-injectivity ::=  EXCLAMATION_MARK
-
 record-decl ::= LBRACE field-decl { SEMI field-decl }* [SEMI] RBRACE
-
-constr-decl ::= (constr-name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [ OF constr-args ]
 
 constr-args ::= typexpr { STAR typexpr }*
 
@@ -429,9 +412,6 @@ classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
 classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
-mod-constraint ::= TYPE [type-params] typeconstr type-equation { type-constraint }
-  |  MODULE module-path EQ extended-module-path
-
 specification ::= VAL value-name COLON typexpr
   | EXTERNAL value-name COLON typexpr EQ external-declaration
   | type-definition
