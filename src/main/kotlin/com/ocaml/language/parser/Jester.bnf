@@ -1,19 +1,4 @@
-// See also: https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:keywords
-
-file ::= COMMENT
-| DOC_COMMENT
-| ANNOTATION
-//| unit-interface
-| unit-implementation
-
-// INTERNAL TOKENS THAT WERE NOT IN THE  DOCUMENTATION
-// otherwise lowercase and capitalized are not recognized as ident
-private ident ::= LOWERCASE_IDENT | CAPITALIZED_IDENT
-
-// https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
-unit-interface ::=  { specification [SEMISEMI] }+
-unit-implementation ::= module-items*
-
+//noinspection BnfUnusedRuleForFile
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
 integer-literal ::= [MINUS] INTEGER_VALUE
 int32-literal ::=  integer-literal "l"
@@ -67,10 +52,6 @@ typeconstr-name ::= LOWERCASE_IDENT
 
 field-name ::= LOWERCASE_IDENT
 
-module-name ::= CAPITALIZED_IDENT
-
-modtype-name ::= ident
-
 class-name ::= LOWERCASE_IDENT
 
 inst-var-name ::= LOWERCASE_IDENT
@@ -86,17 +67,11 @@ typeconstr ::= [ extended-module-path DOT ] typeconstr-name
 
 field ::= [ module-path DOT ] field-name
 
-modtype-path ::= [ extended-module-path DOT ] modtype-name
-
 class-path ::= [ module-path DOT ] class-name
 
 classtype-path ::= [ extended-module-path DOT ] class-name
 
 module-path ::= module-name { DOT module-name }*
-
-extended-module-path ::= extended-module-name { DOT extended-module-name }*
-
-extended-module-name ::= module-name { LPAREN extended-module-path RPAREN }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
 ident_typexpr ::= SINGLE_QUOTE ident
@@ -454,19 +429,11 @@ classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
 classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
-modtype_module_type ::= modtype-path
 sig_module_type ::= SIG { specification [SEMISEMI] }* END
 functor_module_type ::= FUNCTOR ( module-name COLON module_type ) RIGHT_ARROW module_type
-arrow_module_type ::= module_type RIGHT_ARROW module_type
-with_module_type ::= module_type WITH mod-constraint { AND mod-constraint }*
-paren_module_type ::= LPAREN module_type RPAREN
 
-module_type ::= modtype_module_type
-  |  sig_module_type
+module_type ::= sig_module_type
   |  functor_module_type
-  |  arrow_module_type
-  |  with_module_type
-  |  paren_module_type
 
 mod-constraint ::= TYPE [type-params] typeconstr type-equation { type-constraint }
   |  MODULE module-path EQ extended-module-path
@@ -500,8 +467,6 @@ module_expr ::= modpath_module_expr
   |  expr_module_expr
   |  paren_module_expr
   |  paren_type_module_expr
-
-module-items ::= { SEMISEMI }* ( definition | expr ) { { SEMISEMI }* ( definition | SEMISEMI expr) }* { SEMISEMI }*
 
 definition ::= LET [REC] let-binding { AND let-binding }*
   | EXTERNAL value-name COLON typexpr EQ external-declaration

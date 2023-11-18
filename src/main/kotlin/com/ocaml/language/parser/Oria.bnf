@@ -174,8 +174,17 @@ unit-implementation ::= [ module-items ]
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
+module_name ::= CAPITALIZED_IDENT
+
+modtype_name ::= ident
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
+// tocheck: was ident (DOT ident) *
+modtype_path ::= [ extended_module_path DOT ] modtype_name
+
+extended_module_path ::= extended_module_name { DOT extended_module_name }*
+
+extended_module_name ::= module_name { LPAREN extended_module_path RPAREN }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
 
@@ -202,8 +211,35 @@ unit-implementation ::= [ module-items ]
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
+private base_module_type ::=  modtype_path
+  | SIG signature ? END // todo
+  | FUNCTOR functor_args RIGHT_ARROW module_type // todo
+  //| MODULE TYPE OF module_expr // fixme; not found
+  | LPAREN module_type RPAREN
+
+private module_type_suffix ::=
+    RIGHT_ARROW module_type
+    | WITH mod_constraint { AND mod_constraint }*
+
+module_type ::= base_module_type [module_type_suffix] // todo
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
+module-items ::= // fixme: merged definition + specification
+{ SEMISEMI }* (definition|seq_expr)? { { SEMISEMI }* ( definition | SEMISEMI seq_expr) }* { SEMISEMI }*
+
+//definition ::= LET [REC] let-binding { AND let-binding }*
+//  | EXTERNAL value-name COLON typexpr EQ external-declaration
+//  | type-definition
+//  | exception-definition
+//  | class-definition
+//  | classtype-definition
+//  | MODULE module-name { ( module-name COLON module_type ) }* [ COLON module_type ] EQ module_expr
+//  | MODULE TYPE modtype-name EQ module_type
+//  | OPEN module-path
+//  | INCLUDE module_expr
+// todo: language extensions
+//  | recursive_module_extension_def
+//  | generalized_open_statements_def
 
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
 
@@ -269,10 +305,6 @@ module_expr ::=
   | LPAREN VAL expr COLON_GT package_type RPAREN
   | extension
 
-module-items ::=
-//    (seq_expr)? (SEMISEMI seq_expr | SEMISEMI | structure_item)*
-{ SEMISEMI }* (definition|seq_expr)? { { SEMISEMI }* ( definition | SEMISEMI seq_expr) }* { SEMISEMI }*
-
 definition ::=
     let_bindings
   | primitive_declaration
@@ -297,41 +329,22 @@ module_binding_body ::=
   | COLON module_type (EQ module_expr)?
   | functor_arg module_binding_body
 
-// [CHANGES]: added module_name
-module_name ::= (CAPITALIZED_IDENT|UNDERSCORE)
-
 module_binding ::=
-    MODULE module_name module_binding_body
+    MODULE (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
 
 rec_module_bindings ::=
     rec_module_binding and_module_binding *
 
 rec_module_binding ::=
-    MODULE REC module_name module_binding_body
+    MODULE REC (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
 
 and_module_binding ::=
-    AND module_name module_binding_body
+    AND (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
 
 
 //
 ///* Module types */
 //
-
-module_type_suffix ::=
-    (RIGHT_ARROW module_type //%prec below_WITH
-    | WITH with_constraints | attribute)
-
-module_type ::=
-    mty_longident module_type_suffix ?
-  | SIG signature ? END module_type_suffix ?
-  | FUNCTOR functor_args RIGHT_ARROW module_type module_type_suffix ?
-      //%prec below_WITH
-  | MODULE TYPE OF module_expr module_type_suffix ? //%prec below_LBRACKETAT
-/*  | LPAREN MODULE mod_longident RPAREN
-       */
-  | LPAREN module_type RPAREN module_type_suffix ?
-  | extension module_type_suffix ?
-
 signature ::=
     SEMISEMI signature ?
   | signature_item signature ?
@@ -366,20 +379,20 @@ module_declaration_body ::=
 
 
 module_declaration ::=
-    MODULE module_name module_declaration_body
+    MODULE (CAPITALIZED_IDENT|UNDERSCORE) module_declaration_body
 
 module_alias ::=
-    MODULE module_name EQ mod_longident
+    MODULE (CAPITALIZED_IDENT|UNDERSCORE) EQ mod_longident
 
 rec_module_declarations ::=
     rec_module_declaration (and_module_declaration)*
 
 
 rec_module_declaration ::=
-    MODULE REC module_name COLON module_type
+    MODULE REC (CAPITALIZED_IDENT|UNDERSCORE) COLON module_type
 
 and_module_declaration ::=
-    AND module_name COLON module_type
+    AND (CAPITALIZED_IDENT|UNDERSCORE) COLON module_type
 
 
 module_type_declaration_body ::=
@@ -1174,11 +1187,7 @@ extension_constructor_rebind ::=
     constr_ident EQ constr_longident
 
 ///* "with" constraints ? (additional type equations over signature components) */
-
-with_constraints ::=
-    with_constraint ( AND with_constraint ) *
-
-with_constraint ::=
+mod_constraint ::=
     TYPE type_parameters ? label_longident with_type_binder core_type_no_attr
     constraints ?
     /* used label_longident instead of type_longident to disallow
@@ -1408,10 +1417,6 @@ mod_longident ::=
 
 mod_ext_longident ::=
     CAPITALIZED_IDENT (LPAREN mod_ext_longident RPAREN | DOT CAPITALIZED_IDENT)?
-
-mty_longident ::=
-  ident (DOT ident) *
-
 
 clty_longident ::=
     LOWERCASE_IDENT
