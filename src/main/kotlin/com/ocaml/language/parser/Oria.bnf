@@ -131,6 +131,9 @@
 
           LBRACKETGREATER = "[>"
           LBRACKETLESS = "[<"
+
+          COMMENT = "COMMENT"
+          DOC_COMMENT = "DOC_COMMENT"
     ]
 
   extends(".*pattern_no_exn")=pattern_no_exn
@@ -155,14 +158,14 @@ implementation ::=
 // [CHANGE]: added all 4 below
 private INFIXOP3 ::= LOR | LXOR | MOD | LAND
 private INFIXOP4 ::= LSL | LSR | ASR
-private INFIXOP5 ::= PIPE_FORWARD | CARRET | CARRET_2 | ARROBASE | ARROBASE_2
+private INFIXOP5 ::= PIPE GT | CARRET | CARRET CARRET | ARROBASE | ARROBASE ARROBASE
 BOOL_VALUE ::= TRUE | FALSE
 
 // https://v2.ocaml.org/manual/toplevel.html#directive-argument
 toplevel_directive ::=
-    SHARP (LIDENT|UIDENT) directive_argument?
+    SHARP (LOWERCASE_IDENT|CAPITALIZED_IDENT) directive_argument?
 
-private directive_argument ::= STRING_VALUE | INT_VALUE | BOOL_VALUE | type_longident
+private directive_argument ::= STRING_VALUE | INTEGER_VALUE | BOOL_VALUE | type_longident
 
 // [CHANGE]: adding custom_operator
 // We can have (simple_operator) or (operator) but we can't have (special_simple_operator)
@@ -196,7 +199,7 @@ functor_arg ::=
   | LPAREN functor_arg_name COLON module_type RPAREN
 
 functor_arg_name ::=
-    UIDENT
+    CAPITALIZED_IDENT
   | UNDERSCORE
 
 functor_args ::=
@@ -250,7 +253,7 @@ module_binding_body ::=
   | functor_arg module_binding_body
 
 // [CHANGES]: added module_name
-module_name ::= (UIDENT|UNDERSCORE)
+module_name ::= (CAPITALIZED_IDENT|UNDERSCORE)
 
 module_binding ::=
     MODULE ext_attributes ? module_name module_binding_body post_item_attributes ?
@@ -314,7 +317,7 @@ sig_include_statement ::=
 module_declaration_body ::=
     COLON module_type
 
-  | LPAREN UIDENT COLON module_type RPAREN module_declaration_body
+  | LPAREN CAPITALIZED_IDENT COLON module_type RPAREN module_declaration_body
 
   | LPAREN RPAREN module_declaration_body
 
@@ -350,11 +353,11 @@ class_declarations ::=
     class_declaration and_class_declaration *
 
 class_declaration ::=
-    CLASS ext_attributes ? VIRTUAL ? class_type_parameters ? LIDENT
+    CLASS ext_attributes ? VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT
     class_fun_binding post_item_attributes ?
 
 and_class_declaration ::=
-    AND attributes ? VIRTUAL ? class_type_parameters ? LIDENT class_fun_binding
+    AND attributes ? VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT class_fun_binding
     post_item_attributes ?
 
 class_fun_binding ::=
@@ -408,7 +411,7 @@ class_field ::=
 
 
 parent_binder ::=
-    AS LIDENT
+    AS LOWERCASE_IDENT
 
 value ::=
     override_flag ? attributes ? MUTABLE VIRTUAL label COLON core_type
@@ -428,9 +431,9 @@ method_ ::=
 
 class_type ::=
     class_signature
-  | QUESTION_MARK LIDENT COLON simple_core_type_or_tuple RIGHT_ARROW class_type
+  | QUESTION_MARK LOWERCASE_IDENT COLON simple_core_type_or_tuple RIGHT_ARROW class_type
   | OPTLABEL simple_core_type_or_tuple RIGHT_ARROW class_type
-  | LIDENT COLON simple_core_type_or_tuple RIGHT_ARROW class_type
+  | LOWERCASE_IDENT COLON simple_core_type_or_tuple RIGHT_ARROW class_type
   | simple_core_type_or_tuple RIGHT_ARROW class_type
 
 class_signature ::=
@@ -479,23 +482,23 @@ class_descriptions ::=
     class_description (and_class_description) *
 
 class_description ::=
-    CLASS ext_attributes ? VIRTUAL ? class_type_parameters ? LIDENT COLON
+    CLASS ext_attributes ? VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT COLON
     class_type post_item_attributes ?
 
 
 and_class_description ::=
-    AND attributes ? VIRTUAL ? class_type_parameters ? LIDENT COLON class_type
+    AND attributes ? VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT COLON class_type
     post_item_attributes ?
 
 class_type_declarations ::=
     class_type_declaration and_class_type_declaration *
 
 class_type_declaration ::=
-    CLASS TYPE ext_attributes ? VIRTUAL ? class_type_parameters ? LIDENT EQ
+    CLASS TYPE ext_attributes ? VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT EQ
     class_signature post_item_attributes ?
 
 and_class_type_declaration ::=
-    AND attributes ? VIRTUAL ? class_type_parameters ? LIDENT EQ
+    AND attributes ? VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT EQ
     class_signature post_item_attributes ?
 
 
@@ -514,7 +517,7 @@ labeled_simple_pattern ::=
   | simple_pattern
 
 pattern_var ::=
-    LIDENT
+    LOWERCASE_IDENT
   | UNDERSCORE
 
 opt_default ::=
@@ -524,7 +527,7 @@ label_let_pattern ::=
     label_var (COLON core_type)?
 
 label_var ::=
-    LIDENT
+    LOWERCASE_IDENT
 
 let_pattern ::=
     pattern_expression (COLON core_type) ?
@@ -567,9 +570,9 @@ let_pattern ::=
 //  %nonassoc below_DOT
 //  %nonassoc DOT
 //  /* Finally, the first tokens of simple_expr are above everything else. */
-//  %nonassoc BACKQUOTE EXCLAMATION_MARK BEGIN CHAR_VALUE FALSE FLOAT_VALUE INT_VALUE
-//            LBRACE LBRACELESS LBRACKET LARRAY LIDENT LPAREN
-//            NEW STRING_VALUE TRUE UIDENT
+//  %nonassoc BACKQUOTE EXCLAMATION_MARK BEGIN CHAR_VALUE FALSE FLOAT_VALUE INTEGER_VALUE
+//            LBRACE LBRACELESS LBRACKET LARRAY LOWERCASE_IDENT LPAREN
+//            NEW STRING_VALUE TRUE CAPITALIZED_IDENT
 //            LBRACKETPERCENT LBRACKETPERCENTPERCENT
 expr ::=
     coloncolon_app_rule
@@ -601,7 +604,7 @@ while_expr ::= WHILE ext_attributes ? seq_expr DO seq_expr DONE
 
 non_op_expr ::=
     let_bindings IN seq_expr
-  | LET MODULE ext_attributes ? UIDENT module_binding_body IN seq_expr
+  | LET MODULE ext_attributes ? CAPITALIZED_IDENT module_binding_body IN seq_expr
   | LET EXCEPTION ext_attributes ? constr_ident generalized_constructor_arguments ? attributes ? IN seq_expr
   | LET OPEN override_flag ? ext_attributes ? module_path IN seq_expr
   | FUNCTION ext_attributes ? PIPE ? match_cases
@@ -816,10 +819,10 @@ label_expr ::=
   | OPTLABEL simple_expr //%prec below_SHARP
 
 label_ident ::=
-    LIDENT
+    LOWERCASE_IDENT
 
 lident_list ::=
-    LIDENT +
+    LOWERCASE_IDENT +
 
 val_decl ::= val_ident
 
@@ -989,8 +992,8 @@ simple_pattern_not_ident ::=
   | LARRAY RARRAY
   | LPAREN pattern_expression RPAREN
   | LPAREN pattern_expression COLON core_type RPAREN
-  | LPAREN MODULE ext_attributes ? UIDENT RPAREN
-  | LPAREN MODULE ext_attributes ? UIDENT COLON package_type RPAREN
+  | LPAREN MODULE ext_attributes ? CAPITALIZED_IDENT RPAREN
+  | LPAREN MODULE ext_attributes ? CAPITALIZED_IDENT COLON package_type RPAREN
   | extension
 
 pattern_semi_list ::=
@@ -1031,7 +1034,7 @@ primitive_declaration ::=
 type_declarations ::=
     type_declaration and_type_declaration *
 
-type_name ::= LIDENT
+type_name ::= LOWERCASE_IDENT
 type_alias ::= type_kind
 type_aliases ::= (type_alias EQ)*
 
@@ -1162,7 +1165,7 @@ with_constraint ::=
   | TYPE type_parameters ? label COLON_EQ core_type_no_attr
   | MODULE mod_longident EQ mod_ext_longident
 
-  | MODULE UIDENT COLON_EQ mod_ext_longident
+  | MODULE CAPITALIZED_IDENT COLON_EQ mod_ext_longident
 
 with_type_binder ::=
     EQ PRIVATE
@@ -1197,9 +1200,9 @@ minusgreater_coretype2 ::=
     core_type2 (RIGHT_ARROW core_type2)+
 
 core_type2 ::=
-    QUESTION_MARK LIDENT COLON core_type2
+    QUESTION_MARK LOWERCASE_IDENT COLON core_type2
   | OPTLABEL core_type2
-  | LIDENT COLON core_type2
+  | LOWERCASE_IDENT COLON core_type2
   | simple_core_type_or_tuple
 
 
@@ -1279,32 +1282,32 @@ field_semi ::=
   label COLON poly_type_no_attr attributes ? SEMI attributes ?
 
 label ::=
-    LIDENT
+    LOWERCASE_IDENT
 
 ///* Constants */
 //
 constant ::=
-    INT_VALUE
+    INTEGER_VALUE
   | CHAR_VALUE
   | STRING_VALUE
   | FLOAT_VALUE
 
 signed_constant ::=
     constant
-  | MINUS INT_VALUE
+  | MINUS INTEGER_VALUE
   | MINUS FLOAT_VALUE
-  | PLUS INT_VALUE
+  | PLUS INTEGER_VALUE
   | PLUS FLOAT_VALUE
 
 /* Identifiers and long identifiers */
 
 ident ::=
-    UIDENT
-  | LIDENT
+    CAPITALIZED_IDENT
+  | LOWERCASE_IDENT
 
 // [CHANGE]: change(s) of this element
 val_ident ::=
-    LIDENT
+    LOWERCASE_IDENT
   | RAISE // raise can be used as an identifier
   | LPAREN custom_operator RPAREN
 
@@ -1346,7 +1349,7 @@ operator ::=
   | INFIXOP5
 
 constr_ident ::=
-    UIDENT
+    CAPITALIZED_IDENT
   | LBRACKET RBRACKET
   | LPAREN RPAREN
   /* | SHORTCUT                                */
@@ -1366,14 +1369,14 @@ constr_longident ::=
   | BOOL_VALUE
 
 label_longident ::=
-    LIDENT
-  | mod_longident DOT LIDENT
+    LOWERCASE_IDENT
+  | mod_longident DOT LOWERCASE_IDENT
 
 type_longident ::=
-    LIDENT
+    LOWERCASE_IDENT
     // [CHANGE]: stop using mod_ext as we can have A.B(C).t
-//  | mod_ext_longident DOT LIDENT
-    | UIDENT (LPAREN UIDENT (DOT UIDENT)* RPAREN)? DOT type_longident
+//  | mod_ext_longident DOT LOWERCASE_IDENT
+    | CAPITALIZED_IDENT (LPAREN CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* RPAREN)? DOT type_longident
 
 // [CHANGE]: too few cases were handled. We need to handle:
 // A
@@ -1382,25 +1385,25 @@ type_longident ::=
 // A.B(C.D)
 // A.B(C.D(E))
 module_path ::=
-    UIDENT (DOT UIDENT)* (LPAREN module_path RPAREN)?
+    CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* (LPAREN module_path RPAREN)?
 
 mod_longident ::=
-    UIDENT (DOT UIDENT)*
+    CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)*
 
 mod_ext_longident ::=
-    UIDENT (LPAREN mod_ext_longident RPAREN | DOT UIDENT)?
+    CAPITALIZED_IDENT (LPAREN mod_ext_longident RPAREN | DOT CAPITALIZED_IDENT)?
 
 mty_longident ::=
   ident (DOT ident) *
 
 
 clty_longident ::=
-    LIDENT
-  | mod_ext_longident DOT LIDENT
+    LOWERCASE_IDENT
+  | mod_ext_longident DOT LOWERCASE_IDENT
 //
 class_longident ::=
-    LIDENT
-  | mod_longident DOT LIDENT
+    LOWERCASE_IDENT
+  | mod_longident DOT LOWERCASE_IDENT
 
 /* Miscellaneous */
 
@@ -1433,8 +1436,8 @@ private additive ::=
 ///* Attributes and extensions */
 //
 single_attr_id ::=
-    LIDENT
-  | UIDENT
+    LOWERCASE_IDENT
+  | CAPITALIZED_IDENT
   | AND
   | AS
   | ASSERT

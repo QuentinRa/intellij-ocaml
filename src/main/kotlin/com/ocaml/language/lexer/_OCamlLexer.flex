@@ -208,6 +208,9 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   { UPPERCASE } { IDENTCHAR } * { return CAPITALIZED_IDENT; }
 
   // todo: missing quoted strings
+  // todo: these are not valid
+  "~" { LOWERCASE } { IDENTCHAR } * ":" { return LABEL_OP; }
+  "?" {LOWERCASE} {IDENTCHAR} * ":" { return OPTLABEL; }
 
   // todo: these are not valid yet
   "(*" { yybegin(IN_OCAML_ML_COMMENT); inCommentString = false; commentDepth = 1; tokenStart(); }
@@ -218,16 +221,28 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
 }
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
+//<IN_STRING> {
+//    "\"" { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
+//    [\\] "u{" {DIGIT_HEXA}* "}" { }
+//    [\\] "newline" ("space"|"tab") { }
+//    [\\] "newline" { }
+//    [\\] ([\\\"'nbtr]|space) { }
+//    [\\] {DIGIT} {DIGIT} {DIGIT} { }
+//    [\\] "x" {DIGIT_HEXA} {DIGIT_HEXA} {DIGIT_HEXA} { }
+//    [\\] "o" {DIGIT_3} {DIGIT_7} {DIGIT_7} { }
+//    . {}
+//    <<EOF>> { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
+//}
 <IN_STRING> {
     "\"" { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
-    [\\] "u{" {DIGIT_HEXA}* "}" { }
-    [\\] "newline" ("space"|"tab") { }
-    [\\] "newline" { }
-    [\\] ([\\\"'nbtr]|space) { }
-    [\\] {DIGIT} {DIGIT} {DIGIT} { }
-    [\\] "x" {DIGIT_HEXA} {DIGIT_HEXA} {DIGIT_HEXA} { }
-    [\\] "o" {DIGIT_3} {DIGIT_7} {DIGIT_7} { }
-    . {}
+    "\\" { NEWLINE } ([ \t] *) { }
+    "\\" [\\\'\"ntbr ] { }
+    "\\" [0-9] [0-9] [0-9] { }
+    "\\" "o" [0-3] [0-7] [0-7] { }
+    "\\" "x" [0-9a-fA-F] [0-9a-fA-F] { }
+    "\\" . { }
+    { NEWLINE } { }
+    . { }
     <<EOF>> { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
 }
 
