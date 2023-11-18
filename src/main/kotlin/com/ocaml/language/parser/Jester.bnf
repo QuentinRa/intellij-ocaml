@@ -352,16 +352,6 @@ class-binding ::= [VIRTUAL] [[ type-parameters ]] class-name { parameter } [ COL
 
 type-parameters ::= SINGLE_QUOTE ident { COMMA SINGLE_QUOTE ident }
 
-// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-spec
-class-specification ::= CLASS class-spec { AND class-spec }*
-
-class-spec ::= [VIRTUAL] [[ type-parameters ]] class-name COLON class-type
-
-// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
-classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
-
-classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type
-
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
 specification ::= VAL value-name COLON typexpr
   | EXTERNAL value-name COLON typexpr EQ external-declaration

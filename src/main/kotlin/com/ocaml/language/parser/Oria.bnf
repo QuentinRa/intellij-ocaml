@@ -217,6 +217,10 @@ module_name ::= CAPITALIZED_IDENT
 
 modtype_name ::= ident
 
+class_name ::= LOWERCASE_IDENT
+
+method_name ::= LOWERCASE_IDENT
+
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
 constr ::= [ module_path DOT ] constr_name
 
@@ -317,12 +321,7 @@ injectivity ::= EXCLAMATION_MARK
 
 // [BET]: removed from first LPAREN RPAREN (unit) and true|false
 // [MISSING]: removed generalized_constructor_arguments
-constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN)
-[ OF constr_args // constructor_arguments
- // generalized_constructor_arguments
- // | COLON constructor_arguments RIGHT_ARROW simple_core_type
- // | COLON simple_core_type
-]
+constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [OF constr_args]
 
 // [MAJOR]: used simple_typeexpr
 // [BETS]: removed | LBRACE label_declarations RBRACE
@@ -343,10 +342,22 @@ exception_specification ::= EXCEPTION constr_decl
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-def
+class_definition ::= CLASS class_binding { AND class_binding } *
+
+class_binding ::=
+    [VIRTUAL] [class_type_parameters] class_name { labeled_simple_pattern }*
+    [ COLON class_type ] EQ class_expr
+
+private class_type_parameters ::= LBRACKET type_parameters RBRACKET
+type_parameters ::= SINGLE_QUOTE ident { COMMA SINGLE_QUOTE ident }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-spec
+class_specification ::= CLASS class_spec { AND class_spec } *
+class_spec ::= [VIRTUAL] [class_type_parameters] class_name COLON class_type // todo
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
+classtype_definition ::= CLASS TYPE classtype_def { AND classtype_def } *
+classtype_def ::= [VIRTUAL] [class_type_parameters] class_name EQ class_signature // todo
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
 private base_module_type ::= modtype_path
@@ -377,8 +388,8 @@ specification ::=
     value_description
   | type_definition
   | exception_specification
-  | class_descriptions // todo
-  | class_type_declarations // todo
+  | class_specification
+  | classtype_definition
   | module_declaration
   | module_type_declaration
   | open_statement
@@ -415,8 +426,8 @@ definition ::=
   | module_binding
   | module_type_declaration
   | open_statement
-  | class_declarations
-  | class_type_declarations
+  | class_definition
+  | classtype_definition
   | str_include_statement
   // extensions
   | str_type_extension
@@ -515,26 +526,6 @@ module_binding ::=
     MODULE (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
 ///* Class expressions */
 
-class_declarations ::=
-    class_declaration and_class_declaration *
-
-class_declaration ::=
-    CLASS VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT
-    class_fun_binding
-
-and_class_declaration ::=
-    AND VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT class_fun_binding
-
-class_fun_binding ::=
-    EQ class_expr
-
-  | COLON class_type EQ class_expr
-
-  | labeled_simple_pattern class_fun_binding
-
-class_type_parameters ::=
-    LBRACKET type_param ( COMMA type_param ) * RBRACKET
-
 class_fun_def ::=
     labeled_simple_pattern + RIGHT_ARROW class_expr
 
@@ -628,29 +619,6 @@ value_type ::=
 
 constrain_field ::=
         core_type EQ core_type
-
-class_descriptions ::=
-    class_description (and_class_description) *
-
-class_description ::=
-    CLASS VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT COLON
-    class_type
-
-
-and_class_description ::=
-    AND VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT COLON class_type
-
-class_type_declarations ::=
-    class_type_declaration and_class_type_declaration *
-
-class_type_declaration ::=
-    CLASS TYPE VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT EQ
-    class_signature
-
-and_class_type_declaration ::=
-    AND VIRTUAL ? class_type_parameters ? LOWERCASE_IDENT EQ
-    class_signature
-
 
 ///* Core expressions */
 //
