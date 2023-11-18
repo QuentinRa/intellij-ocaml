@@ -133,3 +133,39 @@
           LBRACKETLESS = "[<"
     ]
 }
+
+// See also: https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:keywords
+
+file ::= COMMENT
+| DOC_COMMENT
+| ANNOTATION
+//| unit-interface
+| unit-implementation
+
+// INTERNAL TOKENS THAT WERE NOT IN THE  DOCUMENTATION
+// otherwise lowercase and capitalized are not recognized as ident
+private ident ::= LOWERCASE_IDENT | CAPITALIZED_IDENT
+
+// https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
+//fixme unit-interface ::=  { specification [SEMISEMI] }+
+unit-implementation ::= [ module-items ]
+
+module-items ::=
+    { SEMISEMI }* (structure_item|seq_expr)? { { SEMISEMI }* ( structure_item | SEMISEMI seq_expr) }* { SEMISEMI }*
+
+structure_item ::=
+    let_bindings
+  | primitive_declaration
+  | value_description
+  | str_type_extension
+  | type_declarations
+  | str_exception_declaration
+  | module_binding
+  | rec_module_bindings
+  | module_type_declaration
+  | open_statement
+  | class_declarations
+  | class_type_declarations
+  | str_include_statement
+  | item_extension
+
