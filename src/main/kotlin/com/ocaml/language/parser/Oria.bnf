@@ -144,7 +144,7 @@
 }
 
 // ALL MAJOR TODOS
-// todo:  aliases are not handled anymore, check what should be done.
+// todo:  aliases are not handled
 
 /*Copyright (c) 2021 Sidharth Kuruvila
 Implicit reference: https://v2.ocaml.org/manual/lex.html.
@@ -211,6 +211,8 @@ infix_op ::= infix_symbol
 constr_name ::= CAPITALIZED_IDENT
 
 typeconstr_name ::= LOWERCASE_IDENT
+
+field_name ::= LOWERCASE_IDENT
 
 // [BACK]: was UIDENT | UNDERSCORE
 module_name ::= CAPITALIZED_IDENT
@@ -299,11 +301,18 @@ type_definition ::= TYPE [NONREC] typedef { AND typedef }*
 // [BETS]: used type_params instead of optional_type_parameters
 typedef ::= [type_params] typeconstr_name type_information
 
-// fixme: missing [type-representation]
-type_information ::= [type_equation] { type_constraint }*
+type_information ::= [type_equation] [type_representation] { type_constraint }*
 
-// todo: type_kind
-type_equation ::= EQ type_kind
+// [BETS]: removed a bunch of stuff with private opt
+type_equation ::= EQ typexpr
+| private_type_equation
+
+// [BETS]: removed DOTDOT
+type_representation ::=
+    EQ [PIPE] constructor_declaration { PIPE constructor_declaration } *
+  | EQ record_decl
+  | EQ PIPE
+  | private_type_representation
 
 type_params ::= type_param
   |  LPAREN type_param { COMMA type_param }* RPAREN
@@ -314,10 +323,13 @@ type_param ::= [ext_variance] SINGLE_QUOTE ident
 ext_variance ::= variance [injectivity]
   |  injectivity [variance]
 
-variance ::= PLUS
-  | MINUS
+variance ::= PLUS | MINUS
 
 injectivity ::= EXCLAMATION_MARK
+
+record_decl ::= LBRACE field_decl { SEMI field_decl }* [SEMI] RBRACE
+
+field_decl ::= [MUTABLE] field_name COLON poly_type_no_attr // todo
 
 // [BET]: removed from first LPAREN RPAREN (unit) and true|false
 // [MISSING]: removed generalized_constructor_arguments
@@ -372,7 +384,7 @@ private module_type_suffix ::=
 
 module_type ::= base_module_type [module_type_suffix]
 
-// todo: all elements
+// todo
 //mod_constraint ::= TYPE [type_params] typeconstr type_equation { type_constraint }
 //  |  MODULE module_path EQ extended_module_path
 mod_constraint ::=
@@ -469,7 +481,13 @@ primitive_declaration ::=
 
 external_declaration ::= STRING_VALUE [ STRING_VALUE [ STRING_VALUE ] ]
 
+// https://v2.ocaml.org/releases/4.14/htmlman/privatetypes.html#s:private-types
+private_type_equation ::= EQ PRIVATE typexpr
 
+private_type_representation ::=
+    EQ PRIVATE [PIPE] constructor_declaration { PIPE constructor_declaration } *
+  | EQ PRIVATE record_decl
+  | EQ PRIVATE PIPE
 
 
 
@@ -1124,24 +1142,6 @@ opt_pattern_type_constraint ::=
     COLON core_type
 
 /* Type declarations */
-
-type_kind ::=
-        core_type
-      | PRIVATE core_type
-      | constructor_declarations
-      | PRIVATE constructor_declarations
-      | DOTDOT
-      | PRIVATE ? LBRACE label_declarations RBRACE
-      | core_type EQ PRIVATE ? constructor_declarations
-      | core_type EQ DOTDOT
-      | core_type EQ PRIVATE ? LBRACE label_declarations RBRACE
-
-//
-constructor_declarations ::=
-    PIPE ? constructor_declaration (PIPE constructor_declaration) *
-    // can have "type v = |" but not
-    | PIPE
-
 constructor_declaration ::=
     constr_ident generalized_constructor_arguments ?
 
@@ -1149,12 +1149,6 @@ generalized_constructor_arguments ::=
     OF constr_args
   | COLON constr_args RIGHT_ARROW simple_core_type
   | COLON simple_core_type
-//
-label_declarations ::=
-    label_declaration (SEMI label_declaration) * (SEMI)?
-//
-label_declaration ::=
-    MUTABLE ? label COLON poly_type_no_attr
 
 ///* Polymorphic types */
 

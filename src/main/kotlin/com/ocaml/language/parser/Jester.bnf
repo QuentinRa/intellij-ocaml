@@ -19,8 +19,6 @@ string-literal ::= STRING_VALUE
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
 tag-name ::= CAPITALIZED_IDENT
 
-field-name ::= LOWERCASE_IDENT
-
 class-name ::= LOWERCASE_IDENT
 
 inst-var-name ::= LOWERCASE_IDENT
@@ -275,18 +273,7 @@ object_expr_internal_base_expr ::= NEW class-path
   | LBRACELESS [ inst-var-name [EQ expr] { SEMI inst-var-name [EQ expr] } [SEMI] ] GREATERRBRACE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
-type-equation ::= EQ typexpr
-
-type-representation ::=
-  EQ [PIPE] constr-decl { PIPE constr-decl }*
-  | EQ record-decl
-  | EQ PIPE
-
-record-decl ::= LBRACE field-decl { SEMI field-decl }* [SEMI] RBRACE
-
 constr-args ::= typexpr { STAR typexpr }*
-
-field-decl ::= [MUTABLE] field-name COLON poly-typexpr
 
 type-constraint ::= CONSTRAINT typexpr EQ typexpr
 
