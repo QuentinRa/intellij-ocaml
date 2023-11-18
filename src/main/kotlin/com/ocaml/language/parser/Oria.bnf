@@ -313,6 +313,7 @@ type_representation ::=
   | EQ record_decl
   | EQ PIPE
   | private_type_representation
+  | type_extension_representation
 
 type_params ::= type_param
   |  LPAREN type_param { COMMA type_param }* RPAREN
@@ -376,7 +377,7 @@ private base_module_type ::= modtype_path
   | SIG [SEMISEMI] { specification [SEMISEMI] }* END // added [SEMISEMI]
   | FUNCTOR LPAREN module_name COLON module_type RPAREN RIGHT_ARROW module_type
   | LPAREN module_type RPAREN
-  | module_type_ext_modtypeof
+  | module_type_typeof
 
 private module_type_suffix ::=
     RIGHT_ARROW module_type
@@ -387,6 +388,7 @@ module_type ::= base_module_type [module_type_suffix]
 // todo
 //mod_constraint ::= TYPE [type_params] typeconstr type_equation { type_constraint }
 //  |  MODULE module_path EQ extended_module_path
+// fixme: see also: https://v2.ocaml.org/releases/4.14/htmlman/signaturesubstitution.html
 mod_constraint ::=
     TYPE [type_params] label_longident (EQ PRIVATE | EQ) core_type_no_attr [(CONSTRAINT core_type EQ core_type) *]
     /* used label_longident instead of type_longident to disallow
@@ -407,8 +409,9 @@ specification ::=
   | open_statement
   | sig_include_statement
   // extensions
-  | sig_type_extension
+  | type_extension_definition
   | recursive_module_extension_spec
+  | module_alias_spec
   // special
   | primitive_declaration
 
@@ -442,12 +445,12 @@ definition ::=
   | classtype_definition
   | str_include_statement
   // extensions
-  | str_type_extension
+  | type_extension_specification
   | recursive_module_extension_def
   // special
   | primitive_declaration
 
-// https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
+// https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s:recursive-modules
 // [BETS]: discard rec_module_bindings ; rec_module_binding ; and_module_binding
 recursive_module_extension_def ::=
     MODULE REC module_name COLON module_type EQ module_expr
@@ -459,11 +462,14 @@ recursive_module_extension_spec ::=
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
 
 // https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html
+type_extension_representation ::= EQ DOTDOT
+| PRIVATE EQ DOTDOT
+
 // [BETS]: removed [NONREC]
 // [BETS]: removed optional_type_parameters
 // [BETS]: removed type_longident and used typeconstr
-str_type_extension ::= TYPE [type_params] typeconstr type_extension_def
-sig_type_extension ::= TYPE [type_params] typeconstr type_extension_spec
+type_extension_specification ::= TYPE [type_params] typeconstr type_extension_def
+type_extension_definition ::= TYPE [type_params] typeconstr type_extension_spec
 
 type_extension_spec ::= PLUSEQ [PRIVATE] [PIPE] constr_decl { PIPE constr_decl } *
 type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
@@ -473,7 +479,7 @@ type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
 constr_def ::= constr_decl | constr_name EQ constr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
-module_type_ext_modtypeof ::= MODULE TYPE OF module_expr
+module_type_typeof ::= MODULE TYPE OF module_expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
 primitive_declaration ::=
@@ -489,7 +495,8 @@ private_type_representation ::=
   | EQ PRIVATE record_decl
   | EQ PRIVATE PIPE
 
-
+// https://v2.ocaml.org/releases/4.14/htmlman/modulealias.html#s:module-alias
+module_alias_spec ::= MODULE module_name EQ module_path
 
 
 
