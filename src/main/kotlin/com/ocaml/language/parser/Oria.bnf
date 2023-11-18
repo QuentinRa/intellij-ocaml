@@ -174,6 +174,7 @@ unit-implementation ::= [ module-items ]
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
+// tocheck: was UIDENT | UNDERSCORE
 module_name ::= CAPITALIZED_IDENT
 
 modtype_name ::= ident
@@ -211,36 +212,52 @@ extended_module_name ::= module_name { LPAREN extended_module_path RPAREN }*
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
-private base_module_type ::=  modtype_path
-  | SIG signature ? END // todo
-  | FUNCTOR functor_args RIGHT_ARROW module_type // todo
+private base_module_type ::= modtype_path
+  | SIG [SEMISEMI] { specification [SEMISEMI] }* END // tocheck: added [SEMISEMI]
+  | FUNCTOR LPAREN module_name COLON module_type RPAREN RIGHT_ARROW module_type
   //| MODULE TYPE OF module_expr // fixme; not found
   | LPAREN module_type RPAREN
 
+// todo: mod_constraint
 private module_type_suffix ::=
     RIGHT_ARROW module_type
     | WITH mod_constraint { AND mod_constraint }*
 
-module_type ::= base_module_type [module_type_suffix] // todo
+module_type ::= base_module_type [module_type_suffix]
+
+specification ::= // todo
+    value_description
+  | primitive_declaration
+  | sig_type_extension
+  | type_declarations
+  | sig_exception_declaration
+  | module_declaration
+  | module_alias
+  | rec_module_declarations
+  | module_type_declaration
+  | open_statement
+  | sig_include_statement
+  | class_descriptions
+  | class_type_declarations
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
-module-items ::= // fixme: merged definition + specification
+module-items ::= // todo: seq_expr
 { SEMISEMI }* (definition|seq_expr)? { { SEMISEMI }* ( definition | SEMISEMI seq_expr) }* { SEMISEMI }*
 
-//definition ::= LET [REC] let-binding { AND let-binding }*
-//  | EXTERNAL value-name COLON typexpr EQ external-declaration
-//  | type-definition
-//  | exception-definition
-//  | class-definition
-//  | classtype-definition
-//  | MODULE module-name { ( module-name COLON module_type ) }* [ COLON module_type ] EQ module_expr
-//  | MODULE TYPE modtype-name EQ module_type
-//  | OPEN module-path
-//  | INCLUDE module_expr
-// todo: language extensions
-//  | recursive_module_extension_def
-//  | generalized_open_statements_def
-
+definition ::= // todo
+    let_bindings
+  | primitive_declaration
+  | value_description
+  | str_type_extension
+  | type_declarations
+  | str_exception_declaration
+  | module_binding
+  | rec_module_bindings
+  | module_type_declaration
+  | open_statement
+  | class_declarations
+  | class_type_declarations
+  | str_include_statement
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
 
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
@@ -305,21 +322,6 @@ module_expr ::=
   | LPAREN VAL expr COLON_GT package_type RPAREN
   | extension
 
-definition ::=
-    let_bindings
-  | primitive_declaration
-  | value_description
-  | str_type_extension
-  | type_declarations
-  | str_exception_declaration
-  | module_binding
-  | rec_module_bindings
-  | module_type_declaration
-  | open_statement
-  | class_declarations
-  | class_type_declarations
-  | str_include_statement
-
 str_include_statement ::=
     INCLUDE module_expr
 
@@ -345,25 +347,6 @@ and_module_binding ::=
 //
 ///* Module types */
 //
-signature ::=
-    SEMISEMI signature ?
-  | signature_item signature ?
-
-signature_item ::=
-    value_description
-  | primitive_declaration
-  | sig_type_extension
-  | type_declarations
-  | sig_exception_declaration
-  | module_declaration
-  | module_alias
-  | rec_module_declarations
-  | module_type_declaration
-  | open_statement
-  | sig_include_statement
-  | class_descriptions
-  | class_type_declarations
-
 open_statement ::=
   OPEN override_flag ? (module_expr|module_path)
 

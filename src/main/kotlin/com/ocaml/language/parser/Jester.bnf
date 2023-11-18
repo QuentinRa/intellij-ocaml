@@ -429,12 +429,6 @@ classtype-definition ::= CLASS TYPE classtype-def { AND classtype-def }*
 classtype-def ::= [VIRTUAL] [[ type-parameters ]] class-name EQ class-body-type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
-sig_module_type ::= SIG { specification [SEMISEMI] }* END
-functor_module_type ::= FUNCTOR ( module-name COLON module_type ) RIGHT_ARROW module_type
-
-module_type ::= sig_module_type
-  |  functor_module_type
-
 mod-constraint ::= TYPE [type-params] typeconstr type-equation { type-constraint }
   |  MODULE module-path EQ extended-module-path
 
