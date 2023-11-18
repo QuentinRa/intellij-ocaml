@@ -27,6 +27,6 @@ class OCamlParserDefinition : ParserDefinition {
     object ParserDefinitionUtils {
         val FILE = IFileElementType(OCamlLanguage)
         val COMMENTS = TokenSet.create(OCamlTypes.COMMENT, OCamlTypes.DOC_COMMENT, OCamlTypes.ANNOTATION)
-        val STRINGS = TokenSet.create(OCamlTypes.STRING_LITERAL)
+        val STRINGS = TokenSet.create(OCamlTypes.STRING_VALUE)
     }
 }
