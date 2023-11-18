@@ -15,30 +15,8 @@ char-literal ::= CHAR_VALUE
 string-literal ::= STRING_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
-// [CHANGE]: removed PIPE from core-operator-char
-// [CHANGE]: removed linenum-directive
-infix-symbol ::= (core-operator-char | PERCENT | LT) { operator-char }*
-  |  SHARP { operator-char }+
-
-prefix-symbol ::= EXCLAMATION_MARK { operator-char }*
-  |  (QUESTION_MARK | TILDE) { operator-char }+
-
-operator-char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core-operator-char | PERCENT | LT | COLON | DOT
-
-core-operator-char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
-
-//linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
-value-name ::= LOWERCASE_IDENT
-  |  LPAREN operator-name RPAREN
-
-operator-name ::= prefix-symbol | infix-op
-
-infix-op ::= infix-symbol
-  |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
-  |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
-
 tag-name ::= CAPITALIZED_IDENT
 
 field-name ::= LOWERCASE_IDENT

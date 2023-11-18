@@ -161,6 +161,10 @@ file ::= COMMENT
 // otherwise lowercase and capitalized are not recognized as ident
 ident ::= CAPITALIZED_IDENT | LOWERCASE_IDENT
 
+// These operators are considered as one character
+private lexed_operators ::= MINUSDOT | PLUSEQ | L_OR | L_AND | NOT_EQ
+| COLON_EQ
+
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-implementation ::= [ module-items ]
 //unit-interface ::=  { specification [SEMISEMI] }+
@@ -180,8 +184,30 @@ label_name ::= LOWERCASE_IDENT
 // optlabel ::=  QUESTION_MARK label_name COLON
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
+infix_symbol ::= (core_operator_char | PERCENT | LT) { operator_char }*
+  | SHARP { operator_char }+
+
+prefix_symbol ::= EXCLAMATION_MARK { operator_char }*
+  | (QUESTION_MARK | TILDE) { operator_char }+
+
+operator_char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core_operator_char | PERCENT | LT | COLON | DOT
+| lexed_operators
+
+core_operator_char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET | PIPE
+
+//linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
+// [CHANGES]: raise can be used as an identifier (value_name)
+value_name ::= LOWERCASE_IDENT
+  | LPAREN operator_name RPAREN
+
+operator_name ::= prefix_symbol | infix_op
+
+infix_op ::= infix_symbol
+  |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
+  |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
+
 constr_name ::= CAPITALIZED_IDENT
 
 typeconstr_name ::= LOWERCASE_IDENT
@@ -359,7 +385,7 @@ specification ::=
   // extensions
   | sig_type_extension
 
-value_description ::= VAL val_ident COLON core_type
+value_description ::= VAL value_name COLON typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
 module-items ::= // todo: seq_expr and fixme: definition|specification
@@ -420,33 +446,6 @@ private INFIXOP3 ::= LOR | LXOR | MOD | LAND
 private INFIXOP4 ::= LSL | LSR | ASR
 private INFIXOP5 ::= PIPE GT | CARRET | CARRET CARRET | ARROBASE | ARROBASE ARROBASE
 BOOL_VALUE ::= TRUE | FALSE
-
-// [CHANGE]: adding custom_operator
-// We can have (simple_operator) or (operator) but we can't have (special_simple_operator)
-// We must have at least two characters when using "special operators" (like "??" is valid but not "?")
-// actually, the first should should not be "*", ".", or ":" but that's not handled
-private custom_operator ::=
-    (operator|simple_operator) (operator|special_simple_operator)*
-    | (operator|special_simple_operator) (operator|special_simple_operator)+
-
-private custom_operator_no_braces ::=
-    // these 3 can be used without parenthesis like "! 5" "!!!!!! 6", etc.
-    EXCLAMATION_MARK custom_operator*
-    | QUESTION_MARK custom_operator*
-    | TILDE custom_operator*
-
-private simple_operator ::=
-  DOLLAR
-  | ARROBASE
-  | CARRET
-
-private special_simple_operator ::=
-    simple_operator
-    | DOT
-    | COLON
-    | QUESTION_MARK
-    | PIPE
-    | TILDE
 
 functor_arg ::=
     LPAREN RPAREN
@@ -905,8 +904,6 @@ non_op_simple_expr ::=
   | LPAREN seq_expr RPAREN
   | BEGIN seq_expr ? END
   | LPAREN seq_expr type_constraint_stro RPAREN
-  | extension
-  | custom_operator_no_braces
 
 private lookup_expr ::=
     field_lookup_expr
@@ -997,15 +994,15 @@ label_ident ::=
 lident_list ::=
     LOWERCASE_IDENT +
 
-val_decl ::= val_ident
+val_decl ::= value_name
 
 // [CHANGES]: added let_binding_expr
 let_binding_body_expr ::= seq_expr
 
 private internal_let_binding_body ::=
     val_decl fun_binding
-  | val_ident COLON typevar_list DOT core_type EQ let_binding_body_expr
-  | val_ident COLON TYPE lident_list DOT core_type EQ let_binding_body_expr
+  | value_name COLON typevar_list DOT core_type EQ let_binding_body_expr
+  | value_name COLON TYPE lident_list DOT core_type EQ let_binding_body_expr
   | pattern_no_exn EQ let_binding_body_expr
   | simple_pattern_not_ident COLON core_type EQ let_binding_body_expr
 
@@ -1094,7 +1091,7 @@ pattern_expression ::=
   | pattern_gen_pattern_expression
 
 val_ident_pattern_expression ::=
-    pattern_expression AS val_ident
+    pattern_expression AS value_name
 
 coloncolon_separated_pattern_expression ::=
     pattern_expression SHORTCUT pattern_expression
@@ -1123,7 +1120,7 @@ pattern_no_exn ::=
   | pattern_gen_pattern_no_exn
 
 val_ident_pattern_no_exn ::=
-    pattern_no_exn AS val_ident
+    pattern_no_exn AS value_name
 
 coloncolon_separated_pattern_no_exn ::=
     pattern_no_exn SHORTCUT pattern_no_exn
@@ -1187,7 +1184,7 @@ opt_pattern_type_constraint ::=
 primitive_declaration_body ::=
     STRING_VALUE +
 
-primitive_declaration_name ::= val_ident
+primitive_declaration_name ::= value_name
 
 primitive_declaration ::=
     EXTERNAL primitive_declaration_name COLON core_type EQ
@@ -1363,49 +1360,6 @@ signed_constant ::=
   | PLUS FLOAT_VALUE
 
 /* Identifiers and long identifiers */
-// [CHANGE]: change(s) of this element
-val_ident ::=
-    LOWERCASE_IDENT
-  | RAISE // raise can be used as an identifier
-  | LPAREN custom_operator RPAREN
-
-// [CHANGE]: an operator such as '||+' doesn't exist
-// but it is valid. It's a combination of '|' '|' '+'.
-// Unfortunately, operators such as '||' are considered as one
-// as they are declared as a token (which is fine). It means that
-// we need to add these to the list too, as '||' won't match '|' '|'.
-operator ::=
-    NOT_EQ
-  | INFIXOP1
-  | INFIXOP2
-  | INFIXOP3
-  | INFIXOP4
-  | SHARPOP
-  | EXCLAMATION_MARK
-  | additive
-  | subtractive
-  | STAR
-  | EQ
-  | LT
-  | GT
-  | OR
-  | L_OR
-  | AMPERSAND
-  | L_AND
-  | COLON_EQ
-  | PLUSEQ
-  | PERCENT
-  // [CHANGE]: added missing operators
-  | EQEQ
-  | LT_OR_EQUAL
-  | GT_OR_EQUAL
-  | OP_STRUCT_DIFF
-  | STARDOT
-  | SLASHDOT
-  | STARSTAR
-  | SLASH
-  | INFIXOP5
-
 constr_ident ::=
     CAPITALIZED_IDENT
   | LBRACKET RBRACKET
@@ -1416,8 +1370,8 @@ constr_ident ::=
   | BOOL_VALUE
 
 val_longident ::=
-    val_ident
-  | mod_longident DOT val_ident
+    value_name
+  | mod_longident DOT value_name
 
 constr_longident ::=
     mod_longident       ////%prec below_DOT
