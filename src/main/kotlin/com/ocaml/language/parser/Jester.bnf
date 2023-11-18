@@ -302,16 +302,6 @@ object_expr_internal_base_expr ::= NEW class-path
   | LBRACELESS [ inst-var-name [EQ expr] { SEMI inst-var-name [EQ expr] } [SEMI] ] GREATERRBRACE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
-type-definition ::= TYPE [NONREC] typedef { and_types }*
-
-typedef ::= [type-params] type_name type-information
-
-type_name ::= typeconstr-name
-
-and_types ::= AND typedef
-
-type-information ::= [type-equation] [type-representation] { type-constraint }*
-
 type-equation ::= EQ typexpr
 
 type-representation ::=

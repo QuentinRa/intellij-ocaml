@@ -143,6 +143,9 @@
   extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr|bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr|record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
 }
 
+// todo: ALL MAJOR TODOS
+// todo:  aliases are not handled anymore, check what should be done.
+
 /*Copyright (c) 2021 Sidharth Kuruvila
 Implicit reference: https://v2.ocaml.org/manual/lex.html.
 Implicit reference: https://docs.ocaml.pro/sources/merlin.3.4.2/upstream/ocaml_402/parsing/parser.mly/index.html
@@ -207,6 +210,20 @@ extended_module_name ::= module_name { LPAREN extended_module_path RPAREN }*
 // https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
+type_definition ::= TYPE [NONREC] typedef { AND typedef }*
+
+// [BETS]: used type_params instead of optional_type_parameters
+typedef ::= [type_params] typeconstr_name type_information
+
+// fixme: missing [type-representation]
+type_information ::= [type_equation] { type_constraint }*
+
+// todo: type_kind
+type_equation ::= EQ type_kind
+
+// todo: core_type
+type_constraint ::= CONSTRAINT core_type EQ core_type
+
 type_params ::= type_param
   |  LPAREN type_param { COMMA type_param }* RPAREN
 
@@ -230,8 +247,8 @@ constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN)
  // | COLON simple_core_type
 ]
 
-// fixme: was typexpr { STAR typexpr }*
-// [BET]: removed | LBRACE label_declarations RBRACE
+// todo: simple_core_type
+// [BETS]: removed | LBRACE label_declarations RBRACE
 constr_args ::= simple_core_type { STAR simple_core_type } *
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
@@ -261,7 +278,7 @@ private module_type_suffix ::=
 
 module_type ::= base_module_type [module_type_suffix]
 
-// fixme: full
+// todo: all elements
 //mod_constraint ::= TYPE [type_params] typeconstr type_equation { type_constraint }
 //  |  MODULE module_path EQ extended_module_path
 mod_constraint ::=
@@ -276,7 +293,7 @@ mod_constraint ::=
 specification ::=
     value_description
   | primitive_declaration
-  | type_declarations
+  | type_definition
   | sig_exception_declaration
   | module_declaration
   | module_alias
@@ -299,7 +316,7 @@ module-items ::= // todo: seq_expr and fixme: definition|specification
 definition ::=
     let_bindings
   | primitive_declaration
-  | type_declarations
+  | type_definition
   | str_exception_declaration
   | module_binding
   | rec_module_bindings
@@ -520,7 +537,7 @@ value ::=
     override_flag ? MUTABLE VIRTUAL label COLON core_type
   | override_flag ? VIRTUAL MUTABLE ? label COLON core_type
   | override_flag ? MUTABLE ? label EQ seq_expr
-  | override_flag ? MUTABLE ? label type_constraint EQ seq_expr
+  | override_flag ? MUTABLE ? label type_constraint_stro EQ seq_expr
 
 method_ ::=
     override_flag ? PRIVATE VIRTUAL label COLON poly_type
@@ -820,7 +837,7 @@ non_op_simple_expr ::=
   | name_tag //%prec prec_constant_constructor
   | LPAREN seq_expr RPAREN
   | BEGIN seq_expr ? END
-  | LPAREN seq_expr type_constraint RPAREN
+  | LPAREN seq_expr type_constraint_stro RPAREN
   | extension
   | custom_operator_no_braces
 
@@ -939,7 +956,7 @@ and_let_binding ::=
 //
 fun_binding ::=
     strict_binding
-  | type_constraint EQ let_binding_body_expr
+  | type_constraint_stro EQ let_binding_body_expr
 
 strict_binding ::=
     EQ let_binding_body_expr
@@ -974,8 +991,8 @@ lbl_expr_list ::=
     lbl_expr (SEMI lbl_expr) * SEMI?
 //
 lbl_expr ::=
-    label_longident type_constraint ? EQ expr
-  | label_longident type_constraint ?
+    label_longident type_constraint_stro ? EQ expr
+  | label_longident type_constraint_stro ?
 //
 //
 field_expr_list ::=
@@ -988,7 +1005,7 @@ field_expr ::=
 expr_semi_list ::=
     expr (SEMI expr) *
 //
-type_constraint ::=
+type_constraint_stro ::=
     COLON core_type
   | COLON core_type COLON_GT core_type
   | COLON_GT core_type
@@ -1110,25 +1127,6 @@ primitive_declaration ::=
     primitive_declaration_body
 
 /* Type declarations */
-// [CHANGES]: added type_name
-type_declarations ::=
-    type_declaration and_type_declaration *
-
-type_name ::= LOWERCASE_IDENT
-type_alias ::= type_kind
-type_aliases ::= (type_alias EQ)*
-
-private type_alias_handler ::= EQ type_aliases? type_kind?
-
-type_declaration ::=
-    TYPE NONREC ? optional_type_parameters ? type_name
-    type_alias_handler? constraints ?
-
-and_type_declaration ::=
-    AND optional_type_parameters ? type_name type_alias_handler? constraints ?
-
-constraints ::=
-      (CONSTRAINT core_type EQ core_type) *
 
 type_kind ::=
         core_type
