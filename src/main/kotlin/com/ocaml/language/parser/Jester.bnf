@@ -14,11 +14,6 @@ char-literal ::= CHAR_VALUE
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
 string-literal ::= STRING_VALUE
 
-// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
-label-name ::= LOWERCASE_IDENT
-label ::=  TILDE label-name COLON
-optlabel ::=  QUESTION_MARK label-name COLON
-
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
 // [CHANGE]: removed PIPE from core-operator-char
 // [CHANGE]: removed linenum-directive

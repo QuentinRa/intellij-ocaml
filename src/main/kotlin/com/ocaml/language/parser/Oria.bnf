@@ -143,7 +143,7 @@
   extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr|bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr|record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
 }
 
-// todo: ALL MAJOR TODOS
+// ALL MAJOR TODOS
 // todo:  aliases are not handled anymore, check what should be done.
 
 /*Copyright (c) 2021 Sidharth Kuruvila
@@ -174,6 +174,10 @@ unit-implementation ::= [ module-items ]
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
+label_name ::= LOWERCASE_IDENT
+// these two were unused, dunno why
+// label ::=  TILDE label_name COLON
+// optlabel ::=  QUESTION_MARK label_name COLON
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
 
@@ -201,6 +205,56 @@ extended_module_path ::= extended_module_name { DOT extended_module_name }*
 
 extended_module_name ::= module_name { LPAREN extended_module_path RPAREN }*
 
+// https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
+// todo: major element not OK
+typexpr ::= typexpr_no_attr
+// 4.b. handle RIGHT_ARROW with no label
+// 7. handle as SINGLE_QUOTE ident
+private typexpr_no_attr ::=
+    { typexpr2 { RIGHT_ARROW typexpr2 }+ | typexpr2 } [AS SINGLE_QUOTE ident]
+
+// 4.a. handle RIGHT_ARROW with label
+// [BETS]: Removed: "| OPTLABEL typexpr2" and "| LOWERCASE_IDENT COLON typexpr2"
+private typexpr2 ::=
+    [QUESTION_MARK] label_name COLON typexpr2
+  | simple_typeexpr_or_tuple
+
+// 5. Handle tuples
+private simple_typeexpr_or_tuple ::=
+    simple_typeexpr [ STAR simple_typeexpr { STAR simple_typeexpr }* ]
+
+// Not sure which one is handled here
+private simple_typeexpr ::=
+    simple_typeexpr2 { simple_typeexpr2_suffix } *
+  | LPAREN typexpr { COMMA typexpr }* RPAREN
+
+private simple_typeexpr2_suffix ::=
+    SHARP class_longident
+    | type_longident
+
+private simple_typeexpr2 ::=
+    SINGLE_QUOTE ident (DOT SINGLE_QUOTE ident)?
+  | UNDERSCORE
+  | type_longident
+  | LPAREN core_type_comma_list RPAREN type_longident
+  // [CHANGES]: uncommented all
+  | LT meth_list GT
+  | LT GT
+  | SHARP class_longident
+  | LPAREN core_type_comma_list RPAREN SHARP class_longident
+  | LBRACKET tag_field RBRACKET
+/* PR#3835: this is not LR(1), would need lookahead=2
+  | LBRACKET simple_core_type RBRACKET
+*/
+  | LBRACKET PIPE? row_field_list RBRACKET
+  | LBRACKETGREATER row_field_list RBRACKET
+  | LBRACKETLESS row_field_list RBRACKET
+//  | LBRACKETGREATER PIPE ? row_field_list RBRACKET
+  | LBRACKETGREATER RBRACKET
+//  | LBRACKETLESS PIPE ? row_field_list RBRACKET
+//  | LBRACKETLESS PIPE ? row_field_list GT name_tag_list RBRACKET
+  | LPAREN MODULE package_type RPAREN
+
 // https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
 
 // https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
@@ -220,9 +274,6 @@ type_information ::= [type_equation] { type_constraint }*
 
 // todo: type_kind
 type_equation ::= EQ type_kind
-
-// todo: core_type
-type_constraint ::= CONSTRAINT core_type EQ core_type
 
 type_params ::= type_param
   |  LPAREN type_param { COMMA type_param }* RPAREN
@@ -247,9 +298,11 @@ constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN)
  // | COLON simple_core_type
 ]
 
-// todo: simple_core_type
+// [MAJOR]: used simple_typeexpr
 // [BETS]: removed | LBRACE label_declarations RBRACE
-constr_args ::= simple_core_type { STAR simple_core_type } *
+constr_args ::= simple_typeexpr { STAR simple_typeexpr } *
+
+type_constraint ::= CONSTRAINT typexpr EQ typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
 
@@ -327,6 +380,7 @@ definition ::=
   | str_include_statement
   // extensions
   | str_type_extension
+
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
 
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
@@ -347,6 +401,19 @@ constr_def ::= constr_decl | constr_name EQ constr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
 module_type_ext_modtypeof ::= MODULE TYPE OF module_expr
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // [CHANGE]: added all 4 below
 private INFIXOP3 ::= LOR | LXOR | MOD | LAND
@@ -1203,8 +1270,6 @@ core_type2 ::=
   | LOWERCASE_IDENT COLON core_type2
   | simple_core_type_or_tuple
 
-
-
 simple_core_type ::=
     simple_core_type2 sumple_core_type2_suffix * ////%prec below_SHARP
   | LPAREN core_type_comma_list RPAREN ////%prec below_SHARP
@@ -1392,7 +1457,7 @@ clty_longident ::=
 //
 class_longident ::=
     LOWERCASE_IDENT
-  | mod_longident DOT LOWERCASE_IDENT
+  | { CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* } DOT LOWERCASE_IDENT
 
 /* Miscellaneous */
 
