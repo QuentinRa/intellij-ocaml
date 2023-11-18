@@ -372,25 +372,36 @@ mod_constraint ::=
   | MODULE mod_longident EQ mod_ext_longident
   | MODULE CAPITALIZED_IDENT COLON_EQ mod_ext_longident
 
-// todo
+// [BETS]: removed module_alias ::= MODULE (CAPITALIZED_IDENT|UNDERSCORE) EQ mod_longident
 specification ::=
     value_description
   | type_definition
   | exception_specification
+  | class_descriptions // todo
+  | class_type_declarations // todo
   | module_declaration
-  | module_alias
-  | rec_module_declarations
   | module_type_declaration
   | open_statement
   | sig_include_statement
-  | class_descriptions
-  | class_type_declarations
   // extensions
   | sig_type_extension
+  | recursive_module_extension_spec
   // special
   | primitive_declaration
 
 value_description ::= VAL value_name COLON typexpr
+
+module_declaration ::=
+    MODULE module_name COLON module_type
+  | MODULE module_name LPAREN module_name COLON module_type RPAREN COLON module_type
+
+module_type_declaration ::=
+    MODULE TYPE modtype_name
+    | MODULE TYPE modtype_name EQ module_type
+
+open_statement ::= OPEN module_path
+
+sig_include_statement ::= INCLUDE module_type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
 module-items ::= // todo: seq_expr and fixme: definition|specification
@@ -402,7 +413,6 @@ definition ::=
   | type_definition
   | exception_definition
   | module_binding
-  | rec_module_bindings
   | module_type_declaration
   | open_statement
   | class_declarations
@@ -410,10 +420,18 @@ definition ::=
   | str_include_statement
   // extensions
   | str_type_extension
+  | recursive_module_extension_def
   // special
   | primitive_declaration
 
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
+// [BETS]: discard rec_module_bindings ; rec_module_binding ; and_module_binding
+recursive_module_extension_def ::=
+    MODULE REC module_name COLON module_type EQ module_expr
+    { AND module_name COLON module_type EQ module_expr } *
+
+recursive_module_extension_spec ::=
+    MODULE REC module_name COLON module_type { AND module_name COLON module_type } *
 
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
 
@@ -495,58 +513,6 @@ module_binding_body ::=
 
 module_binding ::=
     MODULE (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
-
-rec_module_bindings ::=
-    rec_module_binding and_module_binding *
-
-rec_module_binding ::=
-    MODULE REC (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
-
-and_module_binding ::=
-    AND (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
-
-
-//
-///* Module types */
-//
-open_statement ::=
-  OPEN override_flag ? (module_expr|module_path_stro)
-
-sig_include_statement ::=
-    INCLUDE module_type //%prec below_WITH
-
-module_declaration_body ::=
-    COLON module_type
-
-  | LPAREN CAPITALIZED_IDENT COLON module_type RPAREN module_declaration_body
-
-  | LPAREN RPAREN module_declaration_body
-
-
-module_declaration ::=
-    MODULE (CAPITALIZED_IDENT|UNDERSCORE) module_declaration_body
-
-module_alias ::=
-    MODULE (CAPITALIZED_IDENT|UNDERSCORE) EQ mod_longident
-
-rec_module_declarations ::=
-    rec_module_declaration (and_module_declaration)*
-
-
-rec_module_declaration ::=
-    MODULE REC (CAPITALIZED_IDENT|UNDERSCORE) COLON module_type
-
-and_module_declaration ::=
-    AND (CAPITALIZED_IDENT|UNDERSCORE) COLON module_type
-
-
-module_type_declaration_body ::=
-    EQ module_type
-
-module_type_declaration ::=
-    MODULE TYPE ident module_type_declaration_body ?
-
-
 ///* Class expressions */
 
 class_declarations ::=

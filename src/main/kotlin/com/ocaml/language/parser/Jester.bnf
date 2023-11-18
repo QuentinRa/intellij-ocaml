@@ -404,17 +404,10 @@ definition ::= LET [REC] let-binding { AND let-binding }*
   | recursive_module_extension_def
   | generalized_open_statements_def
 
-// https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
-recursive_module_extension_def ::=
-    MODULE REC module-name COLON module_type EQ module_expr { AND module-name COLON module_type EQ module_expr } *
-
-recursive_module_extension_spec ::=
-    MODULE REC module-name COLON module_type { AND module-name COLON module_type } *
-
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
 private generalized_open_statements_def ::=
   OPEN module_expr
-  |   OPEN! module_expr
+  | OPEN! module_expr
 
 private generalized_open_statements_spec ::=
   OPEN extended-module-path
