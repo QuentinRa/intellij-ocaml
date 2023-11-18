@@ -142,11 +142,6 @@
   extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr|bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr|record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
 }
 
-// Help:
-// https://github.com/JetBrains/Grammar-Kit
-// https://github.com/JetBrains/Grammar-Kit/blob/master/TUTORIAL.md
-
-
 /*Copyright (c) 2021 Sidharth Kuruvila
 Implicit reference: https://v2.ocaml.org/manual/lex.html.
 Implicit reference: https://docs.ocaml.pro/sources/merlin.3.4.2/upstream/ocaml_402/parsing/parser.mly/index.html
@@ -158,7 +153,61 @@ file ::= COMMENT
 //| unit-interface
 | unit-implementation
 
-unit-implementation ::= structure
+// INTERNAL TOKENS THAT WERE NOT IN THE  DOCUMENTATION
+// otherwise lowercase and capitalized are not recognized as ident
+ident ::= CAPITALIZED_IDENT | LOWERCASE_IDENT
+
+// https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
+unit-implementation ::= [ module-items ]
+//unit-interface ::=  { specification [SEMISEMI] }+
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:character-literals
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
+
+// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
+
+// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
+
+// https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
+
+// https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
+
+// https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
+
+// https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
+
+// https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classes:class-types
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-expr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-def
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-spec
+
+// https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classtype
+
+// https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
+
+// https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
+
+// https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
 
 // [CHANGE]: added all 4 below
 private INFIXOP3 ::= LOR | LXOR | MOD | LAND
@@ -209,7 +258,7 @@ module_expr_sufix ::=
 
 module_expr ::=
     mod_longident module_expr_sufix?
-  | STRUCT structure END module_expr_sufix?
+  | STRUCT module-items END module_expr_sufix?
   | FUNCTOR functor_args RIGHT_ARROW module_expr module_expr_sufix?
   | LPAREN module_expr COLON module_type RPAREN
   | LPAREN module_expr RPAREN
@@ -220,11 +269,11 @@ module_expr ::=
   | LPAREN VAL expr COLON_GT package_type RPAREN
   | extension
 
-structure ::=
+module-items ::=
 //    (seq_expr)? (SEMISEMI seq_expr | SEMISEMI | structure_item)*
-{ SEMISEMI }* (structure_item|seq_expr)? { { SEMISEMI }* ( structure_item | SEMISEMI seq_expr) }* { SEMISEMI }*
+{ SEMISEMI }* (definition|seq_expr)? { { SEMISEMI }* ( definition | SEMISEMI seq_expr) }* { SEMISEMI }*
 
-structure_item ::=
+definition ::=
     let_bindings
   | primitive_declaration
   | value_description
@@ -1272,11 +1321,6 @@ signed_constant ::=
   | PLUS FLOAT_VALUE
 
 /* Identifiers and long identifiers */
-
-ident ::=
-    CAPITALIZED_IDENT
-  | LOWERCASE_IDENT
-
 // [CHANGE]: change(s) of this element
 val_ident ::=
     LOWERCASE_IDENT
