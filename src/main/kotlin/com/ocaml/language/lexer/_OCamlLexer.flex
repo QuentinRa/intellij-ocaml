@@ -150,6 +150,7 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "&&"                { return L_AND; }
   "^"                 { return CARRET; }
   "-."                { return MINUSDOT; }
+  "+="                { return PLUSEQ; }
   "+"                 { return PLUS; }
   "-"                 { return MINUS; }
   "/"                 { return SLASH; }

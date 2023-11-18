@@ -97,6 +97,7 @@
 
           CARRET = "^"
           MINUSDOT = "-."
+          PLUSEQ = "+="
           PLUS = "+"
           MINUS = "-"
           SLASH = "/"
@@ -174,16 +175,24 @@ unit-implementation ::= [ module-items ]
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
-// tocheck: was UIDENT | UNDERSCORE
-module_name ::= CAPITALIZED_IDENT
-
 constr_name ::= CAPITALIZED_IDENT
+
+typeconstr_name ::= LOWERCASE_IDENT
+
+// [BACK]: was UIDENT | UNDERSCORE
+module_name ::= CAPITALIZED_IDENT
 
 modtype_name ::= ident
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
-// tocheck: was ident (DOT ident) *
+constr ::= [ module_path DOT ] constr_name
+
+typeconstr ::= [ extended_module_path DOT ] typeconstr_name
+
+// [BACK]: was ident (DOT ident) *
 modtype_path ::= [ extended_module_path DOT ] modtype_name
+
+module_path ::= module_name { DOT module_name }*
 
 extended_module_path ::= extended_module_name { DOT extended_module_name }*
 
@@ -202,6 +211,7 @@ type_params ::= type_param
   |  LPAREN type_param { COMMA type_param }* RPAREN
 
 type_param ::= [ext_variance] SINGLE_QUOTE ident
+//optional_type_param ::= [ext_variance] (SINGLE_QUOTE ident|UNDERSCORE)
 
 ext_variance ::= variance [injectivity]
   |  injectivity [variance]
@@ -211,10 +221,18 @@ variance ::= PLUS
 
 injectivity ::= EXCLAMATION_MARK
 
-// tocheck: was also: LPAREN RPAREN (unit) and true|false
-//constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [ OF constr_args ]
-//
-//constr_args ::= typexpr { STAR typexpr } *
+// [BET]: removed from first LPAREN RPAREN (unit) and true|false
+// [MISSING]: removed generalized_constructor_arguments
+constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN)
+[ OF constr_args // constructor_arguments
+ // generalized_constructor_arguments
+ // | COLON constructor_arguments RIGHT_ARROW simple_core_type
+ // | COLON simple_core_type
+]
+
+// fixme: was typexpr { STAR typexpr }*
+// [BET]: removed | LBRACE label_declarations RBRACE
+constr_args ::= simple_core_type { STAR simple_core_type } *
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
 
@@ -232,21 +250,21 @@ injectivity ::= EXCLAMATION_MARK
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modtypes.html#s:modtypes
 private base_module_type ::= modtype_path
-  | SIG [SEMISEMI] { specification [SEMISEMI] }* END // tocheck: added [SEMISEMI]
+  | SIG [SEMISEMI] { specification [SEMISEMI] }* END // added [SEMISEMI]
   | FUNCTOR LPAREN module_name COLON module_type RPAREN RIGHT_ARROW module_type
   | LPAREN module_type RPAREN
   | module_type_ext_modtypeof
 
-// todo: mod_constraint
 private module_type_suffix ::=
     RIGHT_ARROW module_type
     | WITH mod_constraint { AND mod_constraint }*
 
 module_type ::= base_module_type [module_type_suffix]
 
+// fixme: full
 //mod_constraint ::= TYPE [type_params] typeconstr type_equation { type_constraint }
 //  |  MODULE module_path EQ extended_module_path
-mod_constraint ::= // fixme: full
+mod_constraint ::=
     TYPE [type_params] label_longident (EQ PRIVATE | EQ) core_type_no_attr [(CONSTRAINT core_type EQ core_type) *]
     /* used label_longident instead of type_longident to disallow
        functor applications in type path */
@@ -254,10 +272,10 @@ mod_constraint ::= // fixme: full
   | MODULE mod_longident EQ mod_ext_longident
   | MODULE CAPITALIZED_IDENT COLON_EQ mod_ext_longident
 
-specification ::= // todo
+// todo
+specification ::=
     value_description
   | primitive_declaration
-  | sig_type_extension
   | type_declarations
   | sig_exception_declaration
   | module_declaration
@@ -268,14 +286,17 @@ specification ::= // todo
   | sig_include_statement
   | class_descriptions
   | class_type_declarations
+  // extensions
+  | sig_type_extension
 
 value_description ::= VAL val_ident COLON core_type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
-module-items ::= // todo: seq_expr // fixme: definition|specification
+module-items ::= // todo: seq_expr and fixme: definition|specification
 { SEMISEMI }* (definition|specification|seq_expr)? { { SEMISEMI }* ( definition | specification | SEMISEMI seq_expr) }* { SEMISEMI }*
 
-definition ::= // todo
+// todo
+definition ::=
     let_bindings
   | primitive_declaration
   | type_declarations
@@ -287,27 +308,25 @@ definition ::= // todo
   | class_declarations
   | class_type_declarations
   | str_include_statement
+  // extensions
   | str_type_extension
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
 
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
 
-// https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html todo: ...
-str_type_extension ::=
-  TYPE NONREC ? optional_type_parameters ? type_longident type_extension_def
-
-sig_type_extension ::=
-  TYPE NONREC ? optional_type_parameters ? type_longident type_extension_spec
-
-// todo
-constr_decl ::= constr_ident generalized_constructor_arguments ?
+// https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html
+// [BETS]: removed [NONREC]
+// [BETS]: removed optional_type_parameters
+// [BETS]: removed type_longident and used typeconstr
+str_type_extension ::= TYPE [type_params] typeconstr type_extension_def
+sig_type_extension ::= TYPE [type_params] typeconstr type_extension_spec
 
 type_extension_spec ::= PLUSEQ [PRIVATE] [PIPE] constr_decl { PIPE constr_decl } *
 type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
 
-// todo
-constr_def ::= constr_decl | constr_ident EQ constr_longident
-//constr_def ::= constr_decl | constr_name EQ constr
+// [BETS]: used 'constr_name' instead of '... | () | [] | true | false'
+// [BETS]: used 'constr' instead of '... | () | [] | true | false'
+constr_def ::= constr_decl | constr_name EQ constr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
 module_type_ext_modtypeof ::= MODULE TYPE OF module_expr
@@ -398,7 +417,7 @@ and_module_binding ::=
 ///* Module types */
 //
 open_statement ::=
-  OPEN override_flag ? (module_expr|module_path)
+  OPEN override_flag ? (module_expr|module_path_stro)
 
 sig_include_statement ::=
     INCLUDE module_type //%prec below_WITH
@@ -678,7 +697,7 @@ non_op_expr ::=
     let_bindings IN seq_expr
   | LET MODULE CAPITALIZED_IDENT module_binding_body IN seq_expr
   | LET EXCEPTION constr_ident generalized_constructor_arguments ? IN seq_expr
-  | LET OPEN override_flag ? module_path IN seq_expr
+  | LET OPEN override_flag ? module_path_stro IN seq_expr
   | FUNCTION PIPE ? match_cases
   | FUN labeled_simple_pattern fun_def
   | FUN LPAREN TYPE lident_list RPAREN fun_def
@@ -1122,20 +1141,6 @@ type_kind ::=
       | core_type EQ DOTDOT
       | core_type EQ PRIVATE ? LBRACE label_declarations RBRACE
 
-optional_type_parameters ::=
-    optional_type_parameter
-  | LPAREN optional_type_parameter_list RPAREN
-
-optional_type_parameter ::=
-    EXCLAMATION_MARK ? variance ? optional_type_variable
-
-optional_type_parameter_list ::=
-    optional_type_parameter (COMMA optional_type_parameter) *
-
-optional_type_variable ::=
-    SINGLE_QUOTE ident
-  | UNDERSCORE
-
 //
 constructor_declarations ::=
     PIPE ? constructor_declaration (PIPE constructor_declaration) *
@@ -1157,13 +1162,9 @@ sig_exception_declaration ::=
 
 
 generalized_constructor_arguments ::=
-    OF constructor_arguments
-  | COLON constructor_arguments RIGHT_ARROW simple_core_type
+    OF constr_args
+  | COLON constr_args RIGHT_ARROW simple_core_type
   | COLON simple_core_type
-
-constructor_arguments ::=
-    core_type_list
-  | LBRACE label_declarations RBRACE
 //
 label_declarations ::=
     label_declaration (SEMI label_declaration) * (SEMI)?
@@ -1378,8 +1379,8 @@ type_longident ::=
 // A.B(C)
 // A.B(C.D)
 // A.B(C.D(E))
-module_path ::=
-    CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* (LPAREN module_path RPAREN)?
+module_path_stro ::=
+    CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* (LPAREN module_path_stro RPAREN)?
 
 mod_longident ::=
     CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)*

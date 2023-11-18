@@ -46,8 +46,6 @@ infix-op ::= infix-symbol
 
 tag-name ::= CAPITALIZED_IDENT
 
-typeconstr-name ::= LOWERCASE_IDENT
-
 field-name ::= LOWERCASE_IDENT
 
 class-name ::= LOWERCASE_IDENT
@@ -59,17 +57,11 @@ method-name ::= LOWERCASE_IDENT
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
 value-path ::= [ module-path DOT ] value-name
 
-constr ::= [ module-path DOT ] constr-name
-
-typeconstr ::= [ extended-module-path DOT ] typeconstr-name
-
 field ::= [ module-path DOT ] field-name
 
 class-path ::= [ module-path DOT ] class-name
 
 classtype-path ::= [ extended-module-path DOT ] class-name
-
-module-path ::= module-name { DOT module-name }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
 ident_typexpr ::= SINGLE_QUOTE ident
