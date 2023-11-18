@@ -331,6 +331,10 @@ constr_args ::= simple_typeexpr { STAR simple_typeexpr } *
 type_constraint ::= CONSTRAINT typexpr EQ typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
+exception_definition ::= EXCEPTION constr_name EQ constr
+| exception_specification
+
+exception_specification ::= EXCEPTION constr_decl
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classes:class-types
 
@@ -371,9 +375,8 @@ mod_constraint ::=
 // todo
 specification ::=
     value_description
-  | primitive_declaration
   | type_definition
-  | sig_exception_declaration
+  | exception_specification
   | module_declaration
   | module_alias
   | rec_module_declarations
@@ -384,6 +387,8 @@ specification ::=
   | class_type_declarations
   // extensions
   | sig_type_extension
+  // special
+  | primitive_declaration
 
 value_description ::= VAL value_name COLON typexpr
 
@@ -394,9 +399,8 @@ module-items ::= // todo: seq_expr and fixme: definition|specification
 // todo
 definition ::=
     let_bindings
-  | primitive_declaration
   | type_definition
-  | str_exception_declaration
+  | exception_definition
   | module_binding
   | rec_module_bindings
   | module_type_declaration
@@ -406,6 +410,8 @@ definition ::=
   | str_include_statement
   // extensions
   | str_type_extension
+  // special
+  | primitive_declaration
 
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s%3Arecursive-modules
 
@@ -428,7 +434,11 @@ constr_def ::= constr_decl | constr_name EQ constr
 // https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
 module_type_ext_modtypeof ::= MODULE TYPE OF module_expr
 
+// https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
+primitive_declaration ::=
+    EXTERNAL value_name COLON typexpr EQ external_declaration
 
+external_declaration ::= STRING_VALUE [ STRING_VALUE [ STRING_VALUE ] ]
 
 
 
@@ -1179,17 +1189,6 @@ lbl_pattern ::=
 opt_pattern_type_constraint ::=
     COLON core_type
 
-/* Primitive declarations */
-
-primitive_declaration_body ::=
-    STRING_VALUE +
-
-primitive_declaration_name ::= value_name
-
-primitive_declaration ::=
-    EXTERNAL primitive_declaration_name COLON core_type EQ
-    primitive_declaration_body
-
 /* Type declarations */
 
 type_kind ::=
@@ -1211,17 +1210,6 @@ constructor_declarations ::=
 
 constructor_declaration ::=
     constr_ident generalized_constructor_arguments ?
-
-str_exception_declaration ::=
-    EXCEPTION constr_ident EQ constr_longident
-  | sig_exception_declaration
-
-sig_exception_declaration ::=
-  EXCEPTION constr_ident generalized_constructor_arguments ?
-
-
-
-
 
 generalized_constructor_arguments ::=
     OF constr_args
