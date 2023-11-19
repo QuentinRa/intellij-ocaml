@@ -358,13 +358,13 @@ exception_specification ::= EXCEPTION constr_decl
 // [BETS]: using RAW opt label
 // [OPT]: go back to two lines?
 class_type ::=
-  QUESTION_MARK LOWERCASE_IDENT COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
+    QUESTION_MARK LOWERCASE_IDENT COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
   | LOWERCASE_IDENT COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
   | simple_typeexpr_or_tuple RIGHT_ARROW class_type
   | class_body_type
 
 class_body_type ::=
-    OBJECT [LPAREN typexpr RPAREN] { class_field_spec } * END
+      OBJECT [LPAREN typexpr RPAREN] { class_field_spec } * END
     | LBRACKET typexpr { COMMA typexpr } * RBRACKET classtype_path
     | LET OPEN module_path IN class_body_type
 
@@ -372,8 +372,8 @@ class_field_spec ::=
     INHERIT class_body_type
   | VAL [MUTABLE] [VIRTUAL] inst_var_name COLON typexpr
   | VAL VIRTUAL MUTABLE inst_var_name COLON typexpr
-  | METHOD [PRIVATE] [VIRTUAL] method_name EQ poly_type // todo
-  | METHOD VIRTUAL PRIVATE method_name EQ poly_type
+  | METHOD [PRIVATE] [VIRTUAL] method_name COLON poly_type // todo
+  | METHOD VIRTUAL PRIVATE method_name COLON poly_type // todo
   | CONSTRAINT typexpr EQ typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-expr
@@ -391,26 +391,26 @@ private class_simple_expr ::=
   | LPAREN class_expr COLON class_type RPAREN
   | LPAREN class_expr RPAREN
 
+// todo: seq_expr and poly_type
 class_field ::=
-  INHERIT [EXCLAMATION_MARK] class_expr [AS LOWERCASE_IDENT]
-  | VAL value
-  | METHOD method_
-  | CONSTRAINT constrain_field
+    INHERIT class_expr [AS LOWERCASE_IDENT]
+  | INHERIT [EXCLAMATION_MARK] class_expr [AS LOWERCASE_IDENT]
+  | VAL [MUTABLE] inst_var_name [COLON typexpr] EQ seq_expr
+  | VAL [EXCLAMATION_MARK] [MUTABLE] inst_var_name [COLON typexpr] EQ seq_expr
+  | VAL [MUTABLE] VIRTUAL inst_var_name COLON typexpr
+  | VAL VIRTUAL MUTABLE inst_var_name COLON typexpr
+  | METHOD [PRIVATE] method_name class_field_strict_binding
+  | METHOD EXCLAMATION_MARK [PRIVATE] method_name class_field_strict_binding
+  | METHOD [PRIVATE] method_name COLON poly_type EQ seq_expr
+  | METHOD EXCLAMATION_MARK [PRIVATE] method_name COLON poly_type EQ seq_expr
+  | METHOD [PRIVATE] VIRTUAL method_name COLON poly_type
+  | METHOD VIRTUAL PRIVATE method_name COLON poly_type
+  | CONSTRAINT typexpr EQ typexpr
   | INITIALIZER seq_expr
 
-private method_ ::=
-    [EXCLAMATION_MARK] PRIVATE VIRTUAL label COLON poly_type
-  | [EXCLAMATION_MARK] VIRTUAL PRIVATE ? label COLON poly_type
-  | [EXCLAMATION_MARK] PRIVATE ? label strict_binding
-  | [EXCLAMATION_MARK] PRIVATE ? label COLON poly_type EQ seq_expr
-  | [EXCLAMATION_MARK] PRIVATE ? label COLON TYPE lident_list
-    DOT core_type EQ seq_expr
-
-private value ::=
-    [EXCLAMATION_MARK] MUTABLE VIRTUAL label COLON core_type
-  | [EXCLAMATION_MARK] VIRTUAL MUTABLE ? label COLON core_type
-  | [EXCLAMATION_MARK] MUTABLE ? label EQ seq_expr
-  | [EXCLAMATION_MARK] MUTABLE ? label type_constraint_stro EQ seq_expr
+// [BETS]: unsure if this pattern is the correct one
+private class_field_strict_binding ::=
+    { labeled_simple_pattern } * [COLON typexpr] EQ seq_expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
 
@@ -636,12 +636,6 @@ class_self_pattern ::=
 
 class_fields ::=
     class_field +
-
-///* Class types */
-
-
-constrain_field ::=
-        core_type EQ core_type
 
 ///* Core expressions */
 //
