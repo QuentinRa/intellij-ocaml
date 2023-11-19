@@ -329,14 +329,15 @@ injectivity ::= EXCLAMATION_MARK
 
 record_decl ::= LBRACE field_decl { SEMI field_decl }* [SEMI] RBRACE
 
+// fixme: constr_decl doesn't support ":" (see: https://v2.ocaml.org/releases/4.14/htmlman/gadts.html#s:gadts)
 // [BEST]: removed from first LPAREN RPAREN (unit) and true|false
 // [BEST]: removed "| COLON constr_args RIGHT_ARROW simple_core_type"
 // [BEST]: removed "| COLON simple_core_type"
 constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [OF constr_args]
 
 // [MAJOR]: used simple_typeexpr
-// [BETS]: removed | LBRACE label_declarations RBRACE
 constr_args ::= simple_typeexpr { STAR simple_typeexpr } *
+| inline_records_constr_args
 
 field_decl ::= [MUTABLE] field_name COLON poly_type_no_attr // todo
 
@@ -406,6 +407,7 @@ specification ::=
   | type_extension_definition
   | recursive_module_extension_spec
   | module_alias_spec
+  | signature_substitution_spec
   // special
   | primitive_declaration
 
@@ -468,8 +470,8 @@ private type_extension_representation ::= EQ DOTDOT
 // [BETS]: removed [NONREC]
 // [BETS]: removed optional_type_parameters
 // [BETS]: removed type_longident and used typeconstr
-private type_extension_specification ::= TYPE [type_params] typeconstr type_extension_def
-private type_extension_definition ::= TYPE [type_params] typeconstr type_extension_spec
+private type_extension_specification ::= TYPE [type_params] typeconstr type_extension_spec
+private type_extension_definition ::= TYPE [type_params] typeconstr type_extension_def
 
 type_extension_spec ::= PLUSEQ [PRIVATE] [PIPE] constr_decl { PIPE constr_decl } *
 type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
@@ -481,7 +483,7 @@ constr_def ::= constr_decl | constr_name EQ constr
 // https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
 private module_type_typeof ::= MODULE TYPE OF module_expr
 
-// https://v2.ocaml.org/releases/4.14/htmlman/privatetypes.html#s:private-types
+// (3/3) https://v2.ocaml.org/releases/4.14/htmlman/privatetypes.html#s:private-types
 private private_type_equation ::= EQ PRIVATE typexpr
 
 private private_type_representation ::=
@@ -489,15 +491,25 @@ private private_type_representation ::=
   | EQ PRIVATE record_decl
   | EQ PRIVATE PIPE
 
-// https://v2.ocaml.org/releases/4.14/htmlman/modulealias.html#s:module-alias
+// (1/1) https://v2.ocaml.org/releases/4.14/htmlman/modulealias.html#s:module-alias
 private module_alias_spec ::= MODULE module_name EQ module_path
 
-// https://v2.ocaml.org/releases/4.14/htmlman/signaturesubstitution.html#s:signature-substitution
+// (1/1) https://v2.ocaml.org/releases/4.14/htmlman/signaturesubstitution.html#s:signature-substitution
 private signature_substitution_mod_constraint ::=
     TYPE [type_params] typeconstr_name COLON_EQ typexpr
     | MODULE module_path COLON_EQ extended_module_path
+    | MODULE TYPE modtype_path EQ module_type
+    | MODULE TYPE modtype_path COLON_EQ module_type
 
+private signature_substitution_spec ::=
+    TYPE type_subst { AND type_subst }*
+    | MODULE module_name COLON_EQ extended_module_path
+    | MODULE TYPE module_name COLON_EQ module_type
 
+type_subst ::= [type_params] typeconstr_name COLON_EQ typexpr { type_constraint }*
+
+// (1/1) https://v2.ocaml.org/releases/4.14/htmlman/inlinerecords.html#s:inline-records
+private inline_records_constr_args ::= record_decl
 
 
 
