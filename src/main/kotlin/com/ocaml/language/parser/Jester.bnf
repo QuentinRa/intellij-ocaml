@@ -21,10 +21,6 @@ tag-name ::= CAPITALIZED_IDENT
 
 class-name ::= LOWERCASE_IDENT
 
-inst-var-name ::= LOWERCASE_IDENT
-
-method-name ::= LOWERCASE_IDENT
-
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
 value-path ::= [ module-path DOT ] value-name
 
