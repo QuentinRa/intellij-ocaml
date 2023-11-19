@@ -166,9 +166,14 @@ file ::= COMMENT
 // otherwise lowercase and capitalized are not recognized as ident
 ident ::= CAPITALIZED_IDENT | LOWERCASE_IDENT
 
-// These operators are considered as one character
-private lexed_operators ::= MINUSDOT | PLUSEQ | L_OR | L_AND | NOT_EQ
-| COLON_EQ
+private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alone
+ DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
+ // and all of them are lexed too (:> -> <- [< and [> are lexed but not valid)
+ | NOT_EQ | COLON_EQ | L_OR | L_AND | MINUSDOT | PLUSEQ
+ // These two are valid and lexed alone
+ | LT | PERCENT
+ // And this one is valid but dunno from which rule as it's not in CORE_OPERATOR_CHAR
+ | EXCLAMATION_MARK
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-implementation ::= [ module-items ]
@@ -189,16 +194,8 @@ label_name ::= LOWERCASE_IDENT
 // optlabel ::=  QUESTION_MARK label_name COLON
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
-infix_symbol ::= (core_operator_char | PERCENT | LT) { operator_char }*
-  | SHARP { operator_char }+
-
-prefix_symbol ::= EXCLAMATION_MARK { operator_char }*
-  | (QUESTION_MARK | TILDE) { operator_char }+
-
-operator_char ::= TILDE | EXCLAMATION_MARK | QUESTION_MARK | core_operator_char | PERCENT | LT | COLON | DOT
-| lexed_operators
-
-core_operator_char ::= DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET | PIPE
+infix_symbol ::= INFIX_SYMBOL_VALUE | infix_symbol_lexed
+prefix_symbol ::= PREFIX_SYMBOL_VALUE
 
 //linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
 
@@ -311,6 +308,40 @@ poly_typexpr ::=
 private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 
 // [BETS]: removed coloncolon_app_rule
+// expr ::= value-path
+//  |  constant
+//  |  ( expr )
+//  |  begin expr end
+//  |  ( expr : typexpr )
+//  |  constr expr
+//  |  `tag-name expr
+//  |  [| expr { ; expr } [;] |]
+//  |  { field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
+//  |  { expr with field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
+//  |  expr { argument }+
+//  |  expr . field
+//  |  expr . field <- expr
+//  |  expr .( expr )
+//  |  expr .( expr ) <- expr
+//  |  expr .[ expr ]
+//  |  expr .[ expr ] <- expr
+//  |  if expr then expr [ else expr ]
+//  |  while expr do expr done
+//  |  for value-name = expr ( to | downto ) expr do expr done
+//  |  expr ; expr
+//  |  match expr with pattern-matching
+//  |  function pattern-matching
+//  |  fun { parameter }+ [ : typexpr ] -> expr
+//  |  try expr with pattern-matching
+//  |  let [rec] let-binding { and let-binding } in expr
+//  |  let exception constr-decl in expr
+//  |  let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
+//  |  ( expr :> typexpr )
+//  |  ( expr : typexpr :> typexpr )
+//  |  assert expr
+//  |  lazy expr
+//  |  local-open
+//  |  object-expr
 expr ::=
     expr_comma_list_tmp
   | non_op_expr
@@ -320,8 +351,7 @@ expr ::=
   | coloncolon_bin_expr_tmp
   | sum_bin_expr_tmp
   | mul_bin_expr_tmp
-  | infixop4_bin_expr_tmp
-  | infixop5_bin_expr_tmp
+  | infix_expr
   | sign_unary_expr_tmp
   | div_bin_expr_tmp
 
@@ -330,11 +360,10 @@ coloncolon_bin_expr_tmp ::= expr SHORTCUT expr { rightAssociative = true }  // e
 compare_bin_expr_tmp ::= expr (NOT_EQ | EQ | EQEQ | OP_STRUCT_DIFF | LT | GT | LT_OR_EQUAL | GT_OR_EQUAL) expr
 or_bin_expr_tmp ::= expr (OR | L_OR) expr
 and_bin_expr_tmp ::= expr (AMPERSAND | L_AND) expr
-sum_bin_expr_tmp ::= expr (INFIXOP2 | PLUS | PLUSDOT | MINUS | MINUSDOT) expr
-mul_bin_expr_tmp ::= expr (INFIXOP3 | STAR | STARDOT | STARSTAR | PERCENT) expr
+sum_bin_expr_tmp ::= expr (PLUS | PLUSDOT | MINUS | MINUSDOT) expr
+mul_bin_expr_tmp ::= expr (STAR | STARDOT | STARSTAR | PERCENT) expr
 div_bin_expr_tmp ::= expr (SLASH | SLASHDOT) expr
-infixop4_bin_expr_tmp ::= expr INFIXOP4 expr
-infixop5_bin_expr_tmp ::= expr INFIXOP5 expr
+infix_expr ::= expr infix_op expr
 sign_unary_expr_tmp ::= (subtractive | additive) expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
@@ -614,9 +643,6 @@ private inline_records_constr_args ::= record_decl
 
 
 // [CHANGE]: added all 4 below
-private INFIXOP3 ::= LOR | LXOR | MOD | LAND
-private INFIXOP4 ::= LSL | LSR | ASR
-private INFIXOP5 ::= PIPE GT | CARRET | CARRET CARRET | ARROBASE | ARROBASE ARROBASE
 BOOL_VALUE ::= TRUE | FALSE
 
 functor_arg ::=

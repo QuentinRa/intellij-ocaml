@@ -54,6 +54,9 @@ LOWERCASE=[a-z]
 UPPERCASE=[A-Z]
 IDENTCHAR=[A-Za-z_0-9']
 
+CORE_OPERATOR_CHAR=[$&*+\-/=>@\^|]
+OPERATOR_CHAR=([~!?%<:.]|{CORE_OPERATOR_CHAR})
+
 // aliases
 DIGIT_UNDERSCORE=({DIGIT}|{UNDERSCORE})
 DIGIT_HEXA=({DIGIT}|{HEXA_LETTER})
@@ -212,6 +215,12 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   // todo: these are not valid
   "~" { LOWERCASE } { IDENTCHAR } * ":" { return LABEL_OP; }
   "?" {LOWERCASE} {IDENTCHAR} * ":" { return OPTLABEL; }
+
+  // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
+  ({CORE_OPERATOR_CHAR}|"%"|"<") {OPERATOR_CHAR}*  { return INFIX_SYMBOL_VALUE; }
+  "#" {OPERATOR_CHAR}*                             { return INFIX_SYMBOL_VALUE; }
+  "!" {OPERATOR_CHAR}*                             { return PREFIX_SYMBOL_VALUE; }
+  ("?"|"~") {OPERATOR_CHAR}*                       { return PREFIX_SYMBOL_VALUE; }
 
   // todo: these are not valid yet
   "(*" { yybegin(IN_OCAML_ML_COMMENT); inCommentString = false; commentDepth = 1; tokenStart(); }
