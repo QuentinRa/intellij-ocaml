@@ -139,9 +139,11 @@
 
   extends(".*pattern_no_exn")=pattern_no_exn
   extends(".*pattern_expression")=pattern_expression
-  extends("coloncolon_app_rule|label_assign_expr|ref_read_bin_expr|ref_assign_bin_expr|sign_unary_expr|sum_bin_expr|infix_expr|coloncolon_bin_expr|expr_comma_list|non_op_expr|expr")=expr
+
+  extends("label_assign_expr|infix_expr|non_op_expr|expr")=expr
+  extends(".*_expr_tmp|expr_comma_list_tmp")=expr
+
   extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr|bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr|record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
-  extends(".*_expr_tmp|coloncolon_app_rule_tmp|expr_comma_list_tmp")=expr
 }
 
 // ALL MAJOR TODOS
@@ -310,14 +312,11 @@ private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 
 // [BETS]: removed coloncolon_app_rule
 expr ::=
-    coloncolon_app_rule_tmp
-  | expr_comma_list_tmp
+    expr_comma_list_tmp
   | non_op_expr
-  | ref_read_bin_expr_tmp
   | or_bin_expr_tmp
   | and_bin_expr_tmp
   | compare_bin_expr_tmp
-  | infixop1_bin_expr_tmp
   | coloncolon_bin_expr_tmp
   | sum_bin_expr_tmp
   | mul_bin_expr_tmp
@@ -325,22 +324,17 @@ expr ::=
   | infixop5_bin_expr_tmp
   | sign_unary_expr_tmp
   | div_bin_expr_tmp
-  | raise_expr_tmp
 
-expr_comma_list_tmp ::= expr { COMMA expr } +
-coloncolon_app_rule_tmp ::= LPAREN SHORTCUT RPAREN LPAREN expr RPAREN
-ref_read_bin_expr_tmp ::= expr COLON_EQ expr { rightAssociative = true }
-coloncolon_bin_expr_tmp ::= expr SHORTCUT expr { rightAssociative = true }
+expr_comma_list_tmp ::= expr { COMMA expr } +                               // expr { , expr } +
+coloncolon_bin_expr_tmp ::= expr SHORTCUT expr { rightAssociative = true }  // expr :: expr
 compare_bin_expr_tmp ::= expr (NOT_EQ | EQ | EQEQ | OP_STRUCT_DIFF | LT | GT | LT_OR_EQUAL | GT_OR_EQUAL) expr
-or_bin_expr_tmp ::= expr (OR | L_OR) expr { rightAssociative = true }
-and_bin_expr_tmp ::= expr (AMPERSAND | L_AND) expr { rightAssociative = true }
-infixop1_bin_expr_tmp ::= expr INFIXOP1 expr
+or_bin_expr_tmp ::= expr (OR | L_OR) expr
+and_bin_expr_tmp ::= expr (AMPERSAND | L_AND) expr
 sum_bin_expr_tmp ::= expr (INFIXOP2 | PLUS | PLUSDOT | MINUS | MINUSDOT) expr
 mul_bin_expr_tmp ::= expr (INFIXOP3 | STAR | STARDOT | STARSTAR | PERCENT) expr
 div_bin_expr_tmp ::= expr (SLASH | SLASHDOT) expr
-raise_expr_tmp ::= RAISE expr
-infixop4_bin_expr_tmp ::= expr INFIXOP4 expr  { rightAssociative = true }
-infixop5_bin_expr_tmp ::= expr INFIXOP5 expr  { rightAssociative = true }
+infixop4_bin_expr_tmp ::= expr INFIXOP4 expr
+infixop5_bin_expr_tmp ::= expr INFIXOP5 expr
 sign_unary_expr_tmp ::= (subtractive | additive) expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
