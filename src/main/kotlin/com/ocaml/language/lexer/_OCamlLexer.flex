@@ -207,13 +207,10 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "'" [\\] "o" {DIGIT_3} {DIGIT_7} {DIGIT_7}  "'" { return CHAR_VALUE; }
 
   // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
-  ({ LOWERCASE } | "_") { IDENTCHAR } * { return LOWERCASE_IDENT; }
-  { UPPERCASE } { IDENTCHAR } * { return CAPITALIZED_IDENT; }
+  ({ LOWERCASE } | "_") { IDENTCHAR } * { return LOWERCASE_IDENT_VALUE; }
+  { UPPERCASE } { IDENTCHAR } * { return CAPITALIZED_IDENT_VALUE; }
 
-  // todo: missing quoted strings
-  // todo: these are not valid
-  "~" { LOWERCASE } { IDENTCHAR } * ":" { return LABEL_OP; }
-  "?" {LOWERCASE} {IDENTCHAR} * ":" { return OPTLABEL; }
+  // todo: missing quoted strings + fix strings
 
   // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
   ({CORE_OPERATOR_CHAR}|"%"|"<") {OPERATOR_CHAR}*  { return INFIX_SYMBOL_VALUE; }
@@ -221,7 +218,6 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "!" {OPERATOR_CHAR}*                             { return PREFIX_SYMBOL_VALUE; }
   ("?"|"~") {OPERATOR_CHAR}*                       { return PREFIX_SYMBOL_VALUE; }
 
-  // todo: these are not valid yet
   "(*" { yybegin(IN_OCAML_ML_COMMENT); inCommentString = false; commentDepth = 1; tokenStart(); }
   // not a normal, empty, comment nor a (*** kind of comment
   "(**" [^*)] { yybegin(IN_OCAML_DOC_COMMENT); inCommentString = false; commentDepth = 1; tokenStart(); }

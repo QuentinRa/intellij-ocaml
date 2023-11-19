@@ -142,6 +142,7 @@
 
   extends("infix_expr|non_op_expr|expr")=expr
   extends("expr_comma_list|coloncolon_bin_expr|sign_unary_expr")=expr
+  extends("simple_expr")=expr
 
   extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr|local_open")=simple_expr
   extends("bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr")=simple_expr
@@ -160,13 +161,9 @@ Reference: https://v2.ocaml.org/manual/lex.html
 /* Entry points */
 file ::= COMMENT
 | DOC_COMMENT
-| ANNOTATION
+| ANNOTATION // fixme: annotations are an extension and not a comment
 //| unit-interface
 | unit-implementation
-
-// INTERNAL TOKENS THAT WERE NOT IN THE  DOCUMENTATION
-// otherwise lowercase and capitalized are not recognized as ident
-ident ::= CAPITALIZED_IDENT | LOWERCASE_IDENT
 
 private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alone
  DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
@@ -180,6 +177,12 @@ private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alon
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-implementation ::= [ module-items ]
 //unit-interface ::=  { specification [SEMISEMI] }+
+
+// https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
+ident ::= capitalized_ident | lowercase_ident
+capitalized_ident ::= CAPITALIZED_IDENT_VALUE
+lowercase_ident ::= LOWERCASE_IDENT_VALUE | UNDERSCORE // underscore alone is not lexed as lowercase
+                                                       // which is *normal* but not "expected"
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
 integer_literal ::= [MINUS] INTEGER_VALUE
@@ -197,7 +200,7 @@ char_literal ::= CHAR_VALUE
 string_literal ::= STRING_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
-label_name ::= LOWERCASE_IDENT
+label_name ::= lowercase_ident
 // these two were unused, dunno why
 // label ::=  TILDE label_name COLON
 // optlabel ::=  QUESTION_MARK label_name COLON
@@ -210,7 +213,7 @@ prefix_symbol ::= PREFIX_SYMBOL_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
 // [CHANGES]: raise can be used as an identifier (value_name)
-value_name ::= LOWERCASE_IDENT
+value_name ::= lowercase_ident
   | LPAREN operator_name RPAREN
 
 operator_name ::= prefix_symbol | infix_op
@@ -219,24 +222,24 @@ infix_op ::= infix_symbol
   |  STAR | PLUS | MINUS | MINUSDOT | EQ | NOT_EQ | LT | GT | OR | L_OR | AMPERSAND | L_AND | COLON_EQ
   |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
 
-constr_name ::= CAPITALIZED_IDENT
+constr_name ::= capitalized_ident
 
-tag_name ::= CAPITALIZED_IDENT
+tag_name ::= capitalized_ident
 
-typeconstr_name ::= LOWERCASE_IDENT
+typeconstr_name ::= lowercase_ident
 
-field_name ::= LOWERCASE_IDENT
+field_name ::= lowercase_ident
 
 // [BACK]: was UIDENT | UNDERSCORE
-module_name ::= CAPITALIZED_IDENT
+module_name ::= capitalized_ident
 
 modtype_name ::= ident
 
-class_name ::= LOWERCASE_IDENT
+class_name ::= lowercase_ident
 
-inst_var_name ::= LOWERCASE_IDENT
+inst_var_name ::= lowercase_ident
 
-method_name ::= LOWERCASE_IDENT
+method_name ::= lowercase_ident
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
 value_path ::= [ module_path DOT ] value_name
@@ -267,7 +270,7 @@ private typexpr_no_attr ::=
     { typexpr2 { RIGHT_ARROW typexpr2 }+ | typexpr2 } [AS SINGLE_QUOTE ident]
 
 // 4.a. handle RIGHT_ARROW with label
-// [BETS]: Removed: "| OPTLABEL typexpr2" and "| LOWERCASE_IDENT COLON typexpr2"
+// [BETS]: Removed: "| OPTLABEL typexpr2" and "| lowercase_ident COLON typexpr2"
 private typexpr2 ::=
     [QUESTION_MARK] label_name COLON typexpr2
   | simple_typeexpr_or_tuple
@@ -402,7 +405,7 @@ simple_expr ::=
 
 // fixme: actually, we can have "A.B expr" not just "A.b expr" (value-path)
 // [BETS]: removed constr_longident
-non_op_simple_expr ::= value_path                  // value-path
+non_op_simple_expr ::= (value_path|module_path)    // value-path
   | constant                                       // constant
   | constr                                         // **** duplicate
   | BACKTICK ident                                 // **** duplicate
@@ -494,8 +497,8 @@ exception_specification ::= EXCEPTION constr_decl
 // [BETS]: using RAW opt label
 // [OPT]: go back to two lines?
 class_type ::=
-    QUESTION_MARK LOWERCASE_IDENT COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
-  | LOWERCASE_IDENT COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
+    QUESTION_MARK lowercase_ident COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
+  | lowercase_ident COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
   | simple_typeexpr_or_tuple RIGHT_ARROW class_type
   | class_body_type
 
@@ -527,10 +530,9 @@ private class_simple_expr ::=
   | LPAREN class_expr COLON class_type RPAREN
   | LPAREN class_expr RPAREN
 
-// todo: seq_expr
 class_field ::=
-    INHERIT class_expr [AS LOWERCASE_IDENT]
-  | INHERIT [EXCLAMATION_MARK] class_expr [AS LOWERCASE_IDENT]
+    INHERIT class_expr [AS lowercase_ident]
+  | INHERIT [EXCLAMATION_MARK] class_expr [AS lowercase_ident]
   | VAL [MUTABLE] inst_var_name [COLON typexpr] EQ seq_expr
   | VAL [EXCLAMATION_MARK] [MUTABLE] inst_var_name [COLON typexpr] EQ seq_expr
   | VAL [MUTABLE] VIRTUAL inst_var_name COLON typexpr
@@ -587,7 +589,7 @@ mod_constraint ::=
   | MODULE module_path EQ extended_module_path
   | signature_substitution_mod_constraint
 
-// [BETS]: removed module_alias ::= MODULE (CAPITALIZED_IDENT|UNDERSCORE) EQ mod_longident
+// [BETS]: removed module_alias ::= MODULE (capitalized_ident|UNDERSCORE) EQ mod_longident
 specification ::=
     value_description
   | type_definition
@@ -719,7 +721,7 @@ functor_arg ::=
   | LPAREN functor_arg_name COLON module_type RPAREN
 
 functor_arg_name ::=
-    CAPITALIZED_IDENT
+    capitalized_ident
   | UNDERSCORE
 
 functor_args ::=
@@ -751,7 +753,7 @@ module_binding_body ::=
   | functor_arg module_binding_body
 
 module_binding ::=
-    MODULE (CAPITALIZED_IDENT|UNDERSCORE) module_binding_body
+    MODULE (capitalized_ident|UNDERSCORE) module_binding_body
 ///* Class expressions */
 
 class_fun_def ::=
@@ -782,7 +784,7 @@ labeled_simple_pattern ::=
   | simple_pattern
 
 pattern_var ::=
-    LOWERCASE_IDENT
+    lowercase_ident
   | UNDERSCORE
 
 opt_default ::=
@@ -792,7 +794,7 @@ label_let_pattern ::=
     label_var (COLON core_type)?
 
 label_var ::=
-    LOWERCASE_IDENT
+    lowercase_ident
 
 let_pattern ::=
     pattern_expression (COLON core_type) ?
@@ -872,10 +874,10 @@ label_expr ::=
   | OPTLABEL simple_expr //%prec below_SHARP
 
 label_ident ::=
-    LOWERCASE_IDENT
+    lowercase_ident
 
 lident_list ::=
-    LOWERCASE_IDENT +
+    lowercase_ident +
 
 val_decl ::= value_name
 
@@ -1026,8 +1028,8 @@ simple_pattern_not_ident ::=
   | LARRAY RARRAY
   | LPAREN pattern_expression RPAREN
   | LPAREN pattern_expression COLON core_type RPAREN
-  | LPAREN MODULE CAPITALIZED_IDENT RPAREN
-  | LPAREN MODULE CAPITALIZED_IDENT COLON package_type RPAREN
+  | LPAREN MODULE capitalized_ident RPAREN
+  | LPAREN MODULE capitalized_ident COLON package_type RPAREN
   | extension
 
 pattern_semi_list ::=
@@ -1067,9 +1069,9 @@ minusgreater_coretype2 ::=
     core_type2 (RIGHT_ARROW core_type2)+
 
 core_type2 ::=
-    QUESTION_MARK LOWERCASE_IDENT COLON core_type2
+    QUESTION_MARK lowercase_ident COLON core_type2
   | OPTLABEL core_type2
-  | LOWERCASE_IDENT COLON core_type2
+  | lowercase_ident COLON core_type2
   | simple_core_type_or_tuple
 
 simple_core_type ::=
@@ -1147,7 +1149,7 @@ field_semi ::=
   label COLON poly_type_no_attr SEMI
 
 label ::=
-    LOWERCASE_IDENT
+    lowercase_ident
 
 ///* Constants */
 //
@@ -1172,21 +1174,21 @@ constr_longident ::=
   | BOOL_VALUE
 
 label_longident ::=
-    LOWERCASE_IDENT
-  | mod_longident DOT LOWERCASE_IDENT
+    lowercase_ident
+  | mod_longident DOT lowercase_ident
 
 type_longident ::=
-    LOWERCASE_IDENT
+    lowercase_ident
     // [CHANGE]: stop using mod_ext as we can have A.B(C).t
-//  | mod_ext_longident DOT LOWERCASE_IDENT
-    | CAPITALIZED_IDENT (LPAREN CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* RPAREN)? DOT type_longident
+//  | mod_ext_longident DOT lowercase_ident
+    | capitalized_ident (LPAREN capitalized_ident (DOT capitalized_ident)* RPAREN)? DOT type_longident
 
 mod_longident ::=
-    CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)*
+    capitalized_ident (DOT capitalized_ident)*
 
 class_longident ::=
-    LOWERCASE_IDENT
-  | { CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* } DOT LOWERCASE_IDENT
+    lowercase_ident
+  | { capitalized_ident (DOT capitalized_ident)* } DOT lowercase_ident
 
 /* Miscellaneous */
 
