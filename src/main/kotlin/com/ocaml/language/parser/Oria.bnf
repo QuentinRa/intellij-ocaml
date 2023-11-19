@@ -435,7 +435,7 @@ array_constructor_with_local_open_expr ::= module_path DOT LARRAY seq_expr RARRA
 record_constructor_with_local_open_expr ::= module_path DOT LBRACE seq_expr RBRACE
 
 // todo: not done and not correct
-object_expr ::= inst_var_name LESSMINUS expr
+object_expr ::= inst_var_name LEFT_ARROW expr
 | OBJECT class_structure ? END
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
@@ -461,7 +461,7 @@ type_params ::= type_param
   |  LPAREN type_param { COMMA type_param }* RPAREN
 
 type_param ::= [ext_variance] SINGLE_QUOTE ident
-//optional_type_param ::= [ext_variance] (SINGLE_QUOTE ident|UNDERSCORE)
+| gadts_type_param
 
 ext_variance ::= variance [injectivity]
   |  injectivity [variance]
@@ -472,11 +472,17 @@ injectivity ::= EXCLAMATION_MARK
 
 record_decl ::= LBRACE field_decl { SEMI field_decl }* [SEMI] RBRACE
 
-// fixme: constr_decl doesn't support ":" (see: https://v2.ocaml.org/releases/4.14/htmlman/gadts.html#s:gadts)
-// [BEST]: removed from first LPAREN RPAREN (unit) and true|false
-// [BEST]: removed "| COLON constr_args RIGHT_ARROW simple_core_type"
-// [BEST]: removed "| COLON simple_core_type"
-constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [OF constr_args]
+// [BETS]: removed "| COLON constr_args RIGHT_ARROW simple_core_type"
+// [BETS]: removed "| COLON simple_core_type"
+constr_decl ::= gadts_constr_decl
+| constr_decl_name [OF constr_args]
+
+// true and false cannot be used as a lowercase_ident
+// [BETS]: removed ()
+private constr_decl_name ::= constr_name
+| LBRACKET RBRACKET
+| LPAREN SHORTCUT RPAREN
+| TRUE | FALSE
 
 // [MAJOR]: used simple_typeexpr
 constr_args ::= simple_typexpr { STAR simple_typexpr } *
@@ -592,7 +598,7 @@ mod_constraint ::=
 // [BETS]: removed module_alias ::= MODULE (capitalized_ident|UNDERSCORE) EQ mod_longident
 specification ::=
     value_description
-  | type_definition
+  | internal_type_specification
   | exception_specification
   | class_specification
   | classtype_definition
@@ -600,12 +606,9 @@ specification ::=
   | module_type_declaration
   | open_statement
   | sig_include_statement
-  // extensions
-  | type_extension_definition
   | recursive_module_extension_spec
   | module_alias_spec
   | signature_substitution_spec
-  // special
   | primitive_declaration
 
 private value_description ::= VAL value_name COLON typexpr
@@ -615,12 +618,15 @@ private module_declaration ::=
   | MODULE module_name LPAREN module_name COLON module_type RPAREN COLON module_type
 
 private module_type_declaration ::=
-    MODULE TYPE modtype_name
-    | MODULE TYPE modtype_name EQ module_type
+    MODULE TYPE modtype_name EQ module_type
+  | MODULE TYPE modtype_name
 
 private open_statement ::= OPEN module_path
 
 private sig_include_statement ::= INCLUDE module_type
+
+private internal_type_specification ::= type_extension_specification // priority
+| type_definition
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
 module-items ::= // todo: seq_expr and fixme: definition|specification
@@ -629,7 +635,7 @@ module-items ::= // todo: seq_expr and fixme: definition|specification
 // todo
 definition ::=
     let_bindings
-  | type_definition
+  | internal_type_definition
   | exception_definition
   | module_binding
   | module_type_declaration
@@ -637,11 +643,11 @@ definition ::=
   | class_definition
   | classtype_definition
   | str_include_statement
-  // extensions
-  | type_extension_specification
   | recursive_module_extension_def
-  // special
   | primitive_declaration
+
+private internal_type_definition ::= type_extension_definition // first
+| type_definition
 
 // https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
 primitive_declaration ::=
@@ -707,6 +713,14 @@ type_subst ::= [type_params] typeconstr_name COLON_EQ typexpr { type_constraint 
 
 // (1/1) https://v2.ocaml.org/releases/4.14/htmlman/inlinerecords.html#s:inline-records
 private inline_records_constr_args ::= record_decl
+
+// (2/4) https://v2.ocaml.org/releases/4.14/htmlman/gadts.html#s:gadts
+// todo: missing two
+private gadts_constr_decl ::= constr_name COLON [constr_args RIGHT_ARROW] typexpr
+private gadts_type_param ::= [variance] UNDERSCORE
+
+
+
 
 
 
@@ -859,7 +873,7 @@ bigarray_assign_expr ::=
     simple_expr DOT LBRACE expr RBRACE assignment
 
 assignment ::=
-    LESSMINUS expr
+    LEFT_ARROW expr
 
 record_constructor_expr ::=
     LBRACE record_expr RBRACE
