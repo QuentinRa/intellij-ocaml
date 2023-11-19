@@ -1,27 +1,4 @@
 //noinspection BnfUnusedRuleForFile
-// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
-class-name ::= LOWERCASE_IDENT
-
-// https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
-class-path ::= [ module_path DOT ] class-name
-
-// https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
-method-type ::= method-name COLON poly-typexpr
-
-// https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
-polymorphic-variant-type ::= LBRACKET tag-spec-first { PIPE tag-spec }* RBRACKET
-  |  LBRACKETGREATER [ tag-spec ] { PIPE tag-spec }* RBRACKET
-  |  LBRACKETLESS [PIPE] tag-spec-full { PIPE tag-spec-full }* [ GT { BACKTICK tag-name }+ ] RBRACKET
-
-tag-spec-first ::= BACKTICK tag-name [ OF typexpr ]
-  |  [ typexpr ] PIPE tag-spec
-
-tag-spec ::= BACKTICK tag-name [ OF typexpr ]
-  |  typexpr
-
-tag-spec-full ::= BACKTICK tag-name [ OF [AMPERSAND] typexpr { AMPERSAND typexpr }* ]
-  |  typexpr
-
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
 value_pattern ::= value-name
 underscore_pattern ::= UNDERSCORE

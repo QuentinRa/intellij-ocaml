@@ -253,6 +253,8 @@ field ::= [ module_path DOT ] field_name
 // [BACK]: was ident (DOT ident) *
 modtype_path ::= [ extended_module_path DOT ] modtype_name
 
+class_path ::= [ module_path DOT ] class_name
+
 classtype_path ::= [ extended_module_path DOT ] class_name
 
 module_path ::= module_name { DOT module_name }*
@@ -262,60 +264,57 @@ extended_module_path ::= extended_module_name { DOT extended_module_name }*
 extended_module_name ::= module_name { LPAREN extended_module_path RPAREN }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/types.html#s:typexpr
-// todo: major element not OK
 typexpr ::= typexpr_no_attr
-// 4.b. handle RIGHT_ARROW with no label
-// 7. handle as SINGLE_QUOTE ident
+
 private typexpr_no_attr ::=
-    { typexpr2 { RIGHT_ARROW typexpr2 }+ | typexpr2 } [AS SINGLE_QUOTE ident]
+    { typexpr2 { RIGHT_ARROW typexpr2 }+ | typexpr2 } // ... typexpr -> typexpr
+    [AS SINGLE_QUOTE ident]                           // typexpr as ' ident
 
-// 4.a. handle RIGHT_ARROW with label
-// [BETS]: Removed: "| OPTLABEL typexpr2" and "| lowercase_ident COLON typexpr2"
 private typexpr2 ::=
-    [QUESTION_MARK] label_name COLON typexpr2
-  | simple_typeexpr_or_tuple
+    [QUESTION_MARK] label_name COLON typexpr2        // [[?]label-name:] typexpr -> typexpr
+  | simple_typexpr_or_tuple
 
-// 5. Handle tuples
-private simple_typeexpr_or_tuple ::=
-    simple_typeexpr [ STAR simple_typeexpr { STAR simple_typeexpr }* ]
+private simple_typexpr_or_tuple ::=
+    simple_typexpr [ STAR simple_typexpr { STAR simple_typexpr }* ] // typexpr { * typexpr }+
 
 // Not sure which one is handled here
-private simple_typeexpr ::=
-    simple_typeexpr2 { simple_typeexpr2_suffix } *
-  | LPAREN typexpr { COMMA typexpr }* RPAREN
+private simple_typexpr ::=
+    simple_typexpr2 { typeconstr } *                 // typexpr typeconstr
+  | LPAREN typexpr { COMMA typexpr }* RPAREN simple_typexpr2_suffix
 
-private simple_typeexpr2_suffix ::=
-    SHARP class_longident
-    | type_longident
+private simple_typexpr2_suffix ::= SHARP class_path  // ( typexpr { , typexpr } ) # class-path
+| typeconstr                                         // ( typexpr { , typexpr } ) typeconstr
 
-private simple_typeexpr2 ::=
-    SINGLE_QUOTE ident (DOT SINGLE_QUOTE ident)?
-  | UNDERSCORE
-  | type_longident
-  | LPAREN typexpr { COMMA typexpr }* RPAREN type_longident
-  // [CHANGES]: uncommented all
-  | LT meth_list GT
-  | LT GT
-  | SHARP class_longident
-  | LPAREN typexpr { COMMA typexpr }* RPAREN SHARP class_longident
-  | LBRACKET tag_field RBRACKET
-/* PR#3835: this is not LR(1), would need lookahead=2
-  | LBRACKET simple_core_type RBRACKET
-*/
-  | LBRACKET PIPE? row_field_list RBRACKET
-  | LBRACKETGREATER row_field_list RBRACKET
-  | LBRACKETLESS row_field_list RBRACKET
-//  | LBRACKETGREATER PIPE ? row_field_list RBRACKET
-  | LBRACKETGREATER RBRACKET
-//  | LBRACKETLESS PIPE ? row_field_list RBRACKET
-//  | LBRACKETLESS PIPE ? row_field_list GT name_tag_list RBRACKET
-  | LPAREN MODULE package_type RPAREN
+private simple_typexpr2 ::=
+    SINGLE_QUOTE ident                               // ' ident
+  | UNDERSCORE                                       // _
+  | typeconstr                                       // typeconstr
+  | SHARP classtype_path                             // # classtype-path
+  | LPAREN typexpr RPAREN                            // ( typexpr )
+  | LT [DOTDOT] GT                                   // < [..] >
+  | polymorphic_variant_type                         // polymorphic-variant-type
+  // Examples: type x = <a:int;> or <a:int;..> or <a:int>
+  | LT method_type { COLON method_type }* [SEMI | SEMI DOTDOT] GT // < method-type { ; method-type } [; | ; ..] >
 
 poly_typexpr ::=
     { SINGLE_QUOTE ident }+ DOT typexpr
   | typexpr
 
+method_type ::= method_name COLON poly_typexpr
+
 // https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
+polymorphic_variant_type ::= LBRACKET tag_spec_first { PIPE tag_spec }* RBRACKET
+  |  LBRACKETGREATER [ tag_spec ] { PIPE tag_spec }* RBRACKET
+  |  LBRACKETLESS [PIPE] tag_spec_full { PIPE tag_spec_full }* [ GT { BACKTICK tag_name }+ ] RBRACKET
+
+tag_spec_first ::= BACKTICK tag_name [ OF typexpr ]
+  |  [ typexpr ] PIPE tag_spec
+
+tag_spec ::= BACKTICK tag_name [ OF typexpr ]
+  |  typexpr
+
+tag_spec_full ::= BACKTICK tag_name [ OF [AMPERSAND] typexpr { AMPERSAND typexpr }* ]
+  |  typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
 constant ::= integer_literal
@@ -373,7 +372,7 @@ non_op_expr ::=
   | LET MODULE module_name { LPAREN module_name COLON module_type RPAREN }* [COLON module_type] IN seq_expr // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
   | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
   | FUNCTION pattern_matching                                           // function pattern-matching
-  | FUN { labeled_simple_pattern } * [ COLON simple_typeexpr ] RIGHT_ARROW seq_expr // fun { parameter }+ [ : typexpr ] -> expr
+  | FUN { labeled_simple_pattern } * [ COLON simple_typexpr ] RIGHT_ARROW seq_expr // fun { parameter }+ [ : typexpr ] -> expr
   | MATCH seq_expr WITH pattern_matching                                // match expr with pattern-matching
   | TRY seq_expr WITH pattern_matching                                  // try expr with pattern-matching
   | constr simple_expr                                                  // constr expr
@@ -391,6 +390,7 @@ non_op_expr ::=
 simple_expr ::=
   local_open_group
   | non_op_simple_expr
+  // todo: not validated
   | record_constructor_expr
   | assign_expr
   | lookup_expr
@@ -479,7 +479,7 @@ record_decl ::= LBRACE field_decl { SEMI field_decl }* [SEMI] RBRACE
 constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [OF constr_args]
 
 // [MAJOR]: used simple_typeexpr
-constr_args ::= simple_typeexpr { STAR simple_typeexpr } *
+constr_args ::= simple_typexpr { STAR simple_typexpr } *
 | inline_records_constr_args
 
 field_decl ::= [MUTABLE] field_name COLON poly_type_no_attr // todo
@@ -497,9 +497,9 @@ exception_specification ::= EXCEPTION constr_decl
 // [BETS]: using RAW opt label
 // [OPT]: go back to two lines?
 class_type ::=
-    QUESTION_MARK lowercase_ident COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
-  | lowercase_ident COLON simple_typeexpr_or_tuple RIGHT_ARROW class_type
-  | simple_typeexpr_or_tuple RIGHT_ARROW class_type
+    QUESTION_MARK lowercase_ident COLON simple_typexpr_or_tuple RIGHT_ARROW class_type
+  | lowercase_ident COLON simple_typexpr_or_tuple RIGHT_ARROW class_type
+  | simple_typexpr_or_tuple RIGHT_ARROW class_type
   | class_body_type
 
 class_body_type ::=
