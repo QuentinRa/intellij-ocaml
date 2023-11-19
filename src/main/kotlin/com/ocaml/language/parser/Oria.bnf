@@ -307,9 +307,8 @@ type_information ::= [type_equation] [type_representation] { type_constraint }*
 type_equation ::= EQ typexpr
 | private_type_equation
 
-// [BETS]: removed DOTDOT
 type_representation ::=
-    EQ [PIPE] constructor_declaration { PIPE constructor_declaration } *
+    EQ [PIPE] constr_decl { PIPE constr_decl } *
   | EQ record_decl
   | EQ PIPE
   | private_type_representation
@@ -330,15 +329,16 @@ injectivity ::= EXCLAMATION_MARK
 
 record_decl ::= LBRACE field_decl { SEMI field_decl }* [SEMI] RBRACE
 
-field_decl ::= [MUTABLE] field_name COLON poly_type_no_attr // todo
-
-// [BET]: removed from first LPAREN RPAREN (unit) and true|false
-// [MISSING]: removed generalized_constructor_arguments
+// [BEST]: removed from first LPAREN RPAREN (unit) and true|false
+// [BEST]: removed "| COLON constr_args RIGHT_ARROW simple_core_type"
+// [BEST]: removed "| COLON simple_core_type"
 constr_decl ::= (constr_name | LBRACKET RBRACKET | LPAREN SHORTCUT RPAREN) [OF constr_args]
 
 // [MAJOR]: used simple_typeexpr
 // [BETS]: removed | LBRACE label_declarations RBRACE
 constr_args ::= simple_typeexpr { STAR simple_typeexpr } *
+
+field_decl ::= [MUTABLE] field_name COLON poly_type_no_attr // todo
 
 type_constraint ::= CONSTRAINT typexpr EQ typexpr
 
@@ -385,17 +385,11 @@ private module_type_suffix ::=
 
 module_type ::= base_module_type [module_type_suffix]
 
-// todo
-//mod_constraint ::= TYPE [type_params] typeconstr type_equation { type_constraint }
-//  |  MODULE module_path EQ extended_module_path
-// fixme: see also: https://v2.ocaml.org/releases/4.14/htmlman/signaturesubstitution.html
+// [BETS]: replaced previous names/paths with others
 mod_constraint ::=
-    TYPE [type_params] label_longident (EQ PRIVATE | EQ) core_type_no_attr [(CONSTRAINT core_type EQ core_type) *]
-    /* used label_longident instead of type_longident to disallow
-       functor applications in type path */
-  | TYPE [type_params] label COLON_EQ core_type_no_attr
-  | MODULE mod_longident EQ mod_ext_longident
-  | MODULE CAPITALIZED_IDENT COLON_EQ mod_ext_longident
+    TYPE [type_params] typeconstr type_equation { type_constraint }*
+  | MODULE module_path EQ extended_module_path
+  | signature_substitution_mod_constraint
 
 // [BETS]: removed module_alias ::= MODULE (CAPITALIZED_IDENT|UNDERSCORE) EQ mod_longident
 specification ::=
@@ -415,19 +409,19 @@ specification ::=
   // special
   | primitive_declaration
 
-value_description ::= VAL value_name COLON typexpr
+private value_description ::= VAL value_name COLON typexpr
 
-module_declaration ::=
+private module_declaration ::=
     MODULE module_name COLON module_type
   | MODULE module_name LPAREN module_name COLON module_type RPAREN COLON module_type
 
-module_type_declaration ::=
+private module_type_declaration ::=
     MODULE TYPE modtype_name
     | MODULE TYPE modtype_name EQ module_type
 
-open_statement ::= OPEN module_path
+private open_statement ::= OPEN module_path
 
-sig_include_statement ::= INCLUDE module_type
+private sig_include_statement ::= INCLUDE module_type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
 module-items ::= // todo: seq_expr and fixme: definition|specification
@@ -450,26 +444,32 @@ definition ::=
   // special
   | primitive_declaration
 
+// https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
+primitive_declaration ::=
+    EXTERNAL value_name COLON typexpr EQ external_declaration
+
+external_declaration ::= STRING_VALUE [ STRING_VALUE [ STRING_VALUE ] ]
+
 // https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s:recursive-modules
 // [BETS]: discard rec_module_bindings ; rec_module_binding ; and_module_binding
-recursive_module_extension_def ::=
+private recursive_module_extension_def ::=
     MODULE REC module_name COLON module_type EQ module_expr
     { AND module_name COLON module_type EQ module_expr } *
 
-recursive_module_extension_spec ::=
+private recursive_module_extension_spec ::=
     MODULE REC module_name COLON module_type { AND module_name COLON module_type } *
 
 // https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
 
 // https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html
-type_extension_representation ::= EQ DOTDOT
+private type_extension_representation ::= EQ DOTDOT
 | PRIVATE EQ DOTDOT
 
 // [BETS]: removed [NONREC]
 // [BETS]: removed optional_type_parameters
 // [BETS]: removed type_longident and used typeconstr
-type_extension_specification ::= TYPE [type_params] typeconstr type_extension_def
-type_extension_definition ::= TYPE [type_params] typeconstr type_extension_spec
+private type_extension_specification ::= TYPE [type_params] typeconstr type_extension_def
+private type_extension_definition ::= TYPE [type_params] typeconstr type_extension_spec
 
 type_extension_spec ::= PLUSEQ [PRIVATE] [PIPE] constr_decl { PIPE constr_decl } *
 type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
@@ -479,24 +479,23 @@ type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
 constr_def ::= constr_decl | constr_name EQ constr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
-module_type_typeof ::= MODULE TYPE OF module_expr
-
-// https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
-primitive_declaration ::=
-    EXTERNAL value_name COLON typexpr EQ external_declaration
-
-external_declaration ::= STRING_VALUE [ STRING_VALUE [ STRING_VALUE ] ]
+private module_type_typeof ::= MODULE TYPE OF module_expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/privatetypes.html#s:private-types
-private_type_equation ::= EQ PRIVATE typexpr
+private private_type_equation ::= EQ PRIVATE typexpr
 
-private_type_representation ::=
-    EQ PRIVATE [PIPE] constructor_declaration { PIPE constructor_declaration } *
+private private_type_representation ::=
+    EQ PRIVATE [PIPE] constr_decl { PIPE constr_decl } *
   | EQ PRIVATE record_decl
   | EQ PRIVATE PIPE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modulealias.html#s:module-alias
-module_alias_spec ::= MODULE module_name EQ module_path
+private module_alias_spec ::= MODULE module_name EQ module_path
+
+// https://v2.ocaml.org/releases/4.14/htmlman/signaturesubstitution.html#s:signature-substitution
+private signature_substitution_mod_constraint ::=
+    TYPE [type_params] typeconstr_name COLON_EQ typexpr
+    | MODULE module_path COLON_EQ extended_module_path
 
 
 
@@ -1149,13 +1148,8 @@ opt_pattern_type_constraint ::=
     COLON core_type
 
 /* Type declarations */
-constructor_declaration ::=
-    constr_ident generalized_constructor_arguments ?
-
 generalized_constructor_arguments ::=
     OF constr_args
-  | COLON constr_args RIGHT_ARROW simple_core_type
-  | COLON simple_core_type
 
 ///* Polymorphic types */
 
