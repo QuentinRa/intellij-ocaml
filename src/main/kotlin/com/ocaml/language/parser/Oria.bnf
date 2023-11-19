@@ -182,12 +182,19 @@ unit-implementation ::= [ module-items ]
 //unit-interface ::=  { specification [SEMISEMI] }+
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
+integer_literal ::= [MINUS] INTEGER_VALUE
+int32_literal ::=  integer_literal "l"
+int64_literal ::=  integer_literal "L"
+nativeint_literal ::=  integer_literal "n"
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
+float_literal ::= [MINUS] FLOAT_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:character-literals
+char_literal ::= CHAR_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
+string_literal ::= STRING_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
 label_name ::= LOWERCASE_IDENT
@@ -232,9 +239,13 @@ inst_var_name ::= LOWERCASE_IDENT
 method_name ::= LOWERCASE_IDENT
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:refer-named
+value_path ::= [ module_path DOT ] value_name
+
 constr ::= [ module_path DOT ] constr_name
 
 typeconstr ::= [ extended_module_path DOT ] typeconstr_name
+
+field ::= [ module_path DOT ] field_name
 
 // [BACK]: was ident (DOT ident) *
 modtype_path ::= [ extended_module_path DOT ] modtype_name
@@ -304,6 +315,21 @@ poly_typexpr ::=
 // https://v2.ocaml.org/releases/4.14/htmlman/types.html#sss:typexpr-polyvar
 
 // https://v2.ocaml.org/releases/4.14/htmlman/const.html#s:const
+constant ::= integer_literal
+ |  int32_literal
+ |  int64_literal
+ |  nativeint_literal
+ |  float_literal
+ |  char_literal
+ |  string_literal
+ |  constr
+ |  FALSE
+ |  TRUE
+ |  LPAREN RPAREN
+ |  BEGIN END
+ |  LBRACKET RBRACKET
+ |  LARRAY RARRAY
+ |  BACKTICK tag_name
 
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
 
@@ -311,11 +337,7 @@ poly_typexpr ::=
 private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 
 // [BETS]: removed coloncolon_app_rule
-// expr ::= value-path
-//  |  constant
-//  |  ( expr )
-//  |  begin expr end
-//  |  ( expr : typexpr )
+// expr ::=
 //  |  [| expr { ; expr } [;] |]
 //  |  { field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
 //  |  { expr with field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
@@ -330,7 +352,6 @@ private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 //  |  ( expr :> typexpr )
 //  |  ( expr : typexpr :> typexpr )
 //  |  local-open
-//  |  object-expr
 expr ::=
     expr_comma_list
   | non_op_expr
@@ -365,6 +386,47 @@ non_op_expr ::=
   | object_expr
   | simple_expr labeled_simple_expr *
   | simple_expr
+
+// [BETS]: remove local_open_group???
+simple_expr ::=
+//    local_open_group
+  non_op_simple_expr
+  | record_constructor_expr
+  | assign_expr
+  | lookup_expr
+  | array_constructor_expr
+  | list_constructor_expr
+  | bang_expr
+  | new_object_expr
+  | self_copy_object_expr
+  | send_message_object_expr
+  | sharpop_expr
+  | first_class_module_expr
+
+//private local_open_group ::=
+//      object_copy_with_local_open_expr
+//    | expr_with_local_open_expr
+//    | list_constructor_with_local_open_expr
+//    | array_constructor_with_local_open_expr
+//    | record_constructor_with_local_open_expr
+//    | first_class_module_with_local_open_expr
+//
+//object_copy_with_local_open_expr ::= mod_longident DOT LBRACELESS field_expr_list ? GREATERRBRACE
+//expr_with_local_open_expr ::= mod_longident DOT LPAREN seq_expr RPAREN
+//list_constructor_with_local_open_expr ::= mod_longident DOT LBRACKET expr_semi_list SEMI ? RBRACKET
+//array_constructor_with_local_open_expr ::= mod_longident DOT LARRAY ( expr_semi_list SEMI ? )? RARRAY
+//record_constructor_with_local_open_expr ::= mod_longident DOT LBRACE record_expr RBRACE
+//first_class_module_with_local_open_expr ::= mod_longident DOT LPAREN MODULE module_expr COLON package_type RPAREN
+
+// fixme: actually, we can have "A.B expr" not just "A.b expr" (value-path)
+// [BETS]: removed constr_longident
+non_op_simple_expr ::= value_path                  // value-path
+  | constant                                       // constant
+  | constr                                         // **** duplicate
+  | BACKTICK ident                                 // **** duplicate
+  | LPAREN seq_expr RPAREN                         // ( expr )
+  | BEGIN [seq_expr] END                           // begin expr end
+  | LPAREN seq_expr COLON typexpr RPAREN           // ( expr : typexpr )
 
 // todo: not done and not correct
 object_expr ::= inst_var_name LESSMINUS expr
@@ -732,59 +794,8 @@ label_var ::=
 let_pattern ::=
     pattern_expression (COLON core_type) ?
 
-simple_expr ::=
-    local_open_group
-  | non_op_simple_expr
-  | record_constructor_expr
-  | assign_expr
-  | lookup_expr
-  | array_constructor_expr
-  | list_constructor_expr
-  | bang_expr
-  | new_object_expr
-  | self_copy_object_expr
-  | send_message_object_expr
-  | sharpop_expr
-  | first_class_module_expr
-
 first_class_module_expr ::=
     LPAREN MODULE module_expr (COLON package_type) ? RPAREN
-
-private local_open_group ::=
-      object_copy_with_local_open_expr
-    | expr_with_local_open_expr
-    | list_constructor_with_local_open_expr
-    | array_constructor_with_local_open_expr
-    | record_constructor_with_local_open_expr
-    | first_class_module_with_local_open_expr
-
-first_class_module_with_local_open_expr ::=
-    mod_longident DOT LPAREN MODULE module_expr COLON package_type RPAREN
-
-record_constructor_with_local_open_expr ::=
-    mod_longident DOT LBRACE record_expr RBRACE
-
-object_copy_with_local_open_expr ::=
-    mod_longident DOT LBRACELESS field_expr_list ? GREATERRBRACE
-
-expr_with_local_open_expr ::=
-   mod_longident DOT LPAREN seq_expr RPAREN
-
-list_constructor_with_local_open_expr ::=
-   mod_longident DOT LBRACKET expr_semi_list SEMI ? RBRACKET
-
-array_constructor_with_local_open_expr ::=
-    mod_longident DOT LARRAY ( expr_semi_list SEMI ? )? RARRAY
-
-
-non_op_simple_expr ::=
-    val_longident
-  | constant
-  | constr_longident //%prec prec_constant_constructor
-  | name_tag //%prec prec_constant_constructor
-  | LPAREN seq_expr RPAREN
-  | BEGIN seq_expr ? END
-  | LPAREN seq_expr type_constraint_stro RPAREN
 
 private lookup_expr ::=
     field_lookup_expr
@@ -1127,10 +1138,10 @@ core_type_list ::=
 meth_list ::=
     field_semi meth_list
   | field_semi
-  | field
+  | field_stro
   | DOTDOT
 
-field ::=
+field_stro ::=
   label COLON poly_type_no_attr
 
 field_semi ::=
@@ -1141,22 +1152,18 @@ label ::=
 
 ///* Constants */
 //
-constant ::=
+constant_stro ::=
     INTEGER_VALUE
   | CHAR_VALUE
   | STRING_VALUE
   | FLOAT_VALUE
 
 signed_constant ::=
-    constant
+    constant_stro
   | MINUS INTEGER_VALUE
   | MINUS FLOAT_VALUE
   | PLUS INTEGER_VALUE
   | PLUS FLOAT_VALUE
-
-val_longident ::=
-    value_name
-  | mod_longident DOT value_name
 
 constr_longident ::=
     mod_longident       ////%prec below_DOT

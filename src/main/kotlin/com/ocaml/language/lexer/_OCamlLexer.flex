@@ -203,7 +203,7 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "'" .  "'" { return CHAR_VALUE; }
   "'" [\\] ([\\\"'nbtr]|space)  "'" { return CHAR_VALUE; }
   "'" [\\] {DIGIT} {DIGIT} {DIGIT}  "'" { return CHAR_VALUE; }
-  "'" [\\] "x" {DIGIT_HEXA} {DIGIT_HEXA} {DIGIT_HEXA}  "'" { return CHAR_VALUE; }
+  "'" [\\] "x" {DIGIT_HEXA} {DIGIT_HEXA}  "'" { return CHAR_VALUE; }
   "'" [\\] "o" {DIGIT_3} {DIGIT_7} {DIGIT_7}  "'" { return CHAR_VALUE; }
 
   // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
