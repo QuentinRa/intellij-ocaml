@@ -184,7 +184,7 @@ fun_base_expr ::= FUN { parameter }+ [ COLON typexpr ] RIGHT_ARROW expr
 try_base_expr ::= TRY expr WITH pattern-matching
 let_base_expr ::= LET [REC] let-binding { AND let-binding }* IN expr
 let_exception_base_expr ::= LET EXCEPTION constr-decl IN expr
-let_module_base_expr ::= LET MODULE module-name { ( module-name COLON module_type ) }* [COLON module_type ] EQ module_expr IN expr
+let_module_base_expr ::= LET MODULE module-name { ( module_name COLON module_type ) }* [COLON module_type ] EQ module_expr IN expr
 expr_coercion_base_expr ::= LPAREN expr COLON_GT typexpr RPAREN
 expr_type_coercion_base_expr ::= LPAREN expr COLON typexpr COLON_GT typexpr RPAREN
 

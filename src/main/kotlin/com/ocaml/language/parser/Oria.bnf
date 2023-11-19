@@ -143,8 +143,6 @@
   extends("infix_expr|non_op_expr|expr")=expr
   extends("expr_comma_list|coloncolon_bin_expr|sign_unary_expr")=expr
 
-  extends("label_assign_expr")=expr
-
   extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr")=simple_expr
   extends("bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr")=simple_expr
   extends("record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
@@ -215,6 +213,8 @@ infix_op ::= infix_symbol
   |  MOD | LAND | LOR | LXOR | LSL | LSR | ASR
 
 constr_name ::= CAPITALIZED_IDENT
+
+tag_name ::= CAPITALIZED_IDENT
 
 typeconstr_name ::= LOWERCASE_IDENT
 
@@ -308,7 +308,6 @@ poly_typexpr ::=
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
 
 // https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
-// todo: xxxxxxx should rename seq_expr to expr | and "expr" to something else
 private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 
 // [BETS]: removed coloncolon_app_rule
@@ -317,8 +316,6 @@ private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 //  |  ( expr )
 //  |  begin expr end
 //  |  ( expr : typexpr )
-//  |  constr expr
-//  |  `tag-name expr
 //  |  [| expr { ; expr } [;] |]
 //  |  { field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
 //  |  { expr with field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
@@ -329,21 +326,9 @@ private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 //  |  expr .( expr ) <- expr
 //  |  expr .[ expr ]
 //  |  expr .[ expr ] <- expr
-//  |  if expr then expr [ else expr ]
-//  |  while expr do expr done
-//  |  for value-name = expr ( to | downto ) expr do expr done
 //  |  expr ; expr
-//  |  match expr with pattern-matching
-//  |  function pattern-matching
-//  |  fun { parameter }+ [ : typexpr ] -> expr
-//  |  try expr with pattern-matching
-//  |  let [rec] let-binding { and let-binding } in expr
-//  |  let exception constr-decl in expr
-//  |  let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
 //  |  ( expr :> typexpr )
 //  |  ( expr : typexpr :> typexpr )
-//  |  assert expr
-//  |  lazy expr
 //  |  local-open
 //  |  object-expr
 expr ::=
@@ -358,28 +343,32 @@ coloncolon_bin_expr ::= expr SHORTCUT expr { rightAssociative = true }  // expr 
 infix_expr ::= expr infix_op expr                                       // expr infix-op expr
 sign_unary_expr ::= (MINUS|MINUSDOT|prefix_symbol) expr   // "- expr", "-. expr" "prefix-symbol expr"
 
+// todo: add here "LET OPEN [EXCLAMATION_MARK] module_path_stro IN seq_expr"
+// todo: pattern_matching, labeled_simple_pattern
+// [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
+// [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
-    let_bindings IN seq_expr
-  | LET MODULE CAPITALIZED_IDENT module_binding_body IN seq_expr
-  | LET EXCEPTION constr_ident generalized_constructor_arguments ? IN seq_expr
-  | LET OPEN [EXCLAMATION_MARK] module_path_stro IN seq_expr
-  | FUNCTION PIPE ? match_cases
-  | FUN labeled_simple_pattern fun_def
-  | FUN LPAREN TYPE lident_list RPAREN fun_def
-  | MATCH seq_expr WITH PIPE ? match_cases
-  | TRY seq_expr WITH PIPE ? match_cases
-  | constr_longident simple_expr //%prec below_SHARP
-  | name_tag simple_expr //%prec below_SHARP
-  | IF expr THEN expr [ELSE expr]
-//  | IF ext_attributes ? seq_expr THEN expr
-  | WHILE seq_expr DO seq_expr DONE
-  | FOR pattern_expression EQ seq_expr direction_flag seq_expr DO seq_expr DONE
-  | label_assign_expr
-  | ASSERT simple_expr
-  | LAZY simple_expr //%prec below_SHARP
-  | OBJECT class_structure ? END
+    LET [REC] let_binding { AND let_binding } * IN seq_expr             // let [rec] let-binding { and let-binding } in expr
+  | LET MODULE module_name { LPAREN module_name COLON module_type RPAREN }* [COLON module_type] IN seq_expr // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
+  | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
+  | FUNCTION pattern_matching                                           // function pattern-matching
+  | FUN { labeled_simple_pattern } * [ COLON simple_typeexpr ] RIGHT_ARROW seq_expr // fun { parameter }+ [ : typexpr ] -> expr
+  | MATCH seq_expr WITH pattern_matching                                // match expr with pattern-matching
+  | TRY seq_expr WITH pattern_matching                                  // try expr with pattern-matching
+  | constr simple_expr                                                  // constr expr
+  | BACKTICK tag_name simple_expr                                       // `tag-name expr
+  | IF expr THEN expr [ELSE expr]                                       // if expr then expr [ else expr ]
+  | WHILE seq_expr DO seq_expr DONE                                     // while expr do expr done
+  | FOR value_name EQ seq_expr (TO | DOWNTO) seq_expr DO seq_expr DONE  // for value-name = expr ( to | downto ) expr do expr done
+  | ASSERT simple_expr                                                  // assert expr
+  | LAZY simple_expr                                                    // lazy expr
+  | object_expr
   | simple_expr labeled_simple_expr *
-  | simple_expr //%prec below_SHARP
+  | simple_expr
+
+// todo: not done and not correct
+object_expr ::= inst_var_name LESSMINUS expr
+| OBJECT class_structure ? END
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
 type_definition ::= TYPE [NONREC] typedef { AND typedef }*
@@ -856,9 +845,6 @@ bigarray_assign_expr ::=
 assignment ::=
     LESSMINUS expr
 
-label_assign_expr ::=
-    label LESSMINUS expr
-
 record_constructor_expr ::=
     LBRACE record_expr RBRACE
 
@@ -893,17 +879,11 @@ private internal_let_binding_body ::=
   | pattern_no_exn EQ let_binding_body_expr
   | simple_pattern_not_ident COLON core_type EQ let_binding_body_expr
 
-let_binding_body ::= internal_let_binding_body
+let_binding ::= internal_let_binding_body
 
-let_bindings ::= let_binding and_let_binding *
+let_bindings ::= LET [REC] let_binding { AND let_binding } *
 
-// [CHANGE]: added attributes after body ([@])
-let_binding ::=
-    LET REC ? let_binding_body
 
-and_let_binding ::=
-    AND let_binding_body
-//
 //
 fun_binding ::=
     strict_binding
@@ -914,21 +894,13 @@ strict_binding ::=
   | labeled_simple_pattern fun_binding
   | LPAREN TYPE lident_list RPAREN fun_binding
 
-match_cases ::=
-    match_case (PIPE match_case) *
+pattern_matching ::=
+    [PIPE] match_case (PIPE match_case) *
 
 match_case ::=
     pattern_expression RIGHT_ARROW seq_expr
   | pattern_expression WHEN seq_expr RIGHT_ARROW seq_expr
   | pattern_expression RIGHT_ARROW DOT
-
-
-fun_def ::=
-    RIGHT_ARROW seq_expr
-  | COLON simple_core_type RIGHT_ARROW seq_expr
-/* Cf #5939: we used to accept (fun p when e0 -> e) */
-  | labeled_simple_pattern fun_def
-  | LPAREN TYPE lident_list RPAREN fun_def
 
 record_expr ::=
     simple_expr WITH lbl_expr_list
@@ -1062,10 +1034,6 @@ lbl_pattern ::=
 opt_pattern_type_constraint ::=
     COLON core_type
 
-/* Type declarations */
-generalized_constructor_arguments ::=
-    OF constr_args
-
 ///* Polymorphic types */
 
 typevar_list ::=
@@ -1186,16 +1154,6 @@ signed_constant ::=
   | PLUS INTEGER_VALUE
   | PLUS FLOAT_VALUE
 
-/* Identifiers and long identifiers */
-constr_ident ::=
-    CAPITALIZED_IDENT
-  | LBRACKET RBRACKET
-  | LPAREN RPAREN
-  /* | SHORTCUT                                */
-  | LPAREN SHORTCUT RPAREN
-  // [CHANGE]: add BOOL_VALUE and remove both
-  | BOOL_VALUE
-
 val_longident ::=
     value_name
   | mod_longident DOT value_name
@@ -1217,15 +1175,6 @@ type_longident ::=
 //  | mod_ext_longident DOT LOWERCASE_IDENT
     | CAPITALIZED_IDENT (LPAREN CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* RPAREN)? DOT type_longident
 
-// [CHANGE]: too few cases were handled. We need to handle:
-// A
-// A.B
-// A.B(C)
-// A.B(C.D)
-// A.B(C.D(E))
-module_path_stro ::=
-    CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)* (LPAREN module_path_stro RPAREN)?
-
 mod_longident ::=
     CAPITALIZED_IDENT (DOT CAPITALIZED_IDENT)*
 
@@ -1237,7 +1186,3 @@ class_longident ::=
 
 name_tag ::=
     BACKTICK ident
-
-direction_flag ::=
-    TO
-  | DOWNTO
