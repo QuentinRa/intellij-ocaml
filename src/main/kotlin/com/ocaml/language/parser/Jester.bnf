@@ -144,14 +144,6 @@ parameter ::= pattern
   |  QUESTION_MARK label-name COLON pattern
   |  QUESTION_MARK label-name COLON ( pattern [COLON typexpr] [EQ expr] )
 
-local-open ::=
-  LET OPEN module-path IN expr
-  |  module-path DOT LPAREN expr RPAREN
-  |  module-path DOT LBRACKET expr RBRACKET
-  |  module-path DOT LARRAY expr RARRAY
-  |  module-path DOT LBRACE expr RBRACE
-  |  module-path DOT LBRACELESS expr GREATERRBRACE
-
 object_expr_internal_rec_base_expr ::= expr SHARP method-name
 object_expr_internal_base_expr ::= NEW class-path
   | OBJECT class-body END

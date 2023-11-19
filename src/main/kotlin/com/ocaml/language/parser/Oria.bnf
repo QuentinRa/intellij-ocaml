@@ -143,7 +143,7 @@
   extends("infix_expr|non_op_expr|expr")=expr
   extends("expr_comma_list|coloncolon_bin_expr|sign_unary_expr")=expr
 
-  extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr")=simple_expr
+  extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr|local_open")=simple_expr
   extends("bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr")=simple_expr
   extends("record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
 }
@@ -337,11 +337,10 @@ constant ::= integer_literal
 private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 
 // [BETS]: removed coloncolon_app_rule
-// expr ::=
+// Missing
 //  |  [| expr { ; expr } [;] |]
 //  |  { field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
 //  |  { expr with field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
-//  |  expr { argument }+
 //  |  expr . field
 //  |  expr . field <- expr
 //  |  expr .( expr )
@@ -351,7 +350,6 @@ private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 //  |  expr ; expr
 //  |  ( expr :> typexpr )
 //  |  ( expr : typexpr :> typexpr )
-//  |  local-open
 expr ::=
     expr_comma_list
   | non_op_expr
@@ -364,7 +362,6 @@ coloncolon_bin_expr ::= expr SHORTCUT expr { rightAssociative = true }  // expr 
 infix_expr ::= expr infix_op expr                                       // expr infix-op expr
 sign_unary_expr ::= (MINUS|MINUSDOT|prefix_symbol) expr   // "- expr", "-. expr" "prefix-symbol expr"
 
-// todo: add here "LET OPEN [EXCLAMATION_MARK] module_path_stro IN seq_expr"
 // todo: pattern_matching, labeled_simple_pattern
 // [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
 // [BETS]: removed "FOR pattern_expression"
@@ -384,13 +381,13 @@ non_op_expr ::=
   | ASSERT simple_expr                                                  // assert expr
   | LAZY simple_expr                                                    // lazy expr
   | object_expr
-  | simple_expr labeled_simple_expr *
+  | simple_expr { argument } +                                         // expr { argument }+
   | simple_expr
 
 // [BETS]: remove local_open_group???
 simple_expr ::=
-//    local_open_group
-  non_op_simple_expr
+  local_open_group
+  | non_op_simple_expr
   | record_constructor_expr
   | assign_expr
   | lookup_expr
@@ -403,21 +400,6 @@ simple_expr ::=
   | sharpop_expr
   | first_class_module_expr
 
-//private local_open_group ::=
-//      object_copy_with_local_open_expr
-//    | expr_with_local_open_expr
-//    | list_constructor_with_local_open_expr
-//    | array_constructor_with_local_open_expr
-//    | record_constructor_with_local_open_expr
-//    | first_class_module_with_local_open_expr
-//
-//object_copy_with_local_open_expr ::= mod_longident DOT LBRACELESS field_expr_list ? GREATERRBRACE
-//expr_with_local_open_expr ::= mod_longident DOT LPAREN seq_expr RPAREN
-//list_constructor_with_local_open_expr ::= mod_longident DOT LBRACKET expr_semi_list SEMI ? RBRACKET
-//array_constructor_with_local_open_expr ::= mod_longident DOT LARRAY ( expr_semi_list SEMI ? )? RARRAY
-//record_constructor_with_local_open_expr ::= mod_longident DOT LBRACE record_expr RBRACE
-//first_class_module_with_local_open_expr ::= mod_longident DOT LPAREN MODULE module_expr COLON package_type RPAREN
-
 // fixme: actually, we can have "A.B expr" not just "A.b expr" (value-path)
 // [BETS]: removed constr_longident
 non_op_simple_expr ::= value_path                  // value-path
@@ -427,6 +409,27 @@ non_op_simple_expr ::= value_path                  // value-path
   | LPAREN seq_expr RPAREN                         // ( expr )
   | BEGIN [seq_expr] END                           // begin expr end
   | LPAREN seq_expr COLON typexpr RPAREN           // ( expr : typexpr )
+
+// Other elements
+argument ::= simple_expr
+  | TILDE label_name COLON simple_expr
+  | TILDE label_name
+  | QUESTION_MARK label_name
+  | QUESTION_MARK label_name COLON simple_expr
+
+private local_open_group ::= local_open
+ | object_copy_with_local_open_expr
+ | expr_with_local_open_expr
+ | list_constructor_with_local_open_expr
+ | array_constructor_with_local_open_expr
+ | record_constructor_with_local_open_expr
+
+local_open ::= LET OPEN module_path IN seq_expr
+expr_with_local_open_expr ::= module_path DOT LPAREN seq_expr RPAREN
+list_constructor_with_local_open_expr ::= module_path DOT LBRACKET seq_expr RBRACKET
+object_copy_with_local_open_expr ::= module_path DOT LBRACELESS seq_expr GREATERRBRACE
+array_constructor_with_local_open_expr ::= module_path DOT LARRAY seq_expr RARRAY
+record_constructor_with_local_open_expr ::= module_path DOT LBRACE seq_expr RBRACE
 
 // todo: not done and not correct
 object_expr ::= inst_var_name LESSMINUS expr
@@ -861,10 +864,6 @@ record_constructor_expr ::=
 
 
 sharpop_expr ::= simple_expr SHARPOP simple_expr
-
-labeled_simple_expr ::=
-    simple_expr | label_expr
-
 
 label_expr ::=
     LABEL_OP simple_expr //%prec below_SHARP
