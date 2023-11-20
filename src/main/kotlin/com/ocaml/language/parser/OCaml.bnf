@@ -366,11 +366,6 @@ constant ::= integer_literal
  |  BACKTICK tag_name
 
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
-// [MISSING] todo
-//  |  module-path .( pattern )
-//  |  module-path .[ pattern ]
-//  |  module-path .[| pattern |]
-//  |  module-path .{ pattern }
 pattern_expression ::=
     val_ident_pattern_expression
   | comma_list_pattern_expression
@@ -391,7 +386,12 @@ private pattern_gen ::= constr pattern_expression                               
   | simple_pattern
   | LAZY simple_pattern                                                          // lazy pattern
 
-private simple_pattern ::= value_name                                           // value-name
+private simple_pattern ::=
+    module_path DOT LPAREN pattern_expression RPAREN                             //  module-path .( pattern )
+  | module_path DOT LBRACKET pattern_expression RBRACKET                         //  module-path .[ pattern ]
+  | module_path DOT LARRAY pattern_expression RARRAY                             //  module-path .[| pattern |]
+  | module_path DOT LBRACE pattern_expression RBRACE                             //  module-path .{ pattern }
+  | value_name                                           // value-name
   | simple_pattern_not_ident
 
 private simple_pattern_not_ident ::= char_literal DOTDOT char_literal            // char-literal .. char-literal
@@ -462,8 +462,7 @@ simple_expr ::=
   | object_simple_expr | self_copy_object_expr | send_message_object_expr
   | first_class_module_expr
 
-// fixme: actually, we can have "A.B expr" not just "A.b expr" (value-path)
-non_op_simple_expr ::= (value_path|module_path)    // value-path
+non_op_simple_expr ::= value_path                  // value-path
   | constant                                       // constant
   | constr                                         // **** duplicate
   | BACKTICK ident                                 // **** duplicate
@@ -515,8 +514,8 @@ list_constructor_expr ::= LARRAY [expr { SEMI expr }* [SEMI]] RARRAY // // [ exp
 argument ::= simple_expr
   | TILDE label_name COLON simple_expr
   | TILDE label_name
-  | QUESTION_MARK label_name
   | QUESTION_MARK label_name COLON simple_expr
+  | QUESTION_MARK label_name
 
 pattern_matching ::=
     [PIPE] pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr
