@@ -391,7 +391,7 @@ private simple_pattern ::=
   | module_path DOT LBRACKET pattern_expression RBRACKET                         //  module-path .[ pattern ]
   | module_path DOT LARRAY pattern_expression RARRAY                             //  module-path .[| pattern |]
   | module_path DOT LBRACE pattern_expression RBRACE                             //  module-path .{ pattern }
-  | value_name                                           // value-name
+  | value_name                                                                   // value-name
   | simple_pattern_not_ident
 
 private simple_pattern_not_ident ::= char_literal DOTDOT char_literal            // char-literal .. char-literal
@@ -404,6 +404,7 @@ private simple_pattern_not_ident ::= char_literal DOTDOT char_literal           
   | LPAREN pattern_expression RPAREN                                             // ( pattern )
   | LPAREN pattern_expression COLON typexpr RPAREN                               // ( pattern : typexpr )
   | first_class_module_pattern
+  | gadts_pattern
 
 pattern_no_exn ::=
     val_ident_pattern_expression
@@ -810,8 +811,7 @@ primitive_declaration ::=
 
 external_declaration ::= STRING_VALUE [ STRING_VALUE [ STRING_VALUE ] ]
 
-// https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s:recursive-modules
-// [BETS]: discard rec_module_bindings ; rec_module_binding ; and_module_binding
+// (2/2) https://v2.ocaml.org/releases/4.14/htmlman/recursivemodules.html#s:recursive-modules
 private recursive_module_extension_def ::=
     MODULE REC module_name COLON module_type EQ module_expr
     { AND module_name COLON module_type EQ module_expr } *
@@ -819,9 +819,13 @@ private recursive_module_extension_def ::=
 private recursive_module_extension_spec ::=
     MODULE REC module_name COLON module_type { AND module_name COLON module_type } *
 
-// https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
+// https://v2.ocaml.org/releases/4.14/htmlman/overridingopen.html#s:explicit-overriding-open
+// todo...
 
-// https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html
+// https://v2.ocaml.org/releases/4.14/htmlman/generalizedopens.html#s:generalized-open
+// todo: ...
+
+// (6/6) https://v2.ocaml.org/releases/4.14/htmlman/extensiblevariants.html#s:extensible-variants
 private type_extension_representation ::= EQ DOTDOT
 | PRIVATE EQ DOTDOT
 
@@ -838,7 +842,7 @@ type_extension_def ::= PLUSEQ [PRIVATE] [PIPE] constr_def { PIPE constr_def } *
 // [BETS]: used 'constr' instead of '... | () | [] | true | false'
 constr_def ::= constr_decl | constr_name EQ constr
 
-// https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
+// (1/1) https://v2.ocaml.org/releases/4.14/htmlman/moduletypeof.html#s:module-type-of
 private module_type_typeof ::= MODULE TYPE OF module_expr
 
 // (3/3) https://v2.ocaml.org/releases/4.14/htmlman/privatetypes.html#s:private-types
@@ -852,7 +856,7 @@ private private_type_representation ::=
 // (1/1) https://v2.ocaml.org/releases/4.14/htmlman/modulealias.html#s:module-alias
 private module_alias_spec ::= MODULE module_name EQ module_path
 
-// (1/1) https://v2.ocaml.org/releases/4.14/htmlman/signaturesubstitution.html#s:signature-substitution
+// (4/4) https://v2.ocaml.org/releases/4.14/htmlman/signaturesubstitution.html#s:signature-substitution
 private signature_substitution_mod_constraint ::=
     TYPE [type_params] typeconstr_name COLON_EQ typexpr
     | MODULE module_path COLON_EQ extended_module_path
@@ -869,10 +873,13 @@ type_subst ::= [type_params] typeconstr_name COLON_EQ typexpr { type_constraint 
 // (1/1) https://v2.ocaml.org/releases/4.14/htmlman/inlinerecords.html#s:inline-records
 private inline_records_constr_args ::= record_decl
 
-// (2/4) https://v2.ocaml.org/releases/4.14/htmlman/gadts.html#s:gadts
-// todo: missing two
+// (4/4) https://v2.ocaml.org/releases/4.14/htmlman/gadts.html#s:gadts
 private gadts_constr_decl ::= constr_name COLON [constr_args RIGHT_ARROW] typexpr
 private gadts_type_param ::= [variance] UNDERSCORE
+private gadts_pattern ::= constr LPAREN TYPE { typeconstr_name }+ RPAREN LPAREN pattern_expression RPAREN
+
+matching_case ::= pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr
+| pattern_expression RIGHT_ARROW DOT
 
 // (1/1) https://v2.ocaml.org/releases/4.14/htmlman/bigarray.html#s:bigarray-access
 bigarray_lookup_expr ::= simple_expr DOT LBRACE expr_comma_list RBRACE // expr .{ expr {, expr} }
@@ -898,3 +905,18 @@ private abstract_types_class_field ::= METHOD [PRIVATE] method_name COLON intern
 | METHOD EXCLAMATION_MARK [PRIVATE] COLON internal_abstract_type
 
 private internal_abstract_type ::= TYPE { typeconstr_name }+ DOT typexpr EQ seq_expr
+
+// https://v2.ocaml.org/releases/4.14/htmlman/attributes.html#s:attributes
+// todo: ...
+
+// https://v2.ocaml.org/releases/4.14/htmlman/extensionnodes.html#s:extension-nodes
+// todo:
+
+// https://v2.ocaml.org/releases/4.14/htmlman/generativefunctors.html#s:generative-functors
+// todo:
+
+// https://v2.ocaml.org/releases/4.14/htmlman/indexops.html#s:index-operators
+// todo:
+
+// https://v2.ocaml.org/releases/4.14/htmlman/bindingops.html#s:binding-operators
+// todo:
