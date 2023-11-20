@@ -138,7 +138,6 @@
           DOC_COMMENT = "DOC_COMMENT"
     ]
 
-  extends(".*pattern_no_exn")=pattern_no_exn
   extends(".*pattern_expression")=pattern_expression
 
   extends("infix_expr|non_op_expr|.*_unary_expr|expr")=expr
@@ -355,7 +354,7 @@ constant ::= integer_literal
  |  BACKTICK tag_name
 
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
-// [MISSING] todo:
+// [MISSING] todo
 //  |  module-path .( pattern )
 //  |  module-path .[ pattern ]
 //  |  module-path .[| pattern |]
@@ -393,32 +392,12 @@ private simple_pattern_not_ident ::= char_literal DOTDOT char_literal           
   | LPAREN pattern_expression RPAREN                                             // ( pattern )
   | LPAREN pattern_expression COLON typexpr RPAREN                               // ( pattern : typexpr )
 
-// todo
 pattern_no_exn ::=
-    val_ident_pattern_no_exn
-  | comma_list_pattern_no_exn  //%prec below_COMMA
-  | coloncolon_separated_pattern_no_exn
-  | bar_pattern_no_exn
-  | attribute_pattern_no_exn
-  | pattern_gen_pattern_no_exn
-
-val_ident_pattern_no_exn ::=
-    pattern_no_exn AS value_name
-
-coloncolon_separated_pattern_no_exn ::=
-    pattern_no_exn SHORTCUT pattern_no_exn
-
-bar_pattern_no_exn ::=
-    pattern_no_exn PIPE pattern_no_exn
-
-pattern_gen_pattern_no_exn ::=
-    pattern_gen
-
-attribute_pattern_no_exn ::=
-    pattern_no_exn attribute
-
-comma_list_pattern_no_exn ::=
-    pattern_no_exn (COMMA pattern_expression) +
+    val_ident_pattern_expression
+  | comma_list_pattern_expression
+  | shortcut_pattern_expression
+  | bar_pattern_expression
+  | pattern_gen_pattern_expression
 
 // https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
 // [CHANGES]: added [SEMI]
@@ -443,7 +422,6 @@ minus_unary_expr ::= MINUS expr                                         // - exp
 minusdot_unary_expr ::= MINUSDOT expr                                   // -. expr
 prefix_unary_expr ::= prefix_symbol expr                                // prefix-symbol expr
 
-// todo: pattern_matching, labeled_simple_pattern, let_binding
 // [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
 // [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
@@ -451,7 +429,7 @@ non_op_expr ::=
   | LET MODULE module_name module_binding_body IN seq_expr               // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
   | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
   | FUNCTION pattern_matching                                           // function pattern-matching
-  | FUN { labeled_simple_pattern } * [ COLON simple_typexpr ] RIGHT_ARROW seq_expr // fun { parameter }+ [ : typexpr ] -> expr
+  | FUN { parameter } + [ COLON simple_typexpr ] RIGHT_ARROW seq_expr   // fun { parameter }+ [ : typexpr ] -> expr
   | MATCH seq_expr WITH pattern_matching                                // match expr with pattern-matching
   | TRY seq_expr WITH pattern_matching                                  // try expr with pattern-matching
   | constr simple_expr                                                  // constr expr
@@ -477,7 +455,6 @@ simple_expr ::=
   | first_class_module_expr
 
 // fixme: actually, we can have "A.B expr" not just "A.b expr" (value-path)
-// [BETS]: removed constr_longident
 non_op_simple_expr ::= (value_path|module_path)    // value-path
   | constant                                       // constant
   | constr                                         // **** duplicate
@@ -531,6 +508,21 @@ argument ::= simple_expr
   | QUESTION_MARK label_name
   | QUESTION_MARK label_name COLON simple_expr
 
+parameter ::=
+   TILDE LPAREN label_name [COLON typexpr] RPAREN
+ | TILDE label_name COLON pattern_expression RPAREN
+ | TILDE label_name
+ | QUESTION_MARK LPAREN label_name [COLON typexpr] [EQ seq_expr] RPAREN
+ | QUESTION_MARK label_name COLON pattern_expression
+ | QUESTION_MARK label_name COLON LPAREN pattern_expression [COLON typexpr] [EQ seq_expr] RPAREN
+ | QUESTION_MARK label_name
+ | pattern_expression
+
+let_binding ::= value_name COLON poly_typexpr EQ seq_expr
+| value_name {parameter}* [COLON typexpr] [COLON_GT typexpr] EQ seq_expr
+| pattern_no_exn EQ seq_expr
+
+// START LOCAL_OPEN
 private local_open_group ::= local_open
  | object_copy_with_local_open_expr
  | expr_with_local_open_expr
@@ -544,7 +536,9 @@ list_constructor_with_local_open_expr ::= module_path DOT LBRACKET seq_expr RBRA
 object_copy_with_local_open_expr ::= module_path DOT LBRACELESS seq_expr GREATERRBRACE
 array_constructor_with_local_open_expr ::= module_path DOT LARRAY seq_expr RARRAY
 record_constructor_with_local_open_expr ::= module_path DOT LBRACE seq_expr RBRACE
+// END LOCAL_OPEN
 
+// START OBJECT_EXPR
 // [CHANGES]: was split in 4
 // [CHANGES]: removed "inst_var_name" but no a good idea imo (dunno where to add it)
 object_expr ::= inst_var_name LEFT_ARROW expr    // inst-var-name <- expr
@@ -556,7 +550,7 @@ self_copy_object_expr ::= LBRACELESS [field_expr { SEMI field_expr } * [SEMI]] G
 send_message_object_expr ::= simple_expr SHARP method_name // expr # method_name
 
 private field_expr ::= inst_var_name [EQ expr]
-// END
+// END OBJECT_EXPR
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
 type_definition ::= TYPE [NONREC] typedef { AND typedef }*
@@ -673,9 +667,7 @@ class_field ::=
   | CONSTRAINT typexpr EQ typexpr
   | INITIALIZER seq_expr
 
-// [BETS]: unsure if this pattern is the correct one
-private class_field_strict_binding ::=
-    { labeled_simple_pattern } * [COLON typexpr] EQ seq_expr
+private class_field_strict_binding ::= { parameter } * [COLON typexpr] EQ seq_expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
 
@@ -683,7 +675,7 @@ private class_field_strict_binding ::=
 class_definition ::= CLASS class_binding { AND class_binding } *
 
 class_binding ::=
-    [VIRTUAL] [class_type_parameters] class_name { labeled_simple_pattern }* // todo
+    [VIRTUAL] [class_type_parameters] class_name { parameter }*
     [COLON class_type] EQ class_expr
 
 private class_type_parameters ::= LBRACKET type_parameters RBRACKET
@@ -882,7 +874,7 @@ package_constraint ::= TYPE typeconstr EQ typexpr
 ///* Class expressions */
 
 class_fun_def ::=
-    labeled_simple_pattern + RIGHT_ARROW class_expr
+    parameter + RIGHT_ARROW class_expr
 
 //
 class_body ::=
@@ -893,36 +885,8 @@ class_self_pattern ::=
     LPAREN pattern_expression RPAREN
   | LPAREN pattern_expression COLON core_type RPAREN
 
-
 class_fields ::=
     class_field +
-
-///* Core expressions */
-labeled_simple_pattern ::=
-    QUESTION_MARK LPAREN label_let_pattern opt_default ? RPAREN
-  | QUESTION_MARK label_var
-  | OPTLABEL LPAREN let_pattern opt_default ? RPAREN
-  | OPTLABEL pattern_var
-  | TILDE LPAREN label_let_pattern RPAREN
-  | TILDE label_var
-  | LABEL_OP simple_pattern
-  | simple_pattern
-
-pattern_var ::=
-    lowercase_ident
-  | UNDERSCORE
-
-opt_default ::=
-    EQ seq_expr
-
-label_let_pattern ::=
-    label_var (COLON core_type)?
-
-label_var ::=
-    lowercase_ident
-
-let_pattern ::=
-    pattern_expression (COLON core_type) ?
 
 label_expr ::=
     LABEL_OP simple_expr //%prec below_SHARP
@@ -933,52 +897,9 @@ label_expr ::=
 label_ident ::=
     lowercase_ident
 
-lident_list ::=
-    lowercase_ident +
-
-val_decl ::= value_name
-
-// [CHANGES]: added let_binding_expr
-let_binding_body_expr ::= seq_expr
-
-private internal_let_binding_body ::=
-    val_decl fun_binding
-  | value_name COLON typevar_list DOT core_type EQ let_binding_body_expr
-  | value_name COLON TYPE lident_list DOT core_type EQ let_binding_body_expr
-  | pattern_no_exn EQ let_binding_body_expr
-  | simple_pattern_not_ident COLON core_type EQ let_binding_body_expr
-
-let_binding ::= internal_let_binding_body
-
-//
-private fun_binding ::=
-    strict_binding
-  | type_constraint_stro EQ let_binding_body_expr
-
-private strict_binding ::=
-    EQ let_binding_body_expr
-  | labeled_simple_pattern fun_binding
-  | LPAREN TYPE lident_list RPAREN fun_binding
-
 pattern_matching ::=
     [PIPE] pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr
     { PIPE  pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr }*
-
-//
-type_constraint_stro ::=
-    COLON core_type
-  | COLON core_type COLON_GT core_type
-  | COLON_GT core_type
-//
-//opt_type_constraint ::=
-//    type_constraint
-//  | /* empty */
-//
-//
-/* Polymorphic types */
-
-typevar_list ::=
-    (SINGLE_QUOTE ident) +
 
 ///* Core types */
 //
