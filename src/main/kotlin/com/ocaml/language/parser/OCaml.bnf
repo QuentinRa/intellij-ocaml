@@ -294,7 +294,8 @@ private simple_typexpr ::=
   | LPAREN typexpr { COMMA typexpr }* RPAREN simple_typexpr2_suffix
 
 private simple_typexpr2_suffix ::= SHARP class_path  // ( typexpr { , typexpr } ) # class-path
-| typeconstr                                         // ( typexpr { , typexpr } ) typeconstr
+| typeconstr *                                       // ( typexpr { , typexpr } ) typeconstr
+                                                     // and "typexpr typeconstr" transitively as "( typexpr { , typexpr } )" is a typexpr
 
 private simple_typexpr2 ::=
     SINGLE_QUOTE ident                               // ' ident
@@ -306,10 +307,15 @@ private simple_typexpr2 ::=
   | polymorphic_variant_type                         // polymorphic-variant-type
   // Examples: type x = <a:int;> or <a:int;..> or <a:int>
   | LT method_type { COLON method_type }* [SEMI | SEMI DOTDOT] GT // < method-type { ; method-type } [; | ; ..] >
+  | first_class_module_typexpr
 
 poly_typexpr ::=
     { SINGLE_QUOTE ident }+ DOT typexpr
   | typexpr
+
+private poly_typexpr_no_attr ::=
+    { SINGLE_QUOTE ident }+ DOT typexpr_no_attr
+  | typexpr_no_attr
 
 method_type ::= method_name COLON poly_typexpr
 
@@ -399,10 +405,7 @@ simple_expr ::=
   | lookup_expr
   | array_constructor_expr
   | list_constructor_expr
-  | object_simple_expr | self_copy_object_expr
-  // todo: not validated
-  | send_message_object_expr
-  | sharpop_expr
+  | object_simple_expr | self_copy_object_expr | send_message_object_expr
   | first_class_module_expr
 
 // fixme: actually, we can have "A.B expr" not just "A.b expr" (value-path)
@@ -537,7 +540,7 @@ private constr_decl_name ::= constr_name
 constr_args ::= simple_typexpr { STAR simple_typexpr } *
 | inline_records_constr_args
 
-field_decl ::= [MUTABLE] field_name COLON poly_type_no_attr // todo
+field_decl ::= [MUTABLE] field_name COLON poly_typexpr_no_attr
 
 type_constraint ::= CONSTRAINT typexpr EQ typexpr
 
@@ -772,9 +775,16 @@ private gadts_type_param ::= [variance] UNDERSCORE
 bigarray_lookup_expr ::= simple_expr DOT LBRACE expr_comma_list RBRACE // expr .{ expr {, expr} }
 bigarray_assign_expr ::= simple_expr DOT LBRACE expr_comma_list RBRACE LEFT_ARROW expr // expr .{ expr {, expr} } <- expr
 
+// (5/6) https://v2.ocaml.org/releases/4.14/htmlman/firstclassmodules.html#s:first-class-modules
+// todo: missing one
+first_class_module_typexpr ::= LPAREN MODULE package_type RPAREN
+first_class_module_modexpr ::= LPAREN VAL expr [COLON package_type] RPAREN
+first_class_module_expr ::= LPAREN MODULE module_expr [COLON package_type] RPAREN
 
+package_type ::= modtype_path WITH package_constraint { AND package_constraint }*
+| modtype_path
 
-
+package_constraint ::= TYPE typeconstr EQ typexpr
 
 
 
@@ -800,13 +810,10 @@ module_expr ::=
   | STRUCT module-items END module_expr_sufix?
   | FUNCTOR functor_args RIGHT_ARROW module_expr module_expr_sufix?
   | LPAREN module_expr COLON module_type RPAREN
-  | LPAREN module_expr RPAREN
-  | LPAREN VAL expr RPAREN
-  | LPAREN VAL expr COLON package_type RPAREN
   | LPAREN VAL expr COLON package_type COLON_GT package_type
     RPAREN
   | LPAREN VAL expr COLON_GT package_type RPAREN
-  | extension
+  | first_class_module_modexpr
 
 str_include_statement ::=
     INCLUDE module_expr
@@ -863,11 +870,6 @@ label_var ::=
 
 let_pattern ::=
     pattern_expression (COLON core_type) ?
-
-first_class_module_expr ::=
-    LPAREN MODULE module_expr (COLON package_type) ? RPAREN
-
-sharpop_expr ::= simple_expr SHARPOP simple_expr
 
 label_expr ::=
     LABEL_OP simple_expr //%prec below_SHARP
@@ -1032,11 +1034,6 @@ opt_pattern_type_constraint ::=
 typevar_list ::=
     (SINGLE_QUOTE ident) +
 
-poly_type_no_attr ::=
-        core_type_no_attr
-      | typevar_list DOT core_type_no_attr
-
-
 ///* Core types */
 //
 core_type ::=
@@ -1087,9 +1084,6 @@ simple_core_type2 ::=
   | LPAREN MODULE package_type RPAREN
   | extension
 
-package_type ::=
-    module_type
-
 row_field_list ::=
     row_field (PIPE row_field)*
 
@@ -1124,10 +1118,10 @@ meth_list ::=
   | DOTDOT
 
 field_stro ::=
-  label COLON poly_type_no_attr
+  label COLON poly_typexpr_no_attr
 
 field_semi ::=
-  label COLON poly_type_no_attr SEMI
+  label COLON poly_typexpr_no_attr SEMI
 
 label ::=
     lowercase_ident
