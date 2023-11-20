@@ -351,6 +351,103 @@ constant ::= integer_literal
  |  BACKTICK tag_name
 
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
+pattern_expression ::=
+    val_ident_pattern_expression
+  | comma_list_pattern_expression  //%prec below_COMMA
+  | coloncolon_separated_pattern_expression
+  | bar_pattern_expression
+  | exception_pattern_expression
+  | attribute_pattern_expression
+  | pattern_gen_pattern_expression
+
+val_ident_pattern_expression ::=
+    pattern_expression AS value_name
+
+coloncolon_separated_pattern_expression ::=
+    pattern_expression SHORTCUT pattern_expression
+
+bar_pattern_expression ::=
+    pattern_expression PIPE pattern_expression
+
+pattern_gen_pattern_expression ::=
+    pattern_gen
+
+attribute_pattern_expression ::=
+    pattern_expression attribute
+
+exception_pattern_expression ::= EXCEPTION pattern_expression //%prec prec_constr_appl
+
+comma_list_pattern_expression ::=
+    pattern_expression (COMMA pattern_expression) +
+
+
+pattern_no_exn ::=
+    val_ident_pattern_no_exn
+  | comma_list_pattern_no_exn  //%prec below_COMMA
+  | coloncolon_separated_pattern_no_exn
+  | bar_pattern_no_exn
+  | attribute_pattern_no_exn
+  | pattern_gen_pattern_no_exn
+
+val_ident_pattern_no_exn ::=
+    pattern_no_exn AS value_name
+
+coloncolon_separated_pattern_no_exn ::=
+    pattern_no_exn SHORTCUT pattern_no_exn
+
+bar_pattern_no_exn ::=
+    pattern_no_exn PIPE pattern_no_exn
+
+pattern_gen_pattern_no_exn ::=
+    pattern_gen
+
+attribute_pattern_no_exn ::=
+    pattern_no_exn attribute
+
+comma_list_pattern_no_exn ::=
+    pattern_no_exn (COMMA pattern_expression) +
+
+pattern_gen ::=
+    constr_longident pattern_expression //%prec prec_constr_appl
+  | name_tag pattern_expression //%prec prec_constr_appl
+  | simple_pattern
+  | LPAREN SHORTCUT RPAREN LPAREN pattern_expression COMMA pattern_expression RPAREN
+  | LAZY simple_pattern
+
+simple_pattern ::=
+    val_decl //%prec below_EQUAL
+  | simple_pattern_not_ident
+
+simple_pattern_not_ident ::=
+  UNDERSCORE
+  | signed_constant DOTDOT signed_constant
+  | signed_constant
+  | constr_longident
+  | name_tag
+  | SHARP type_longident
+  | LBRACE lbl_pattern_list RBRACE
+  | LBRACKET pattern_semi_list SEMI ? RBRACKET
+  | LARRAY pattern_semi_list SEMI ? RARRAY
+  | LARRAY RARRAY
+  | LPAREN pattern_expression RPAREN
+  | LPAREN pattern_expression COLON core_type RPAREN
+  | LPAREN MODULE capitalized_ident RPAREN
+  | LPAREN MODULE capitalized_ident COLON package_type RPAREN
+  | extension
+
+pattern_semi_list ::=
+    pattern_expression (SEMI pattern_expression) *
+
+lbl_pattern_list ::=
+    lbl_pattern (SEMI lbl_pattern) * (SEMI UNDERSCORE)? SEMI?
+
+lbl_pattern ::=
+    label_longident opt_pattern_type_constraint ? EQ pattern_expression
+  | label_longident opt_pattern_type_constraint ?
+
+
+opt_pattern_type_constraint ::=
+    COLON core_type
 
 // https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
 // [CHANGES]: added [SEMI]
@@ -914,107 +1011,7 @@ type_constraint_stro ::=
 //  | /* empty */
 //
 //
-///* Patterns */
-//
-pattern_expression ::=
-    val_ident_pattern_expression
-  | comma_list_pattern_expression  //%prec below_COMMA
-  | coloncolon_separated_pattern_expression
-  | bar_pattern_expression
-  | exception_pattern_expression
-  | attribute_pattern_expression
-  | pattern_gen_pattern_expression
-
-val_ident_pattern_expression ::=
-    pattern_expression AS value_name
-
-coloncolon_separated_pattern_expression ::=
-    pattern_expression SHORTCUT pattern_expression
-
-bar_pattern_expression ::=
-    pattern_expression PIPE pattern_expression
-
-pattern_gen_pattern_expression ::=
-    pattern_gen
-
-attribute_pattern_expression ::=
-    pattern_expression attribute
-
-exception_pattern_expression ::= EXCEPTION pattern_expression //%prec prec_constr_appl
-
-comma_list_pattern_expression ::=
-    pattern_expression (COMMA pattern_expression) +
-
-
-pattern_no_exn ::=
-    val_ident_pattern_no_exn
-  | comma_list_pattern_no_exn  //%prec below_COMMA
-  | coloncolon_separated_pattern_no_exn
-  | bar_pattern_no_exn
-  | attribute_pattern_no_exn
-  | pattern_gen_pattern_no_exn
-
-val_ident_pattern_no_exn ::=
-    pattern_no_exn AS value_name
-
-coloncolon_separated_pattern_no_exn ::=
-    pattern_no_exn SHORTCUT pattern_no_exn
-
-bar_pattern_no_exn ::=
-    pattern_no_exn PIPE pattern_no_exn
-
-pattern_gen_pattern_no_exn ::=
-    pattern_gen
-
-attribute_pattern_no_exn ::=
-    pattern_no_exn attribute
-
-comma_list_pattern_no_exn ::=
-    pattern_no_exn (COMMA pattern_expression) +
-
-pattern_gen ::=
-    constr_longident pattern_expression //%prec prec_constr_appl
-  | name_tag pattern_expression //%prec prec_constr_appl
-  | simple_pattern
-  | LPAREN SHORTCUT RPAREN LPAREN pattern_expression COMMA pattern_expression RPAREN
-  | LAZY simple_pattern
-
-simple_pattern ::=
-    val_decl //%prec below_EQUAL
-  | simple_pattern_not_ident
-
-simple_pattern_not_ident ::=
-  UNDERSCORE
-  | signed_constant DOTDOT signed_constant
-  | signed_constant
-  | constr_longident
-  | name_tag
-  | SHARP type_longident
-  | LBRACE lbl_pattern_list RBRACE
-  | LBRACKET pattern_semi_list SEMI ? RBRACKET
-  | LARRAY pattern_semi_list SEMI ? RARRAY
-  | LARRAY RARRAY
-  | LPAREN pattern_expression RPAREN
-  | LPAREN pattern_expression COLON core_type RPAREN
-  | LPAREN MODULE capitalized_ident RPAREN
-  | LPAREN MODULE capitalized_ident COLON package_type RPAREN
-  | extension
-
-pattern_semi_list ::=
-    pattern_expression (SEMI pattern_expression) *
-
-lbl_pattern_list ::=
-    lbl_pattern (SEMI lbl_pattern) * (SEMI UNDERSCORE)? SEMI?
-
-lbl_pattern ::=
-    label_longident opt_pattern_type_constraint ? EQ pattern_expression
-  | label_longident opt_pattern_type_constraint ?
-
-
-opt_pattern_type_constraint ::=
-    COLON core_type
-
-///* Polymorphic types */
+/* Polymorphic types */
 
 typevar_list ::=
     (SINGLE_QUOTE ident) +
