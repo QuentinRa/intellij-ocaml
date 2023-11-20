@@ -517,10 +517,12 @@ parameter ::=
  | QUESTION_MARK label_name COLON LPAREN pattern_expression [COLON typexpr] [EQ seq_expr] RPAREN
  | QUESTION_MARK label_name
  | pattern_expression
+ | abstract_types_parameter
 
 let_binding ::= value_name COLON poly_typexpr EQ seq_expr
 | value_name {parameter}* [COLON typexpr] [COLON_GT typexpr] EQ seq_expr
 | pattern_no_exn EQ seq_expr
+| abstract_types_let_binding
 
 // START LOCAL_OPEN
 private local_open_group ::= local_open
@@ -666,6 +668,7 @@ class_field ::=
   | METHOD VIRTUAL PRIVATE method_name COLON poly_typexpr
   | CONSTRAINT typexpr EQ typexpr
   | INITIALIZER seq_expr
+  | abstract_types_class_field
 
 private class_field_strict_binding ::= { parameter } * [COLON typexpr] EQ seq_expr
 
@@ -868,6 +871,22 @@ package_type ::= modtype_path WITH package_constraint { AND package_constraint }
 | modtype_path
 
 package_constraint ::= TYPE typeconstr EQ typexpr
+
+// (3/3) https://v2.ocaml.org/releases/4.14/htmlman/locallyabstract.html#s:locally-abstract
+private abstract_types_parameter ::= LPAREN TYPE { typeconstr_name }+ RPAREN
+
+private abstract_types_let_binding ::= value_name COLON internal_abstract_type
+
+private abstract_types_class_field ::= METHOD [PRIVATE] method_name COLON internal_abstract_type
+| METHOD EXCLAMATION_MARK [PRIVATE] COLON internal_abstract_type
+
+private internal_abstract_type ::= TYPE { typeconstr_name }+ DOT typexpr EQ seq_expr
+
+
+
+
+
+
 
 
 
