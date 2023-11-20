@@ -344,19 +344,13 @@ constant ::= integer_literal
 // https://v2.ocaml.org/releases/4.14/htmlman/patterns.html#s:patterns
 
 // https://v2.ocaml.org/releases/4.14/htmlman/expr.html#s:value-expr
-private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
+// [CHANGES]: added [SEMI]
+private seq_expr ::= expr { SEMI expr } *  [SEMI] // expr ; expr
 
 // [BETS]: removed coloncolon_app_rule
-// [MISSING]:
+// [MISSING]: todo?
+//  |  [ expr { ; expr } [;] ]
 //  |  [| expr { ; expr } [;] |]
-//  |  { field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
-//  |  { expr with field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
-//  |  expr . field
-//  |  expr . field <- expr
-//  |  expr .( expr )
-//  |  expr .( expr ) <- expr
-//  |  expr .[ expr ]
-//  |  expr .[ expr ] <- expr
 //  |  expr ; expr
 //  |  ( expr :> typexpr )
 //  |  ( expr : typexpr :> typexpr )
@@ -377,7 +371,7 @@ sign_unary_expr ::= (MINUS|MINUSDOT|prefix_symbol) expr   // "- expr", "-. expr"
 // [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
     LET [REC] let_binding { AND let_binding } * IN seq_expr             // let [rec] let-binding { and let-binding } in expr
-  | LET MODULE module_name { LPAREN module_name COLON module_type RPAREN }* [COLON module_type] IN seq_expr // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
+  | LET MODULE module_name { LPAREN module_name COLON module_type RPAREN }* [COLON module_type] EQ module_expr IN seq_expr // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
   | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
   | FUNCTION pattern_matching                                           // function pattern-matching
   | FUN { labeled_simple_pattern } * [ COLON simple_typexpr ] RIGHT_ARROW seq_expr // fun { parameter }+ [ : typexpr ] -> expr
@@ -397,10 +391,10 @@ non_op_expr ::=
 simple_expr ::=
   local_open_group
   | non_op_simple_expr
-  // todo: not validated
   | record_constructor_expr
   | assign_expr
   | lookup_expr
+  // todo: not validated
   | array_constructor_expr
   | list_constructor_expr
   | bang_expr
@@ -419,6 +413,37 @@ non_op_simple_expr ::= (value_path|module_path)    // value-path
   | LPAREN seq_expr RPAREN                         // ( expr )
   | BEGIN [seq_expr] END                           // begin expr end
   | LPAREN seq_expr COLON typexpr RPAREN           // ( expr : typexpr )
+
+record_constructor_expr ::=
+    LBRACE record_expr RBRACE
+
+//  { field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
+//  { expr with field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
+private record_expr ::=
+    simple_expr WITH field_expr_list
+  | field_expr_list
+
+private field_expr_list ::=
+    field [COLON typexpr] [EQ expr] { SEMI field [COLON typexpr] [EQ expr]}* [SEMI]
+
+private assign_expr ::=
+    field_assign_expr
+  | array_assign_expr
+  | string_assign_expr
+  | bigarray_assign_expr
+
+private lookup_expr ::=
+    field_lookup_expr
+  | array_lookup_expr
+  | string_lookup_expr
+  | bigarray_lookup_expr
+
+field_lookup_expr ::= simple_expr DOT field                           //  expr . field
+field_assign_expr ::= simple_expr DOT field LEFT_ARROW expr           // expr . field <- expr
+array_lookup_expr ::= simple_expr DOT LPAREN seq_expr RPAREN          // expr .( expr )
+array_assign_expr ::= simple_expr DOT LPAREN seq_expr RPAREN LEFT_ARROW expr // expr .( expr ) <- expr
+string_lookup_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET           // expr .[ expr ]
+string_assign_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET LEFT_ARROW expr // expr .[ expr ] <- expr
 
 // Other elements
 argument ::= simple_expr
@@ -726,7 +751,9 @@ private inline_records_constr_args ::= record_decl
 private gadts_constr_decl ::= constr_name COLON [constr_args RIGHT_ARROW] typexpr
 private gadts_type_param ::= [variance] UNDERSCORE
 
-
+// (1/1) https://v2.ocaml.org/releases/4.14/htmlman/bigarray.html#s:bigarray-access
+bigarray_lookup_expr ::= simple_expr DOT LBRACE expr_comma_list RBRACE // expr .{ expr {, expr} }
+bigarray_assign_expr ::= simple_expr DOT LBRACE expr_comma_list RBRACE LEFT_ARROW expr // expr .{ expr {, expr} } <- expr
 
 
 
@@ -823,19 +850,6 @@ let_pattern ::=
 first_class_module_expr ::=
     LPAREN MODULE module_expr (COLON package_type) ? RPAREN
 
-private lookup_expr ::=
-    field_lookup_expr
-  | array_lookup_expr
-  | string_lookup_expr
-  | bigarray_lookup_expr
-
-
-private assign_expr ::=
-    field_assign_expr
-  | array_assign_expr
-  | string_assign_expr
-  | bigarray_assign_expr
-
 bang_expr ::=
     EXCLAMATION_MARK simple_expr
 
@@ -843,7 +857,7 @@ new_object_expr ::=
     NEW class_longident
 
 self_copy_object_expr ::=
-    LBRACELESS field_expr_list ? GREATERRBRACE
+    LBRACELESS field_expr_list_stro ? GREATERRBRACE
 
 send_message_object_expr ::=
     simple_expr SHARP label
@@ -853,38 +867,6 @@ array_constructor_expr ::=
 
 list_constructor_expr ::=
     LBRACKET expr_semi_list SEMI ? RBRACKET
-
-field_lookup_expr ::=
-    simple_expr DOT label_longident
-
-field_assign_expr ::=
-    simple_expr DOT label_longident assignment
-
-array_lookup_expr ::=
-    simple_expr DOT LPAREN seq_expr RPAREN
-
-array_assign_expr ::=
-    simple_expr DOT LPAREN seq_expr RPAREN assignment
-
-
-string_lookup_expr ::=
-  simple_expr DOT LBRACKET seq_expr RBRACKET
-
-string_assign_expr ::=
-    simple_expr DOT LBRACKET seq_expr RBRACKET assignment
-
-bigarray_lookup_expr ::=
-  simple_expr DOT LBRACE expr RBRACE
-
-bigarray_assign_expr ::=
-    simple_expr DOT LBRACE expr RBRACE assignment
-
-assignment ::=
-    LEFT_ARROW expr
-
-record_constructor_expr ::=
-    LBRACE record_expr RBRACE
-
 
 sharpop_expr ::= simple_expr SHARPOP simple_expr
 
@@ -935,19 +917,9 @@ match_case ::=
   | pattern_expression WHEN seq_expr RIGHT_ARROW seq_expr
   | pattern_expression RIGHT_ARROW DOT
 
-record_expr ::=
-    simple_expr WITH lbl_expr_list
-  | lbl_expr_list
-//
-lbl_expr_list ::=
-    lbl_expr (SEMI lbl_expr) * SEMI?
-//
-lbl_expr ::=
-    label_longident type_constraint_stro ? EQ expr
-  | label_longident type_constraint_stro ?
 //
 //
-field_expr_list ::=
+field_expr_list_stro ::=
     field_expr (SEMI field_expr) * SEMI ?
 
 field_expr ::=

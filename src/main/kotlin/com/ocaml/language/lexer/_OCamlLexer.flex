@@ -188,10 +188,10 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "\"" { yybegin(IN_STRING); tokenStart(); }
 
   // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
-  {DIGIT} {DIGIT_UNDERSCORE}* "." {DIGIT_UNDERSCORE} ("e"|"E") ("+"|"-") {DIGIT} {DIGIT_UNDERSCORE}* { return FLOAT_VALUE; }
-  {DIGIT} {DIGIT_UNDERSCORE}* "." {DIGIT_UNDERSCORE} { return FLOAT_VALUE; }
-  ("0x"|"0X") {DIGIT_HEXA} {DIGIT_HEXA_UNDERSCORE} "." {DIGIT_HEXA_UNDERSCORE} ("p"|"P") ("+"|"-") {DIGIT} {DIGIT_UNDERSCORE} { return FLOAT_VALUE; }
-  ("0x"|"0X") {DIGIT_HEXA} {DIGIT_HEXA_UNDERSCORE} "." {DIGIT_HEXA_UNDERSCORE} { return FLOAT_VALUE; }
+  {DIGIT} {DIGIT_UNDERSCORE}* "." {DIGIT_UNDERSCORE}* ("e"|"E") ("+"|"-") {DIGIT} {DIGIT_UNDERSCORE}* { return FLOAT_VALUE; }
+  {DIGIT} {DIGIT_UNDERSCORE}* "." {DIGIT_UNDERSCORE}* { return FLOAT_VALUE; }
+  ("0x"|"0X") {DIGIT_HEXA} {DIGIT_HEXA_UNDERSCORE}* "." {DIGIT_HEXA_UNDERSCORE}* ("p"|"P") ("+"|"-") {DIGIT} {DIGIT_UNDERSCORE}* { return FLOAT_VALUE; }
+  ("0x"|"0X") {DIGIT_HEXA} {DIGIT_HEXA_UNDERSCORE}* "." {DIGIT_HEXA_UNDERSCORE}* { return FLOAT_VALUE; }
 
   // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
   {DIGIT} {DIGIT_UNDERSCORE}* { return INTEGER_VALUE; }
