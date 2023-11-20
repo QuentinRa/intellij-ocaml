@@ -168,8 +168,8 @@ to ensure the following updates are easy -e.g., a matter of copying the document
 file ::= COMMENT
 | DOC_COMMENT
 | ANNOTATION // fixme: annotations are an extension and not a comment
-//| unit-interface // todo: separate parser for mli
-| unit-implementation
+//| unit_interface // todo: separate parser for mli
+| unit_implementation
 
 private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alone
  DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
@@ -183,8 +183,8 @@ private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alon
 private prefix_symbol_lexed ::= EXCLAMATION_MARK | QUESTION_MARK | TILDE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
-unit-implementation ::= [ module-items ]
-unit-interface ::=  { specification [SEMISEMI] }*
+unit_implementation ::= [ module_items ]
+unit_interface ::=  { specification [SEMISEMI] }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
 // [CHANGES]: using the lexer
@@ -375,12 +375,12 @@ minus_unary_expr ::= MINUS expr                                         // - exp
 minusdot_unary_expr ::= MINUSDOT expr                                   // -. expr
 prefix_unary_expr ::= prefix_symbol expr                                // prefix-symbol expr
 
-// todo: pattern_matching, labeled_simple_pattern
+// todo: pattern_matching, labeled_simple_pattern, let_binding
 // [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
 // [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
     LET [REC] let_binding { AND let_binding } * IN seq_expr             // let [rec] let-binding { and let-binding } in expr
-  | LET MODULE module_name { LPAREN module_name COLON module_type RPAREN }* [COLON module_type] EQ module_expr IN seq_expr // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
+  | LET MODULE module_name module_binding_body IN seq_expr               // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
   | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
   | FUNCTION pattern_matching                                           // function pattern-matching
   | FUN { labeled_simple_pattern } * [ COLON simple_typexpr ] RIGHT_ARROW seq_expr // fun { parameter }+ [ : typexpr ] -> expr
@@ -579,7 +579,8 @@ class_expr ::=
     class_simple_expr { simple_expr | label_expr } *
   | class_simple_expr
   | FUN class_fun_def
-  | let_bindings IN class_expr
+  | LET [REC] let_binding { AND let_binding } IN class_expr
+  | LET OPEN module_path IN class_expr
 
 private class_simple_expr ::=
     LBRACKET typexpr { COMMA typexpr } * RBRACKET class_longident
@@ -647,7 +648,6 @@ mod_constraint ::=
   | MODULE module_path EQ extended_module_path
   | signature_substitution_mod_constraint
 
-// [BETS]: removed module_alias ::= MODULE (capitalized_ident|UNDERSCORE) EQ mod_longident
 specification ::=
     value_description
   | internal_type_specification
@@ -655,7 +655,7 @@ specification ::=
   | class_specification
   | classtype_definition
   | module_declaration
-  | module_type_declaration
+  | module_type_specification
   | open_statement
   | sig_include_statement
   | recursive_module_extension_spec
@@ -669,7 +669,7 @@ private module_declaration ::=
     MODULE module_name COLON module_type
   | MODULE module_name LPAREN module_name COLON module_type RPAREN COLON module_type
 
-private module_type_declaration ::=
+private module_type_specification ::=
     MODULE TYPE modtype_name EQ module_type
   | MODULE TYPE modtype_name
 
@@ -681,16 +681,27 @@ private internal_type_specification ::= type_extension_specification // priority
 | type_definition
 
 // https://v2.ocaml.org/releases/4.14/htmlman/modules.html#s:module-expr
-module-items ::= // todo: seq_expr and fixme: definition|specification
+private module_expr_sufix ::= LPAREN module_expr RPAREN
+
+private module_expr_value ::=
+    module_path
+  | STRUCT [ module_items ] END
+  | FUNCTOR LPAREN module_name COLON module_type RPAREN RIGHT_ARROW module_expr
+  | LPAREN module_expr COLON module_type RPAREN
+  | LPAREN module_expr RPAREN
+  | first_class_module_modexpr
+
+module_expr ::= module_expr_value { module_expr_sufix } *
+
+module_items ::= // fixme: definition|specification and "?"
 { SEMISEMI }* (definition|specification|seq_expr)? { { SEMISEMI }* ( definition | specification | SEMISEMI seq_expr) }* { SEMISEMI }*
 
-// todo
 definition ::=
     let_bindings
   | internal_type_definition
   | exception_definition
   | module_binding
-  | module_type_declaration
+  | module_type_definition
   | open_statement
   | class_definition
   | classtype_definition
@@ -700,6 +711,18 @@ definition ::=
 
 private internal_type_definition ::= type_extension_definition // first
 | type_definition
+
+// todo: let_binding
+private let_bindings ::= LET [REC] let_binding { AND let_binding } *
+
+private str_include_statement ::= INCLUDE module_expr
+
+private module_type_definition ::= MODULE TYPE module_name EQ module_type
+
+private module_binding_body ::= // { ( module-name : module-type ) } [ : module-type ] = module-expr
+{ LPAREN module_name COLON module_type RPAREN }* [COLON module_type] EQ module_expr
+
+private module_binding ::= MODULE module_name module_binding_body
 
 // https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
 primitive_declaration ::=
@@ -791,41 +814,6 @@ package_constraint ::= TYPE typeconstr EQ typexpr
 // [CHANGE]: added all 4 below
 BOOL_VALUE ::= TRUE | FALSE
 
-functor_arg ::=
-    LPAREN RPAREN
-  | LPAREN functor_arg_name COLON module_type RPAREN
-
-functor_arg_name ::=
-    capitalized_ident
-  | UNDERSCORE
-
-functor_args ::=
-    functor_arg +
-
-module_expr_sufix ::=
-    (LPAREN module_expr RPAREN | LPAREN RPAREN | module_expr attribute) +
-
-module_expr ::=
-    mod_longident module_expr_sufix?
-  | STRUCT module-items END module_expr_sufix?
-  | FUNCTOR functor_args RIGHT_ARROW module_expr module_expr_sufix?
-  | LPAREN module_expr COLON module_type RPAREN
-  | LPAREN VAL expr COLON package_type COLON_GT package_type
-    RPAREN
-  | LPAREN VAL expr COLON_GT package_type RPAREN
-  | first_class_module_modexpr
-
-str_include_statement ::=
-    INCLUDE module_expr
-
-// [CHANGES]: using (EQ module_expr)?
-module_binding_body ::=
-    EQ module_expr
-  | COLON module_type (EQ module_expr)?
-  | functor_arg module_binding_body
-
-module_binding ::=
-    MODULE (capitalized_ident|UNDERSCORE) module_binding_body
 ///* Class expressions */
 
 class_fun_def ::=
@@ -896,9 +884,6 @@ private internal_let_binding_body ::=
   | simple_pattern_not_ident COLON core_type EQ let_binding_body_expr
 
 let_binding ::= internal_let_binding_body
-
-let_bindings ::= LET [REC] let_binding { AND let_binding } *
-
 
 //
 private fun_binding ::=
