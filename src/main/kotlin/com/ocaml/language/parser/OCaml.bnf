@@ -141,7 +141,7 @@
   extends(".*pattern_no_exn")=pattern_no_exn
   extends(".*pattern_expression")=pattern_expression
 
-  extends("infix_expr|non_op_expr|expr")=expr
+  extends("infix_expr|non_op_expr|.*_unary_expr|expr")=expr
   extends("expr_comma_list|coloncolon_bin_expr|sign_unary_expr")=expr
   extends("simple_expr")=expr
 
@@ -222,7 +222,7 @@ label_name ::= lowercase_ident
 // [CHANGES]: adding the "infix_symbol_patch"
 // [CHANGES]: linenum-directive was commented out as they were not used
 infix_symbol ::= INFIX_SYMBOL_VALUE | infix_symbol_lexed
-prefix_symbol ::= PREFIX_SYMBOL_VALUE E | prefix_symbol_lexed
+prefix_symbol ::= PREFIX_SYMBOL_VALUE | prefix_symbol_lexed
 
 //linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
 
@@ -357,7 +357,7 @@ private seq_expr ::= expr { SEMI expr } *  [SEMI] // expr ; expr
 //  |  ( expr : typexpr :> typexpr )
 expr ::=
     expr_comma_list
-  | sign_unary_expr
+  | minus_unary_expr | minusdot_unary_expr | prefix_unary_expr
   | non_op_expr
   | coloncolon_bin_expr
   | infix_expr
@@ -365,9 +365,9 @@ expr ::=
 expr_comma_list ::= expr { COMMA expr } +                               // expr { , expr } +
 coloncolon_bin_expr ::= expr SHORTCUT expr { rightAssociative = true }  // expr :: expr
 infix_expr ::= expr infix_op expr                                       // expr infix-op expr
-sign_unary_expr ::= (MINUS|MINUSDOT|prefix_symbol) expr                 // - expr
-                                                                        // -. expr
-                                                                        // prefix-symbol expr
+minus_unary_expr ::= MINUS expr                                         // - expr
+minusdot_unary_expr ::= MINUSDOT expr                                   // -. expr
+prefix_unary_expr ::= prefix_symbol expr                                // prefix-symbol expr
 
 // todo: pattern_matching, labeled_simple_pattern
 // [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
@@ -439,12 +439,16 @@ private lookup_expr ::=
   | string_lookup_expr
   | bigarray_lookup_expr
 
-field_lookup_expr ::= simple_expr DOT field                           //  expr . field
-field_assign_expr ::= simple_expr DOT field LEFT_ARROW expr           // expr . field <- expr
-array_lookup_expr ::= simple_expr DOT LPAREN seq_expr RPAREN          // expr .( expr )
-array_assign_expr ::= simple_expr DOT LPAREN seq_expr RPAREN LEFT_ARROW expr // expr .( expr ) <- expr
-string_lookup_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET           // expr .[ expr ]
-string_assign_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET LEFT_ARROW expr // expr .[ expr ] <- expr
+// [CHANGES]: there is a problem about operators after "<-" that are matching the
+// "... operator expr" pattern while it should include the operator in expr.
+private priority_patch ::= [operator_name] expr
+
+field_lookup_expr ::= simple_expr DOT field                                                 // expr . field
+field_assign_expr ::= simple_expr DOT field LEFT_ARROW priority_patch                       // expr . field <- expr
+array_lookup_expr ::= simple_expr DOT LPAREN seq_expr RPAREN                                // expr .( expr )
+array_assign_expr ::= simple_expr DOT LPAREN seq_expr RPAREN LEFT_ARROW priority_patch      // expr .( expr ) <- expr
+string_lookup_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET                           // expr .[ expr ]
+string_assign_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET LEFT_ARROW priority_patch // expr .[ expr ] <- expr
 
 array_constructor_expr ::= LBRACKET [expr { SEMI expr }* [SEMI]] RBRACKET // // [| expr { ; expr } [;] |]
 list_constructor_expr ::= LARRAY [expr { SEMI expr }* [SEMI]] RARRAY // // [ expr { ; expr } [;] ]
