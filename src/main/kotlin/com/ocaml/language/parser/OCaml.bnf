@@ -134,6 +134,9 @@
           LBRACKETGREATER = "[>"
           LBRACKETLESS = "[<"
 
+          EXCLAMATION_MARK_PLUS = "!+"
+          EXCLAMATION_MARK_MINUS = "!-"
+
           COMMENT = "COMMENT"
           DOC_COMMENT = "DOC_COMMENT"
     ]
@@ -180,6 +183,11 @@ private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alon
  | EXCLAMATION_MARK
 
 private prefix_symbol_lexed ::= EXCLAMATION_MARK | QUESTION_MARK | TILDE
+| EXCLAMATION_MARK_PLUS | EXCLAMATION_MARK_MINUS
+
+// These are not lexed as prefix symbol on purpose
+// as we need them in ext_variance
+private ext_variance_patch ::= EXCLAMATION_MARK_PLUS | EXCLAMATION_MARK_MINUS
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit_implementation ::= [ module_items ]
@@ -391,6 +399,7 @@ private simple_pattern_not_ident ::= char_literal DOTDOT char_literal           
   | LARRAY pattern_expression { SEMI pattern_expression } * [SEMI] RARRAY        // [| pattern { ; pattern } [ ; ] |]
   | LPAREN pattern_expression RPAREN                                             // ( pattern )
   | LPAREN pattern_expression COLON typexpr RPAREN                               // ( pattern : typexpr )
+  | first_class_module_pattern
 
 pattern_no_exn ::=
     val_ident_pattern_expression
@@ -403,11 +412,6 @@ pattern_no_exn ::=
 // [CHANGES]: added [SEMI]
 private seq_expr ::= expr { SEMI expr } *  [SEMI] // expr ; expr
 
-// [BETS]: removed coloncolon_app_rule
-// [MISSING]: todo?
-//  |  expr ; expr
-//  |  ( expr :> typexpr )
-//  |  ( expr : typexpr :> typexpr )
 expr ::=
     expr_comma_list
   | minus_unary_expr | minusdot_unary_expr | prefix_unary_expr
@@ -426,7 +430,7 @@ prefix_unary_expr ::= prefix_symbol expr                                // prefi
 // [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
     LET [REC] let_binding { AND let_binding } * IN seq_expr             // let [rec] let-binding { and let-binding } in expr
-  | LET MODULE module_name module_binding_body IN seq_expr               // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
+  | LET MODULE module_name module_binding_body IN seq_expr              // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
   | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
   | FUNCTION pattern_matching                                           // function pattern-matching
   | FUN { parameter } + [ COLON simple_typexpr ] RIGHT_ARROW seq_expr   // fun { parameter }+ [ : typexpr ] -> expr
@@ -462,6 +466,8 @@ non_op_simple_expr ::= (value_path|module_path)    // value-path
   | LPAREN seq_expr RPAREN                         // ( expr )
   | BEGIN [seq_expr] END                           // begin expr end
   | LPAREN seq_expr COLON typexpr RPAREN           // ( expr : typexpr )
+  | LPAREN seq_expr COLON_GT typexpr RPAREN        // ( expr :> typexpr )
+  | LPAREN seq_expr COLON typexpr COLON_GT typexpr RPAREN // ( expr : typexpr :> typexpr )
 
 record_constructor_expr ::=
     LBRACE record_expr RBRACE
@@ -581,6 +587,7 @@ type_param ::= [ext_variance] SINGLE_QUOTE ident
 
 ext_variance ::= variance [injectivity]
   |  injectivity [variance]
+  |  ext_variance_patch
 
 variance ::= PLUS | MINUS
 
@@ -861,11 +868,11 @@ private gadts_type_param ::= [variance] UNDERSCORE
 bigarray_lookup_expr ::= simple_expr DOT LBRACE expr_comma_list RBRACE // expr .{ expr {, expr} }
 bigarray_assign_expr ::= simple_expr DOT LBRACE expr_comma_list RBRACE LEFT_ARROW expr // expr .{ expr {, expr} } <- expr
 
-// (5/6) https://v2.ocaml.org/releases/4.14/htmlman/firstclassmodules.html#s:first-class-modules
-// todo: missing one
-first_class_module_typexpr ::= LPAREN MODULE package_type RPAREN
-first_class_module_modexpr ::= LPAREN VAL expr [COLON package_type] RPAREN
+// (6/6) https://v2.ocaml.org/releases/4.14/htmlman/firstclassmodules.html#s:first-class-modules
+private first_class_module_typexpr ::= LPAREN MODULE package_type RPAREN
+private first_class_module_modexpr ::= LPAREN VAL expr [COLON package_type] RPAREN
 first_class_module_expr ::= LPAREN MODULE module_expr [COLON package_type] RPAREN
+private first_class_module_pattern ::= LPAREN MODULE module_name [COLON package_type] RPAREN
 
 package_type ::= modtype_path WITH package_constraint { AND package_constraint }*
 | modtype_path
@@ -888,21 +895,16 @@ private internal_abstract_type ::= TYPE { typeconstr_name }+ DOT typexpr EQ seq_
 
 
 
-
-
 ///* Class expressions */
-
 class_fun_def ::=
     parameter + RIGHT_ARROW class_expr
 
-//
 class_body ::=
    class_self_pattern ? class_fields ?
-//
-//
+
 class_self_pattern ::=
     LPAREN pattern_expression RPAREN
-  | LPAREN pattern_expression COLON core_type RPAREN
+  | LPAREN pattern_expression COLON typexpr RPAREN
 
 class_fields ::=
     class_field +
@@ -920,107 +922,6 @@ pattern_matching ::=
     [PIPE] pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr
     { PIPE  pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr }*
 
-///* Core types */
-//
-core_type ::=
-    // [CHANGE] Add support for COLON_GT
-    core_type_no_attr (attribute|COLON_GT core_type_no_attr)?
-
-core_type_no_attr ::=
-    (minusgreater_coretype2| core_type2) (AS SINGLE_QUOTE ident)?
-
-minusgreater_coretype2 ::=
-    core_type2 (RIGHT_ARROW core_type2)+
-
-core_type2 ::=
-    QUESTION_MARK lowercase_ident COLON core_type2
-  | OPTLABEL core_type2
-  | lowercase_ident COLON core_type2
-  | simple_core_type_or_tuple
-
-simple_core_type ::=
-    simple_core_type2 sumple_core_type2_suffix * ////%prec below_SHARP
-  | LPAREN core_type_comma_list RPAREN ////%prec below_SHARP
-
-sumple_core_type2_suffix ::=
-    SHARP class_longident
-    | type_longident
-
-simple_core_type2 ::=
-    SINGLE_QUOTE ident (DOT SINGLE_QUOTE ident)?
-  | UNDERSCORE
-  | type_longident
-  | LPAREN core_type_comma_list RPAREN type_longident
-  // [CHANGES]: uncommented all
-  | LT meth_list GT
-  | LT GT
-  | SHARP class_longident
-  | LPAREN core_type_comma_list RPAREN SHARP class_longident
-  | LBRACKET tag_field RBRACKET
-/* PR#3835: this is not LR(1), would need lookahead=2
-  | LBRACKET simple_core_type RBRACKET
-*/
-  | LBRACKET PIPE? row_field_list RBRACKET
-  | LBRACKETGREATER row_field_list RBRACKET
-  | LBRACKETLESS row_field_list RBRACKET
-//  | LBRACKETGREATER PIPE ? row_field_list RBRACKET
-  | LBRACKETGREATER RBRACKET
-//  | LBRACKETLESS PIPE ? row_field_list RBRACKET
-//  | LBRACKETLESS PIPE ? row_field_list GT name_tag_list RBRACKET
-  | LPAREN MODULE package_type RPAREN
-  | extension
-
-row_field_list ::=
-    row_field (PIPE row_field)*
-
-row_field ::=
-    tag_field
-  | simple_core_type
-
-tag_field ::=
-    name_tag OF AMPERSAND ? amper_type_list
-  | name_tag
-
-amper_type_list ::=
-    core_type_no_attr (AMPERSAND core_type_no_attr) *
-//
-//name_tag_list ::=
-//    name_tag
-//  | name_tag_list name_tag
-//
-simple_core_type_or_tuple ::=
-    simple_core_type (STAR core_type_list) ?
-
-core_type_comma_list ::=
-    core_type (COMMA core_type) *
-
-core_type_list ::=
-    simple_core_type (STAR simple_core_type) *
-
-meth_list ::=
-    field_semi meth_list
-  | field_semi
-  | field_stro
-  | DOTDOT
-
-field_stro ::=
-  label COLON poly_typexpr_no_attr
-
-field_semi ::=
-  label COLON poly_typexpr_no_attr SEMI
-
-label ::=
-    lowercase_ident
-
-///* Constants */
-type_longident ::=
-    lowercase_ident
-    | capitalized_ident (LPAREN capitalized_ident (DOT capitalized_ident)* RPAREN)? DOT type_longident
-
 class_longident ::=
     lowercase_ident
   | { capitalized_ident (DOT capitalized_ident)* } DOT lowercase_ident
-
-/* Miscellaneous */
-name_tag ::=
-    BACKTICK ident

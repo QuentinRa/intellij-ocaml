@@ -145,6 +145,8 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "[|"                { return LARRAY; }
   "|]"                { return RARRAY; }
   "="                 { return EQ; }
+  "!+"                { return EXCLAMATION_MARK_PLUS; }
+  "!-"                { return EXCLAMATION_MARK_MINUS; }
   "!="                { return NOT_EQ; }
   ":="                { return COLON_EQ; }
   ":>"                { return COLON_GT; }
