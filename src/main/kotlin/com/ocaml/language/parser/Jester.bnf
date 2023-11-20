@@ -121,13 +121,6 @@ parameter ::= pattern
   |  QUESTION_MARK label-name COLON pattern
   |  QUESTION_MARK label-name COLON ( pattern [COLON typexpr] [EQ expr] )
 
-object_expr_internal_rec_base_expr ::= expr SHARP method-name
-object_expr_internal_base_expr ::= NEW class-path
-  | OBJECT class-body END
-  | inst-var-name
-  | inst-var-name LEFT_ARROW expr
-  | LBRACELESS [ inst-var-name [EQ expr] { SEMI inst-var-name [EQ expr] } [SEMI] ] GREATERRBRACE
-
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
 constr-args ::= typexpr { STAR typexpr }*
 

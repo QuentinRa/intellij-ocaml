@@ -148,6 +148,7 @@
   extends("first_class_module_expr|sharpop_expr|.*_object_expr|.*_with_local_open_expr|local_open")=simple_expr
   extends("bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr")=simple_expr
   extends("record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
+  extends("object_simple_expr")=simple_expr
 }
 
 /*
@@ -178,6 +179,8 @@ private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alon
  | LT | PERCENT
  // And this one is valid but dunno from which rule as it's not in CORE_OPERATOR_CHAR
  | EXCLAMATION_MARK
+
+private prefix_symbol_lexed ::= EXCLAMATION_MARK | QUESTION_MARK | TILDE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
 unit-implementation ::= [ module-items ]
@@ -219,7 +222,7 @@ label_name ::= lowercase_ident
 // [CHANGES]: adding the "infix_symbol_patch"
 // [CHANGES]: linenum-directive was commented out as they were not used
 infix_symbol ::= INFIX_SYMBOL_VALUE | infix_symbol_lexed
-prefix_symbol ::= PREFIX_SYMBOL_VALUE
+prefix_symbol ::= PREFIX_SYMBOL_VALUE E | prefix_symbol_lexed
 
 //linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
 
@@ -349,22 +352,22 @@ private seq_expr ::= expr { SEMI expr } *  [SEMI] // expr ; expr
 
 // [BETS]: removed coloncolon_app_rule
 // [MISSING]: todo?
-//  |  [ expr { ; expr } [;] ]
-//  |  [| expr { ; expr } [;] |]
 //  |  expr ; expr
 //  |  ( expr :> typexpr )
 //  |  ( expr : typexpr :> typexpr )
 expr ::=
     expr_comma_list
+  | sign_unary_expr
   | non_op_expr
   | coloncolon_bin_expr
   | infix_expr
-  | sign_unary_expr
 
 expr_comma_list ::= expr { COMMA expr } +                               // expr { , expr } +
 coloncolon_bin_expr ::= expr SHORTCUT expr { rightAssociative = true }  // expr :: expr
 infix_expr ::= expr infix_op expr                                       // expr infix-op expr
-sign_unary_expr ::= (MINUS|MINUSDOT|prefix_symbol) expr   // "- expr", "-. expr" "prefix-symbol expr"
+sign_unary_expr ::= (MINUS|MINUSDOT|prefix_symbol) expr                 // - expr
+                                                                        // -. expr
+                                                                        // prefix-symbol expr
 
 // todo: pattern_matching, labeled_simple_pattern
 // [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
@@ -394,12 +397,10 @@ simple_expr ::=
   | record_constructor_expr
   | assign_expr
   | lookup_expr
-  // todo: not validated
   | array_constructor_expr
   | list_constructor_expr
-  | bang_expr
-  | new_object_expr
-  | self_copy_object_expr
+  | object_simple_expr | self_copy_object_expr
+  // todo: not validated
   | send_message_object_expr
   | sharpop_expr
   | first_class_module_expr
@@ -445,6 +446,9 @@ array_assign_expr ::= simple_expr DOT LPAREN seq_expr RPAREN LEFT_ARROW expr // 
 string_lookup_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET           // expr .[ expr ]
 string_assign_expr ::= simple_expr DOT LBRACKET seq_expr RBRACKET LEFT_ARROW expr // expr .[ expr ] <- expr
 
+array_constructor_expr ::= LBRACKET [expr { SEMI expr }* [SEMI]] RBRACKET // // [| expr { ; expr } [;] |]
+list_constructor_expr ::= LARRAY [expr { SEMI expr }* [SEMI]] RARRAY // // [ expr { ; expr } [;] ]
+
 // Other elements
 argument ::= simple_expr
   | TILDE label_name COLON simple_expr
@@ -466,9 +470,18 @@ object_copy_with_local_open_expr ::= module_path DOT LBRACELESS seq_expr GREATER
 array_constructor_with_local_open_expr ::= module_path DOT LARRAY seq_expr RARRAY
 record_constructor_with_local_open_expr ::= module_path DOT LBRACE seq_expr RBRACE
 
-// todo: not done and not correct
-object_expr ::= inst_var_name LEFT_ARROW expr
-| OBJECT class_structure ? END
+// [CHANGES]: was split in 4
+// [CHANGES]: removed "inst_var_name" but no a good idea imo (dunno where to add it)
+object_expr ::= inst_var_name LEFT_ARROW expr    // inst-var-name <- expr
+| OBJECT class_body END                          // object class-body end
+
+object_simple_expr ::= NEW class_path            // new class-path
+// {< [ inst-var-name [= expr] { ; inst-var-name [= expr] } [;] ] >}
+self_copy_object_expr ::= LBRACELESS [field_expr { SEMI field_expr } * [SEMI]] GREATERRBRACE
+send_message_object_expr ::= simple_expr SHARP method_name // expr # method_name
+
+private field_expr ::= inst_var_name [EQ expr]
+// END
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
 type_definition ::= TYPE [NONREC] typedef { AND typedef }*
@@ -564,7 +577,7 @@ class_expr ::=
 private class_simple_expr ::=
     LBRACKET typexpr { COMMA typexpr } * RBRACKET class_longident
   | class_longident
-  | OBJECT class_structure ? END
+  | OBJECT class_body ? END
   | LPAREN class_expr COLON class_type RPAREN
   | LPAREN class_expr RPAREN
 
@@ -808,7 +821,7 @@ class_fun_def ::=
     labeled_simple_pattern + RIGHT_ARROW class_expr
 
 //
-class_structure ::=
+class_body ::=
    class_self_pattern ? class_fields ?
 //
 //
@@ -850,24 +863,6 @@ let_pattern ::=
 first_class_module_expr ::=
     LPAREN MODULE module_expr (COLON package_type) ? RPAREN
 
-bang_expr ::=
-    EXCLAMATION_MARK simple_expr
-
-new_object_expr ::=
-    NEW class_longident
-
-self_copy_object_expr ::=
-    LBRACELESS field_expr_list_stro ? GREATERRBRACE
-
-send_message_object_expr ::=
-    simple_expr SHARP label
-
-array_constructor_expr ::=
-  LARRAY (expr_semi_list SEMI ?) ? RARRAY
-
-list_constructor_expr ::=
-    LBRACKET expr_semi_list SEMI ? RBRACKET
-
 sharpop_expr ::= simple_expr SHARPOP simple_expr
 
 label_expr ::=
@@ -900,11 +895,11 @@ let_bindings ::= LET [REC] let_binding { AND let_binding } *
 
 
 //
-fun_binding ::=
+private fun_binding ::=
     strict_binding
   | type_constraint_stro EQ let_binding_body_expr
 
-strict_binding ::=
+private strict_binding ::=
     EQ let_binding_body_expr
   | labeled_simple_pattern fun_binding
   | LPAREN TYPE lident_list RPAREN fun_binding
@@ -917,17 +912,6 @@ match_case ::=
   | pattern_expression WHEN seq_expr RIGHT_ARROW seq_expr
   | pattern_expression RIGHT_ARROW DOT
 
-//
-//
-field_expr_list_stro ::=
-    field_expr (SEMI field_expr) * SEMI ?
-
-field_expr ::=
-    label EQ expr
-  | label
-
-expr_semi_list ::=
-    expr (SEMI expr) *
 //
 type_constraint_stro ::=
     COLON core_type
