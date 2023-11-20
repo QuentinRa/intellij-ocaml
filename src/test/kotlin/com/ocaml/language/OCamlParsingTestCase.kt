@@ -4,12 +4,13 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.testFramework.ParsingTestCase
 import com.ocaml.language.parser.OCamlParserDefinition
-import com.ocaml.language.psi.file.OCamlFile
+import com.ocaml.language.psi.files.OCamlFile
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 // PsiErrorElement
 @RunWith(JUnit4::class)
+@Deprecated("Separate class for ml/mli.")
 abstract class OCamlParsingTestCase protected constructor() : ParsingTestCase("", "ml", OCamlParserDefinition()) {
     protected object TestVariables {
         const val FILE_NAME = "dummy"

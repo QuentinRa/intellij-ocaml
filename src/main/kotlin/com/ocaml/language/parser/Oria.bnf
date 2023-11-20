@@ -149,16 +149,13 @@
   extends("record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
 }
 
-// ALL MAJOR TODOS
-// todo:  aliases are not handled
-
 /*
 Copyright (c) 1996 Institut National de Recherche en Informatique et en Automatique.
 Copyright (c) 2021 Sidharth Kuruvila
 Source: https://github.com/ocaml/ocaml/blob/4.14/parsing/parser.mly
 Reference: https://v2.ocaml.org/manual/lex.html
 */
-/* Entry points */
+
 file ::= COMMENT
 | DOC_COMMENT
 | ANNOTATION // fixme: annotations are an extension and not a comment
@@ -175,8 +172,9 @@ private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alon
  | EXCLAMATION_MARK
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
+// todo:
 unit-implementation ::= [ module-items ]
-//unit-interface ::=  { specification [SEMISEMI] }+
+//unit-interface ::=  { specification [SEMISEMI] }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
 ident ::= capitalized_ident | lowercase_ident

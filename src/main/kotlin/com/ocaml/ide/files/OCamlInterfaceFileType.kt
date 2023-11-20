@@ -6,7 +6,7 @@ import com.ocaml.icons.OCamlIcons
 import org.jetbrains.annotations.Contract
 import javax.swing.Icon
 
-object OCamlInterfaceFileType : LanguageFileType(OCamlLanguage) {
+object OCamlInterfaceFileType : LanguageFileType(OCamlInterfaceLanguage) {
     // Extension-Related Constants
     internal const val DEFAULT_EXTENSION = "mli"
     private const val DOT_DEFAULT_EXTENSION = ".$DEFAULT_EXTENSION"
