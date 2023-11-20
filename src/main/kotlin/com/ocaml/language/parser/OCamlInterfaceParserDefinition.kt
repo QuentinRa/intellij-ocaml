@@ -10,7 +10,7 @@ import com.ocaml.language.base.BaseParserDefinition
 import com.ocaml.language.psi.files.OCamlInterfaceFile
 
 class OCamlInterfaceParserDefinition : BaseParserDefinition() {
-    override fun createParser(project: Project?): PsiParser = OCamlParser()
+    override fun createParser(project: Project?): PsiParser = OCamlInterfaceParser()
     override fun getFileNodeType(): IFileElementType = ParserDefinitionUtils.FILE
     override fun createFile(viewProvider: FileViewProvider): PsiFile = OCamlInterfaceFile(viewProvider)
 

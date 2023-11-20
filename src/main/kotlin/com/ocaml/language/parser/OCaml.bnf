@@ -1,5 +1,5 @@
 {
-//  parserClass="com.ocaml.language.parser.OCamlImplementationParser"
+//  parserClass="com.ocaml.language.parser.OCamlInterfaceParser"
   parserClass="com.ocaml.language.parser.OCamlParser"
   parserUtilClass="com.ocaml.language.parser.OCamlParserUtils"
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
@@ -170,7 +170,7 @@ to ensure the following updates are easy -e.g., a matter of copying the document
 file ::= COMMENT
 | DOC_COMMENT
 | ANNOTATION // fixme: annotations are an extension and not a comment
-//| unit_interface // todo: separate parser for mli
+//| unit_interface
 | unit_implementation
 
 private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alone
@@ -274,7 +274,11 @@ typeconstr ::= [ extended_module_path DOT ] typeconstr_name
 
 field ::= [ module_path DOT ] field_name
 
-modtype_path ::= [ extended_module_path DOT ] modtype_name
+// [CHANGES]: when we "A.B.C", the parser doesn't differentiate whether the last is a modtype
+// or any capital letter, which is problematic as it fails the expression.
+//modtype_path ::= [ extended_module_path DOT ] modtype_name
+modtype_path ::= [ extended_module_name DOT { extended_module_name DOT } *] modtype_name
+| modtype_name
 
 class_path ::= [ module_path DOT ] class_name
 
@@ -514,6 +518,15 @@ argument ::= simple_expr
   | QUESTION_MARK label_name
   | QUESTION_MARK label_name COLON simple_expr
 
+pattern_matching ::=
+    [PIPE] pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr
+    { PIPE  pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr }*
+
+let_binding ::= value_name COLON poly_typexpr EQ seq_expr
+| value_name {parameter}* [COLON typexpr] [COLON_GT typexpr] EQ seq_expr
+| pattern_no_exn EQ seq_expr
+| abstract_types_let_binding
+
 parameter ::=
    TILDE LPAREN label_name [COLON typexpr] RPAREN
  | TILDE label_name COLON pattern_expression RPAREN
@@ -524,11 +537,6 @@ parameter ::=
  | QUESTION_MARK label_name
  | pattern_expression
  | abstract_types_parameter
-
-let_binding ::= value_name COLON poly_typexpr EQ seq_expr
-| value_name {parameter}* [COLON typexpr] [COLON_GT typexpr] EQ seq_expr
-| pattern_no_exn EQ seq_expr
-| abstract_types_let_binding
 
 // START LOCAL_OPEN
 private local_open_group ::= local_open
@@ -645,18 +653,17 @@ class_field_spec ::=
   | CONSTRAINT typexpr EQ typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-expr
-// todo
 class_expr ::=
-    class_simple_expr { simple_expr | label_expr } *
+    class_simple_expr { argument } +
   | class_simple_expr
-  | FUN class_fun_def
+  | FUN { parameter } + RIGHT_ARROW class_expr
   | LET [REC] let_binding { AND let_binding } IN class_expr
   | LET OPEN module_path IN class_expr
 
 private class_simple_expr ::=
-    LBRACKET typexpr { COMMA typexpr } * RBRACKET class_longident
-  | class_longident
-  | OBJECT class_body ? END
+    LBRACKET typexpr { COMMA typexpr } * RBRACKET class_path
+  | class_path
+  | OBJECT class_body END
   | LPAREN class_expr COLON class_type RPAREN
   | LPAREN class_expr RPAREN
 
@@ -680,6 +687,10 @@ class_field ::=
 private class_field_strict_binding ::= { parameter } * [COLON typexpr] EQ seq_expr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#sss:class-body
+class_body ::= [class_self_pattern] { class_field } *
+
+private class_self_pattern ::= LPAREN pattern_expression RPAREN
+| LPAREN pattern_expression COLON typexpr RPAREN
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:class-def
 class_definition ::= CLASS class_binding { AND class_binding } *
@@ -737,7 +748,7 @@ private value_description ::= VAL value_name COLON typexpr
 
 private module_declaration ::=
     MODULE module_name COLON module_type
-  | MODULE module_name LPAREN module_name COLON module_type RPAREN COLON module_type
+  | MODULE module_name { LPAREN module_name COLON module_type RPAREN } * COLON module_type
 
 private module_type_specification ::=
     MODULE TYPE modtype_name EQ module_type
@@ -763,8 +774,8 @@ private module_expr_value ::=
 
 module_expr ::= module_expr_value { module_expr_sufix } *
 
-module_items ::= // fixme: definition|specification and "?"
-{ SEMISEMI }* (definition|specification|seq_expr)? { { SEMISEMI }* ( definition | specification | SEMISEMI seq_expr) }* { SEMISEMI }*
+module_items ::= { SEMISEMI }* (definition|seq_expr)
+  { { SEMISEMI }* ( definition | SEMISEMI seq_expr) }* { SEMISEMI }*
 
 definition ::=
     let_bindings
@@ -782,7 +793,6 @@ definition ::=
 private internal_type_definition ::= type_extension_definition // first
 | type_definition
 
-// todo: let_binding
 private let_bindings ::= LET [REC] let_binding { AND let_binding } *
 
 private str_include_statement ::= INCLUDE module_expr
@@ -790,7 +800,8 @@ private str_include_statement ::= INCLUDE module_expr
 private module_type_definition ::= MODULE TYPE module_name EQ module_type
 
 private module_binding_body ::= // { ( module-name : module-type ) } [ : module-type ] = module-expr
-{ LPAREN module_name COLON module_type RPAREN }* [COLON module_type] EQ module_expr
+  { LPAREN module_name COLON module_type RPAREN }*
+  [COLON module_type] EQ module_expr
 
 private module_binding ::= MODULE module_name module_binding_body
 
@@ -888,40 +899,3 @@ private abstract_types_class_field ::= METHOD [PRIVATE] method_name COLON intern
 | METHOD EXCLAMATION_MARK [PRIVATE] COLON internal_abstract_type
 
 private internal_abstract_type ::= TYPE { typeconstr_name }+ DOT typexpr EQ seq_expr
-
-
-
-
-
-
-
-///* Class expressions */
-class_fun_def ::=
-    parameter + RIGHT_ARROW class_expr
-
-class_body ::=
-   class_self_pattern ? class_fields ?
-
-class_self_pattern ::=
-    LPAREN pattern_expression RPAREN
-  | LPAREN pattern_expression COLON typexpr RPAREN
-
-class_fields ::=
-    class_field +
-
-label_expr ::=
-    LABEL_OP simple_expr //%prec below_SHARP
-  | TILDE label_ident
-  | QUESTION_MARK label_ident
-  | OPTLABEL simple_expr //%prec below_SHARP
-
-label_ident ::=
-    lowercase_ident
-
-pattern_matching ::=
-    [PIPE] pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr
-    { PIPE  pattern_expression [WHEN seq_expr] RIGHT_ARROW seq_expr }*
-
-class_longident ::=
-    lowercase_ident
-  | { capitalized_ident (DOT capitalized_ident)* } DOT lowercase_ident
