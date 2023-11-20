@@ -1,4 +1,5 @@
 {
+//  parserClass="com.ocaml.language.parser.OCamlImplementationParser"
   parserClass="com.ocaml.language.parser.OCamlParser"
   parserUtilClass="com.ocaml.language.parser.OCamlParserUtils"
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
@@ -154,12 +155,19 @@ Copyright (c) 1996 Institut National de Recherche en Informatique et en Automati
 Copyright (c) 2021 Sidharth Kuruvila
 Source: https://github.com/ocaml/ocaml/blob/4.14/parsing/parser.mly
 Reference: https://v2.ocaml.org/manual/lex.html
-*/
 
+This file is used to generate the parser. It's not a copy of the original parser,
+but they are similar. This parser tries to match the documentation as much as possible,
+to ensure the following updates are easy -e.g., a matter of copying the documentation-,
+
+- [BETS]: something that I removed as it was not in the documentation, but that may have been foolish
+- [CHANGES]: something that is different from the documentation
+- [MISSING]: something missing in the implementation that was in the documentation
+*/
 file ::= COMMENT
 | DOC_COMMENT
 | ANNOTATION // fixme: annotations are an extension and not a comment
-//| unit-interface
+//| unit-interface // todo: separate parser for mli
 | unit-implementation
 
 private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alone
@@ -172,45 +180,50 @@ private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alon
  | EXCLAMATION_MARK
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
-// todo:
 unit-implementation ::= [ module-items ]
-//unit-interface ::=  { specification [SEMISEMI] }*
+unit-interface ::=  { specification [SEMISEMI] }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
+// [CHANGES]: using the lexer
 ident ::= capitalized_ident | lowercase_ident
 capitalized_ident ::= CAPITALIZED_IDENT_VALUE
 lowercase_ident ::= LOWERCASE_IDENT_VALUE | UNDERSCORE // underscore alone is not lexed as lowercase
                                                        // which is *normal* but not "expected"
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
+// [CHANGES]: using the lexer
 integer_literal ::= [MINUS] INTEGER_VALUE
 int32_literal ::=  integer_literal "l"
 int64_literal ::=  integer_literal "L"
 nativeint_literal ::=  integer_literal "n"
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:floating-point-literals
+// [CHANGES]: using the lexer
 float_literal ::= [MINUS] FLOAT_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:character-literals
+// [CHANGES]: using the lexer
 char_literal ::= CHAR_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:stringliterals
+// [CHANGES]: using the lexer
 string_literal ::= STRING_VALUE
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:labelname
+// [CHANGES]: label and optlab were commented out as they were not used
 label_name ::= lowercase_ident
-// these two were unused, dunno why
 // label ::=  TILDE label_name COLON
 // optlabel ::=  QUESTION_MARK label_name COLON
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex-ops-symbols
+// [CHANGES]: adding the "infix_symbol_patch"
+// [CHANGES]: linenum-directive was commented out as they were not used
 infix_symbol ::= INFIX_SYMBOL_VALUE | infix_symbol_lexed
 prefix_symbol ::= PREFIX_SYMBOL_VALUE
 
 //linenum-directive ::= SHARP { DIGIT }+ '"' { string-character } '"'
 
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
-// [CHANGES]: raise can be used as an identifier (value_name)
 value_name ::= lowercase_ident
   | LPAREN operator_name RPAREN
 
@@ -228,7 +241,6 @@ typeconstr_name ::= lowercase_ident
 
 field_name ::= lowercase_ident
 
-// [BACK]: was UIDENT | UNDERSCORE
 module_name ::= capitalized_ident
 
 modtype_name ::= ident
@@ -248,7 +260,6 @@ typeconstr ::= [ extended_module_path DOT ] typeconstr_name
 
 field ::= [ module_path DOT ] field_name
 
-// [BACK]: was ident (DOT ident) *
 modtype_path ::= [ extended_module_path DOT ] modtype_name
 
 class_path ::= [ module_path DOT ] class_name
@@ -275,7 +286,6 @@ private typexpr2 ::=
 private simple_typexpr_or_tuple ::=
     simple_typexpr [ STAR simple_typexpr { STAR simple_typexpr }* ] // typexpr { * typexpr }+
 
-// Not sure which one is handled here
 private simple_typexpr ::=
     simple_typexpr2 { typeconstr } *                 // typexpr typeconstr
   | LPAREN typexpr { COMMA typexpr }* RPAREN simple_typexpr2_suffix
@@ -337,7 +347,7 @@ constant ::= integer_literal
 private seq_expr ::= expr { SEMI expr } *  [SEMI] // [ expr { ; expr } [;] ]
 
 // [BETS]: removed coloncolon_app_rule
-// Missing
+// [MISSING]:
 //  |  [| expr { ; expr } [;] |]
 //  |  { field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
 //  |  { expr with field [: typexpr] [= expr]{ ; field [: typexpr] [= expr] } [;] }
@@ -384,7 +394,6 @@ non_op_expr ::=
   | simple_expr { argument } +                                         // expr { argument }+
   | simple_expr
 
-// [BETS]: remove local_open_group???
 simple_expr ::=
   local_open_group
   | non_op_simple_expr
@@ -497,7 +506,7 @@ exception_definition ::= EXCEPTION constr_name EQ constr
 exception_specification ::= EXCEPTION constr_decl
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classes:class-types
-// [MAJOR]: using simple_core_type_or_tuple
+// [CHANGES]: using simple_core_type_or_tuple
 // [BETS]: using RAW opt label
 // [OPT]: go back to two lines?
 class_type ::=
