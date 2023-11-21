@@ -34,6 +34,14 @@ User features
   * [x] Comments
   * [x] Strings
   * [ ] Identifiers
+* [ ] Typing
+  * [x] Braces matching
+  * [ ] Quotes handler
+  * [ ] Paste processor
+  * [ ] Smart enter processor
+  * [x] Single Line Comments Handler
+  * [ ] Multi Lines Comments Handler
+  * [ ] Other handlers
 
 ## 🎯 What's my goal?
 
