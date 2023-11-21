@@ -19,6 +19,22 @@ This plugin is providing support for OCaml for JetBrains IDEs. It's based on bot
 
 [Getting Started 🗺️](https://plugins.jetbrains.com/plugin/18531-ocaml/documentation/getting-started) | [Features 🚀](https://plugins.jetbrains.com/plugin/18531-ocaml/documentation/features)
 
+## Current Progress Of The Rework
+
+Internal
+
+* [x] Parser implemented
+  * [ ] Parser Errors are not handled
+  * [ ] Parser recovery is not handled
+  * [ ] Parser tests were not implemented
+
+User features
+
+* [x] Spell-checker
+  * [x] Comments
+  * [x] Strings
+  * [ ] Identifiers
+
 ## 🎯 What's my goal?
 
 * [ ] Can run/compile ocaml files (without having to install some external build system)

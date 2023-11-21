@@ -37,7 +37,7 @@
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCaml" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
-        <lang.syntaxHighlighterFactory language="OCamli" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
+<!--        <lang.syntaxHighlighterFactory language="OCamli" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>-->
         <colorSettingsPage implementation="com.ocaml.ide.settings.OCamlColorSettingsPage"/>
 
         <!-- INSIGHT -->
