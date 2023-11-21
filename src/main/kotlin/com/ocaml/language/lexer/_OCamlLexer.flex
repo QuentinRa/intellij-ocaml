@@ -125,7 +125,7 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "while"             { return WHILE; }
   "with"              { return WITH; }
   "{<"                { return LBRACELESS; }
-  ">}"                { return GREATERRBRACE; }
+  ">}"                { return RGREATERRBRACE; }
   "mod"               { return MOD; }
   "land"              { return LAND; }
   "lor"               { return LOR; }
@@ -153,7 +153,7 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   ";;"                { return SEMISEMI; }
   "||"                { return L_OR; }
   "&&"                { return L_AND; }
-  "^"                 { return CARRET; }
+  "^"                 { return CARET; }
   "-."                { return MINUSDOT; }
   "+="                { return PLUSEQ; }
   "+"                 { return PLUS; }
@@ -173,7 +173,7 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
   "}"                 { return RBRACE; }
   "["                 { return LBRACKET; }
   "]"                 { return RBRACKET; }
-  "@"                 { return ARROBASE; }
+  "@"                 { return AT_SIGN; }
   "#"                 { return SHARP; }
   "?"                 { return QUESTION_MARK; }
   "!"                 { return EXCLAMATION_MARK; }

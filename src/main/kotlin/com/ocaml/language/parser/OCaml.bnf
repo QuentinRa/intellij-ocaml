@@ -63,7 +63,7 @@
           WHILE = "while"
           WITH = "with"
           LBRACELESS = "{<"
-          GREATERRBRACE = ">}"
+          RGREATERRBRACE = ">}"
 
           MOD = "mod"
           LAND = "land"
@@ -96,7 +96,7 @@
           L_OR = "||"
           L_AND = "&&"
 
-          CARRET = "^"
+          CARET = "^"
           MINUSDOT = "-."
           PLUSEQ = "+="
           PLUS = "+"
@@ -117,7 +117,7 @@
           RBRACE = "}"
           LBRACKET = "["
           RBRACKET = "]"
-          ARROBASE = "@"
+          AT_SIGN = "@"
           SHARP = "#"
           QUESTION_MARK = "?"
           EXCLAMATION_MARK = "!"
@@ -174,7 +174,7 @@ file ::= COMMENT
 | unit_implementation
 
 private infix_symbol_lexed ::= // PIPE is rejected, but all these are lexed alone
- DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | ARROBASE | CARRET
+ DOLLAR | AMPERSAND | STAR | PLUS | MINUS | SLASH | EQ | GT | AT_SIGN | CARET
  // and all of them are lexed too (:> -> <- [< and [> are lexed but not valid)
  | NOT_EQ | COLON_EQ | L_OR | L_AND | MINUSDOT | PLUSEQ
  // These two are valid and lexed alone
@@ -549,7 +549,7 @@ private local_open_group ::= local_open
 local_open ::= LET OPEN module_path IN seq_expr
 expr_with_local_open_expr ::= module_path DOT LPAREN seq_expr RPAREN
 list_constructor_with_local_open_expr ::= module_path DOT LBRACKET seq_expr RBRACKET
-object_copy_with_local_open_expr ::= module_path DOT LBRACELESS seq_expr GREATERRBRACE
+object_copy_with_local_open_expr ::= module_path DOT LBRACELESS seq_expr RGREATERRBRACE
 array_constructor_with_local_open_expr ::= module_path DOT LARRAY seq_expr RARRAY
 record_constructor_with_local_open_expr ::= module_path DOT LBRACE seq_expr RBRACE
 // END LOCAL_OPEN
@@ -562,7 +562,7 @@ object_expr ::= inst_var_name LEFT_ARROW expr    // inst-var-name <- expr
 
 object_simple_expr ::= NEW class_path            // new class-path
 // {< [ inst-var-name [= expr] { ; inst-var-name [= expr] } [;] ] >}
-self_copy_object_expr ::= LBRACELESS [field_expr { SEMI field_expr } * [SEMI]] GREATERRBRACE
+self_copy_object_expr ::= LBRACELESS [field_expr { SEMI field_expr } * [SEMI]] RGREATERRBRACE
 send_message_object_expr ::= simple_expr SHARP method_name // expr # method_name
 
 private field_expr ::= inst_var_name [EQ expr]

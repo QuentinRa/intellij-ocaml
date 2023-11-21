@@ -20,9 +20,9 @@ enum class OCamlColor(name: String, attr: TextAttributesKey? = null) {
     TYPE_PARAMETER("TYPE_PARAMETER", Default.IDENTIFIER),
     CONST_PARAMETER("CONST_PARAMETER", Default.CONSTANT),
 
-    TYPE("TYPE", Default.KEYWORD),
-    CLASS("CLASS", Default.CLASS_NAME),
-    MODULE("MODULE", Default.IDENTIFIER),
+    TYPE_NAME("TYPE", Default.KEYWORD),
+    CLASS_NAME("CLASS", Default.CLASS_NAME),
+    MODULE_NAME("MODULE", Default.IDENTIFIER),
     ALIAS("ALIAS", Default.CLASS_NAME),
 
     KEYWORD("KEYWORD", Default.KEYWORD),
