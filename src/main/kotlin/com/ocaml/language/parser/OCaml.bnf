@@ -2,7 +2,9 @@
 //  parserClass="com.ocaml.language.parser.OCamlInterfaceParser"
   parserClass="com.ocaml.language.parser.OCamlParser"
   parserUtilClass="com.ocaml.language.parser.OCamlParserUtils"
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  implements='com.ocaml.language.psi.api.OCamlElement'
+  extends='com.ocaml.language.psi.api.OCamlElementImpl'
 
   psiClassPrefix="OCaml"
   psiImplClassSuffix="Impl"
@@ -151,6 +153,8 @@
   extends("bang_expr|list_constructor_expr|array_constructor_expr|.*_assign_expr|.*_lookup_expr")=simple_expr
   extends("record_constructor_expr|sharp_op_expr|non_op_simple_expr|simple_expr")=simple_expr
   extends("object_simple_expr")=simple_expr
+
+  consumeTokenMethod(".*pattern_expression|.*expr") = "consumeTokenFast"
 }
 
 /*
@@ -434,7 +438,7 @@ prefix_unary_expr ::= prefix_symbol expr                                // prefi
 // [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
 // [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
-    LET [REC] let_binding { AND let_binding } * IN seq_expr             // let [rec] let-binding { and let-binding } in expr
+    let_bindings IN seq_expr                                            // let [rec] let-binding { and let-binding } in expr
   | LET MODULE module_name module_binding_body IN seq_expr              // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
   | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
   | FUNCTION pattern_matching                                           // function pattern-matching
@@ -657,7 +661,7 @@ class_expr ::=
     class_simple_expr { argument } +
   | class_simple_expr
   | FUN { parameter } + RIGHT_ARROW class_expr
-  | LET [REC] let_binding { AND let_binding } IN class_expr
+  | let_bindings IN class_expr
   | LET OPEN module_path IN class_expr
 
 private class_simple_expr ::=
@@ -793,7 +797,7 @@ definition ::=
 private internal_type_definition ::= type_extension_definition // first
 | type_definition
 
-private let_bindings ::= LET [REC] let_binding { AND let_binding } *
+let_bindings ::= LET [REC] let_binding { AND let_binding } *
 
 private str_include_statement ::= INCLUDE module_expr
 
