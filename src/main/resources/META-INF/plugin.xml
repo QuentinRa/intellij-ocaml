@@ -36,8 +36,9 @@
         <lang.parserDefinition language="OCamli" implementationClass="com.ocaml.language.parser.OCamlInterfaceParserDefinition"/>
 
         <!-- HIGHLIGHT -->
-<!--        <lang.syntaxHighlighterFactory language="OCaml" implementationClass="com.ocaml.ide.highlighter.OCamlSyntaxHighlighterFactory"/>-->
-<!--        <colorSettingsPage implementation="com.ocaml.ide.highlighter.OCamlColorSettingsPage"/>-->
+        <lang.syntaxHighlighterFactory language="OCaml" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="OCamli" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
+<!--        <colorSettingsPage implementation="com.ocaml.ide.highlight.OCamlColorSettingsPage"/>-->
 
         <!-- INSIGHT -->
 <!--        <codeInsight.lineMarkerProvider language="OCaml" implementationClass="com.ocaml.ide.navigation.OCamlLineMarkerProvider"/>-->

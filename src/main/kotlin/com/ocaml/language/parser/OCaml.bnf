@@ -775,7 +775,7 @@ private module_expr_value ::=
 module_expr ::= module_expr_value { module_expr_sufix } *
 
 module_items ::= { SEMISEMI }* (definition|seq_expr)
-  { { SEMISEMI }* ( definition | SEMISEMI seq_expr) }* { SEMISEMI }*
+  { { SEMISEMI }* ( definition | seq_expr) }* { SEMISEMI }*
 
 definition ::=
     let_bindings
