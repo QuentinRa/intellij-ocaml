@@ -2,8 +2,7 @@ package com.ocaml.sdk;
 
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownload;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.SdkDownloadTask;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.OCamlSdkDownload;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -25,7 +24,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * OCaml SDK
@@ -36,7 +34,7 @@ import java.util.function.Consumer;
  *     <li>lib/*</li>
  * </ul>
  */
-public class OCamlSdkType extends SdkType implements SdkDownload {
+public class OCamlSdkType extends SdkType implements OCamlSdkDownload {
 
     private static final String OCAML_SDK = "OCaml SDK";
 
@@ -82,8 +80,7 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         File[] files = rootFolder.listFiles();
         if (files == null) return;
         for (File file : files) {
-            VirtualFile rootCandidate = LocalFileSystem.getInstance()
-                    .findFileByPath(FileUtil.toSystemIndependentName(file.getAbsolutePath()));
+            VirtualFile rootCandidate = LocalFileSystem.getInstance().findFileByPath(FileUtil.toSystemIndependentName(file.getAbsolutePath()));
             if (rootCandidate == null) continue;
             sdkModificator.addRoot(rootCandidate, OrderRootType.CLASSES);
         }
@@ -93,56 +90,70 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
     // Name + Icon
     //
 
-    @NotNull @Override public String getPresentableName() {
-        return "OCaml";
+    public static @Nullable String getMajorAndMinorVersion(@NotNull String version) {
+        if (!OCamlSdkVersionManager.isValid(version)) return null;
+        // if we got two ".", then we trunc the patch number
+        int last = version.lastIndexOf('.');
+        if (last != version.indexOf('.')) version = version.substring(0, last);
+        return version;
     }
 
-    @NotNull @Override public Icon getIcon() {
-        return OCamlIcons.Nodes.OCAML_SDK;
+    @NotNull @Override public String getPresentableName() {
+        return "OCaml";
     }
 
     //
     // Home path
     //
 
-    @Override public @NotNull Collection<String> suggestHomePaths() {
-        return OCamlSdkHomeManager.suggestHomePaths();
+    @NotNull @Override public Icon getIcon() {
+        return OCamlIcons.Nodes.OCAML_SDK;
     }
 
-    @Nullable @Override public String suggestHomePath() {
-        return OCamlSdkHomeManager.defaultOCamlLocation();
+    @Override public @NotNull Collection<String> suggestHomePaths() {
+        return OCamlSdkHomeManager.suggestHomePaths();
     }
 
     //
     // suggestSdkName, getVersionString
     //
 
-    @NotNull
-    @Override public final String suggestSdkName(String currentSdkName, @NotNull String sdkHome) {
-        return "OCaml-" + getVersionString(sdkHome);
+    @Nullable @Override public String suggestHomePath() {
+        return OCamlSdkHomeManager.defaultOCamlLocation();
     }
 
-    @NotNull @Override public String getVersionString(@NotNull String sdkHome) {
-        return OCamlSdkVersionManager.parse(sdkHome);
+    @NotNull @Override public final String suggestSdkName(String currentSdkName, @NotNull String sdkHome) {
+        return "OCaml-" + getVersionString(sdkHome);
     }
 
     //
     // Valid
     //
 
+    @NotNull @Override public String getVersionString(@NotNull String sdkHome) {
+        return OCamlSdkVersionManager.parse(sdkHome);
+    }
+
     @Override public boolean isValidSdkHome(@NotNull String sdkHome) {
         return OCamlSdkHomeManager.isValid(sdkHome);
     }
 
+    //
+    // Data
+    //
+
     @Override public String getInvalidHomeMessage(@NotNull String path) {
         InvalidHomeError kind = OCamlSdkHomeManager.invalidHomeErrorMessage(Path.of(path));
-        if (kind == null)
-            return OCamlBundle.message("sdk.home.error.no.provider");
+        if (kind == null) return OCamlBundle.message("sdk.home.error.no.provider");
         switch (kind) {
-            case INVALID_HOME_PATH: return OCamlBundle.message("sdk.home.error.invalid");
-            case NO_TOP_LEVEL: return OCamlBundle.message("sdk.home.error.no.top.level");
-            case NO_COMPILER: return OCamlBundle.message("sdk.home.error.no.compiler");
-            case NO_SOURCES: return OCamlBundle.message("sdk.home.error.no.sources");
+            case INVALID_HOME_PATH:
+                return OCamlBundle.message("sdk.home.error.invalid");
+            case NO_TOP_LEVEL:
+                return OCamlBundle.message("sdk.home.error.no.top.level");
+            case NO_COMPILER:
+                return OCamlBundle.message("sdk.home.error.no.compiler");
+            case NO_SOURCES:
+                return OCamlBundle.message("sdk.home.error.no.sources");
             case NONE:
             case GENERIC:
             default:
@@ -150,17 +161,12 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         }
     }
 
-    //
-    // Data
-    //
-
     @Override public boolean isRootTypeApplicable(@NotNull OrderRootType type) {
         return type == OrderRootType.CLASSES;
     }
 
     @Override @Nullable
-    public AdditionalDataConfigurable createAdditionalDataConfigurable(@NotNull SdkModel sdkModel,
-                                                                       @NotNull SdkModificator sdkModificator) {
+    public AdditionalDataConfigurable createAdditionalDataConfigurable(@NotNull SdkModel sdkModel, @NotNull SdkModificator sdkModificator) {
         return new OCamlSdkAdditionalDataConfigurable();
     }
 
@@ -176,15 +182,18 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         return sdkAdditionalData;
     }
 
-    @Override public void saveAdditionalData(@NotNull SdkAdditionalData additionalData,
-                                             @NotNull Element additional) {
+    //
+    // Setup
+    //
+
+    @Override public void saveAdditionalData(@NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
         OCamlSdkAdditionalData sdkAdditionalData = (OCamlSdkAdditionalData) additionalData;
         additional.setAttribute("ocamlManualURL", sdkAdditionalData.ocamlManualURL);
         additional.setAttribute("ocamlApiURL", sdkAdditionalData.ocamlApiURL);
     }
 
     //
-    // Setup
+    // Documentation
     //
 
     @Override public void setupSdkPaths(@NotNull Sdk sdk) {
@@ -201,25 +210,12 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         sdkModificator.commitChanges();
     }
 
-    //
-    // Documentation
-    //
-
     @Override public @Nullable String getDefaultDocumentationUrl(@NotNull Sdk sdk) {
         return getManualURL(sdk.getVersionString());
     }
 
     public @Nullable String getDefaultAPIUrl(@NotNull Sdk sdk) {
         return getApiURL(sdk.getVersionString());
-    }
-
-    public static @Nullable String getMajorAndMinorVersion(@NotNull String version) {
-        if (!OCamlSdkVersionManager.isValid(version)) return null;
-        // if we got two ".", then we trunc the patch number
-        int last = version.lastIndexOf('.');
-        if (last != version.indexOf('.'))
-            version = version.substring(0, last);
-        return version;
     }
 
     //
@@ -230,18 +226,11 @@ public class OCamlSdkType extends SdkType implements SdkDownload {
         return false;
     }
 
-    @Override public void showDownloadUI(@NotNull SdkTypeId sdkTypeId, @NotNull SdkModel sdkModel,
-                                         @NotNull JComponent parentComponent, @Nullable Sdk selectedSdk,
-                                         @NotNull Consumer<SdkDownloadTask> sdkCreatedCallback) {
-    }
-
     //
     // WSL
     //
 
-    @SinceIdeVersion(release = "213")
-    @SuppressWarnings("unused")
-    public boolean allowWslSdkForLocalProject() {
+    @SinceIdeVersion(release = "213") @SuppressWarnings("unused") public boolean allowWslSdkForLocalProject() {
         return true;
     }
 }

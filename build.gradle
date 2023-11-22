@@ -1,10 +1,10 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '1.5.3'
-    id 'org.jetbrains.grammarkit' version '2021.2.2'
+    id 'org.jetbrains.intellij' version '1.16.0'
+    id 'org.jetbrains.grammarkit' version '2022.3.2'
     id 'net.saliman.properties' version '1.5.2'
-    id 'org.gradle.test-retry' version '1.3.2'
-    id 'com.adarshr.test-logger' version '3.2.0'
+    id 'org.gradle.test-retry' version '1.5.6'
+    id 'com.adarshr.test-logger' version '4.0.0'
 }
 
 testlogger {
@@ -135,7 +135,7 @@ runIde {
     systemProperty 'idea.is.internal', true
 
     // Default args for IDEA installation
-    jvmArgs("-Xmx768m", "-XX:+UseConcMarkSweepGC", "-XX:SoftRefLRUPolicyMSPerMB=50")
+    jvmArgs("-Xmx768m", "-XX:SoftRefLRUPolicyMSPerMB=50")
     // Disable plugin auto reloading. See `com.intellij.ide.plugins.DynamicPluginVfsListener`
     jvmArgs("-Didea.auto.reload.plugins=false")
     // Don't show "Tip of the Day" at startup

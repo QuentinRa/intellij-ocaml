@@ -1,6 +1,5 @@
 package com.ocaml.sdk.utils;
 
-import com.esotericsoftware.minlog.Log;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.PtyCommandLine;
 import com.intellij.openapi.module.Module;
@@ -12,12 +11,14 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.ocaml.OCamlBundle;
 import com.ocaml.sdk.OCamlSdkType;
 import com.ocaml.sdk.providers.OCamlSdkProvidersManager;
+import com.or.utils.Log;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 // note that this class will be removed later, when the REPL will be remade
 @ApiStatus.Internal
 public final class OCamlSdkCommandsManager {
+    private static final Log LOG = Log.create("OCamlSdkCommandsManager");
 
     // find an SDK that can be used to start the REPL
     public static @NotNull Sdk getSdk(Project project) {
@@ -47,7 +48,7 @@ public final class OCamlSdkCommandsManager {
         if (replCommand == null)
             throw new IllegalStateException("Unable to start the console.");
 
-        Log.debug("REPL command is:" + replCommand.getCommandLineString());
+        LOG.debug("REPL command is:" + replCommand.getCommandLineString());
 
         // return PtyCommand
         return new PtyCommandLine(replCommand).withInitialColumns(PtyCommandLine.MAX_COLUMNS);
