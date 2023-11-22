@@ -1,8 +1,0 @@
-- Fix tests for the Windows provider
-
-Console: need tests (0.5.0) (test #*)
-- OCamlFindFunction / OCamlAnnotUtils / Parser
-
-ignore macros too right?
-
-todo: test rename variable

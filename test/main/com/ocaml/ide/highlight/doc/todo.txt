@@ -1,6 +1,0 @@
-(**) : a normal comment, not the start of a doc comment
-(* *) : normal
-(** *) : doc
-(**
-
-*) : doc

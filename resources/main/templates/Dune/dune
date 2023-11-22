@@ -1,2 +1,0 @@
-(executable
- (name test_hello_world))

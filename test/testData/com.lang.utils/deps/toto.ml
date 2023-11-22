@@ -1,3 +1,0 @@
-open Tata
-
-exception Ok
