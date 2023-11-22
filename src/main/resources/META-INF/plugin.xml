@@ -44,7 +44,13 @@
 <!--        <annotator language="OCaml" implementationClass="com.ocaml.ide.insight.OCamlSyntaxAnnotator"/>-->
 
         <!-- STRUCTURE / FOLDING / COMMENTS / DOC -->
-<!--        <lang.psiStructureViewFactory language="OCaml"-->
-<!--                implementationClass="com.ocaml.ide.structure.OCamlStructureViewFactory"/>-->
+        <lang.psiStructureViewFactory language="OCaml" implementationClass="com.ocaml.ide.structure.OCamlStructureViewFactory"/>
+        <lang.commenter language="OCaml" implementationClass="com.ocaml.ide.commenter.OCamlCommenter"/>
+
+        <!-- BRACES -->
+        <lang.braceMatcher language="OCaml" implementationClass="com.ocaml.ide.typing.OCamlBraceMatcher"/>
+
+        <!-- SPELL-CHECKER -->
+        <spellchecker.support language="OCaml" implementationClass="com.ocaml.ide.spelling.OCamlSpellcheckingStrategy"/>
     </extensions>
 </idea-plugin>

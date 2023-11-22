@@ -21,27 +21,41 @@ This plugin is providing support for OCaml for JetBrains IDEs. It's based on bot
 
 ## Current Progress Of The Rework
 
+**Goal**: implement the least feature to have a working plugin using the new parser. This is PoC to test if we can use JetBrains Grammar File.
+
 Internal
 
 * [x] Parser implemented
   * [ ] Parser Errors are not handled
   * [ ] Parser recovery is not handled
   * [ ] Parser tests were not implemented
+  * [ ] Add NameOwner interface to all named elements 
+* [ ] Stubs
+  * [ ] Add Stubs For Variables
 
 User features
 
+* [x] Highlighter
 * [x] Spell-checker
   * [x] Comments
   * [x] Strings
-  * [ ] Identifiers
+  * [x] Identifiers
 * [ ] Typing
   * [x] Braces matching
   * [ ] Quotes handler
   * [ ] Paste processor
   * [ ] Smart enter processor
   * [x] Single Line Comments Handler
-  * [ ] Multi Lines Comments Handler
+  * [x] Multi Lines Comments Handler
   * [ ] Other handlers
+* [ ] Smart Features
+  * [ ] Annotations Highlighter
+  * [ ] Structure View
+    * [ ] Variables (missing icon and text for AND)
+    * [ ] Variables Visibility (MLI? VAL?)
+* [ ] Settings
+  * [X] Color Settings Page For Highlighter
+  * [ ] Add Highlighter Annotator to Color Settings Page
 
 ## 🎯 What's my goal?
 
