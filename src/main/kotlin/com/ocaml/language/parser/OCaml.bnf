@@ -194,8 +194,8 @@ private prefix_symbol_lexed ::= EXCLAMATION_MARK | QUESTION_MARK | TILDE
 private ext_variance_patch ::= EXCLAMATION_MARK_PLUS | EXCLAMATION_MARK_MINUS
 
 // https://v2.ocaml.org/releases/4.14/htmlman/compunit.html#start-section
-unit_implementation ::= [ module_items ]
-unit_interface ::=  { specification [SEMISEMI] }*
+private unit_implementation ::= [ module_items ]
+private unit_interface ::=  { specification [SEMISEMI] }*
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:lex:identifiers
 // [CHANGES]: using the lexer
@@ -439,7 +439,7 @@ prefix_unary_expr ::= prefix_symbol expr                                // prefi
 // [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
     let_bindings IN seq_expr                                            // let [rec] let-binding { and let-binding } in expr
-  | LET MODULE module_name module_binding_body IN seq_expr              // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
+  | LET module_binding IN seq_expr                                      // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
   | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
   | FUNCTION pattern_matching                                           // function pattern-matching
   | FUN { parameter } + [ COLON simple_typexpr ] RIGHT_ARROW seq_expr   // fun { parameter }+ [ : typexpr ] -> expr
@@ -530,6 +530,11 @@ let_binding ::= value_name COLON poly_typexpr EQ seq_expr
 | value_name {parameter}* [COLON typexpr] [COLON_GT typexpr] EQ seq_expr
 | pattern_no_exn EQ seq_expr
 | abstract_types_let_binding
+// todo: the mixin is only partially implemented
+{
+    implements=["com.ocaml.language.psi.api.OCamlNameIdentifierOwner"]
+    mixin="com.ocaml.language.psi.mixin.LetBindingMixin"
+}
 
 parameter ::=
    TILDE LPAREN label_name [COLON typexpr] RPAREN
@@ -733,7 +738,7 @@ mod_constraint ::=
   | MODULE module_path EQ extended_module_path
   | signature_substitution_mod_constraint
 
-specification ::=
+private specification ::=
     value_description
   | internal_type_specification
   | exception_specification
@@ -778,10 +783,10 @@ private module_expr_value ::=
 
 module_expr ::= module_expr_value { module_expr_sufix } *
 
-module_items ::= { SEMISEMI }* (definition|seq_expr)
+private module_items ::= { SEMISEMI }* (definition|seq_expr)
   { { SEMISEMI }* ( definition | seq_expr) }* { SEMISEMI }*
 
-definition ::=
+private definition ::=
     let_bindings
   | internal_type_definition
   | exception_definition
@@ -801,13 +806,13 @@ let_bindings ::= LET [REC] let_binding { AND let_binding } *
 
 private str_include_statement ::= INCLUDE module_expr
 
-private module_type_definition ::= MODULE TYPE module_name EQ module_type
+module_type_definition ::= MODULE TYPE module_name EQ module_type
 
 private module_binding_body ::= // { ( module-name : module-type ) } [ : module-type ] = module-expr
   { LPAREN module_name COLON module_type RPAREN }*
   [COLON module_type] EQ module_expr
 
-private module_binding ::= MODULE module_name module_binding_body
+module_binding ::= MODULE module_name module_binding_body
 
 // https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
 primitive_declaration ::=
