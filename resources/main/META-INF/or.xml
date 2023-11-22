@@ -1,0 +1,88 @@
+<idea-plugin>
+    <!--
+    ALL of this is coming from the ReasonML plugin
+    https://github.com/giraud/reasonml-idea-plugin
+    -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- PARSER -->
+        <stubElementTypeHolder externalIdPrefix="OCaml." class="com.or.lang.core.stub.OclStubBasedElementTypes"/>
+        <lang.ast.factory language="OCAML" implementationClass="com.or.lang.parser.OclASTFactory"/>
+        <lang.parserDefinition language="OCAML" implementationClass="com.or.lang.parser.OclParserDefinition"/>
+
+        <!-- HIGHLIGHT -->
+        <colorSettingsPage implementation="com.or.ide.settings.ORColorSettingsPage"/>
+
+        <!-- STRUCTURE / FOLDING / COMMENTS / DOC -->
+        <lang.psiStructureViewFactory language="OCAML" implementationClass="com.or.ide.structure.StructureViewFactory"/>
+        <lang.foldingBuilder language="OCAML" implementationClass="com.or.ide.folding.ORFoldingBuilder"/>
+        <lang.commenter language="OCAML" implementationClass="com.or.ide.comment.OclCommenter"/>
+        <lang.braceMatcher language="OCAML" implementationClass="com.or.ide.match.OclPairedBraceMatcher"/>
+        <lang.documentationProvider language="OCAML" implementationClass="com.or.ide.docs.ORDocumentationProvider"/>
+
+        <!-- SEARCH / NAVIGATING / USAGES / GO TO -->
+        <stubIndex implementation="com.or.ide.search.index.ModuleTopLevelIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ModuleComponentFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ModuleComponentIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ModuleFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ModuleIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ModuleAliasedIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ModuleAliasesIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.KlassFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.LetIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.LetFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ValIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ValFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.TypeIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.TypeFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ExternalIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ExternalFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.VariantIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.VariantFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ExceptionIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ExceptionFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.RecordFieldIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ObjectFieldIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ParameterIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.ParameterFqnIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.IncludeIndex"/>
+        <stubIndex implementation="com.or.ide.search.index.OpenIndex"/>
+        <fileBasedIndex implementation="com.or.ide.search.index.FileModuleIndex"/>
+        <fileBasedIndex implementation="com.or.ide.search.index.NamespaceIndex"/>
+        <applicationService serviceImplementation="com.or.ide.search.FileModuleIndexService"/>
+        <projectService serviceImplementation="com.or.ide.search.PsiFinder"/>
+        <projectService serviceImplementation="com.or.lang.core.psi.reference.ORElementResolver"/>
+        <lang.findUsagesProvider language="OCAML" implementationClass="com.or.ide.search.OclFindUsagesProvider"/>
+        <gotoClassContributor implementation="com.or.ide.go.ORModuleContributor"/>
+        <gotoDeclarationHandler implementation="com.or.ide.go.ORGotoDeclarationHandler"/>
+
+        <!-- COMPLETION -->
+        <completion.contributor language="OCAML" implementationClass="com.or.ide.insight.OclCompletionContributor"/>
+        <completion.contributor language="OCAML" implementationClass="com.or.ide.insight.OclKeywordCompletionContributor"/>
+
+        <!-- INSIGHT -->
+        <iconProvider implementation="com.or.ide.IconProvider"/>
+        <annotator language="OCAML" implementationClass="com.or.ide.highlight.OclSyntaxAnnotator"/>
+        <codeInsight.lineMarkerProvider language="OCAML" implementationClass="com.or.ide.go.ORLineMarkerProvider"/>
+
+        <!-- TEMPLATES -->
+        <liveTemplateContext implementation="com.or.ide.template.OCamlContentType"/>
+        <liveTemplateContext implementation="com.or.ide.template.OCamlContentType$OCamlExpressionTemplates"/>
+        <liveTemplateContext implementation="com.or.ide.template.OCamlContentType$OCamlCommentTemplates"/>
+        <defaultLiveTemplates file="liveTemplates/OCaml.xml"/>
+
+        <!-- REFACTORING -->
+        <lang.refactoringSupport language="OCAML" implementationClass="com.or.ide.ORRefactoringSupportProvider"/>
+
+        <!-- SPELLCHECKER -->
+        <spellchecker.support language="OCAML" implementationClass="com.or.ide.spellcheckers.OclSpellCheckerStrategy"/>
+
+        <!-- OTHERS -->
+        <typedHandler implementation="com.or.ide.handlers.ORTypedHandler" id="RmlTypedHandler"/>
+        <quoteHandler fileType="OCAML" className="com.or.ide.handlers.OclQuoteHandler"/>
+        <quoteHandler fileType="OCAML_INTERFACE" className="com.or.ide.handlers.OclQuoteHandler"/>
+    </extensions>
+
+    <!-- Add your extensions here -->
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+</idea-plugin>

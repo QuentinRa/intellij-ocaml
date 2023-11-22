@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.ocaml.ide.wizard.view.OCamlSelectTemplate">
+  <grid id="27dc6" binding="myPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="afdd6" class="com.intellij.ui.components.JBCheckBox" binding="myCreateFromTemplateCheckBox">
+        <constraints border-constraint="North"/>
+        <properties>
+          <text resource-bundle="messages/OCamlBundle" key="project.wizard.create.from.template"/>
+        </properties>
+      </component>
+      <component id="5084c" class="com.intellij.ide.projectWizard.ProjectTemplateList" binding="myTemplateList">
+        <constraints border-constraint="Center"/>
+        <properties/>
+      </component>
+    </children>
+  </grid>
+</form>
