@@ -35,12 +35,13 @@ public final class OCamlPlatformUtils {
             // output folder
             CompilerModuleExtension compilerModuleExtension = moduleRootManager.getModuleExtension(CompilerModuleExtension.class);
             VirtualFilePointer outputPointer = compilerModuleExtension.getCompilerOutputPointer();
-            return outputPointer.getPresentableUrl() + "/";
-        } else {
-            // get outputFolder
-            String outputFolderName = project.getService(OCamlSettings.class).outputFolderName;
-            String basePath = rootFolder.get();
-            return basePath + "/" + outputFolderName;
+            if (outputPointer != null) {
+                return outputPointer.getPresentableUrl() + "/";
+            }
         }
+        // get outputFolder
+        String outputFolderName = OCamlSettings.getInstance(project).outputFolderName;
+        String basePath = rootFolder.get();
+        return basePath + "/" + outputFolderName;
     }
 }
