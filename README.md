@@ -58,6 +58,10 @@ User features
   * [X] Color Settings Page For Highlighter
   * [ ] Add Highlighter Annotator to Color Settings Page
 
+Bonus
+
+* [ ] Structure View: show "a,b" as two variables, not one
+
 ## 🎯 What's my goal?
 
 * [ ] Can run/compile ocaml files (without having to install some external build system)

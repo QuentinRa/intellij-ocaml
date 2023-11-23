@@ -10,11 +10,17 @@ import com.ocaml.language.psi.api.OCamlElementImpl
 import javax.swing.Icon
 
 abstract class LetBindingMixin(type: IElementType) : OCamlElementImpl(type), OCamlLetBinding {
+    // todo: add tests
+    //   - let x = 5
+    //   - let x,y = 5,6
+    //   - let (x,y) = 5,6
     override fun getNameIdentifier(): PsiElement? {
         return if(valueName != null)
             valueName
-        else
-            TODO("Not yet implemented")
+        else if (patternNoExn != null) {
+            patternNoExn!!.patternExpression
+        } else
+            TODO("Not yet implemented for:$text")
     }
 
     override fun getName(): String? = nameIdentifier?.text
