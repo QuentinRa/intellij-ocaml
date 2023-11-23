@@ -641,8 +641,10 @@ type_constraint ::= CONSTRAINT typexpr EQ typexpr
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
 exception_definition ::= EXCEPTION constr_name EQ constr
 | exception_specification
+{ pin(".*")=1 }
 
 exception_specification ::= EXCEPTION constr_decl
+{ pin=1 }
 
 // https://v2.ocaml.org/releases/4.14/htmlman/classes.html#ss:classes:class-types
 // [CHANGES]: using simple_core_type_or_tuple
@@ -796,8 +798,8 @@ private definition ::=
     let_bindings
   | internal_type_definition
   | exception_definition
-  | module_binding
   | module_type_definition
+  | module_binding
   | open_statement
   | class_definition
   | classtype_definition
@@ -808,18 +810,21 @@ private definition ::=
 private internal_type_definition ::= type_extension_definition // first
 | type_definition
 
-let_bindings ::= LET [REC] let_binding { AND let_binding } *
+let_bindings ::= LET [REC] let_binding { let_bindings_and }*   { pin=1 }
+private let_bindings_and ::= AND let_binding { pin=1 }
 
 private str_include_statement ::= INCLUDE module_expr
 { pin=1 }
 
 module_type_definition ::= MODULE TYPE module_name EQ module_type
+{ pin=2 }
 
 private module_binding_body ::= // { ( module-name : module-type ) } [ : module-type ] = module-expr
   { LPAREN module_name COLON module_type RPAREN }*
   [COLON module_type] EQ module_expr
 
 module_binding ::= MODULE module_name module_binding_body
+{ pin=1 }
 
 // https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
 primitive_declaration ::=
