@@ -58,6 +58,11 @@ intellij {
   ))
 
   sourceSets["main"].java.srcDirs("src/main/gen")
+  idea {
+    module {
+      generatedSourceDirs.add(file("src/main/gen"))
+    }
+  }
 }
 
 tasks {

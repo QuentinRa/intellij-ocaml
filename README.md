@@ -32,6 +32,7 @@ Internal
   * [ ] Add NameOwner interface to all named elements 
 * [ ] Stubs
   * [ ] Add Stubs For Variables
+* [ ] GitHub CI
 
 User features
 
