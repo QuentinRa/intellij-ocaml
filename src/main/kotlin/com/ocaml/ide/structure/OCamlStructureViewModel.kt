@@ -6,10 +6,11 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.Filter
 import com.intellij.ide.util.treeView.smartTree.Sorter
 import com.intellij.openapi.editor.Editor
+import com.intellij.psi.PsiFile
 import com.ocaml.language.base.OCamlFileBase
-import com.ocaml.language.psi.OCamlConstant
+import com.ocaml.language.psi.OCamlLetBinding
 
-class OCamlStructureViewModel(editor: Editor?, psiFile: OCamlFileBase) :
+class OCamlStructureViewModel(editor: Editor?, psiFile: PsiFile) :
     StructureViewModelBase(psiFile, editor, OCamlStructureViewElement(psiFile)),
     StructureViewModel.ElementInfoProvider {
 
@@ -17,7 +18,7 @@ class OCamlStructureViewModel(editor: Editor?, psiFile: OCamlFileBase) :
     override fun getFilters(): Array<Filter> = super.getFilters()
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement): Boolean = element.value is OCamlFileBase
     override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean = when (element.value) {
-        is OCamlConstant -> true
+        is OCamlLetBinding -> true
         else -> false
     }
 }

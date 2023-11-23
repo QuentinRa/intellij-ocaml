@@ -52,7 +52,7 @@ User features
 * [ ] Smart Features
   * [ ] Annotations Highlighter
   * [ ] Structure View
-    * [ ] Variables (missing icon and text for AND)
+    * [x] Variables
     * [ ] Variables Visibility (MLI? VAL?)
 * [ ] Settings
   * [X] Color Settings Page For Highlighter
