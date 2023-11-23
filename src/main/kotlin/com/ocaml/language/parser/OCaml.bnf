@@ -438,9 +438,7 @@ prefix_unary_expr ::= prefix_symbol expr                                // prefi
 // [BETS]: removed "FUN LPAREN TYPE lident_list RPAREN fun_def"
 // [BETS]: removed "FOR pattern_expression"
 non_op_expr ::=
-    let_bindings IN seq_expr                                            // let [rec] let-binding { and let-binding } in expr
-  | LET module_binding IN seq_expr                                      // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
-  | LET EXCEPTION constr_decl IN seq_expr                               // let exception constr-decl in expr
+    pinned_let
   | FUNCTION pattern_matching                                           // function pattern-matching
   | FUN { parameter } + [ COLON simple_typexpr ] RIGHT_ARROW seq_expr   // fun { parameter }+ [ : typexpr ] -> expr
   | MATCH seq_expr WITH pattern_matching                                // match expr with pattern-matching
@@ -455,6 +453,12 @@ non_op_expr ::=
   | object_expr
   | simple_expr { argument } +                                         // expr { argument }+
   | simple_expr
+
+private pinned_let ::=
+  LET EXCEPTION constr_decl IN seq_expr // let exception constr-decl in expr
+| LET module_binding IN seq_expr        // let module module-name { ( module-name : module-type ) } [ : module-type ]  = module-expr in expr
+| let_bindings IN seq_expr              // let [rec] let-binding { and let-binding } in expr
+{ pin(".*")="IN" }
 
 simple_expr ::=
   local_open_group
@@ -534,6 +538,7 @@ let_binding ::= value_name COLON poly_typexpr EQ seq_expr
 {
     implements=["com.ocaml.language.psi.api.OCamlNameIdentifierOwner"]
     mixin="com.ocaml.language.psi.mixin.LetBindingMixin"
+    pin(".*")="EQ"
 }
 
 parameter ::=
@@ -578,7 +583,8 @@ private field_expr ::= inst_var_name [EQ expr]
 // END OBJECT_EXPR
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:typedefs
-type_definition ::= TYPE [NONREC] typedef { AND typedef }*
+type_definition ::= TYPE [NONREC] typedef { type_definition_and }* { pin=1 }
+private type_definition_and ::= AND typedef { pin=1 }
 
 // [BETS]: used type_params instead of optional_type_parameters
 typedef ::= [type_params] typeconstr_name type_information
@@ -805,6 +811,7 @@ private internal_type_definition ::= type_extension_definition // first
 let_bindings ::= LET [REC] let_binding { AND let_binding } *
 
 private str_include_statement ::= INCLUDE module_expr
+{ pin=1 }
 
 module_type_definition ::= MODULE TYPE module_name EQ module_type
 
@@ -817,6 +824,7 @@ module_binding ::= MODULE module_name module_binding_body
 // https://v2.ocaml.org/releases/4.14/htmlman/intfc.html#s:c-overview
 primitive_declaration ::=
     EXTERNAL value_name COLON typexpr EQ external_declaration
+    { pin=1 }
 
 external_declaration ::= STRING_VALUE [ STRING_VALUE [ STRING_VALUE ] ]
 
