@@ -3,6 +3,7 @@ package com.ocaml.language
 import com.intellij.openapi.util.io.FileUtilRt
 import java.util.*
 
+// todo: add tests
 object OCamlLanguageUtils {
     // convert "file.ml" to "File"
     fun fileNameToModuleName(filename: String): String {

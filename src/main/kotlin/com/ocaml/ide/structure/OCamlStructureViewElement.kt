@@ -71,6 +71,7 @@ private fun presentableName(psi: PsiElement): String? {
 }
 
 private fun getPresentationForStructure(psi: PsiElement): ItemPresentation {
+    if (psi is OCamlFile) return psi.presentation!!
     val presentation = buildString {
         append(presentableName(psi))
     }
