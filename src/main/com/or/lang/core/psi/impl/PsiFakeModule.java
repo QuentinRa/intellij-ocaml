@@ -62,7 +62,7 @@ public class PsiFakeModule extends PsiTokenStub<PsiModule, PsiModuleStub> implem
 
     //region PsiQualifiedPath
     @Override
-    public String @Nullable [] getPath() {
+    public String [] getPath() {
         PsiModuleStub greenStub = getGreenStub();
         if (greenStub != null) {
             return greenStub.getPath();

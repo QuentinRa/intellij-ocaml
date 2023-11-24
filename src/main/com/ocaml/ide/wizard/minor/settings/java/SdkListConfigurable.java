@@ -325,12 +325,12 @@ public class SdkListConfigurable extends MasterDetailsComponent implements Searc
         @SuppressWarnings("RedundantSuppression") AddSdkAction() {
             super(OCamlBundle.message("add.new.jdk.text"), null, IconUtil.getAddIcon());
 
-            KeymapManager keymapManager = KeymapManager.getInstance();
-            if (keymapManager != null) {
-                final Keymap active = keymapManager.getActiveKeymap();
-                final Shortcut[] shortcuts = active.getShortcuts("NewElement");
-                setShortcutSet(new CustomShortcutSet(shortcuts));
-            }
+//            KeymapManager keymapManager = KeymapManager.getInstance();
+//            if (keymapManager != null) {
+//                final Keymap active = keymapManager.getActiveKeymap();
+//                final Shortcut[] shortcuts = active.getShortcuts("NewElement");
+//                setShortcutSet(new CustomShortcutSet(shortcuts));
+//            }
         }
 
         @Override

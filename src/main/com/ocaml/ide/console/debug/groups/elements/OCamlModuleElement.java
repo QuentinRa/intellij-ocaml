@@ -11,7 +11,7 @@ public class OCamlModuleElement extends OCamlTreeElement {
         super(name, null, null, OCamlIcons.Nodes.INNER_MODULE);
     }
 
-    @Override public TreeElement @NotNull [] getChildren() {
+    @Override public TreeElement [] getChildren() {
         return EMPTY_ARRAY;
     }
 }

@@ -83,7 +83,9 @@ public class OCamlSdkComboBox extends SdkComboBoxBase<OCamlSdkComboBoxItem> {
                 onNewSdkAdded.consume(sdk);
             }
         };
-        setRenderer(new SdkListPresenter(() -> ((OCamlSdkComboBoxModel)this.getModel()).myInnerModel).forType(OCamlSdkComboBox::unwrapItem));
+        // fixme:
+        setRenderer(new SdkListPresenter(() -> ((OCamlSdkComboBoxModel)this.getModel()).myInnerModel)
+                .forType(OCamlSdkComboBox::unwrapItem));
         reloadModel();
     }
 

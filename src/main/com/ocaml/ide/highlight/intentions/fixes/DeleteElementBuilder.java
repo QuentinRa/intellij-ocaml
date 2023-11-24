@@ -1,6 +1,5 @@
 package com.ocaml.ide.highlight.intentions.fixes;
 
-import com.intellij.codeInsight.daemon.impl.quickfix.DeleteElementFix;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -30,16 +29,16 @@ public class DeleteElementBuilder implements IntentionActionBuilder {
     public @Nullable List<IntentionAction> build(@Nullable PsiElement start, @Nullable PsiElement end, @NotNull PsiFile file) {
 
         // delete element
-        if (start != null) {
-            DeleteElementFix deleteElement = new DeleteElementFix(start);
-            if (reformat) {
-                PsiElement nextSibling = start.getNextSibling();
-                // delete space too
-                if (nextSibling instanceof PsiWhiteSpace)
-                    return List.of(deleteElement, new DeleteElementFix(nextSibling));
-            }
-            return List.of(deleteElement);
-        }
+//        if (start != null) {
+//            DeleteElementFix deleteElement = new DeleteElementFix(start);
+//            if (reformat) {
+//                PsiElement nextSibling = start.getNextSibling();
+//                // delete space too
+//                if (nextSibling instanceof PsiWhiteSpace)
+//                    return List.of(deleteElement, new DeleteElementFix(nextSibling));
+//            }
+//            return List.of(deleteElement);
+//        }
 
         return null;
     }

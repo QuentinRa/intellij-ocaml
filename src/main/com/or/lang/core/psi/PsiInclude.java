@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public interface PsiInclude extends PsiStructuredElement, StubBasedPsiElement<PsiIncludeStub> {
     String[] getQualifiedPath();
 
-    String @Nullable [] getResolvedPath();
+    String [] getResolvedPath();
 
     @NotNull String getIncludePath();
 

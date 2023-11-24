@@ -168,7 +168,7 @@ public class PsiLetWithAnd extends PsiLetImpl {
             return core.getManager();
         }
 
-        @Override public PsiElement @NotNull [] getChildren() {
+        @Override public PsiElement [] getChildren() {
             return core.getChildren();
         }
 
@@ -220,7 +220,7 @@ public class PsiLetWithAnd extends PsiLetImpl {
             return core.getText();
         }
 
-        @Override public char @NotNull [] textToCharArray() {
+        @Override public char [] textToCharArray() {
             return core.textToCharArray();
         }
 
@@ -318,7 +318,7 @@ public class PsiLetWithAnd extends PsiLetImpl {
             return core.getReference();
         }
 
-        @Override public PsiReference @NotNull [] getReferences() {
+        @Override public PsiReference [] getReferences() {
             return core.getReferences();
         }
 

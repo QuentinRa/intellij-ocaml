@@ -67,7 +67,7 @@ public class OCamlSyntaxHighlighter implements SyntaxHighlighter {
         return new OCamlLexerAdapter();
     }
 
-    @Override public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
+    @Override public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(OCamlTypes.MULTI_COMMENT) || tokenType.equals(OCamlTypes.SINGLE_COMMENT)) {
             return COMMENT_KEYS;
         } else if (tokenType.equals(OCamlTypes.LBRACE) || tokenType.equals(OCamlTypes.RBRACE)) {

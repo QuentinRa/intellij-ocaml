@@ -59,7 +59,7 @@ public class OCamlCreateFileAction extends CreateFileFromTemplateAction {
     }
 
     @Override
-    protected void buildDialog(@NotNull Project project, @NotNull PsiDirectory directory, CreateFileFromTemplateDialog.@NotNull Builder builder) {
+    protected void buildDialog(@NotNull Project project, @NotNull PsiDirectory directory, CreateFileFromTemplateDialog.Builder builder) {
         String ml = OCamlFileType.DOT_DEFAULT_EXTENSION;
         String mli = OCamlInterfaceFileType.DOT_DEFAULT_EXTENSION;
         String mlAndMli = ml + " + " + mli;

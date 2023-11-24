@@ -20,7 +20,7 @@ public class PsiModuleStub extends NamedStubBase<PsiModule> {
     private final boolean myIsFunctorCall;
 
     public PsiModuleStub(StubElement parent, @NotNull IStubElementType elementType, @Nullable String name,
-                         String @Nullable [] path, @Nullable String[] qNamePath, @Nullable String namespace, String alias, boolean isComponent,
+                         String [] path, @Nullable String[] qNamePath, @Nullable String namespace, String alias, boolean isComponent,
                          boolean isInterface, boolean isTopLevel, boolean isFunctorCall) {
         super(parent, elementType, name);
         myPath = path;
@@ -34,7 +34,7 @@ public class PsiModuleStub extends NamedStubBase<PsiModule> {
     }
 
     public PsiModuleStub(StubElement parent, @NotNull IStubElementType elementType, @Nullable StringRef name,
-                         String @Nullable [] path, @Nullable String[] qNamePath, @Nullable String namespace, String alias, boolean isComponent,
+                         String [] path, @Nullable String[] qNamePath, @Nullable String namespace, String alias, boolean isComponent,
                          boolean isInterface, boolean isTopLevel, boolean isFunctorCall) {
         super(parent, elementType, name);
         myPath = path;
@@ -47,7 +47,7 @@ public class PsiModuleStub extends NamedStubBase<PsiModule> {
         myIsFunctorCall = isFunctorCall;
     }
 
-    public String @Nullable [] getPath() {
+    public String [] getPath() {
         return myPath;
     }
 

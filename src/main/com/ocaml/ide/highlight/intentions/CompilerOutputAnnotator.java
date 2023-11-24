@@ -42,7 +42,7 @@ public class CompilerOutputAnnotator extends ExternalAnnotator<CompilerOutputPro
     /* ensure that we got an OCaml SDK */
 
     @Override
-    public CompilerOutputProvider.@Nullable CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
+    public CompilerOutputProvider.CollectedInfo collectInformation(@NotNull PsiFile file, @NotNull Editor editor,
                                                                              boolean hasErrors) {
         Project project = file.getProject();
         VirtualFile sourceFile = file.getVirtualFile();

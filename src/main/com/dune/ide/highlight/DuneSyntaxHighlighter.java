@@ -41,7 +41,7 @@ public class DuneSyntaxHighlighter extends SyntaxHighlighterBase {
     }
 
     @Override
-    public @NotNull TextAttributesKey @NotNull [] getTokenHighlights(@NotNull IElementType tokenType) {
+    public TextAttributesKey [] getTokenHighlights(@NotNull IElementType tokenType) {
         if (tokenType.equals(DuneTypes.LPAREN) || tokenType.equals(DuneTypes.RPAREN)) {
             return PAREN_KEYS;
         } else if (tokenType.equals(DuneTypes.COMMENT)) {

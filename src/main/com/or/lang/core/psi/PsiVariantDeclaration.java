@@ -42,7 +42,7 @@ public class PsiVariantDeclaration extends PsiTokenStub<PsiVariantDeclaration, P
 
     //region PsiQualifiedName
     @Override
-    public String @NotNull [] getPath() {
+    public String [] getPath() {
         PsiVariantDeclarationStub stub = getGreenStub();
         if (stub != null) {
             return stub.getPath();

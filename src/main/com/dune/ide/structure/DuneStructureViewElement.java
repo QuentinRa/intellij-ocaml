@@ -129,7 +129,7 @@ public class DuneStructureViewElement implements StructureViewTreeElement, Sorta
     }
 
     @Override
-    public TreeElement @NotNull [] getChildren() {
+    public TreeElement [] getChildren() {
         List<TreeElement> treeElements = null;
 
         if (m_element instanceof DuneFile) {

@@ -54,7 +54,7 @@ public class PsiValImpl extends PsiTokenStub<PsiVal, PsiValStub> implements PsiV
 
     //region PsiQualifiedName
     @Override
-    public String @NotNull [] getPath() {
+    public String [] getPath() {
         PsiValStub stub = getGreenStub();
         if (stub != null) {
             return stub.getPath();

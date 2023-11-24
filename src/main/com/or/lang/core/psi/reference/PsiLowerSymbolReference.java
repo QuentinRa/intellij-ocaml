@@ -39,7 +39,7 @@ public class PsiLowerSymbolReference extends ORMultiSymbolReference<PsiLowerSymb
     }
 
     @Override
-    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
+    public ResolveResult [] multiResolve(boolean incompleteCode) {
         PsiElement symbol = this.symbol;
         this.symbol = null;
         if (myReferenceName == null) {

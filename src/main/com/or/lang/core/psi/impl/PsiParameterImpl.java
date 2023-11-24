@@ -100,7 +100,7 @@ public class PsiParameterImpl extends PsiTokenStub<PsiParameter, PsiParameterStu
 
     //region PsiQualifiedName
     @Override
-    public String @Nullable [] getPath() {
+    public String [] getPath() {
         PsiParameterStub stub = getGreenStub();
         if (stub != null) {
             return stub.getPath();

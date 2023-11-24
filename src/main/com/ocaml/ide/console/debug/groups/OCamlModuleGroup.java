@@ -30,7 +30,7 @@ public class OCamlModuleGroup extends TreeElementGroup {
         super(TreeElementGroupKind.MODULES);
     }
 
-    @Override public TreeElement @NotNull [] getChildren() {
+    @Override public TreeElement [] getChildren() {
         Stream<OCamlTreeElement> sorted = elements.stream().sorted();
         List<TreeElement> l = sorted.collect(Collectors.toList());
         l.add(0, moduleTypeGroup);
@@ -64,7 +64,7 @@ public class OCamlModuleGroup extends TreeElementGroup {
         @Override public boolean canNavigate() { return false; }
         @Override public boolean canNavigateToSource() { return false; }
 
-        @Override public TreeElement @NotNull [] getChildren() {
+        @Override public TreeElement [] getChildren() {
             return elements.stream().sorted().toArray(OCamlTreeElement[]::new);
         }
 

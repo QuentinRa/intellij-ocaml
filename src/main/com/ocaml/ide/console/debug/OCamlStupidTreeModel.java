@@ -49,7 +49,7 @@ public class OCamlStupidTreeModel implements TreeModel {
             };
         }
 
-        @Override public TreeElement @NotNull [] getChildren() {
+        @Override public TreeElement [] getChildren() {
             ArrayList<TreeElement> e = new ArrayList<>();
             if (exceptions.isVisible()) e.add(exceptions);
             if (types.isVisible()) e.add(types);
@@ -87,15 +87,15 @@ public class OCamlStupidTreeModel implements TreeModel {
         return root;
     }
 
-    @Override public Grouper @NotNull [] getGroupers() {
+    @Override public Grouper [] getGroupers() {
         return new Grouper[0];
     }
 
-    @Override public Sorter @NotNull [] getSorters() {
+    @Override public Sorter [] getSorters() {
         return new Sorter[0];
     }
 
-    @Override public Filter @NotNull [] getFilters() {
+    @Override public Filter [] getFilters() {
         return new Filter[0];
     }
 }

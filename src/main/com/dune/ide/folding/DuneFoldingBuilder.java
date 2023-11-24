@@ -24,9 +24,9 @@ public class DuneFoldingBuilder extends FoldingBuilderEx {
                 < document.getLineNumber(range.getEndOffset());
     }
 
-    @NotNull @Override public FoldingDescriptor @NotNull [] buildFoldRegions(@NotNull PsiElement root,
-                                                                             @NotNull Document document,
-                                                                             boolean quick) {
+    @Override public FoldingDescriptor [] buildFoldRegions(@NotNull PsiElement root,
+                                                           @NotNull Document document,
+                                                           boolean quick) {
         List<FoldingDescriptor> descriptors = new ArrayList<>();
 
         PsiTreeUtil.processElements(

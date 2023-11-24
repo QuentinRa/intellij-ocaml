@@ -30,7 +30,7 @@ public class PsiPropertyNameReference extends PsiPolyVariantReferenceBase<PsiLea
     }
 
     @Override
-    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
+    public ResolveResult [] multiResolve(boolean incompleteCode) {
         if (myReferenceName == null) {
             return ResolveResult.EMPTY_ARRAY;
         }

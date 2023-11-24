@@ -51,7 +51,7 @@ public final class OCamlAnnotFileType implements FileType {
     }
 
     @Override @UntilIdeVersion(release = "203")
-    public @Nullable String getCharset(@NotNull VirtualFile file, byte @NotNull [] content) {
+    public @Nullable String getCharset(@NotNull VirtualFile file, byte [] content) {
         return null;
     }
 }

@@ -45,7 +45,7 @@ public class TreeElementGroup implements StructureViewTreeElement {
         };
     }
 
-    @Override public TreeElement @NotNull [] getChildren() {
+    @Override public TreeElement [] getChildren() {
         return elements.stream().sorted().toArray(OCamlTreeElement[]::new);
     }
 

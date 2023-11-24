@@ -36,8 +36,8 @@ public class OCamlSDKValidator implements ProjectSdkSetupValidator {
         return CONFIGURE_OCAMLC_SDK;
     }
 
-    @Override public EditorNotificationPanel.@NotNull ActionHandler getFixHandler(@NotNull Project project,
-                                                                                  @NotNull VirtualFile file) {
+    @Override public EditorNotificationPanel.ActionHandler getFixHandler(@NotNull Project project,
+                                                                         @NotNull VirtualFile file) {
         return SdkPopupFactory.newBuilder().withProject(project)
                 .withSdkType(OCamlSdkType.getInstance())
                 // module SDK or project SDK

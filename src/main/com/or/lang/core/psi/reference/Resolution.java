@@ -21,19 +21,19 @@ class Resolution implements Comparable<Resolution> {
     Integer[] myWeights;
     private String[] myAlternatePath;
 
-    public Resolution(String @Nullable [] path, @NotNull PsiQualifiedPathElement element) {
+    public Resolution(String [] path, @NotNull PsiQualifiedPathElement element) {
         myPath = path;
         myLevel = path == null ? -1 : myPath.length - 1;
         myElements.add(element);
     }
 
-    public Resolution(String @Nullable [] path, @NotNull List<PsiQualifiedPathElement> elements) {
+    public Resolution(String [] path, @NotNull List<PsiQualifiedPathElement> elements) {
         myPath = path;
         myLevel = path == null ? -1 : myPath.length - 1;
         myElements.addAll(elements);
     }
 
-    public static @NotNull Resolution createAlternate(@NotNull Resolution resolution, String @NotNull [] alternatePath) {
+    public static @NotNull Resolution createAlternate(@NotNull Resolution resolution, String [] alternatePath) {
         Resolution result = new Resolution(resolution.myPath, resolution.myElements);
         int newPathLength = alternatePath.length + resolution.myPath.length;
         result.myAlternatePath = alternatePath;
@@ -184,7 +184,7 @@ class Resolution implements Comparable<Resolution> {
         return levels;
     }
 
-    public String @NotNull [] augmentPath(@NotNull String @NotNull [] path) {
+    public String [] augmentPath(@NotNull String [] path) {
         if (myAlternatePath == null && myPath.length == 1) {
             return path;
         }

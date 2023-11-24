@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ORFoldingBuilder extends FoldingBuilderEx {
     @Override
-    public FoldingDescriptor @NotNull [] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
+    public FoldingDescriptor [] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         PsiTreeUtil.processElements(root, element -> {
             if (element instanceof PsiLet) {

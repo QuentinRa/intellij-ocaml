@@ -21,7 +21,7 @@ public class DuneBundle extends DynamicBundle {
 
     @NotNull
     public static @Nls String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key,
-                                      Object @NotNull ... params) {
+                                      Object ... params) {
         return INSTANCE.getMessage(key, params);
     }
 }

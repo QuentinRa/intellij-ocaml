@@ -34,7 +34,7 @@ public class Joiner {
         return sb.toString();
     }
 
-    public static @NotNull String join(@NotNull String separator, Object @Nullable [] items) {
+    public static @NotNull String join(@NotNull String separator, Object [] items) {
         if (items == null) {
             return "<null>";
         }
@@ -51,7 +51,7 @@ public class Joiner {
         return sb.toString();
     }
 
-    public static @NotNull String joinFrom(@NotNull String separator, Object @Nullable [] items, int from) {
+    public static @NotNull String joinFrom(@NotNull String separator, Object [] items, int from) {
         if (items == null) {
             return "<null>";
         }

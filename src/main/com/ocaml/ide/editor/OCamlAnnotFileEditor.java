@@ -120,7 +120,7 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         String fileName = nameWithoutExtension + OCamlFileType.DOT_DEFAULT_EXTENSION;
         VirtualFile source = VfsUtil.findRelativeFile(file.getParent(), fileName);
         // TOO BAD, maybe we should check the source in the signatures then
-        if (source == null && loadedContent.first.size() > 0) {
+        if (source == null && !loadedContent.first.isEmpty()) {
             File f = loadedContent.first.get(0).position.getFile();
             fileName = f.getAbsolutePath(); // if used in messages
             source = VfsUtil.findFile(f.toPath(), false);
@@ -155,7 +155,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
         // createPreviewEditor
         EditorFactory editorFactory = EditorFactory.getInstance();
         myEditorDocument = editorFactory.createDocument(sourceText);
-        FileDocumentManagerBase.registerDocument(myEditorDocument, new LightVirtualFile());
+        // fixme: removed but unneeded?
+//        FileDocumentManagerBase.registerDocument(myEditorDocument, new LightVirtualFile());
         myEditor = (EditorEx) editorFactory.createViewer(myEditorDocument); // read-only
         myEditor.setHighlighter(highlighter);
         EditorSettings settings = myEditor.getSettings();
@@ -174,7 +175,8 @@ public class OCamlAnnotFileEditor extends UserDataHolderBase implements FileEdit
 
         // installTrafficLights + DumbTrafficLightRenderer
         EditorMarkupModel markupModel = (EditorMarkupModel) myEditor.getMarkupModel();
-        markupModel.setErrorStripeRenderer(() -> new AnalyzerStatus(AllIcons.General.InspectionsOK, "", "", AnalyzerStatus::getEmptyController));
+        // fixme: removed but what is that?
+        //markupModel.setErrorStripeRenderer(() -> new AnalyzerStatus(AllIcons.General.InspectionsOK, "", "", AnalyzerStatus::getEmptyController));
         markupModel.setErrorStripeVisible(true);
 
         myRootNode = new DefaultMutableTreeNode();

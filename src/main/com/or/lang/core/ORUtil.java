@@ -210,7 +210,7 @@ public class ORUtil {
         return found;
     }
 
-    public static @Nullable PsiElement findImmediateFirstChildOfAnyClass(@NotNull PsiElement element, Class<?> @NotNull ... clazz) {
+    public static @Nullable PsiElement findImmediateFirstChildOfAnyClass(@NotNull PsiElement element, Class<?> ... clazz) {
         PsiElement child = element.getFirstChild();
 
         while (child != null) {
@@ -227,7 +227,7 @@ public class ORUtil {
         return null;
     }
 
-    public static String @Nullable [] getQualifiedPath(@NotNull PsiElement element) {
+    public static String [] getQualifiedPath(@NotNull PsiElement element) {
         String path = "";
 
         PsiElement parent = element.getParent();
@@ -290,7 +290,7 @@ public class ORUtil {
         return isALias ? aliasName.toString() : null;
     }
 
-    public static String @Nullable [] getQualifiedNameAsPath(@NotNull PsiQualifiedPathElement element) {
+    public static String [] getQualifiedNameAsPath(@NotNull PsiQualifiedPathElement element) {
         String[] path = element.getPath();
         if (path == null) {
             return null;

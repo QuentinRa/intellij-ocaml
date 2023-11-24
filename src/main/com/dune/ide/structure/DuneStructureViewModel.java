@@ -14,11 +14,11 @@ public class DuneStructureViewModel extends StructureViewModelBase implements St
         super(psiFile, new DuneStructureViewElement(psiFile, 1));
     }
 
-    public Sorter @NotNull [] getSorters() {
+    public Sorter [] getSorters() {
         return new Sorter[]{Sorter.ALPHA_SORTER};
     }
 
-    @Override public Filter @NotNull [] getFilters() {
+    @Override public Filter [] getFilters() {
         return new Filter[]{new NestedFunctionsFilter()};
     }
 

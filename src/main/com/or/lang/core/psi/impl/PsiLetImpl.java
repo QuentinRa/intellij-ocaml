@@ -62,7 +62,7 @@ public class PsiLetImpl extends PsiTokenStub<PsiLet, PsiLetStub> implements PsiL
 
     //region PsiQualifiedName
     @Override
-    public String @NotNull [] getPath() {
+    public String [] getPath() {
         PsiLetStub stub = getGreenStub();
         if (stub != null) {
             return stub.getPath();

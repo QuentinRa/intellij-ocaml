@@ -192,18 +192,15 @@ public class OCamlAnnotParser {
     //
 
     // read AND move to the next line
-    @Contract(mutates = "this")
     private @NotNull String readLine() {
         return lines[pos++];
     }
 
-    @Contract(mutates = "this")
     private @Nullable String tryReadLine() {
         if (pos >= lines.length) return null;
         return lines[pos++];
     }
 
-    @Contract(mutates = "this")
     private String previousLine() {
         return lines[--pos];
     }

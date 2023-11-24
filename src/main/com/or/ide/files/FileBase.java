@@ -34,7 +34,7 @@ public abstract class FileBase extends PsiFileBase implements PsiQualifiedPathEl
 
     //region PsiQualifiedName
     @Override
-    public String @Nullable [] getPath() {
+    public String [] getPath() {
         return null;
     }
 

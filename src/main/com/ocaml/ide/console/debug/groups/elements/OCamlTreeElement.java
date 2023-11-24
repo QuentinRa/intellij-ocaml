@@ -74,7 +74,7 @@ public abstract class OCamlTreeElement implements StructureViewTreeElement, Comp
         };
     }
 
-    @Override public TreeElement @NotNull [] getChildren() {
+    @Override public TreeElement [] getChildren() {
         return EMPTY_ARRAY;
     }
 

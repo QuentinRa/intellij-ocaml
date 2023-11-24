@@ -68,11 +68,11 @@ public class DuneColorSettingsPage implements ColorSettingsPage {
         return additionalTags;
     }
 
-    @Override public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
+    @Override public AttributesDescriptor [] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
 
-    @Override public ColorDescriptor @NotNull [] getColorDescriptors() {
+    @Override public ColorDescriptor [] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 

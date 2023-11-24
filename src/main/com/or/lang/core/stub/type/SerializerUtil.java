@@ -11,7 +11,7 @@ public class SerializerUtil {
     private SerializerUtil() {
     }
 
-    static void writePath(@NotNull StubOutputStream dataStream, String @Nullable [] path) throws IOException {
+    static void writePath(@NotNull StubOutputStream dataStream, String [] path) throws IOException {
         if (path == null) {
             dataStream.writeByte(0);
         } else {
@@ -22,7 +22,7 @@ public class SerializerUtil {
         }
     }
 
-    static String @Nullable [] readPath(@NotNull StubInputStream dataStream) throws IOException {
+    static String [] readPath(@NotNull StubInputStream dataStream) throws IOException {
         String[] path = null;
         byte namesCount = dataStream.readByte();
         if (namesCount > 0) {
