@@ -1,3 +1,5 @@
+src/main/gen/*
+
 .idea
 .gradle
 build/

@@ -6,7 +6,7 @@ import com.intellij.psi.tree.IElementType
 import com.ocaml.ide.files.OCamlLanguage
 import com.ocaml.language.psi.OCamlTypes
 
-// type of an element
+// type of one element
 class OCamlElementType(debugName: String) : IElementType(debugName, OCamlLanguage), ICompositeElementType {
     override fun createCompositeNode(): ASTNode {
         return OCamlTypes.Factory.createElement(this)

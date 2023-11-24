@@ -24,7 +24,7 @@ class OCamlColorSettingsPage : ColorSettingsPage {
         val ANNOTATOR_TAGS: Map<String, TextAttributesKey> = OCamlColor.values().associateBy({ it.name }, { it.textAttributesKey })
         val DEMO_TEXT: String by lazy {
             """(* Variables and Types *)
-let <VARIABLE>x</VARIABLE> = 10
+let <VARIABLE>x</VARIABLE> = 10 and z = 'c'
 let <VARIABLE>y</VARIABLE> = 3.14
 let <VARIABLE>name</VARIABLE> = "OCaml"
 

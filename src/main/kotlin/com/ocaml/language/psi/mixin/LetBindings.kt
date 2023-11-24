@@ -29,13 +29,18 @@ abstract class LetBindingMixin(type: IElementType) : OCamlElementImpl(type), OCa
         TODO("Not yet implemented")
     }
 
+    private fun isFunction() : Boolean {
+        // actually, we should check the type, but well...
+        return getParameterList().isNotEmpty()
+    }
+
     // todo: ...
     override fun getIcon(flags: Int): Icon? {
         val visibilityIcon = PlatformIcons.PUBLIC_ICON
             // PlatformIcons.PUBLIC_ICON
             // PlatformIcons.PROTECTED_ICON
             // PlatformIcons.PRIVATE_ICON
-        val icon = OCamlIcons.Nodes.LET
+        val icon = if (isFunction()) OCamlIcons.Nodes.FUNCTION else OCamlIcons.Nodes.LET
         return ElementBase.iconWithVisibilityIfNeeded(flags, icon, visibilityIcon)
     }
 }
