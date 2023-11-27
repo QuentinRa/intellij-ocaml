@@ -1,0 +1,36 @@
+package com.ocaml.language.psi.stubs
+
+import com.intellij.lang.ASTNode
+import com.intellij.psi.stubs.*
+import com.ocaml.language.psi.OCamlValueDescription
+import com.ocaml.language.psi.api.OCamlNamedStub
+import com.ocaml.language.psi.api.OCamlStubElementType
+import com.ocaml.language.psi.createStubIfParentIsStub
+import com.ocaml.language.psi.impl.OCamlValueDescriptionImpl
+import com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex
+
+class OCamlValBindingStub(
+    parent: StubElement<*>?, elementType: IStubElementType<*, *>, override val name: String?
+) : StubBase<OCamlValueDescription>(parent, elementType), OCamlNamedStub {
+
+    object Type : OCamlStubElementType<OCamlValBindingStub, OCamlValueDescriptionImpl>("VALUE_DESCRIPTION") {
+        override fun shouldCreateStub(node: ASTNode): Boolean = createStubIfParentIsStub(node)
+
+        override fun createPsi(stub: OCamlValBindingStub) = OCamlValueDescriptionImpl(stub, this)
+
+        override fun createStub(psi: OCamlValueDescriptionImpl, parentStub: StubElement<*>?) =
+            OCamlValBindingStub(parentStub, this, psi.name)
+
+        override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?) = OCamlValBindingStub(
+            parentStub, this, dataStream.readName()?.string
+        )
+
+        override fun serialize(stub: OCamlValBindingStub, dataStream: StubOutputStream) = with(dataStream) {
+            writeName(stub.name)
+        }
+
+        override fun indexStub(stub: OCamlValBindingStub, sink: IndexSink) {
+            stub.name?.let { OCamlNamedElementIndex.Utils.index(sink, it) }
+        }
+    }
+}

@@ -2,6 +2,7 @@ package com.ocaml.language.psi.api
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StubElement
@@ -33,4 +34,13 @@ abstract class OCamlStubbedNamedElementImpl<StubT> : OCamlStubbedElementImpl<Stu
     constructor(node: ASTNode) : super(node)
 
     constructor(stub: StubT, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
+
+    override fun getName(): String? {
+        val stub = greenStub
+        return if (stub !== null) stub.name else nameIdentifier?.text
+    }
+
+    override fun setName(name: String): PsiElement {
+        TODO("Not yet implemented")
+    }
 }

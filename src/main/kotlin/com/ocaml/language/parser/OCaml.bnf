@@ -642,8 +642,8 @@ field_decl ::= [MUTABLE] field_name COLON poly_typexpr_no_attr
 type_constraint ::= CONSTRAINT typexpr EQ typexpr
 
 // https://v2.ocaml.org/releases/4.14/htmlman/typedecl.html#ss:exndef
-exception_definition ::= EXCEPTION constr_name EQ constr
-| exception_specification
+exception_definition ::= exception_specification
+| EXCEPTION constr_name EQ constr
 { pin(".*")=1 }
 
 exception_specification ::= EXCEPTION constr_decl
@@ -764,7 +764,16 @@ private specification ::=
   | signature_substitution_spec
   | primitive_declaration
 
-private value_description ::= VAL value_name COLON typexpr
+value_description ::= VAL value_name COLON typexpr
+// todo: the mixin is only partially implemented
+{
+    implements=["com.ocaml.language.psi.api.OCamlNameIdentifierOwner"; "com.ocaml.language.psi.api.OCamlLetDeclaration"]
+    mixin="com.ocaml.language.psi.mixin.OCamlValBindingMixin"
+    extends = "com.ocaml.language.psi.api.OCamlStubbedElementImpl<?>"
+    stubClass = "com.ocaml.language.psi.stubs.OCamlValBindingStub"
+    elementTypeFactory = "com.ocaml.language.psi.OCamlImplUtilsKt.factory"
+    pin=1
+}
 
 private module_declaration ::=
     MODULE module_name COLON module_type
