@@ -30,6 +30,7 @@ Internal
   * [ ] Parser recovery is not handled
   * [ ] Parser tests were not implemented
   * [ ] Add NameOwner interface to all named elements 
+  * [ ] Handle visibility (Has MLI? Has VAL? etc.)
 * [ ] Stubs
   * [ ] Add Stubs For Variables
 * [ ] GitHub CI
@@ -42,25 +43,45 @@ User features
   * [x] Strings
   * [x] Identifiers
 * [ ] Typing
-  * [x] Braces matching
+  * [x] Braces matching (hover the other)
   * [ ] Quotes handler
   * [ ] Paste processor
   * [ ] Smart enter processor
-  * [x] Single Line Comments Handler
-  * [x] Multi Lines Comments Handler
+  * [x] Single Line Comments Handler (CTRL+/)
+  * [x] Multi Lines Comments Handler (CTRL+SHIFT+/)
   * [ ] Other handlers
 * [ ] Smart Features
   * [ ] Annotations Highlighter
-  * [ ] Structure View
+  * [X] Structure View (ALT+7)
     * [x] Variables
-    * [ ] Variables Visibility (MLI? VAL?)
+    * [x] Handle Visibility (public/private)
+    * [ ] Filters
 * [ ] Settings
   * [X] Color Settings Page For Highlighter
   * [ ] Add Highlighter Annotator to Color Settings Page
 
 Bonus
 
-* [ ] Structure View: show "a,b" as two variables, not one
+* [ ] Structure View shows "a,b" as one variable, not two
+
+
+Roadmap
+
+* Add stubs to variables
+* ~~Test OCaml-LSP~~ (no documentation for plugin developers)
+* Modules (files) and variable indexes
+* Find usages
+* Go to
+* Live Templates
+* Can create files
+* Add SDK
+* Handle SDK
+* Handle Module Creation
+* Handle Run Configurations
+* Can compile using dune (.gitconfig? etc.)
+* Can display warnings/errors
+* Can generate annot file
+* Can use annot for type inference
 
 ## 🎯 What's my goal?
 
