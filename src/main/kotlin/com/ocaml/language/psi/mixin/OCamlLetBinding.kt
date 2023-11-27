@@ -28,7 +28,10 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
             TODO("Not yet implemented for:$text")
     }
 
-    override fun getName(): String? = nameIdentifier?.text
+    override fun getName(): String? {
+        val stub = greenStub
+        return if (stub !== null) stub.name else nameIdentifier?.text
+    }
 
     override fun setName(name: String): PsiElement {
         TODO("Not yet implemented")

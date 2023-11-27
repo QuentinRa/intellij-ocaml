@@ -15,7 +15,7 @@ class OCamlFileStub(file: OCamlFile?) : PsiFileStubImpl<OCamlFile>(file) {
 
     object Type : IStubFileElementType<OCamlFileStub>(OCamlLanguage) {
         // Bump this number if Stub structure changes
-        private const val STUB_VERSION = 1
+        private const val STUB_VERSION = 2
         override fun getStubVersion(): Int = OCamlParserDefinition.PARSER_VERSION + STUB_VERSION
 
         override fun getBuilder(): StubBuilder = object : DefaultStubBuilder() {

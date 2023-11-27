@@ -36,6 +36,9 @@
         <lang.parserDefinition language="OCamli" implementationClass="com.ocaml.language.parser.OCamlInterfaceParserDefinition"/>
         <stubElementTypeHolder class="com.ocaml.language.psi.OCamlTypes" externalIdPrefix="ocaml."/>
 
+        <!-- INDEXES -->
+        <stubIndex implementation="com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex"/>
+
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCaml" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.ocaml.ide.settings.OCamlColorSettingsPage"/>

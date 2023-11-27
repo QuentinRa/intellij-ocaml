@@ -26,14 +26,27 @@ This plugin is providing support for OCaml for JetBrains IDEs. It's based on bot
 Internal
 
 * [x] Parser implemented
+  * [x] Add some pins
+    * [ ] Add more pins
+    * [ ] Verify pins
+  * [ ] (a,b) should be two variables
   * [ ] Parser Errors are not handled
   * [ ] Parser recovery is not handled
   * [ ] Parser tests were not implemented
-  * [ ] Add NameOwner interface to all named elements 
   * [ ] Handle visibility (Has MLI? Has VAL? etc.)
 * [ ] Stubs
-  * [ ] Add Stubs For Variables
+  * [x] Add Stubs For Variables
+  * [ ] Use stubs in structure view
+* [ ] Indexes
+  * [x] Add indexes for variables
+  * [ ] Indexes include nested variables (Scopes?)
 * [ ] GitHub CI
+
+Generalize
+
+* [ ] Add stubs for others
+* [ ] Add structure view for others
+* [ ] Add indexes for others
 
 User features
 
@@ -67,7 +80,12 @@ Bonus
 
 Roadmap
 
-* Add stubs to variables
+* Structure View with Stubs
+* Add LineMarker for VAL
+* Handle Include
+* Check annotator
+* Check completion
+* Check references
 * ~~Test OCaml-LSP~~ (no documentation for plugin developers)
 * Modules (files) and variable indexes
 * Find usages
