@@ -13,7 +13,7 @@ abstract class BaseParserDefinition : ParserDefinition {
     override fun createLexer(project: Project?): Lexer = OCamlLexerAdapter()
     override fun getCommentTokens(): TokenSet = ParserDefinitionUtils.COMMENTS
     override fun getStringLiteralElements(): TokenSet = ParserDefinitionUtils.STRINGS
-    override fun createElement(node: ASTNode): PsiElement = OCamlTypes.Factory.createElement(node.elementType)
+    override fun createElement(node: ASTNode): PsiElement = OCamlTypes.Factory.createElement(node)
 
     object ParserDefinitionUtils {
         val COMMENTS = TokenSet.create(OCamlTypes.COMMENT, OCamlTypes.DOC_COMMENT, OCamlTypes.ANNOTATION)

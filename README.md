@@ -78,10 +78,14 @@ Roadmap
 * Handle SDK
 * Handle Module Creation
 * Handle Run Configurations
+* Add parser tests
+* Add OCamlLanguageUtils;LetBindingMixin Tests
 * Can compile using dune (.gitconfig? etc.)
 * Can display warnings/errors
 * Can generate annot file
 * Can use annot for type inference
+* Space allowed (spaceExistenceTypeBetweenTokens)
+* Better stubs (skipChildProcessingWhenBuildingStubs)
 
 ## 🎯 What's my goal?
 

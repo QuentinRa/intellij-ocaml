@@ -34,6 +34,7 @@
         <!-- PARSER -->
         <lang.parserDefinition language="OCaml" implementationClass="com.ocaml.language.parser.OCamlParserDefinition"/>
         <lang.parserDefinition language="OCamli" implementationClass="com.ocaml.language.parser.OCamlInterfaceParserDefinition"/>
+        <stubElementTypeHolder class="com.ocaml.language.psi.OCamlTypes" externalIdPrefix="ocaml."/>
 
         <!-- HIGHLIGHT -->
         <lang.syntaxHighlighterFactory language="OCaml" implementationClass="com.ocaml.ide.highlight.OCamlSyntaxHighlighterFactory"/>
