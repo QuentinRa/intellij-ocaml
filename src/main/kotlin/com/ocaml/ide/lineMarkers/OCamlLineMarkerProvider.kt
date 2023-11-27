@@ -40,7 +40,7 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
         // fixme: if inside a module, it is valid
         if (element !is OCamlLetDeclaration || !element.isGlobal()) return
         val isInterface = (element.containingFile as OCamlFileBase).isInterface()
-        val letName = element.name ?: return
+        val letName = element.qualifiedName ?: return
         val elements = OCamlNamedElementIndex.Utils.findElementsByName(project, letName, scope)
         val filtered : Collection<OCamlNameIdentifierOwner> =
             if (isInterface) elements.filterIsInstance<OCamlLetBinding>() // LET => VAL

@@ -10,33 +10,31 @@ import com.ocaml.language.psi.impl.OCamlLetBindingImpl
 import com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex
 
 class OCamlLetBindingStub(
-    parent: StubElement<*>?, elementType: IStubElementType<*, *>,
-    override val name: String?
+    parent: StubElement<*>?,
+    elementType: IStubElementType<*, *>,
+    override val name: String?,
+    override val qualifiedName: String?
 ) : StubBase<OCamlLetBinding>(parent, elementType), OCamlNamedStub {
 
     object Type : OCamlStubElementType<OCamlLetBindingStub, OCamlLetBinding>("LET_BINDING") {
         override fun shouldCreateStub(node: ASTNode): Boolean = createStubIfParentIsStub(node)
 
-        override fun createPsi(stub: OCamlLetBindingStub) =
-            OCamlLetBindingImpl(stub, this)
+        override fun createPsi(stub: OCamlLetBindingStub) = OCamlLetBindingImpl(stub, this)
 
         override fun createStub(psi: OCamlLetBinding, parentStub: StubElement<*>?) =
-            OCamlLetBindingStub(parentStub, this, psi.name)
+            OCamlLetBindingStub(parentStub, this, psi.name, psi.qualifiedName)
 
-        override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?) =
-            OCamlLetBindingStub(
-                parentStub,
-                this,
-                dataStream.readName()?.string
-            )
+        override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?) = OCamlLetBindingStub(
+            parentStub, this, dataStream.readName()?.string, dataStream.readName()?.string
+        )
 
-        override fun serialize(stub: OCamlLetBindingStub, dataStream: StubOutputStream) =
-            with(dataStream) {
-                writeName(stub.name)
-            }
+        override fun serialize(stub: OCamlLetBindingStub, dataStream: StubOutputStream) = with(dataStream) {
+            writeName(stub.name)
+            writeName(stub.qualifiedName)
+        }
 
         override fun indexStub(stub: OCamlLetBindingStub, sink: IndexSink) {
-            stub.name?.let { OCamlNamedElementIndex.Utils.index(sink, it) }
+            stub.qualifiedName?.let { OCamlNamedElementIndex.Utils.index(sink, it) }
         }
     }
 }

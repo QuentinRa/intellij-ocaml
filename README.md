@@ -83,17 +83,20 @@ User features
 Roadmap
 
 * Fix LineMarker
-  * [ ] Use Qualified Path
   * [ ] Do not use hard-coded path to element
-  * [ ] Can have "val" in file
-  * [ ] Test in a module
-  * [ ] Lets and Vals are returned
-* Used an int instead of a string for the index?
-* Handle Include
+* Add a presentation in each element so that they are rendered nicely (implementation/declaration menu etc.)
+* Use an int instead of a string for the index?
 * Handle Parser Directives
-* Check completion
 * Check references
+* Handle Include and LineMarker
+* Check completion
+* Check folding
+* Qualified path
+  * [ ] Include Modules/Classes/...
+  * [ ] Rebuild Line Marker and Indexes
 * Add annotator tests (local, global, functions)
+* Add line marker tests (see file comment)
+* Add reference/include tests
 * ~~Test OCaml-LSP~~ (no documentation for plugin developers)
 * Modules (files) and variable indexes
 * Find usages

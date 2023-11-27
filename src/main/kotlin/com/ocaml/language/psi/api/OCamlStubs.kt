@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StubElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.ocaml.ide.files.OCamlLanguage
 
 abstract class OCamlStubElementType<StubT : StubElement<*>, PsiT : OCamlElement>(
@@ -19,6 +20,7 @@ abstract class OCamlStubElementType<StubT : StubElement<*>, PsiT : OCamlElement>
 
 interface OCamlNamedStub {
     val name: String?
+    val qualifiedName: String?
 }
 
 abstract class OCamlStubbedElementImpl<StubT : StubElement<*>> : StubBasedPsiElementBase<StubT>, OCamlElement {
@@ -38,6 +40,17 @@ abstract class OCamlStubbedNamedElementImpl<StubT> : OCamlStubbedElementImpl<Stu
     override fun getName(): String? {
         val stub = greenStub
         return if (stub !== null) stub.name else nameIdentifier?.text
+    }
+
+    override fun getQualifiedName(): String? {
+        val stub = greenStub
+        return if (stub !== null)
+            stub.qualifiedName
+        else {
+            val ancestor = PsiTreeUtil.getParentOfType(this, OCamlQualifiedNamedElement::class.java)
+            return if (ancestor == null) name
+            else ancestor.qualifiedName + "." + name
+        }
     }
 
     override fun setName(name: String): PsiElement {

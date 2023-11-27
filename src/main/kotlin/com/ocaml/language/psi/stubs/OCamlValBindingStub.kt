@@ -10,7 +10,10 @@ import com.ocaml.language.psi.impl.OCamlValueDescriptionImpl
 import com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex
 
 class OCamlValBindingStub(
-    parent: StubElement<*>?, elementType: IStubElementType<*, *>, override val name: String?
+    parent: StubElement<*>?,
+    elementType: IStubElementType<*, *>,
+    override val name: String?,
+    override val qualifiedName: String?
 ) : StubBase<OCamlValueDescription>(parent, elementType), OCamlNamedStub {
 
     object Type : OCamlStubElementType<OCamlValBindingStub, OCamlValueDescriptionImpl>("VALUE_DESCRIPTION") {
@@ -19,18 +22,19 @@ class OCamlValBindingStub(
         override fun createPsi(stub: OCamlValBindingStub) = OCamlValueDescriptionImpl(stub, this)
 
         override fun createStub(psi: OCamlValueDescriptionImpl, parentStub: StubElement<*>?) =
-            OCamlValBindingStub(parentStub, this, psi.name)
+            OCamlValBindingStub(parentStub, this, psi.name, psi.qualifiedName)
 
         override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?) = OCamlValBindingStub(
-            parentStub, this, dataStream.readName()?.string
+            parentStub, this, dataStream.readName()?.string, dataStream.readName()?.string
         )
 
         override fun serialize(stub: OCamlValBindingStub, dataStream: StubOutputStream) = with(dataStream) {
             writeName(stub.name)
+            writeName(stub.qualifiedName)
         }
 
         override fun indexStub(stub: OCamlValBindingStub, sink: IndexSink) {
-            stub.name?.let { OCamlNamedElementIndex.Utils.index(sink, it) }
+            stub.qualifiedName?.let { OCamlNamedElementIndex.Utils.index(sink, it) }
         }
     }
 }
