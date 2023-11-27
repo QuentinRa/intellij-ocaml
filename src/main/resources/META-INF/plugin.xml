@@ -53,6 +53,8 @@
         <!-- STRUCTURE / FOLDING / COMMENTS / DOC -->
         <lang.psiStructureViewFactory language="OCaml" implementationClass="com.ocaml.ide.structure.OCamlStructureViewFactory"/>
         <lang.commenter language="OCaml" implementationClass="com.ocaml.ide.commenter.OCamlCommenter"/>
+        <codeInsight.lineMarkerProvider language="OCaml" implementationClass="com.ocaml.ide.lineMarkers.OCamlLineMarkerProvider"/>
+<!--        <codeInsight.lineMarkerProvider language="OCamli" implementationClass="com.ocaml.ide.lineMarkers.OCamlLineMarkerProvider"/>-->
 
         <!-- BRACES -->
         <lang.braceMatcher language="OCaml" implementationClass="com.ocaml.ide.typing.OCamlBraceMatcher"/>
