@@ -73,14 +73,22 @@ User features
     * [x] Handle Visibility (public/private)
     * [ ] Filters (nested variables?)
   * [ ] Surround With
+  * [X] Line Markers
+    * [X] Declaration
+    * [x] Implementation
 * [x] Settings
   * [X] Color Settings Page For Highlighter
   * [x] Add Highlighter Annotator to Color Settings Page
 
 Roadmap
 
-* Add LineMarker for VAL
-  * WARN: MLI parser definition not updated
+* Fix LineMarker
+  * [ ] Use Qualified Path
+  * [ ] Do not use hard-coded path to element
+  * [ ] Can have "val" in file
+  * [ ] Test in a module
+  * [ ] Lets and Vals are returned
+* Used an int instead of a string for the index?
 * Handle Include
 * Handle Parser Directives
 * Check completion

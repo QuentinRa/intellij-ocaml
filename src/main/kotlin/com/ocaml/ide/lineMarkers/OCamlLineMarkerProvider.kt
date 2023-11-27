@@ -12,10 +12,14 @@ import com.ocaml.icons.OCamlIcons
 import com.ocaml.language.base.OCamlFileBase
 import com.ocaml.language.psi.OCamlLetBinding
 import com.ocaml.language.psi.OCamlValueDescription
+import com.ocaml.language.psi.api.OCamlLetDeclaration
 import com.ocaml.language.psi.api.OCamlNameIdentifierOwner
 import com.ocaml.language.psi.api.OCamlNamedElement
 import com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex
 
+// For tests:
+// - In ML, can go to ML or MLI for VAL
+// - In MLI, can go to ML for LET
 class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
     override fun collectNavigationMarkers(
         element: PsiElement,
@@ -24,24 +28,25 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
         val project = element.project
         val scope = GlobalSearchScope.allScope(project)
         (element as? OCamlLetBinding)?.let { collectLetNavigationMarkers(it, project, scope, result) }
+        (element as? OCamlValueDescription)?.let { collectLetNavigationMarkers(it, project, scope, result) }
     }
 
     private fun collectLetNavigationMarkers(
-        element: OCamlLetBinding,
+        element: OCamlNameIdentifierOwner,
         project: Project,
         scope: GlobalSearchScope,
         result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
     ) {
-        if (!element.isGlobal()) return
+        // fixme: if inside a module, it is valid
+        if (element !is OCamlLetDeclaration || !element.isGlobal()) return
         val isInterface = (element.containingFile as OCamlFileBase).isInterface()
         val letName = element.name ?: return
         val elements = OCamlNamedElementIndex.Utils.findElementsByName(project, letName, scope)
-            .apply {
-                if (isInterface) filterIsInstance<OCamlLetBinding>() // LET => VAL
-                else filterIsInstance<OCamlValueDescription>()       // VAL => LET
-            }
-        if (elements.isEmpty()) return
-        val marker: RelatedItemLineMarkerInfo<PsiElement>? = createMarkerInfo(element, isInterface, "let/val", elements)
+        val filtered : Collection<OCamlNameIdentifierOwner> =
+            if (isInterface) elements.filterIsInstance<OCamlLetBinding>() // LET => VAL
+            else elements.filterIsInstance<OCamlValueDescription>()       // VAL => LET
+        if (filtered.isEmpty()) return
+        val marker: RelatedItemLineMarkerInfo<PsiElement>? = createMarkerInfo(element, isInterface, "let/val", filtered)
         if (marker != null) result.add(marker)
     }
 
@@ -51,8 +56,10 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
         method: String,
         relatedElements: Collection<T>?
     ): RelatedItemLineMarkerInfo<PsiElement>? {
-        val nameIdentifier = psiSource.nameIdentifier
-        return if (nameIdentifier != null && relatedElements != null && !relatedElements.isEmpty()) {
+        // fixme: hard coded path
+        val nameIdentifier = psiSource.nameIdentifier?.firstChild?.firstChild
+        // println("For:"+nameIdentifier?.text+"#"+psiSource.containingFile.name+" ===> "+relatedElements)
+        return if (nameIdentifier != null && !relatedElements.isNullOrEmpty()) {
             NavigationGutterIconBuilder.create(if (isInterface) OCamlIcons.Gutter.IMPLEMENTED else OCamlIcons.Gutter.IMPLEMENTING)
                 .setTooltipText((if (isInterface) "Implements " else "Declare ") + method)
                 .setAlignment(GutterIconRenderer.Alignment.RIGHT)
