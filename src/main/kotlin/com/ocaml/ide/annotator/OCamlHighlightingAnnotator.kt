@@ -24,10 +24,10 @@ class OCamlHighlightingAnnotator : Annotator {
             ?.parent // VALUE_NAME
             ?.parent // OCamlNameIdentifierOwner
         if (ancestor !is OCamlNameIdentifierOwner) return
+        if (ancestor !is OCamlLetDeclaration) return
         val color =
-            if ((ancestor as? OCamlLetDeclaration)?.isFunction() == true) OCamlColor.FUNCTION_DECLARATION
-            else if (ancestor.parent is PsiFile) OCamlColor.GLOBAL_VARIABLE // VAL
-            else if (ancestor.parent.parent is PsiFile) OCamlColor.GLOBAL_VARIABLE // LET
+            if (ancestor.isFunction()) OCamlColor.FUNCTION_DECLARATION
+            else if (ancestor.isGlobal()) OCamlColor.GLOBAL_VARIABLE
             else OCamlColor.LOCAL_VARIABLE
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .textAttributes(color.textAttributesKey)

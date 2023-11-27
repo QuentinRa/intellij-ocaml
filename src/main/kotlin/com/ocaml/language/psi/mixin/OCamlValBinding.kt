@@ -2,6 +2,7 @@ package com.ocaml.language.psi.mixin
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.ElementBase
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.util.PlatformIcons
@@ -26,6 +27,9 @@ abstract class OCamlValBindingMixin : OCamlStubbedNamedElementImpl<OCamlValBindi
         return typexpr != null &&
                 OCamlImplUtils.nextSiblingWithTokenType(typexpr!!.firstChild, OCamlTypes.RIGHT_ARROW) != null
     }
+
+    // PsiFile.<this>
+    override fun isGlobal(): Boolean = parent is PsiFile
 
     override fun getIcon(flags: Int): Icon? {
         val visibilityIcon = PlatformIcons.PUBLIC_ICON

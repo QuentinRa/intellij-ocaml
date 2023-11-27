@@ -33,7 +33,7 @@ Internal
   * [ ] Parser Errors are not handled
   * [ ] Parser recovery is not handled
   * [ ] Parser tests were not implemented
-  * [ ] Handle visibility (Has MLI? Has VAL? etc.)
+  * [ ] Handle visibility (Has MLI? Has VAL? etc. ==> related: icons and structure view)
 * [ ] Stubs
   * [x] Add Stubs For Variables
   * [ ] Use stubs in structure view
@@ -104,6 +104,20 @@ Roadmap
 * Can use annot for type inference
 * Space allowed (spaceExistenceTypeBetweenTokens)
 * Better stubs (skipChildProcessingWhenBuildingStubs)
+
+Random
+
+* Let#isFunction: use type inference?
+
+
+Generalization List
+
+* [x] Let
+* [x] Val
+* [ ] Exception
+* [ ] Type
+* [ ] Module
+* [ ] Module Type
 
 ## 🎯 What's my goal?
 

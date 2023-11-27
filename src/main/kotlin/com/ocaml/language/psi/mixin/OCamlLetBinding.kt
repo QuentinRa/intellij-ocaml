@@ -2,6 +2,7 @@ package com.ocaml.language.psi.mixin
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.ElementBase
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.util.PlatformIcons
@@ -33,6 +34,9 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
         // but there is no type inference yet
         return getParameterList().isNotEmpty()
     }
+
+    // PsiFile.LetBindings.<this>
+    override fun isGlobal(): Boolean = parent.parent is PsiFile
 
     override fun getIcon(flags: Int): Icon? {
         val visibilityIcon = PlatformIcons.PUBLIC_ICON
