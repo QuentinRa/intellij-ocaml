@@ -10,22 +10,10 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors as Default
  * All tokens that can have a color
  */
 enum class OCamlColor(humanText: String, attr: TextAttributesKey? = null) {
-    VARIABLE(OCamlBundle.message("settings.ocaml.color.variables.default"), Default.IDENTIFIER),
-    FIELD(OCamlBundle.message("settings.ocaml.color.field"), Default.INSTANCE_FIELD),
-    CONSTANT(OCamlBundle.message("settings.ocaml.color.constant"), Default.CONSTANT),
+    LOCAL_VARIABLE(OptionsBundle.message("options.language.defaults.local.variable"), Default.LOCAL_VARIABLE),
+    GLOBAL_VARIABLE(OptionsBundle.message("options.language.defaults.global.variable"), Default.GLOBAL_VARIABLE),
 
-    FUNCTION(OCamlBundle.message("settings.ocaml.color.function.declaration"), Default.FUNCTION_DECLARATION),
-    METHOD(OCamlBundle.message("settings.ocaml.color.method.declaration"), Default.INSTANCE_METHOD),
-    FUNCTION_CALL(OCamlBundle.message("settings.ocaml.color.function.call"), Default.FUNCTION_CALL),
-    DIRECTIVE(OCamlBundle.message("settings.ocaml.color.directives"), Default.IDENTIFIER),
-
-    PARAMETER(OCamlBundle.message("settings.ocaml.color.parameter"), Default.PARAMETER),
-    TYPE_PARAMETER(OCamlBundle.message("settings.ocaml.color.type.parameter"), Default.IDENTIFIER),
-
-    TYPE_NAME(OCamlBundle.message("settings.ocaml.color.type"), Default.KEYWORD),
-    CLASS_NAME(OCamlBundle.message("settings.ocaml.color.class"), Default.CLASS_NAME),
-    MODULE_NAME(OCamlBundle.message("settings.ocaml.color.module"), Default.IDENTIFIER),
-    ALIAS(OCamlBundle.message("settings.ocaml.color.type.alias"), Default.CLASS_NAME),
+    FUNCTION_DECLARATION(OptionsBundle.message("options.language.defaults.function.declaration"), Default.FUNCTION_DECLARATION),
 
     KEYWORD(OCamlBundle.message("settings.ocaml.color.keyword"), Default.KEYWORD),
 
@@ -34,7 +22,6 @@ enum class OCamlColor(humanText: String, attr: TextAttributesKey? = null) {
     STRING(OCamlBundle.message("settings.ocaml.color.string"), Default.STRING),
 
     COMMENT(OCamlBundle.message("settings.ocaml.color.comment"), Default.BLOCK_COMMENT),
-
     DOC_COMMENT(OCamlBundle.message("settings.ocaml.color.doc.comment"), Default.DOC_COMMENT),
 
     BRACES(OptionsBundle.message("options.language.defaults.braces"), Default.BRACES),

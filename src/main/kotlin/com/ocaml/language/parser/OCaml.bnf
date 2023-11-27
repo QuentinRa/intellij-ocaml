@@ -536,7 +536,7 @@ let_binding ::= value_name COLON poly_typexpr EQ seq_expr
 | abstract_types_let_binding
 // todo: the mixin is only partially implemented
 {
-    implements=["com.ocaml.language.psi.api.OCamlNameIdentifierOwner"]
+    implements=["com.ocaml.language.psi.api.OCamlNameIdentifierOwner"; "com.ocaml.language.psi.api.OCamlLetDeclaration"]
     mixin="com.ocaml.language.psi.mixin.OCamlLetBindingMixin"
     extends = "com.ocaml.language.psi.api.OCamlStubbedElementImpl<?>"
     stubClass = "com.ocaml.language.psi.stubs.OCamlLetBindingStub"

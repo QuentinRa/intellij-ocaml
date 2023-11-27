@@ -24,43 +24,46 @@ class OCamlColorSettingsPage : ColorSettingsPage {
         val ANNOTATOR_TAGS: Map<String, TextAttributesKey> = OCamlColor.values().associateBy({ it.name }, { it.textAttributesKey })
         val DEMO_TEXT: String by lazy {
             """(* Variables and Types *)
-let <VARIABLE>x</VARIABLE> = 10 and <VARIABLE>z</VARIABLE> = 'c'
-let <VARIABLE>y</VARIABLE> = 3.14
-let <VARIABLE>name</VARIABLE> = "OCaml"
+let <GLOBAL_VARIABLE>x</GLOBAL_VARIABLE> = 10 and <GLOBAL_VARIABLE>z</GLOBAL_VARIABLE> = 'c'
+let <GLOBAL_VARIABLE>y</GLOBAL_VARIABLE> = 3.14
+let <GLOBAL_VARIABLE>name</GLOBAL_VARIABLE> = "OCaml"
+let <GLOBAL_VARIABLE>t</GLOBAL_VARIABLE> = 
+    let <LOCAL_VARIABLE>v</LOCAL_VARIABLE> = 5 
+    in v * v
 
 (* Pattern Matching *)
-let rec factorial n =
+let rec <FUNCTION_DECLARATION>factorial</FUNCTION_DECLARATION> n =
   match n with
   | 0 -> 1
   | _ -> n * factorial (n - 1)
 
 (* Functions *)
-let add a b = a + b
-let square x = x * x
+let <FUNCTION_DECLARATION>add</FUNCTION_DECLARATION> a b = a + b
+let <FUNCTION_DECLARATION>square</FUNCTION_DECLARATION> x = x * x
 
-let is_even n =
+let <FUNCTION_DECLARATION>is_even</FUNCTION_DECLARATION> n =
   if n mod 2 = 0 then
     true
   else
     false
 
-let divide a b =
+let <FUNCTION_DECLARATION>divide</FUNCTION_DECLARATION> a b =
   try
     a / b
   with
   | Division_by_zero -> 0
 
 (* Structures *)
-let list = [1; 2; 3; 4; 5]
-let array = [|1; 2; 3; 4; 5|]
-let pair = (10, "hello")
+let <GLOBAL_VARIABLE>list</GLOBAL_VARIABLE> = [1; 2; 3; 4; 5]
+let <GLOBAL_VARIABLE>array</GLOBAL_VARIABLE> = [|1; 2; 3; 4; 5|]
+let <GLOBAL_VARIABLE>pair</GLOBAL_VARIABLE> = (10, "hello")
 type person = { name: string; age: int }
-let john = { name = "John"; age = 30 }
+let <GLOBAL_VARIABLE>john</GLOBAL_VARIABLE> = { name = "John"; age = 30 }
 
 (* Modules *)
 module Math = struct
-  let pi = 3.14
-  let square x = x * x
+  let <GLOBAL_VARIABLE>pi</GLOBAL_VARIABLE> = 3.14
+  let <FUNCTION_DECLARATION>square</FUNCTION_DECLARATION> x = x * x
 end
 
 module type Printable = sig
@@ -68,7 +71,7 @@ module type Printable = sig
 end
 
 module Printer (M: Printable) = struct
-  let print_twice () =
+  let <FUNCTION_DECLARATION>print_twice</FUNCTION_DECLARATION> () =
     M.print ();
     M.print ()
 end

@@ -37,7 +37,7 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
         TODO("Not yet implemented")
     }
 
-    private fun isFunction() : Boolean {
+    override fun isFunction() : Boolean {
         // actually, we should check the type, but well...
         return getParameterList().isNotEmpty()
     }

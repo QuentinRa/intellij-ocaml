@@ -36,7 +36,7 @@ class OCamlLetBindingStub(
             }
 
         override fun indexStub(stub: OCamlLetBindingStub, sink: IndexSink) {
-            stub.name?.let {OCamlNamedElementIndex.Utils.index(sink, it) }
+            stub.name?.let { OCamlNamedElementIndex.Utils.index(sink, it) }
         }
     }
 }

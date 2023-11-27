@@ -47,10 +47,13 @@ Generalize
 * [ ] Add stubs for others
 * [ ] Add structure view for others
 * [ ] Add indexes for others
+* [ ] Add colors (settings+annotator) for others
 
 User features
 
 * [x] Highlighter
+  * [x] Add Lexer Highlighter
+  * [x] Add Annotator Highlighter
 * [x] Spell-checker
   * [x] Comments
   * [x] Strings
@@ -64,28 +67,25 @@ User features
   * [x] Multi Lines Comments Handler (CTRL+SHIFT+/)
   * [ ] Other handlers
 * [ ] Smart Features
-  * [ ] Annotations Highlighter
+  * [ ] Annotations
   * [X] Structure View (ALT+7)
     * [x] Variables
     * [x] Handle Visibility (public/private)
-    * [ ] Filters
-* [ ] Settings
+    * [ ] Filters (nested variables?)
+  * [ ] Surround With
+* [x] Settings
   * [X] Color Settings Page For Highlighter
-  * [ ] Add Highlighter Annotator to Color Settings Page
-
-Bonus
-
-* [ ] Structure View shows "a,b" as one variable, not two
-
+  * [x] Add Highlighter Annotator to Color Settings Page
 
 Roadmap
 
-* Structure View with Stubs
 * Add LineMarker for VAL
+  * WARN: MLI parser definition not updated
 * Handle Include
-* Check annotator
+* Handle Parser Directives
 * Check completion
 * Check references
+* Add annotator tests (local, global, functions)
 * ~~Test OCaml-LSP~~ (no documentation for plugin developers)
 * Modules (files) and variable indexes
 * Find usages
