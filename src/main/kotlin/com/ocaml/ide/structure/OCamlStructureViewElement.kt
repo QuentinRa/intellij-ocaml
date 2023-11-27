@@ -13,9 +13,12 @@ import com.intellij.psi.util.childrenOfType
 import com.intellij.ui.RowIcon
 import com.intellij.util.PlatformIcons
 import com.intellij.util.containers.map2Array
+import com.ocaml.language.base.OCamlFileBase
 import com.ocaml.language.psi.OCamlLetBindings
+import com.ocaml.language.psi.OCamlValueDescription
 import com.ocaml.language.psi.api.OCamlNamedElement
 import com.ocaml.language.psi.files.OCamlFile
+import com.ocaml.language.psi.files.OCamlInterfaceFile
 
 class OCamlStructureViewElement(element: PsiElement) : StructureViewTreeElement, Queryable {
     private val psiAnchor = TreeAnchorizer.getService().createAnchor(element)
@@ -31,6 +34,9 @@ class OCamlStructureViewElement(element: PsiElement) : StructureViewTreeElement,
                         else
                             it
                     }
+                }
+                is OCamlInterfaceFile -> {
+                    psi.childrenOfType<OCamlValueDescription>()
                 }
                 is OCamlLetBindings -> psi.letBindingList
                 else -> emptyList()
@@ -71,7 +77,7 @@ private fun presentableName(psi: PsiElement): String? {
 }
 
 private fun getPresentationForStructure(psi: PsiElement): ItemPresentation {
-    if (psi is OCamlFile) return psi.presentation!!
+    if (psi is OCamlFileBase) return psi.presentation!!
     val presentation = buildString {
         append(presentableName(psi))
     }
