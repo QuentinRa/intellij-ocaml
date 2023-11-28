@@ -81,7 +81,8 @@ User features
 
 Roadmap
 
-* Handle (a,b) variable declarations
+* ~~Handle (a,b) variable declarations in structure view~~
+* Handle (a,b) variable declarations in stubs
 * Do not show "_" in structure view?
 * Handle Parser Directives
 * Check references
@@ -96,6 +97,7 @@ Roadmap
 * Add annotator tests (local, global, functions)
 * Add line marker tests (see file comment)
 * Add reference/include tests
+* Add test for let mixin (let a | let a,b = 5,6 | let ((c, d),e) = (5, 6),7 | let f|g = 5)
 * ~~Test OCaml-LSP~~ (no documentation for plugin developers)
 * Modules (files) indexes
 * Find usages

@@ -17,6 +17,7 @@ import com.ocaml.language.psi.OCamlLetBindings
 import com.ocaml.language.psi.OCamlValueDescription
 import com.ocaml.language.psi.files.OCamlFile
 import com.ocaml.language.psi.files.OCamlInterfaceFile
+import com.ocaml.language.psi.mixin.handleStructuredLetBinding
 
 class OCamlStructureViewElement(element: PsiElement) : StructureViewTreeElement, Queryable {
     private val psiAnchor = TreeAnchorizer.getService().createAnchor(element)
@@ -25,12 +26,12 @@ class OCamlStructureViewElement(element: PsiElement) : StructureViewTreeElement,
         get() {
             return when (val psi = myElement) {
                 is OCamlFile -> {
-                    psi.childrenOfType<OCamlLetBindings>().map {
+                    psi.childrenOfType<OCamlLetBindings>().flatMap {
                         val allBindings = it.letBindingList
                         if (allBindings.size == 1)
-                            allBindings[0] as PsiElement
+                            handleStructuredLetBinding(allBindings[0])
                         else
-                            it
+                            listOf(it)
                     }
                 }
                 is OCamlInterfaceFile -> {
