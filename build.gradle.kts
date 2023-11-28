@@ -38,6 +38,7 @@ val indicesVersion : String = configProperties.getProperty("indicesVersion")
 val psiViewerPluginVersion : String = configProperties.getProperty("psiViewerPluginVersion")
 val pluginSinceBuild : String = configProperties.getProperty("pluginSinceBuild")
 val pluginUntilBuild : String = configProperties.getProperty("pluginUntilBuild")
+val loadPlatform : String = configProperties.getProperty("loadPlatform")
 
 group = "com.ocaml"
 version = "$majorVersion.$minorVersion.$patchVersion-$platformVersion"
@@ -57,8 +58,16 @@ intellij {
     "PsiViewer:$psiViewerPluginVersion"
   ))
 
+  sandboxDir.set("$buildDir/idea-sandbox-$platformVersion-$platformType")
+
   sourceSets["main"].java.srcDirs("src/main/gen")
-  sourceSets["main"].kotlin.srcDirs("src/$platformVersion/kotlin")
+  if (loadPlatform.isNotBlank()) {
+    loadPlatform.splitToSequence(",").forEach {
+      val baseVersion = it.dropLast(1)
+      sourceSets["main"].kotlin.srcDirs("src/$baseVersion/$it/kotlin")
+    }
+  }
+
   idea {
     module {
       generatedSourceDirs.add(file("src/main/gen"))
