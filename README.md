@@ -77,9 +77,12 @@ User features
   * [x] Live Templates
     * [x] Basic implementation
     * [ ] Add scopes (no for in MLI?)
+    * [x] Not available in comments
+    * [x] Not available in other files
   * [X] Line Markers
     * [X] Declaration
     * [x] Implementation
+    * [x] Show a nice presentation
 * [x] Settings
   * [X] Color Settings Page For Highlighter
   * [x] Add Highlighter Annotator to Color Settings Page
@@ -88,7 +91,6 @@ Roadmap
 
 * Fix LineMarker
   * [ ] Do not use hard-coded path to element
-* Add a presentation in each element so that they are rendered nicely (implementation/declaration menu etc.)
 * Handle Parser Directives
 * Check references
 * Handle Include and LineMarker
@@ -111,7 +113,7 @@ Roadmap
 * Handle Run Configurations
 * Add parser tests
 * Add OCamlLanguageUtils;LetBindingMixin Tests
-* Can compile using dune (.gitconfig? etc.)
+* Can compile using dune (.gitignore? etc.)
 * Can display warnings/errors
 * Can generate annot file
 * Can use annot for type inference

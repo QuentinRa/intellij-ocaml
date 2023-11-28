@@ -2,12 +2,14 @@ package com.ocaml.language.psi.api
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
+import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.ocaml.ide.files.OCamlLanguage
+import com.ocaml.ide.presentation.getPresentationForElement
 
 abstract class OCamlStubElementType<StubT : StubElement<*>, PsiT : OCamlElement>(
     debugName: String
@@ -56,4 +58,6 @@ abstract class OCamlStubbedNamedElementImpl<StubT> : OCamlStubbedElementImpl<Stu
     override fun setName(name: String): PsiElement {
         TODO("Not yet implemented")
     }
+
+    override fun getPresentation(): ItemPresentation? = let(::getPresentationForElement)
 }
