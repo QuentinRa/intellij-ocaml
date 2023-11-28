@@ -30,28 +30,31 @@ class OCamlStructureViewElement(element: PsiElement) : StructureViewTreeElement,
                         val allBindings = it.letBindingList
                         if (allBindings.size == 1)
                             handleStructuredLetBinding(allBindings[0])
-                        else
-                            listOf(it)
+                        else listOf(it)
                     }
                 }
+
                 is OCamlInterfaceFile -> {
                     psi.childrenOfType<OCamlValueDescription>()
                 }
+
                 is OCamlLetBindings -> psi.letBindingList
                 else -> emptyList()
             }
         }
 
     override fun getValue(): PsiElement? = myElement
-    override fun navigate(requestFocus: Boolean) { (myElement as? Navigatable)?.navigate(requestFocus) }
+    override fun navigate(requestFocus: Boolean) {
+        (myElement as? Navigatable)?.navigate(requestFocus)
+    }
+
     override fun canNavigate(): Boolean = (myElement as? Navigatable)?.canNavigate() == true
     override fun canNavigateToSource(): Boolean = (myElement as? Navigatable)?.canNavigateToSource() == true
     override fun getPresentation(): ItemPresentation {
-        return myElement?.let(::getPresentationForStructure)
-            ?: PresentationData("unknown", null, null, null)
+        return myElement?.let(::getPresentationForStructure) ?: PresentationData("unknown", null, null, null)
     }
-    override fun getChildren(): Array<out TreeElement> =
-        childElements.map2Array { OCamlStructureViewElement(it) }
+
+    override fun getChildren(): Array<out TreeElement> = childElements.map2Array { OCamlStructureViewElement(it) }
 
     override fun putInfo(info: MutableMap<in String, in String>) {
         val presentation = presentation

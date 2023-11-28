@@ -58,6 +58,7 @@ User features
   * [ ] Smart enter processor
   * [x] Single Line Comments Handler (CTRL+/)
   * [x] Multi Lines Comments Handler (CTRL+SHIFT+/)
+  * [ ] Comments: space not removed after uncommenting ("(* ")
   * [ ] Other handlers
 * [ ] Smart Features
   * [ ] Annotations
@@ -97,6 +98,7 @@ Roadmap
 * Add annotator tests (local, global, functions)
 * Add line marker tests (see file comment)
 * Add reference/include tests
+* Add tests for expandLetBindingStructuredName
 * Add test for let mixin (let a | let a,b = 5,6 | let ((c, d),e) = (5, 6),7 | let f|g = 5)
 * ~~Test OCaml-LSP~~ (no documentation for plugin developers)
 * Modules (files) indexes

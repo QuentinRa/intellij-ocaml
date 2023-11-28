@@ -23,6 +23,10 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
         return valueName?.firstChild?.firstChild
     }
 
+    override fun getName(): String? {
+       return super.getName() ?: computeValueNames().joinToString(",") { it.text }
+    }
+
     override fun isFunction() : Boolean {
         // we should check the type as this check is not enough
         // but there is no type inference yet
@@ -39,15 +43,29 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
     }
 }
 
-private class OCamlLetBindingDeconstruction(private val psi: OCamlValueName, letBinding: OCamlLetBinding) : OCamlLetBindingImpl(letBinding.node) {
-    override fun getNameIdentifier(): PsiElement = psi.firstChild.firstChild
+private fun OCamlLetBinding.computeValueNames() : List<PsiElement> =
+    PsiTreeUtil.findChildrenOfType(this, OCamlValueName::class.java).map {
+        it.firstChild.firstChild
+    }
+
+fun expandLetBindingStructuredName(structuredName: String?) : List<String> {
+    if (structuredName.isNullOrEmpty()) return listOf()
+    if (!structuredName.contains(",")) return listOf(structuredName)
+    val parts = structuredName.split(",").toMutableList()
+    val prefix = parts[0].substringBeforeLast('.')
+    parts[0] = parts[0].removePrefix("$prefix.")
+    return parts.map { part -> "$prefix.$part" }
+}
+
+private class OCamlLetBindingDeconstruction(private val psi: PsiElement, letBinding: OCamlLetBinding) : OCamlLetBindingImpl(letBinding.node) {
+    override fun getNameIdentifier(): PsiElement = psi
     override fun isFunction(): Boolean = false
 }
 
 fun handleStructuredLetBinding(letBinding: OCamlLetBinding): List<PsiElement> {
     if (letBinding.nameIdentifier == null) {
         // we are expanding children variable names
-        return PsiTreeUtil.findChildrenOfType(letBinding, OCamlValueName::class.java).map {
+        return letBinding.computeValueNames().map {
             OCamlLetBindingDeconstruction(it, letBinding)
         }
     }
