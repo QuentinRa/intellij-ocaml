@@ -29,7 +29,6 @@ Internal
   * [x] Add some pins
     * [ ] Add more pins
     * [ ] Verify pins
-  * [ ] (a,b) should be two variables
   * [ ] Parser Errors are not handled
   * [ ] Parser recovery is not handled
   * [ ] Parser tests were not implemented
@@ -42,13 +41,6 @@ Internal
   * [ ] Indexes include nested variables (Scopes?)
   * [ ] Use an index of integers?
 * [ ] GitHub CI
-
-Generalize
-
-* [ ] Add stubs for others
-* [ ] Add structure view for others
-* [ ] Add indexes for others
-* [ ] Add colors (settings+annotator) for others
 
 User features
 
@@ -89,6 +81,8 @@ User features
 
 Roadmap
 
+* Handle (a,b) variable declarations
+* Do not show "_" in structure view?
 * Handle Parser Directives
 * Check references
 * Handle Include and LineMarker
@@ -96,7 +90,9 @@ Roadmap
 * Check folding
 * Qualified path
   * [ ] Include Modules/Classes/...
-  * [ ] Rebuild Line Marker and Indexes
+  * [ ] Stub parsers are not ignoring valid parents
+  * [ ] Add them to indexes
+  * [ ] Ensure Line Marker is still working
 * Add annotator tests (local, global, functions)
 * Add line marker tests (see file comment)
 * Add reference/include tests
@@ -122,7 +118,6 @@ Random
 
 * Let#isFunction: use type inference?
 
-
 Generalization List
 
 * [x] Let
@@ -131,6 +126,13 @@ Generalization List
 * [ ] Type
 * [ ] Module
 * [ ] Module Type
+
+Generalize steps
+
+* [ ] Add stubs for others
+* [ ] Add structure view for others
+* [ ] Add indexes for others
+* [ ] Add colors (settings+annotator) for others
 
 ## 🎯 What's my goal?
 
