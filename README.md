@@ -89,8 +89,6 @@ User features
 
 Roadmap
 
-* Fix LineMarker
-  * [ ] Do not use hard-coded path to element
 * Handle Parser Directives
 * Check references
 * Handle Include and LineMarker

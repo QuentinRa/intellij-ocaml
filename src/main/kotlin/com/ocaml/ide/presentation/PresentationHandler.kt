@@ -38,13 +38,7 @@ fun getPresentationForStructure(psi: PsiElement): ItemPresentation {
 fun getPresentationForElement(psi: OCamlQualifiedNamedElement): ItemPresentation? {
     val presentation = psi.qualifiedName
     val icon = psi.getIcon(Iconable.ICON_FLAG_VISIBILITY)
-    // Show a glimpse of where the element is stored
-    // While it shouldn't occur often
-    val file =  psi.containingFile.virtualFile
-    val parentFolder = file.parent
-    val locationString = if (parentFolder != null && parentFolder.isValid && parentFolder.isDirectory) {
-        "..." + VfsUtil.VFS_SEPARATOR_CHAR + parentFolder.presentableName + VfsUtil.VFS_SEPARATOR_CHAR + file.presentableName
-    } else null
+    val locationString = psi.containingFile.virtualFile.presentableName
     val textAttributes = null
     return PresentationData(presentation, locationString, icon, textAttributes)
 }

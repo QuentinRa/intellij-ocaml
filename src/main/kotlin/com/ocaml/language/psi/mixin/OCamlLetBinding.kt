@@ -22,10 +22,11 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
     //   - let (x,y) = 5,6
     override fun getNameIdentifier(): PsiElement? {
         return if(valueName != null)
-            valueName
-        else if (patternNoExn != null) {
-            patternNoExn!!.patternExpression
-        } else
+            valueName!!.firstChild.firstChild
+        //else if (patternNoExn != null) {
+            //patternNoExn!!.patternExpression
+        //}
+        else
             TODO("Not yet implemented for:$text")
     }
 

@@ -56,9 +56,7 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
         method: String,
         relatedElements: Collection<T>?
     ): RelatedItemLineMarkerInfo<PsiElement>? {
-        // fixme: hard coded path
-        val nameIdentifier = psiSource.nameIdentifier?.firstChild?.firstChild
-        // println("For:"+nameIdentifier?.text+"#"+psiSource.containingFile.name+" ===> "+relatedElements)
+        val nameIdentifier = psiSource.nameIdentifier
         return if (nameIdentifier != null && !relatedElements.isNullOrEmpty()) {
             NavigationGutterIconBuilder.create(if (isInterface) OCamlIcons.Gutter.IMPLEMENTED else OCamlIcons.Gutter.IMPLEMENTING)
                 .setTooltipText((if (isInterface) "Implements " else "Declare ") + method)
