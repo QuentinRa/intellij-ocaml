@@ -55,8 +55,12 @@
         <lang.commenter language="OCaml" implementationClass="com.ocaml.ide.commenter.OCamlCommenter"/>
         <codeInsight.lineMarkerProvider language="OCaml" implementationClass="com.ocaml.ide.lineMarkers.OCamlLineMarkerProvider"/>
 
-        <!-- BRACES -->
+        <!-- TYPING -->
         <lang.braceMatcher language="OCaml" implementationClass="com.ocaml.ide.typing.OCamlBraceMatcher"/>
+
+        <!-- TEMPLATES -->
+        <defaultLiveTemplates file="liveTemplates/default"/>
+        <liveTemplateContext contextId="OCAML_FILE" implementation="com.ocaml.ide.template.OCamlContextType$Generic"/>
 
         <!-- SPELL-CHECKER -->
         <spellchecker.support language="OCaml" implementationClass="com.ocaml.ide.spelling.OCamlSpellcheckingStrategy"/>

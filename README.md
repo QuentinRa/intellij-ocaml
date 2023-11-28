@@ -40,6 +40,7 @@ Internal
 * [ ] Indexes
   * [x] Add indexes for variables
   * [ ] Indexes include nested variables (Scopes?)
+  * [ ] Use an index of integers?
 * [ ] GitHub CI
 
 Generalize
@@ -73,6 +74,9 @@ User features
     * [x] Handle Visibility (public/private)
     * [ ] Filters (nested variables?)
   * [ ] Surround With
+  * [x] Live Templates
+    * [x] Basic implementation
+    * [ ] Add scopes (no for in MLI?)
   * [X] Line Markers
     * [X] Declaration
     * [x] Implementation
@@ -85,7 +89,6 @@ Roadmap
 * Fix LineMarker
   * [ ] Do not use hard-coded path to element
 * Add a presentation in each element so that they are rendered nicely (implementation/declaration menu etc.)
-* Use an int instead of a string for the index?
 * Handle Parser Directives
 * Check references
 * Handle Include and LineMarker
@@ -98,10 +101,9 @@ Roadmap
 * Add line marker tests (see file comment)
 * Add reference/include tests
 * ~~Test OCaml-LSP~~ (no documentation for plugin developers)
-* Modules (files) and variable indexes
+* Modules (files) indexes
 * Find usages
 * Go to
-* Live Templates
 * Can create files
 * Add SDK
 * Handle SDK

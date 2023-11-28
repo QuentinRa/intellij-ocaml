@@ -58,6 +58,7 @@ intellij {
   ))
 
   sourceSets["main"].java.srcDirs("src/main/gen")
+  sourceSets["main"].kotlin.srcDirs("src/$platformVersion/kotlin")
   idea {
     module {
       generatedSourceDirs.add(file("src/main/gen"))
