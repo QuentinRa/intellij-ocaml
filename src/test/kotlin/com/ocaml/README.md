@@ -4,9 +4,11 @@ Tests for IDE Features
 
 |              | Status | Note                               |
 |--------------|--------|------------------------------------|
-| Annotator    | ✅      |                                    |
+| Annotator    | ✅      | Tested Variables colors            |
 | Colors       | N/A    |                                    |
-| Commenter    | ✅      | Test line and block comments       |
+| Commenter    | ✅      | Tested line and block comments     |
+| Files        | N/A    |                                    |
+| Highlight    | ❌      |                                    |
 | LineMarkers  | ❌      | Ensure elements have their markers |
 | Presentation | ❌      | Check the presentation             |
 | Settings     | N/A    |                                    |
@@ -19,6 +21,6 @@ Tests for Parser
 
 |      | Parser | Mixin | Stubs | Indexes |
 |------|--------|-------|-------|---------|
-| File | ❌      | ❌     | ❌     | ❌       |
+| File | N/A    | N/A   | ❌     | ❌       |
 | Let  | ❌      | ✅     | ❌     | ❌       |
 | Val  | ❌      | ❌     | ❌     | ❌       |

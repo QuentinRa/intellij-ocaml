@@ -87,6 +87,7 @@ Roadmap
 
 * Check references
 * Handle Include and LineMarker
+* Modules (files) indexes
 * Check completion
 * Check folding
 * Qualified path
@@ -94,10 +95,18 @@ Roadmap
   * [ ] Stub parsers are not ignoring valid parents
   * [ ] Add them to indexes
   * [ ] Ensure Line Marker is still working
-* ~~Add annotator tests (local, global, functions)~~ N/A
-* ~~Add line marker tests (see file comment)~~ N/A
+
+**Testing**
+
+* Add line marker tests (see file comment)
 * Add reference/include tests
-* Modules (files) indexes
+* Add highlighter tests
+* Add presentation tests
+* Add structure tests
+* Add parser tests
+
+**Resume**
+
 * Find usages
 * Go to
 * Can create files
