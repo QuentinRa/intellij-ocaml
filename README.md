@@ -47,6 +47,7 @@ User features
 * [x] Highlighter
   * [x] Add Lexer Highlighter
   * [x] Add Annotator Highlighter
+  * [ ] ~~Highlight pattern variables~~
 * [x] Spell-checker
   * [x] Comments
   * [x] Strings
@@ -61,7 +62,7 @@ User features
   * [ ] Comments: space not removed after uncommenting ("(* ")
   * [ ] Other handlers
 * [ ] Smart Features
-  * [ ] Annotations
+  * [ ] Warning/Error Annotations
   * [X] Structure View (ALT+7)
     * [x] Variables
     * [x] Handle Visibility (public/private)
@@ -136,6 +137,36 @@ Generalize steps
 * [ ] Add structure view for others
 * [ ] Add indexes for others
 * [ ] Add colors (settings+annotator) for others
+
+## Plugin Features Overview
+
+**Base features** (✅ = YES, ❌ = No/Not yet, 🆗 = Must compile first)
+
+|                         | OCaml | ReasonML | VSCode |
+|-------------------------|-------|----------|--------|
+| Highlighter             | ✅     | ✅        | ✅      |
+| Dune integration        | ❌     | ?        | ✅      |
+| Find Usages             | ❌     | ✅        | ?      |
+| Type inference (hint)   | ❌     | ❌        | 🆗     |
+| Type checking           | ❌     | ❌        | 🆗     |
+| Autocompletion          | ❌     | ✅        | ✅      |
+| Live Templates/Snippets | ✅     | ✅        | ✅      |
+| REPL integration        | ❌     | ❌        | ✅      |
+| Debugging               | ❌     | ?        | ✅      |
+
+**IntelliJ Features**
+
+|                              | OCaml | ReasonML |
+|------------------------------|-------|----------|
+| Structure View               | ✅     | ✅        |
+| Spell-checker                | ✅     | ✅        |
+| Braces Matching              | ✅     | ✅        |
+| Comment Handler (line/block) | ✅     | ✅        |
+| Navigate to declaration      | ✅     | ✅        |
+| Navigate to implementation   | ✅     | ✅        |
+| Parser Recovery <sup>1</sup> | ✅     | ❌        |
+
+<sup>1</sup> Ability of the plugin to work on a file that doesn't compile
 
 ## 🎯 What's my goal?
 
