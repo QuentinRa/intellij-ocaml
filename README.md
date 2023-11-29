@@ -82,8 +82,7 @@ User features
 
 Roadmap
 
-* ~~Handle (a,b) variable declarations in structure view~~
-* Handle (a,b) variable declarations in stubs
+* Handle (a,b) variable declarations in line markers
 * Do not show "_" in structure view?
 * Handle Parser Directives
 * Check references
