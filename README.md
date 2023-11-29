@@ -97,8 +97,6 @@ Roadmap
 * ~~Add annotator tests (local, global, functions)~~ N/A
 * ~~Add line marker tests (see file comment)~~ N/A
 * Add reference/include tests
-* Add tests for expandLetBindingStructuredName
-* ~~Test OCaml-LSP~~ (no documentation for plugin developers)
 * Modules (files) indexes
 * Find usages
 * Go to
@@ -158,7 +156,7 @@ Generalize steps
 |----------------------|-------|----------|--------|
 | Native Build         | ❌     | ❌        | ❌      |
 | Dune integration     | ❌     | ?        | ✅      |
-| Makefile integration | 🆗     | 🆗       | 🆗      |
+| Makefile integration | 🆗    | 🆗       | 🆗     |
 
 **IntelliJ Features**
 
@@ -173,6 +171,19 @@ Generalize steps
 | Parser Recovery <sup>1</sup> | ✅     | ❌        |
 
 <sup>1</sup> Ability of the plugin to work on a file that doesn't compile
+
+**External Dependencies**
+
+|                  | OCaml | ReasonML | VSCode |
+|------------------|-------|----------|--------|
+| OCaml LSP Server | ❌     | ❌        | ✅      |
+| Merlin           | ❌     | ❌        | ❌      |
+
+**External Tools Support**
+
+|             | OCaml | ReasonML | VSCode |
+|-------------|-------|----------|--------|
+| OCamlFormat | ❌     | ✅        | ?      |
 
 ## 🎯 What's my goal?
 

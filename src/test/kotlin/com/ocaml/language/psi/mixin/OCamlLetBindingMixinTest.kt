@@ -5,13 +5,7 @@ import com.ocaml.language.OCamlParsingTestCase
 import com.ocaml.language.psi.OCamlLetBinding
 import org.junit.Test
 
-// Add test for let mixin (let f|g = 5)
 class OCamlLetBindingMixinTest : OCamlParsingTestCase() {
-
-    // todo: computeValueNames
-    // ===> x,y (nodes)
-    // todo: handleStructuredLetBinding
-
     private var letSimple: OCamlLetBinding? = null
     private var letDeconstruction: OCamlLetBinding? = null
     private var letDeconstructionComplex: OCamlLetBinding? = null
@@ -77,5 +71,21 @@ class OCamlLetBindingMixinTest : OCamlParsingTestCase() {
         assertExpanded("Dummy.a", 1)
         assertExpanded("Dummy.a,b", 2)
         assertExpanded("Dummy.c,d,e", 3)
+    }
+
+    @Test
+    fun testHandleStructuredLetBinding() {
+        fun assertStructured (letBinding: OCamlLetBinding?, count: Int) {
+            assertNotNull(letBinding) ; letBinding!!
+            assertSize(
+                count,
+                handleStructuredLetBinding(letBinding)
+            )
+        }
+
+        assertStructured(letSimple, 1)
+        assertStructured(letDeconstruction, 2)
+        assertStructured(letDeconstructionComplex, 3)
+        assertStructured(letDeconstructionPipe, 2)
     }
 }
