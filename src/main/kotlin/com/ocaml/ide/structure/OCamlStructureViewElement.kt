@@ -36,7 +36,7 @@ class OCamlStructureViewElement(element: PsiElement) : StructureViewTreeElement,
                 }
 
                 is OCamlInterfaceFile -> {
-                    psi.childrenOfType<OCamlValueDescription>()
+                    psi.childrenOfType<OCamlValueDescription>().filter { !it.isAnonymous() }
                 }
 
                 is OCamlLetBindings -> psi.letBindingList.filter { !it.isAnonymous() }

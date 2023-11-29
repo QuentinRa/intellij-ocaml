@@ -19,7 +19,7 @@ abstract class OCamlValBindingMixin : OCamlStubbedNamedElementImpl<OCamlValBindi
     constructor(stub: OCamlValBindingStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
     override fun getNameIdentifier(): PsiElement? {
-        return valueName
+        return valueName?.firstChild?.firstChild
     }
 
     override fun isFunction() : Boolean {
