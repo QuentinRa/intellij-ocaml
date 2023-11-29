@@ -3,6 +3,7 @@ package com.ocaml.ide
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.ocaml.ide.colors.OCamlColor
 import com.ocaml.language.base.OCamlFileBase
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -17,5 +18,13 @@ open class OCamlBasePlatformTestCase : BasePlatformTestCase() {
         println("» " + fileName + " " + this.javaClass)
         println(DebugUtil.psiToString(file, false, true))
         return file as OCamlFileBase
+    }
+
+    protected fun configureHighlight(fileName: String, code: String, color: OCamlColor) {
+        myFixture.configureByText(fileName, code.replace(
+            "<info>",
+            "<info textAttributesKey=\"${color.textAttributesKey.externalName}\""
+        ))
+        myFixture.checkHighlighting(false, true, false, true)
     }
 }
