@@ -9,3 +9,5 @@ interface OCamlLetDeclaration {
      */
     fun isGlobal() : Boolean
 }
+
+fun OCamlNamedElement.isAnonymous() : Boolean = name == "_"

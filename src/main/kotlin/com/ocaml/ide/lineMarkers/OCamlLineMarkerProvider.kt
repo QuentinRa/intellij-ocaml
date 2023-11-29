@@ -75,11 +75,11 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
     ) {
         if (!element.isGlobal()) return
         // Handle variable declarations of multiple variables
-        val name = element.nameIdentifier
-        if (name != null) {
+        val nameIdentifier = element.nameIdentifier
+        if (nameIdentifier != null) {
             processQualifiedName<OCamlValueDescription>(
                 element.qualifiedName!!,
-                element,
+                nameIdentifier,
                 "let/val",
                 false,
                 project,

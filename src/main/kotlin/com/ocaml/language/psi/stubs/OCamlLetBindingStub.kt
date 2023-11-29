@@ -5,6 +5,7 @@ import com.intellij.psi.stubs.*
 import com.ocaml.language.psi.OCamlLetBinding
 import com.ocaml.language.psi.api.OCamlNamedStub
 import com.ocaml.language.psi.api.OCamlStubElementType
+import com.ocaml.language.psi.api.isAnonymous
 import com.ocaml.language.psi.createStubIfParentIsStub
 import com.ocaml.language.psi.impl.OCamlLetBindingImpl
 import com.ocaml.language.psi.mixin.expandLetBindingStructuredName
@@ -23,7 +24,7 @@ class OCamlLetBindingStub(
         override fun createPsi(stub: OCamlLetBindingStub) = OCamlLetBindingImpl(stub, this)
 
         override fun createStub(psi: OCamlLetBinding, parentStub: StubElement<*>?) =
-            OCamlLetBindingStub(parentStub, this, psi.name, psi.qualifiedName)
+            OCamlLetBindingStub(parentStub, this, psi.name, if (psi.isAnonymous()) null else psi.qualifiedName)
 
         override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?) = OCamlLetBindingStub(
             parentStub, this, dataStream.readName()?.string, dataStream.readName()?.string

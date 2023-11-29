@@ -36,6 +36,7 @@ Internal
 * [ ] Stubs
   * [x] Add Stubs For Variables
   * [ ] Use stubs in structure view
+  * [x] Do not store anonymous variables
 * [ ] Indexes
   * [x] Add indexes for variables
   * [ ] Indexes include nested variables (Scopes?)
@@ -84,7 +85,6 @@ User features
 
 Roadmap
 
-* Do not show "_" in structure view?
 * Handle Parser Directives
 * Check references
 * Handle Include and LineMarker
@@ -137,6 +137,7 @@ Generalize steps
 * [ ] Add structure view for others
 * [ ] Add indexes for others
 * [ ] Add colors (settings+annotator) for others
+* [ ] Ensure everything anonymous is correctly handled (stubs, structure view, etc.)
 
 ## Plugin Features Overview
 
@@ -145,7 +146,6 @@ Generalize steps
 |                         | OCaml | ReasonML | VSCode |
 |-------------------------|-------|----------|--------|
 | Highlighter             | ✅     | ✅        | ✅      |
-| Dune integration        | ❌     | ?        | ✅      |
 | Find Usages             | ❌     | ✅        | ?      |
 | Type inference (hint)   | ❌     | ❌        | 🆗     |
 | Type checking           | ❌     | ❌        | 🆗     |
@@ -153,6 +153,14 @@ Generalize steps
 | Live Templates/Snippets | ✅     | ✅        | ✅      |
 | REPL integration        | ❌     | ❌        | ✅      |
 | Debugging               | ❌     | ?        | ✅      |
+
+**Build Systems** (✅ = Triggered from the editor, ❌ = Manually, 🆗 = Using An External Plugin)
+
+|                      | OCaml | ReasonML | VSCode |
+|----------------------|-------|----------|--------|
+| Native Build         | ❌     | ❌        | ❌      |
+| Dune integration     | ❌     | ?        | ✅      |
+| Makefile integration | 🆗     | 🆗       | 🆗      |
 
 **IntelliJ Features**
 

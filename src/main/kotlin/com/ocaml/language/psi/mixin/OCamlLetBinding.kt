@@ -11,6 +11,7 @@ import com.ocaml.icons.OCamlIcons
 import com.ocaml.language.psi.OCamlLetBinding
 import com.ocaml.language.psi.OCamlValueName
 import com.ocaml.language.psi.api.OCamlStubbedNamedElementImpl
+import com.ocaml.language.psi.api.isAnonymous
 import com.ocaml.language.psi.impl.OCamlLetBindingImpl
 import com.ocaml.language.psi.stubs.OCamlLetBindingStub
 import javax.swing.Icon
@@ -68,6 +69,8 @@ fun handleStructuredLetBinding(letBinding: OCamlLetBinding): List<PsiElement> {
         return letBinding.computeValueNames().map {
             OCamlLetBindingDeconstruction(it, letBinding)
         }
+    } else if (letBinding.isAnonymous()) {
+        return listOf()
     }
     return listOf(letBinding)
 }
