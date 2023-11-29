@@ -749,8 +749,8 @@ mod_constraint ::=
   | MODULE module_path EQ extended_module_path
   | signature_substitution_mod_constraint
 
-private specification ::=
-    value_description
+private specification ::= top_level_directive
+  | value_description
   | internal_type_specification
   | exception_specification
   | class_specification
@@ -803,8 +803,8 @@ private module_expr_value ::=
 
 module_expr ::= module_expr_value { module_expr_sufix } *
 
-private module_items ::= { SEMISEMI }* (definition|seq_expr)
-  { { SEMISEMI }* ( definition | seq_expr) }* { SEMISEMI }*
+private module_items ::= { SEMISEMI }* (definition|seq_expr|top_level_directive)
+  { { SEMISEMI }* (definition|seq_expr|top_level_directive) }* { SEMISEMI }*
 
 private definition ::=
     let_bindings
@@ -954,3 +954,8 @@ private internal_abstract_type ::= TYPE { typeconstr_name }+ DOT typexpr EQ seq_
 
 // https://v2.ocaml.org/releases/4.14/htmlman/bindingops.html#s:binding-operators
 // todo:
+
+// https://ocaml.org/manual/toplevel.html
+top_level_directive ::= directive_name [directive_argument] SEMISEMI
+directive_name ::= SHARP ident
+directive_argument ::= string_literal | integer_literal | value_path | TRUE | FALSE

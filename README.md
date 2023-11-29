@@ -85,7 +85,6 @@ User features
 
 Roadmap
 
-* Handle Parser Directives
 * Check references
 * Handle Include and LineMarker
 * Check completion

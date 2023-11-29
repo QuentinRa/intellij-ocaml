@@ -74,7 +74,7 @@ DIGIT_7_UNDERSCORE=({DIGIT_7}|{UNDERSCORE})
 
 %%
 <YYINITIAL>  {
-      [^]                             { yybegin(INITIAL); yypushback(1); }
+  [^]                 { yybegin(INITIAL); yypushback(1); }
 }
 
 <INITIAL> {

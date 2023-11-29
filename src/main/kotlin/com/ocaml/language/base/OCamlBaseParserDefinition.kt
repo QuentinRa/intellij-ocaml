@@ -15,6 +15,13 @@ abstract class OCamlBaseParserDefinition : ParserDefinition {
     final override fun getStringLiteralElements(): TokenSet = ParserDefinitionUtils.STRINGS
     final override fun createElement(node: ASTNode): PsiElement = OCamlTypes.Factory.createElement(node)
 
+    override fun spaceExistenceTypeBetweenTokens(left: ASTNode?, right: ASTNode?): ParserDefinition.SpaceRequirements {
+        return if (left?.elementType == OCamlTypes.DIRECTIVE_NAME)
+            return ParserDefinition.SpaceRequirements.MUST
+        else
+            super.spaceExistenceTypeBetweenTokens(left, right)
+    }
+
     private object ParserDefinitionUtils {
         val COMMENTS = TokenSet.create(OCamlTypes.COMMENT, OCamlTypes.DOC_COMMENT, OCamlTypes.ANNOTATION)
         val STRINGS = TokenSet.create(OCamlTypes.STRING_VALUE)
