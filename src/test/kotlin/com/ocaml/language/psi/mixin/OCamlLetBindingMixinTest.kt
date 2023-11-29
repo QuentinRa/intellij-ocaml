@@ -1,8 +1,6 @@
 package com.ocaml.language.psi.mixin
 
-import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.util.PsiTreeUtil
 import com.ocaml.language.OCamlParsingTestCase
 import com.ocaml.language.psi.OCamlLetBinding
 import org.junit.Test
@@ -10,12 +8,8 @@ import org.junit.Test
 // Add test for let mixin (let f|g = 5)
 class OCamlLetBindingMixinTest : OCamlParsingTestCase() {
 
-    // todo: getName ==> expected name
-    // ===> x
-    // ===> x,y
     // todo: computeValueNames
     // ===> x,y (nodes)
-    // todo: expandLetBindingStructuredName
     // todo: handleStructuredLetBinding
 
     private var letSimple: OCamlLetBinding? = null
@@ -55,4 +49,33 @@ class OCamlLetBindingMixinTest : OCamlParsingTestCase() {
         assertNull(letDeconstructionPipe?.nameIdentifier)
     }
 
+    @Test
+    fun testName() {
+        assertEquals(letSimple?.name, "a")
+        assertEquals(letDeconstruction?.name, "b,c")
+        assertEquals(letDeconstructionComplex?.name, "d,e,f")
+        assertEquals(letDeconstructionPipe?.name, "g,h")
+    }
+
+    @Test
+    fun testQualifiedName() {
+        assertEquals(letSimple?.qualifiedName, OCAML_FILE_QUALIFIED_NAME_DOT + "a")
+        assertEquals(letDeconstruction?.qualifiedName, OCAML_FILE_QUALIFIED_NAME_DOT + "b,c")
+        assertEquals(letDeconstructionComplex?.qualifiedName, OCAML_FILE_QUALIFIED_NAME_DOT + "d,e,f")
+        assertEquals(letDeconstructionPipe?.qualifiedName, OCAML_FILE_QUALIFIED_NAME_DOT + "g,h")
+    }
+
+    @Test
+    fun testExpandStructuredName() {
+        fun assertExpanded (name: String, count: Int) {
+            assertSize(
+                count,
+                expandLetBindingStructuredName(name)
+            )
+        }
+
+        assertExpanded("Dummy.a", 1)
+        assertExpanded("Dummy.a,b", 2)
+        assertExpanded("Dummy.c,d,e", 3)
+    }
 }

@@ -15,9 +15,10 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 abstract class OCamlBaseParsingTestCase(fileExt: String, parserDefinition: OCamlBaseParserDefinition) :
     ParsingTestCase("", fileExt, parserDefinition) {
-    protected object TestVariables {
+    protected companion object {
         const val FILE_NAME = "dummy"
         const val OCAML_FILE_QUALIFIED_NAME = "Dummy"
+        const val OCAML_FILE_QUALIFIED_NAME_DOT = "Dummy."
     }
 
 
@@ -26,7 +27,7 @@ abstract class OCamlBaseParsingTestCase(fileExt: String, parserDefinition: OCaml
     }
 
     private fun parseRawCode(code: String): PsiFile {
-        myFile = createPsiFile(TestVariables.FILE_NAME, code)
+        myFile = createPsiFile(FILE_NAME, code)
         println("» " + this.javaClass)
         println(DebugUtil.psiToString(myFile, false, true))
         return myFile
