@@ -94,11 +94,10 @@ Roadmap
   * [ ] Stub parsers are not ignoring valid parents
   * [ ] Add them to indexes
   * [ ] Ensure Line Marker is still working
-* Add annotator tests (local, global, functions)
-* Add line marker tests (see file comment)
+* ~~Add annotator tests (local, global, functions)~~ N/A
+* ~~Add line marker tests (see file comment)~~ N/A
 * Add reference/include tests
 * Add tests for expandLetBindingStructuredName
-* Add test for let mixin (let a | let a,b = 5,6 | let ((c, d),e) = (5, 6),7 | let f|g = 5)
 * ~~Test OCaml-LSP~~ (no documentation for plugin developers)
 * Modules (files) indexes
 * Find usages

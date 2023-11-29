@@ -1,21 +1,25 @@
 package com.ocaml.language
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.DebugUtil
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.ParsingTestCase
+import com.ocaml.language.base.OCamlBaseParserDefinition
+import com.ocaml.language.base.OCamlFileBase
+import com.ocaml.language.parser.OCamlInterfaceParserDefinition
 import com.ocaml.language.parser.OCamlParserDefinition
-import com.ocaml.language.psi.files.OCamlFile
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-// PsiErrorElement
 @RunWith(JUnit4::class)
-@Deprecated("Separate class for ml/mli.")
-abstract class OCamlParsingTestCase protected constructor() : ParsingTestCase("", "ml", OCamlParserDefinition()) {
+abstract class OCamlBaseParsingTestCase(fileExt: String, parserDefinition: OCamlBaseParserDefinition) :
+    ParsingTestCase("", fileExt, parserDefinition) {
     protected object TestVariables {
         const val FILE_NAME = "dummy"
         const val OCAML_FILE_QUALIFIED_NAME = "Dummy"
     }
+
 
     override fun getTestDataPath(): String {
         return "resources/testData"
@@ -28,13 +32,15 @@ abstract class OCamlParsingTestCase protected constructor() : ParsingTestCase(""
         return myFile
     }
 
-    protected fun parseCode(code: String, assertNoErrors: Boolean = true, errorExpected: Boolean = false): OCamlFile {
-        parseRawCode(code)
-//        if (assertNoErrors)
-//            if (! errorExpected)
-//                TestCase.assertNull(myFile.firstChildOfType(PsiErrorElement::class.java))
-//            else
-//                TestCase.assertNotNull(myFile.firstChildOfType(PsiErrorElement::class.java))
-        return myFile as OCamlFile
+    protected open fun parseCode(code: String): OCamlFileBase {
+        return parseRawCode(code) as OCamlFileBase
+    }
+
+    protected inline fun <reified T : PsiElement> initWith(code: String): List<T> {
+        return PsiTreeUtil.findChildrenOfType(
+            parseCode(code), T::class.java
+        ).toList()
     }
 }
+abstract class OCamlParsingTestCase : OCamlBaseParsingTestCase("ml", OCamlParserDefinition())
+abstract class OCamlInterfaceParsingTestCase : OCamlBaseParsingTestCase("mli", OCamlInterfaceParserDefinition())
