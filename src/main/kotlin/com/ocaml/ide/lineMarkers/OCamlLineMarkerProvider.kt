@@ -13,6 +13,8 @@ import com.ocaml.language.psi.OCamlValueDescription
 import com.ocaml.language.psi.api.OCamlLetDeclaration
 import com.ocaml.language.psi.api.OCamlNameIdentifierOwner
 import com.ocaml.language.psi.api.OCamlNamedElement
+import com.ocaml.language.psi.mixin.computeValueNames
+import com.ocaml.language.psi.mixin.expandLetBindingStructuredName
 import com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex
 
 // For tests:
@@ -26,7 +28,7 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
         val scope = GlobalSearchScope.allScope(project)
         (element as? OCamlLetBinding)?.let {
             // From LET, Resolve VAL
-            collectNamedElementNavigationMarkers<OCamlValueDescription>(it, "let/val", false, project, scope, result)
+            collectLetNavigationMarkers(it, project, scope, result)
         }
         (element as? OCamlValueDescription)?.let {
             // From VAL, Resolve LET
@@ -43,27 +45,70 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
         result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
     ) {
         if (element !is OCamlLetDeclaration || !element.isGlobal()) return
-        val letName = element.qualifiedName ?: return
-        val elements = OCamlNamedElementIndex.Utils.findElementsByName(project, letName, scope)
+        val qualifiedName = element.qualifiedName ?: return
+        processQualifiedName<T>(qualifiedName, element.nameIdentifier, text, isInterface, project, scope, result)
+    }
+
+    private inline fun <reified T : OCamlNameIdentifierOwner> processQualifiedName(
+        qualifiedName: String,
+        element: PsiElement?,
+        text: String,
+        isInterface: Boolean,
+        project: Project,
+        scope: GlobalSearchScope,
+        result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
+    ) {
+        val elements = OCamlNamedElementIndex.Utils.findElementsByName(project, qualifiedName, scope)
         val filtered: Collection<OCamlNameIdentifierOwner> = elements.filterIsInstance<T>()
         if (filtered.isEmpty()) return
         val marker: RelatedItemLineMarkerInfo<PsiElement>? = createMarkerInfo(
-            element.nameIdentifier, isInterface, text, filtered
+            element, isInterface, text, filtered
         )
         if (marker != null) result.add(marker)
     }
 
+    private fun collectLetNavigationMarkers(
+        element: OCamlLetBinding,
+        project: Project,
+        scope: GlobalSearchScope,
+        result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
+    ) {
+        if (!element.isGlobal()) return
+        // Handle variable declarations of multiple variables
+        val name = element.nameIdentifier
+        if (name != null) {
+            processQualifiedName<OCamlValueDescription>(
+                element.qualifiedName!!,
+                element,
+                "let/val",
+                false,
+                project,
+                scope,
+                result
+            )
+        } else {
+            val qualifiedNames = expandLetBindingStructuredName(element.qualifiedName!!)
+            element.computeValueNames().forEachIndexed { index, it ->
+                processQualifiedName<OCamlValueDescription>(
+                    qualifiedNames[index],
+                    it,
+                    "let/val",
+                    false,
+                    project,
+                    scope,
+                    result
+                )
+            }
+        }
+    }
+
     private fun <T : OCamlNamedElement?> createMarkerInfo(
-        nameIdentifier: PsiElement?,
-        isInterface: Boolean,
-        method: String,
-        relatedElements: Collection<T>?
+        nameIdentifier: PsiElement?, isInterface: Boolean, method: String, relatedElements: Collection<T>?
     ): RelatedItemLineMarkerInfo<PsiElement>? {
         return if (nameIdentifier != null && !relatedElements.isNullOrEmpty()) {
             NavigationGutterIconBuilder.create(if (isInterface) OCamlIcons.Gutter.IMPLEMENTED else OCamlIcons.Gutter.IMPLEMENTING)
                 .setTooltipText((if (isInterface) "Implements " else "Declare ") + method)
-                .setAlignment(GutterIconRenderer.Alignment.RIGHT)
-                .setTargets(relatedElements)
+                .setAlignment(GutterIconRenderer.Alignment.RIGHT).setTargets(relatedElements)
                 .createLineMarkerInfo(nameIdentifier)
         } else null
     }

@@ -43,7 +43,7 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
     }
 }
 
-private fun OCamlLetBinding.computeValueNames() : List<PsiElement> =
+fun OCamlLetBinding.computeValueNames() : List<PsiElement> =
     PsiTreeUtil.findChildrenOfType(this, OCamlValueName::class.java).map {
         it.firstChild.firstChild
     }

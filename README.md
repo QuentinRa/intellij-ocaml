@@ -76,13 +76,13 @@ User features
     * [X] Declaration
     * [x] Implementation
     * [x] Show a nice presentation
+    * [x] Works with pattern variables (ex: "a,b,c")
 * [x] Settings
   * [X] Color Settings Page For Highlighter
   * [x] Add Highlighter Annotator to Color Settings Page
 
 Roadmap
 
-* Handle (a,b) variable declarations in line markers
 * Do not show "_" in structure view?
 * Handle Parser Directives
 * Check references
