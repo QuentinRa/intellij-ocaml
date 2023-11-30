@@ -203,6 +203,10 @@ ident ::= capitalized_ident | lowercase_ident
 capitalized_ident ::= CAPITALIZED_IDENT_VALUE
 lowercase_ident ::= LOWERCASE_IDENT_VALUE | UNDERSCORE // underscore alone is not lexed as lowercase
                                                        // which is *normal* but not "expected"
+// actually, in some scenarios, such as in VAL
+// underscore alone is not allowed
+lowercase_ident_no_underscore ::= LOWERCASE_IDENT_VALUE
+{ extends="lowercase_ident" }
 
 // https://v2.ocaml.org/releases/4.14/htmlman/lex.html#sss:integer-literals
 // [CHANGES]: using the lexer
@@ -240,6 +244,13 @@ prefix_symbol ::= PREFIX_SYMBOL_VALUE | prefix_symbol_lexed
 // https://v2.ocaml.org/releases/4.14/htmlman/names.html#sss:naming-objects
 value_name ::= lowercase_ident
   | LPAREN operator_name RPAREN
+
+value_name_no_underscore ::= lowercase_ident_no_underscore
+  | LPAREN operator_name RPAREN
+{
+  methods=[lowercaseIdent = "lowercase_ident_no_underscore"]
+  extends="value_name"
+}
 
 operator_name ::= prefix_symbol | infix_op
 
@@ -764,7 +775,7 @@ private specification ::= top_level_directive
   | signature_substitution_spec
   | primitive_declaration
 
-value_description ::= VAL value_name COLON typexpr
+value_description ::= VAL value_name_no_underscore COLON typexpr
 // todo: the mixin is only partially implemented
 {
     implements=["com.ocaml.language.psi.api.OCamlNameIdentifierOwner"; "com.ocaml.language.psi.api.OCamlLetDeclaration"]
@@ -773,6 +784,7 @@ value_description ::= VAL value_name COLON typexpr
     stubClass = "com.ocaml.language.psi.stubs.OCamlValBindingStub"
     elementTypeFactory = "com.ocaml.language.psi.OCamlImplUtilsKt.factory"
     pin=1
+    methods=[valueName = "value_name_no_underscore"]
 }
 
 private module_declaration ::=

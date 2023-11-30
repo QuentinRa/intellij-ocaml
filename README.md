@@ -86,10 +86,13 @@ User features
 Roadmap
 
 * Check references
-* Handle Include and LineMarker
 * Modules (files) indexes
+* Handle Include and Open
+  * [ ] Line Markers?
 * Check completion
 * Check folding
+* Find usages
+* Go to
 * Qualified path
   * [ ] Include Modules/Classes/...
   * [ ] Stub parsers are not ignoring valid parents
@@ -107,8 +110,6 @@ Roadmap
 
 **Resume**
 
-* Find usages
-* Go to
 * Can create files
 * Add SDK
 * Handle SDK

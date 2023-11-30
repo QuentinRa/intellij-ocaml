@@ -8,14 +8,16 @@ Tests for IDE Features
 | Colors       | N/A    |                                    |
 | Commenter    | ✅      | Tested line and block comments     |
 | Files        | N/A    |                                    |
-| Highlight    | ❌      |                                    |
+| Highlight    | N/A    |                                    |
 | LineMarkers  | ❌      | Ensure elements have their markers |
 | Presentation | ❌      | Check the presentation             |
 | Settings     | N/A    |                                    |
 | Spelling     | N/A    |                                    |
-| Structure    | ❌      | Test getChildren                   |
-| Template     | N/A    |                                    |
-| Typing       | ❌      | Test Brace Matching                |
+| Structure    | ✅      | Test Let/Val, only basic/pattern   |
+| Template     | ❌      | Test context                       |
+| Typing       | N/A    |                                    |
+
+**Note**: extract `#getChildren` from Structure and test it.
 
 Tests for Parser
 
@@ -24,3 +26,8 @@ Tests for Parser
 | File | N/A    | N/A   | ❌     | ❌       |
 | Let  | ❌      | ✅     | ❌     | ❌       |
 | Val  | ❌      | ❌     | ❌     | ❌       |
+
+Notes
+
+* `val _ : type`: invalid
+* `val _0 : type`: valid

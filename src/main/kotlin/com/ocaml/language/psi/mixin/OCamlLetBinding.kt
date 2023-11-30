@@ -58,9 +58,12 @@ fun expandLetBindingStructuredName(structuredName: String?) : List<String> {
     return parts.map { part -> "$prefix.$part" }
 }
 
-private class OCamlLetBindingDeconstruction(private val psi: PsiElement, letBinding: OCamlLetBinding) : OCamlLetBindingImpl(letBinding.node) {
+private class OCamlLetBindingDeconstruction(private val psi: PsiElement, private val letBinding: OCamlLetBinding) : OCamlLetBindingImpl(letBinding.node) {
     override fun getNameIdentifier(): PsiElement = psi
     override fun isFunction(): Boolean = false
+    // Ensure TreeAnchorizer is still working as expected:
+    override fun equals(other: Any?): Boolean = letBinding == other
+    override fun hashCode(): Int = letBinding.hashCode()
 }
 
 fun handleStructuredLetBinding(letBinding: OCamlLetBinding): List<PsiElement> {
