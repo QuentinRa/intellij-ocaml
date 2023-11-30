@@ -3,7 +3,9 @@ package com.ocaml.language.psi
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
+import com.ocaml.language.psi.api.OCamlNamedElement
 import com.ocaml.language.psi.api.OCamlStubElementType
+import com.ocaml.language.psi.api.isAnonymous
 import com.ocaml.language.psi.stubs.OCamlLetBindingStub
 import com.ocaml.language.psi.stubs.OCamlValBindingStub
 
@@ -27,12 +29,8 @@ class OCamlImplUtils {
     }
 }
 
-fun createStubIfParentIsStub(node: ASTNode): Boolean {
-    return true
-//    val parent = node.treeParent
-//    val parentType = parent.elementType
-//    return (parentType is IStubElementType<*, *> && parentType.shouldCreateStub(parent)) ||
-//            parentType is IStubFileElementType<*>
+fun createStubIfNotAnonymous(node: ASTNode): Boolean {
+    return (node.psi as? OCamlNamedElement)?.isAnonymous() == false
 }
 
 fun factory(name: String): OCamlStubElementType<*, *> = when (name) {

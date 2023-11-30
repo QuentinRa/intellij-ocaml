@@ -23,8 +23,8 @@ Tests for Parser
 
 |      | Parser | Mixin | Stubs | Indexes |
 |------|--------|-------|-------|---------|
-| File | N/A    | N/A   | ❌     | ❌       |
-| Let  | ❌      | ✅     | ❌     | ❌       |
+| File | N/A    | N/A   | N/A   | ❌       |
+| Let  | ❌      | ✅     | ✅     | ❌       |
 | Val  | ❌      | ❌     | ❌     | ❌       |
 
 Notes

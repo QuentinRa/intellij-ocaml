@@ -83,7 +83,7 @@ User features
   * [X] Color Settings Page For Highlighter
   * [x] Add Highlighter Annotator to Color Settings Page
 
-Roadmap
+**Roadmap I**
 
 * Check references
 * Modules (files) indexes
@@ -93,6 +93,8 @@ Roadmap
 * Check folding
 * Find usages
 * Go to
+* Quotes Handler
+* Smart Enter
 * Qualified path
   * [ ] Include Modules/Classes/...
   * [ ] Stub parsers are not ignoring valid parents
@@ -105,10 +107,10 @@ Roadmap
 * Add reference/include tests
 * Add highlighter tests
 * Add presentation tests
-* Add structure tests
 * Add parser tests
+* Extract StructureView#getChildren and test it
 
-**Resume**
+**Roadmap II**
 
 * Can create files
 * Add SDK

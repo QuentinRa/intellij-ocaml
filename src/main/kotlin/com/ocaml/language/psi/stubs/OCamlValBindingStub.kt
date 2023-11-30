@@ -6,7 +6,7 @@ import com.ocaml.language.psi.OCamlValueDescription
 import com.ocaml.language.psi.api.OCamlNamedStub
 import com.ocaml.language.psi.api.OCamlStubElementType
 import com.ocaml.language.psi.api.isAnonymous
-import com.ocaml.language.psi.createStubIfParentIsStub
+import com.ocaml.language.psi.createStubIfNotAnonymous
 import com.ocaml.language.psi.impl.OCamlValueDescriptionImpl
 import com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex
 
@@ -18,12 +18,12 @@ class OCamlValBindingStub(
 ) : StubBase<OCamlValueDescription>(parent, elementType), OCamlNamedStub {
 
     object Type : OCamlStubElementType<OCamlValBindingStub, OCamlValueDescriptionImpl>("VALUE_DESCRIPTION") {
-        override fun shouldCreateStub(node: ASTNode): Boolean = createStubIfParentIsStub(node)
+        override fun shouldCreateStub(node: ASTNode): Boolean = createStubIfNotAnonymous(node)
 
         override fun createPsi(stub: OCamlValBindingStub) = OCamlValueDescriptionImpl(stub, this)
 
         override fun createStub(psi: OCamlValueDescriptionImpl, parentStub: StubElement<*>?) =
-            OCamlValBindingStub(parentStub, this, psi.name, if (psi.isAnonymous()) null else psi.qualifiedName)
+            OCamlValBindingStub(parentStub, this, psi.name, psi.qualifiedName)
 
         override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?) = OCamlValBindingStub(
             parentStub, this, dataStream.readName()?.string, dataStream.readName()?.string
