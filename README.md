@@ -104,6 +104,8 @@ Dune
 * Find usages
 * Go to
 * Quotes Handler
+  * OCaml
+  * Dune
 * Smart Enter
 * Qualified path
   * [ ] Include Modules/Classes/...

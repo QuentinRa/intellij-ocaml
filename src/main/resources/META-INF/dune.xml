@@ -15,16 +15,10 @@
         <annotator language="Dune" implementationClass="com.dune.ide.annotator.DuneHighlightingAnnotator"/>
 
         <!-- STRUCTURE / FOLDING / COMMENTS / DOC -->
-<!--        <lang.psiStructureViewFactory language="Dune" implementationClass="com.dune.ide.structure.DuneStructureViewFactory"/>-->
+        <lang.psiStructureViewFactory language="Dune" implementationClass="com.dune.ide.structure.DuneStructureViewFactory"/>
         <lang.commenter language="Dune" implementationClass="com.dune.ide.commenter.DuneCommenter"/>
 
         <!-- TYPING -->
         <lang.braceMatcher language="Dune" implementationClass="com.dune.ide.typing.DuneBraceMatcher"/>
-
-        <!--
-            psiStructureViewFactory
-            foldingBuilder
-            commenter
-        -->
     </extensions>
 </idea-plugin>
