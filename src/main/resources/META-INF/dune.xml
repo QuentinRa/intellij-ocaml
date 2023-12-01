@@ -5,21 +5,22 @@
     -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- FILES -->
-        <fileType fileNames="dune;dune-project;jbuild" name="Dune" language="Dune" fieldName="INSTANCE"
+        <fileType fileNames="dune;dune-project;jbuild" name="Dune File" language="Dune" fieldName="INSTANCE"
                   implementationClass="com.dune.ide.files.DuneFileType"/>
+
+        <!-- PARSER -->
+        <lang.parserDefinition language="Dune" implementationClass="com.dune.language.parser.DuneParserDefinition"/>
 
         <!-- HIGHLIGHT -->
 <!--        <lang.syntaxHighlighterFactory language="DUNE" implementationClass="com.dune.ide.highlight.DuneSyntaxHighlighterFactory"/>-->
 <!--        <colorSettingsPage implementation="com.dune.ide.settings.DuneColorSettingsPage"/>-->
 <!--        <annotator language="DUNE" implementationClass="com.dune.ide.highlight.DuneSyntaxAnnotator"/>-->
-
-        <!-- PARSER -->
 <!--        <lang.parserDefinition language="DUNE" implementationClass="com.dune.lang.parser.DuneParserDefinition"/>-->
 <!--        <lang.psiStructureViewFactory language="DUNE" implementationClass="com.dune.ide.structure.DuneStructureViewFactory"/>-->
 <!--        <lang.foldingBuilder language="DUNE" implementationClass="com.dune.ide.folding.DuneFoldingBuilder"/>-->
 
 <!--        <lang.ast.factory language="Dune" implementationClass="com.reason.lang.dune.DuneASTFactory"/>-->
-<!--        <lang.parserDefinition language="Dune" implementationClass="com.reason.lang.dune.DuneParserDefinition"/>-->
+
 <!--        <lang.syntaxHighlighterFactory language="Dune"-->
 <!--                                       implementationClass="com.reason.ide.highlight.DuneSyntaxHighlighterFactory"/>-->
 

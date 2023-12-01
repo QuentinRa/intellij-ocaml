@@ -8,13 +8,14 @@
   psiImplClassSuffix="Impl"
   psiPackage="com.dune.language.psi"
   psiImplPackage="com.dune.language.psi.impl"
-  psiImplUtilClass="com.dune.language.psi.OCamlImplUtils"
 
   elementTypeHolderClass="com.dune.language.psi.DuneTypes"
   elementTypeClass="com.dune.language.psi.api.DuneElementType"
   tokenTypeClass="com.dune.language.psi.api.DuneTokenType"
 
   tokens = [
+    LPAREN = "("
+    RPAREN = ")"
     COMMENT = "COMMENT"
     ATOM_VALUE = "ATOM_VALUE"
     STRING_VALUE = "STRING_VALUE"
@@ -22,7 +23,6 @@
 }
 
 // https://dune.readthedocs.io/en/stable/reference/lexical-conventions.html
-
 implementation ::= { items }*
 
 private items ::= list | COMMENT
@@ -33,4 +33,5 @@ string ::= STRING_VALUE
 
 // Lists are sequences of values enclosed by parentheses.
 // Lists can be empty, for instance: ().
-list ::= '(' { atom | string | list }* ')'
+list ::= LPAREN { atom | string | list }* RPAREN
+{ pin=1 }
