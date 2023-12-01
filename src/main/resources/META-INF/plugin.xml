@@ -65,4 +65,6 @@
         <!-- SPELL-CHECKER -->
         <spellchecker.support language="OCaml" implementationClass="com.ocaml.ide.spelling.OCamlSpellcheckingStrategy"/>
     </extensions>
+
+    <depends config-file="dune.xml">Dune</depends>
 </idea-plugin>
