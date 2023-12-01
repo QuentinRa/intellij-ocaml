@@ -21,6 +21,16 @@ import com.ocaml.language.psi.stubs.index.OCamlNamedElementIndex
 // - In ML, can go to ML or MLI for VAL
 // - In MLI, can go to ML for LET
 class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
+    internal fun collectNavigationMarkersForTest(element: PsiElement): Collection<RelatedItemLineMarkerInfo<*>> {
+        val markers: MutableCollection<RelatedItemLineMarkerInfo<*>> = ArrayList()
+        fun recursiveCollectNavigationMarkersForTest(e: PsiElement) {
+            collectNavigationMarkers(e, markers)
+            e.children.forEach { recursiveCollectNavigationMarkersForTest(it) }
+        }
+        recursiveCollectNavigationMarkersForTest(element)
+        return markers
+    }
+
     override fun collectNavigationMarkers(
         element: PsiElement, result: MutableCollection<in RelatedItemLineMarkerInfo<*>>
     ) {

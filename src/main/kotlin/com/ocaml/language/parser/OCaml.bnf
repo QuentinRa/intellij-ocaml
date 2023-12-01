@@ -798,6 +798,7 @@ private module_type_specification ::=
 private open_statement ::= OPEN module_path
 
 private sig_include_statement ::= INCLUDE module_type
+{ pin=1 }
 
 private internal_type_specification ::= type_extension_specification // priority
 | type_definition

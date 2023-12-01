@@ -101,13 +101,11 @@ User features
   * [ ] Add them to indexes
   * [ ] Ensure Line Marker is still working
 
-**Testing**
+**Roadmap I#Testing**
 
-* Add line marker tests (see file comment)
 * Add reference/include tests
-* Add highlighter tests
 * Add presentation tests
-* Add parser tests
+* Add template tests
 * Extract StructureView#getChildren and test it
 
 **Roadmap II**
@@ -125,6 +123,18 @@ User features
 * Can use annot for type inference
 * Space allowed (spaceExistenceTypeBetweenTokens)
 * Better stubs (skipChildProcessingWhenBuildingStubs)
+
+**Roadmap III**
+
+* Ensure parser works on 0Caml 4.14 Code
+* Ensure parser works on 0Caml 4.13 Code
+* Ensure parser works on 0Caml 4.12 Code
+* Ensure parser works on 0Caml 4.11 Code
+* Ensure parser works on 0Caml 4.10 Code
+
+**Roadmap III#Testing**
+
+* Add parser tests
 
 Random
 
