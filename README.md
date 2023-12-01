@@ -85,12 +85,16 @@ User features
 
 Dune
 
-* [X] Highlight
-* [X] Annotator Highlight
-* [ ] Structure View
+* [x] Highlight
+* [x] Annotator Highlight
+* [x] Structure View
+* [x] Braces matching
+* [x] Commenter
 
 **Roadmap I**
 
+* Test DunePsiFactory
+* Remove "()" from dune structure view
 * Dune Structure View
 * Check references
 * Check Documentation
