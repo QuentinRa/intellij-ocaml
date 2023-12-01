@@ -83,8 +83,15 @@ User features
   * [X] Color Settings Page For Highlighter
   * [x] Add Highlighter Annotator to Color Settings Page
 
+Dune
+
+* [X] Highlight
+* [X] Annotator Highlight
+* [ ] Structure View
+
 **Roadmap I**
 
+* Dune Structure View
 * Check references
 * Check Documentation
 * Modules (files) indexes
@@ -92,6 +99,8 @@ User features
   * [ ] Line Markers?
 * Check completion
 * Check folding
+  * OCaml Folding
+  * Dune Folding
 * Find usages
 * Go to
 * Quotes Handler
@@ -104,6 +113,7 @@ User features
 
 **Roadmap I#Testing**
 
+* Add dune tests (annotator, parser)
 * Add reference/include tests
 * Add presentation tests
 * Add template tests
@@ -170,16 +180,16 @@ Generalize steps
 | Type checking           | ❌     | ❌        | 🆗     |
 | Autocompletion          | ❌     | ✅        | ✅      |
 | Live Templates/Snippets | ✅     | ✅        | ✅      |
-| REPL integration        | ❌     | ❌        | ✅      |
 | Debugging               | ❌     | ?        | ✅      |
 
-**Build Systems** (✅ = Triggered from the editor, ❌ = Manually, 🆗 = Using An External Plugin)
+**Build Systems** (✅ = Triggered from the editor, ❌ = Manually, 🆗 = Using An External Plugin, 😓 = Syntax Highlight Only)
 
 |                      | OCaml | ReasonML | VSCode |
 |----------------------|-------|----------|--------|
 | Native Build         | ❌     | ❌        | ❌      |
-| Dune integration     | ❌     | ?        | ✅      |
+| Dune integration     | 😓    | 😓       | ✅      |
 | Makefile integration | 🆗    | 🆗       | 🆗     |
+| REPL integration     | ❌     | ❌        | ✅      |
 
 **IntelliJ Features**
 
