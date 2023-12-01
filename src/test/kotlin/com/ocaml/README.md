@@ -24,7 +24,7 @@ Tests for Parser
 |      | Parser | Mixin | Stubs | Indexes |
 |------|--------|-------|-------|---------|
 | File | N/A    | N/A   | N/A   | ❌       |
-| Let  | ❌      | ✅     | ✅     | ❌       |
+| Let  | ❌      | ✅     | ✅     | ✅       |
 | Val  | ❌      | ❌     | ❌     | ❌       |
 
 Notes

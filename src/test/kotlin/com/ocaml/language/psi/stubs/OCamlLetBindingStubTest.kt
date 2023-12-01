@@ -28,6 +28,9 @@ class OCamlLetBindingStubTest : OCamlBasePlatformTestCase() {
     fun testAnonymous() {
         generateStubTree<OCamlLetBindingStub>("""
                 let _ = ()
+                let _ = 
+                    let d = 5
+                    in d * d
             """, 0)
     }
 
@@ -44,6 +47,7 @@ class OCamlLetBindingStubTest : OCamlBasePlatformTestCase() {
     fun testNestedGlobalVariable() {
         generateStubTree<OCamlLetBindingStub>("""
                 class xxx = let x = () in object end;;
+                module xxx = struct let x = () end;;
             """, 0)
     }
 }
