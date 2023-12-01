@@ -20,19 +20,20 @@ class DuneParserDefinition : ParserDefinition {
 
     override fun createParser(project: Project?): PsiParser = DuneParser()
 
-    override fun getFileNodeType(): IFileElementType = FILE
+    override fun getFileNodeType(): IFileElementType = Constants.FILE
 
-    override fun getCommentTokens(): TokenSet = COMMENT_TOKENS
+    override fun getCommentTokens(): TokenSet = Constants.COMMENT_TOKENS
 
-    override fun getStringLiteralElements(): TokenSet = STRING_TOKENS
+    override fun getStringLiteralElements(): TokenSet = Constants.STRING_TOKENS
+    override fun getWhitespaceTokens(): TokenSet = Constants.WHITE_SPACE_TOKENS // there is no white_space
 
     override fun createElement(node: ASTNode): PsiElement = DuneTypes.Factory.createElement(node.elementType)
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = DuneFile(viewProvider)
-
-    companion object Utils {
+    object Constants {
         val FILE = IFileElementType(DuneLanguage)
         val COMMENT_TOKENS = TokenSet.create(DuneTypes.COMMENT)
         val STRING_TOKENS = TokenSet.create(DuneTypes.STRING_VALUE)
+        val WHITE_SPACE_TOKENS = TokenSet.create(DuneTypes.WHITE_SPACE)
     }
 }

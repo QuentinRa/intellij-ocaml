@@ -19,13 +19,15 @@
     COMMENT = "COMMENT"
     ATOM_VALUE = "ATOM_VALUE"
     STRING_VALUE = "STRING_VALUE"
+    WHITE_SPACE = "WHITE_SPACE"
   ]
 }
 
 // https://dune.readthedocs.io/en/stable/reference/lexical-conventions.html
+// Since whitespace are separators, they are not considered as blank whitespace anymore
 implementation ::= { items }*
 
-private items ::= list | COMMENT
+private items ::= list | COMMENT | WHITE_SPACE
 
 atom ::= ATOM_VALUE
 
@@ -33,5 +35,7 @@ string ::= STRING_VALUE
 
 // Lists are sequences of values enclosed by parentheses.
 // Lists can be empty, for instance: ().
-list ::= LPAREN { atom | string | list }* RPAREN
+list ::= LPAREN [WHITE_SPACE] [value { WHITE_SPACE value }*] [WHITE_SPACE] RPAREN
 { pin=1 }
+
+private value ::= atom | string | list
