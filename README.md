@@ -86,6 +86,7 @@ User features
 **Roadmap I**
 
 * Check references
+* Check Documentation
 * Modules (files) indexes
 * Handle Include and Open
   * [ ] Line Markers?

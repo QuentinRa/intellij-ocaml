@@ -12,6 +12,9 @@
         <lang.parserDefinition language="Dune" implementationClass="com.dune.language.parser.DuneParserDefinition"/>
 
         <!-- HIGHLIGHT -->
+        <lang.syntaxHighlighterFactory language="Dune" implementationClass="com.dune.ide.highlight.DuneSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="com.dune.ide.settings.DuneColorSettingsPage"/>
+
 <!--        <lang.syntaxHighlighterFactory language="DUNE" implementationClass="com.dune.ide.highlight.DuneSyntaxHighlighterFactory"/>-->
 <!--        <colorSettingsPage implementation="com.dune.ide.settings.DuneColorSettingsPage"/>-->
 <!--        <annotator language="DUNE" implementationClass="com.dune.ide.highlight.DuneSyntaxAnnotator"/>-->
