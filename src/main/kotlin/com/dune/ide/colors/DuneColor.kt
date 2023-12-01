@@ -11,8 +11,14 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors as Default
  */
 enum class DuneColor(humanText: String, attr: TextAttributesKey? = null) {
     COMMENT(OptionsBundle.message("options.language.defaults.line.comment"), Default.BLOCK_COMMENT),
-    ATOM(DuneBundle.message("settings.dune.color.atom"), Default.FUNCTION_DECLARATION),
     STRING(OptionsBundle.message("options.language.defaults.string"), Default.STRING),
+
+    // Short reminder: (<instruction> (<argument> <parameter>) <parameter>*)
+    // Example Syntax: (library (name my_lib) ...)
+    INSTRUCTION(DuneBundle.message("settings.dune.color.instruction"), Default.KEYWORD),
+    ARGUMENT(DuneBundle.message("settings.dune.color.argument"), Default.FUNCTION_DECLARATION),
+    PARAMETER(DuneBundle.message("settings.dune.color.parameter"), Default.PARAMETER),
+
     PARENTHESES(OptionsBundle.message("options.language.defaults.parentheses"), Default.PARENTHESES),
     ;
 

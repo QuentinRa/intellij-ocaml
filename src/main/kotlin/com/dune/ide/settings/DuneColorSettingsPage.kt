@@ -24,14 +24,14 @@ class DuneColorSettingsPage : ColorSettingsPage {
         val ANNOTATOR_TAGS: Map<String, TextAttributesKey> = DuneColor.values().associateBy({ it.name }, { it.textAttributesKey })
         val DEMO_TEXT: String by lazy {
             """; Simple Dune File
-(library
- (name my_lib)
- (modules my_module))
+(<INSTRUCTION>library</INSTRUCTION>
+ (<ARGUMENT>name</ARGUMENT> <PARAMETER>my_lib</PARAMETER>)
+ (<ARGUMENT>modules</ARGUMENT> <PARAMETER>my_module</PARAMETER>))
 
-(executable
- (name "my_executable")
- (libraries my_lib)
- (modules main))"""
+(<INSTRUCTION>executable</INSTRUCTION>
+ (<ARGUMENT>name</ARGUMENT> "my_executable")
+ (<ARGUMENT>libraries</ARGUMENT> <PARAMETER>my_lib</PARAMETER>)
+ (<ARGUMENT>modules</ARGUMENT> <PARAMETER>main</PARAMETER>))"""
         }
     }
 

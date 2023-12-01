@@ -1,8 +1,4 @@
 <idea-plugin>
-    <!--
-    All of these are coming from the ReasonML plugin
-    https://github.com/giraud/reasonml-idea-plugin
-    -->
     <extensions defaultExtensionNs="com.intellij">
         <!-- FILES -->
         <fileType fileNames="dune;dune-project;jbuild" name="Dune File" language="Dune" fieldName="INSTANCE"
@@ -15,28 +11,15 @@
         <lang.syntaxHighlighterFactory language="Dune" implementationClass="com.dune.ide.highlight.DuneSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.dune.ide.settings.DuneColorSettingsPage"/>
 
-<!--        <lang.syntaxHighlighterFactory language="DUNE" implementationClass="com.dune.ide.highlight.DuneSyntaxHighlighterFactory"/>-->
-<!--        <colorSettingsPage implementation="com.dune.ide.settings.DuneColorSettingsPage"/>-->
-<!--        <annotator language="DUNE" implementationClass="com.dune.ide.highlight.DuneSyntaxAnnotator"/>-->
-<!--        <lang.parserDefinition language="DUNE" implementationClass="com.dune.lang.parser.DuneParserDefinition"/>-->
-<!--        <lang.psiStructureViewFactory language="DUNE" implementationClass="com.dune.ide.structure.DuneStructureViewFactory"/>-->
-<!--        <lang.foldingBuilder language="DUNE" implementationClass="com.dune.ide.folding.DuneFoldingBuilder"/>-->
+        <!-- ANNOTATOR -->
+        <annotator language="Dune" implementationClass="com.dune.ide.annotator.DuneHighlightingAnnotator"/>
 
-<!--        <lang.ast.factory language="Dune" implementationClass="com.reason.lang.dune.DuneASTFactory"/>-->
-
-<!--        <lang.syntaxHighlighterFactory language="Dune"-->
-<!--                                       implementationClass="com.reason.ide.highlight.DuneSyntaxHighlighterFactory"/>-->
-
-<!--        <lang.psiStructureViewFactory language="Dune"-->
-<!--                                      implementationClass="com.reason.ide.structure.StructureViewFactory"/>-->
-
-<!--        <lang.foldingBuilder language="Dune" implementationClass="com.reason.ide.folding.DuneFoldingBuilder"/>-->
-<!--        <lang.commenter language="Dune" implementationClass="com.reason.ide.comment.DuneCommenter"/>-->
-<!--        <lang.braceMatcher language="Dune" implementationClass="com.reason.ide.match.DunePairedBraceMatcher"/>-->
-<!--        <annotator language="Dune" implementationClass="com.reason.ide.highlight.DuneSyntaxAnnotator"/>-->
-    </extensions>
-
-    <!-- Add your extensions here -->
-    <extensions defaultExtensionNs="com.intellij">
+        <!--
+            psiStructureViewFactory
+            foldingBuilder
+            ast.factory
+            commenter
+            braceMatcher
+        -->
     </extensions>
 </idea-plugin>

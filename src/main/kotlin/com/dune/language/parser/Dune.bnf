@@ -17,8 +17,8 @@
     LPAREN = "("
     RPAREN = ")"
     COMMENT = "COMMENT"
-    ATOM_VALUE = "ATOM_VALUE"
-    STRING_VALUE = "STRING_VALUE"
+    ATOM = "ATOM"
+    STRING = "STRING"
     WHITE_SPACE = "WHITE_SPACE"
   ]
 }
@@ -29,13 +29,9 @@ implementation ::= { items }*
 
 private items ::= list | COMMENT | WHITE_SPACE
 
-atom ::= ATOM_VALUE
-
-string ::= STRING_VALUE
-
 // Lists are sequences of values enclosed by parentheses.
 // Lists can be empty, for instance: ().
 list ::= LPAREN [WHITE_SPACE] [value { WHITE_SPACE value }*] [WHITE_SPACE] RPAREN
 { pin=1 }
 
-private value ::= atom | string | list
+private value ::= ATOM | STRING | list
