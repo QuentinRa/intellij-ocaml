@@ -9,7 +9,7 @@ import com.intellij.psi.stubs.PsiFileStubImpl
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.IStubFileElementType
-import com.ocaml.ide.files.OCamlLanguage
+import com.ocaml.language.OCamlLanguage
 import com.ocaml.language.base.OCamlBaseParserDefinition
 import com.ocaml.language.psi.OCamlTypes
 import com.ocaml.language.psi.stubs.OCamlStubVersions

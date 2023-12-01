@@ -107,16 +107,16 @@ User features
 * Add presentation tests
 * Add template tests
 * Extract StructureView#getChildren and test it
+* Add OCamlLanguageUtils tests
 
 **Roadmap II**
 
 * Can create files
 * Add SDK
 * Handle SDK
+* Add REPL
 * Handle Module Creation
 * Handle Run Configurations
-* Add parser tests
-* Add OCamlLanguageUtils;LetBindingMixin Tests
 * Can compile using dune (.gitignore? etc.)
 * Can display warnings/errors
 * Can generate annot file

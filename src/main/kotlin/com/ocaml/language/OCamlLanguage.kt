@@ -1,4 +1,4 @@
-package com.ocaml.ide.files
+package com.ocaml.language
 
 import com.intellij.lang.Language
 

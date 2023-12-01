@@ -8,8 +8,8 @@ import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.ocaml.ide.files.OCamlLanguage
 import com.ocaml.ide.presentation.getPresentationForElement
+import com.ocaml.language.OCamlLanguage
 
 abstract class OCamlStubElementType<StubT : StubElement<*>, PsiT : OCamlElement>(
     debugName: String

@@ -7,8 +7,8 @@ import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiUtilCore
 import com.ocaml.OCamlBundle
-import com.ocaml.ide.files.OCamlLanguage
 import com.ocaml.ide.highlight.OCamlSyntaxHighlighter
+import com.ocaml.language.OCamlLanguage
 
 // Don't forget to update TemplateContextTypePatch for older versions
 sealed class OCamlContextType(presentableName: String) : TemplateContextTypePatch(presentableName) {

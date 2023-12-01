@@ -3,7 +3,7 @@ package com.ocaml.ide.spelling
 import com.intellij.psi.PsiElement
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy
 import com.intellij.spellchecker.tokenizer.Tokenizer
-import com.ocaml.ide.files.OCamlLanguage
+import com.ocaml.language.OCamlLanguage
 import com.ocaml.language.psi.OCamlTypes
 import com.ocaml.language.psi.api.OCamlNameIdentifierOwner
 

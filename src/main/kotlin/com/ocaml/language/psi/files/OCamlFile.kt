@@ -3,7 +3,7 @@ package com.ocaml.language.psi.files
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 import com.ocaml.ide.files.OCamlFileType
-import com.ocaml.ide.files.OCamlLanguage
+import com.ocaml.language.OCamlLanguage
 import com.ocaml.language.base.OCamlFileBase
 
 class OCamlFile(viewProvider: FileViewProvider) : OCamlFileBase(viewProvider, OCamlLanguage) {

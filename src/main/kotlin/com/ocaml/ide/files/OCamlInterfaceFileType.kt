@@ -3,6 +3,7 @@ package com.ocaml.ide.files
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.ocaml.OCamlBundle
 import com.ocaml.icons.OCamlIcons
+import com.ocaml.language.OCamlInterfaceLanguage
 import org.jetbrains.annotations.Contract
 import javax.swing.Icon
 
