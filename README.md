@@ -94,8 +94,12 @@ Dune
 **Roadmap I**
 
 * Test DunePsiFactory
-* Remove "()" from dune structure view
-* Dune Structure View
+  * Cannot rename ":xxx"
+  * Cannot rename "-xxx"
+  * Cannot rename "a/b/c"
+* Test Dune Structure View
+  * Do not show empty lists
+  * Do not show values (strings, atoms)
 * Check references
 * Check Documentation
 * Modules (files) indexes

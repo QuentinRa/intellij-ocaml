@@ -19,7 +19,7 @@ class DuneSyntaxHighlighter : SyntaxHighlighter {
         fun map(tokenType: IElementType): DuneColor? = when (tokenType) {
             COMMENT -> DuneColor.COMMENT
             LPAREN, RPAREN -> DuneColor.PARENTHESES
-            STRING -> DuneColor.STRING
+            STRING_VALUE -> DuneColor.STRING
             else -> null
         }
     }

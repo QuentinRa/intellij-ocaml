@@ -33,7 +33,7 @@ class DuneParserDefinition : ParserDefinition {
     object Constants {
         val FILE = IFileElementType(DuneLanguage)
         val COMMENT_TOKENS = TokenSet.create(DuneTypes.COMMENT)
-        val STRING_TOKENS = TokenSet.create(DuneTypes.STRING)
+        val STRING_TOKENS = TokenSet.create(DuneTypes.STRING_VALUE)
         val WHITE_SPACE_TOKENS = TokenSet.create()
     }
 }

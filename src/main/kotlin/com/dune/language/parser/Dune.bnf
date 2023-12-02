@@ -19,8 +19,8 @@
     LPAREN = "("
     RPAREN = ")"
     COMMENT = "COMMENT"
-    ATOM = "ATOM"
-    STRING = "STRING"
+    ATOM_VALUE = "ATOM_VALUE"
+    STRING_VALUE = "STRING_VALUE"
     WHITE_SPACE = "WHITE_SPACE"
   ]
 }
@@ -40,10 +40,11 @@ list ::= LPAREN [WHITE_SPACE] [value { WHITE_SPACE argument }*] [WHITE_SPACE] RP
     extends="com.dune.language.psi.ext.DuneNamedOwnerElementImpl"
 }
 
-argument ::= value
+atom ::= ATOM_VALUE
 {
-    implements="com.dune.language.psi.api.DuneNamedOwnerElement"
-    extends="com.dune.language.psi.ext.DuneNamedOwnerElementImpl"
+    implements="com.dune.language.psi.api.DuneNamedElement"
+    extends="com.dune.language.psi.ext.DuneNamedElementImpl"
 }
 
-value ::= ATOM | STRING | list
+value ::= atom | STRING_VALUE | list
+argument ::= atom | STRING_VALUE | list { implements="value" }

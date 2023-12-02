@@ -1,7 +1,6 @@
 package com.dune.ide.structure
 
 import com.dune.ide.presentation.getPresentationForStructure
-import com.dune.language.psi.DuneArgument
 import com.dune.language.psi.DuneList
 import com.dune.language.psi.files.DuneFile
 import com.intellij.ide.projectView.PresentationData
@@ -21,9 +20,13 @@ class DuneStructureViewElement(element: PsiElement) : StructureViewTreeElement, 
     private val childElements: List<PsiElement>
         get() {
             return when (val psi = myElement) {
-                is DuneFile -> psi.childrenOfType<DuneList>()
-                is DuneList -> psi.argumentList
-                is DuneArgument -> psi.value.list?.argumentList ?: emptyList()
+                is DuneFile -> psi.childrenOfType<DuneList>().filter { it.value?.atom != null }
+                // [HUMAN]: we basically only keep the lists that have an atom
+                // So the structure view only display lists (name=the atom) and their sub-lists
+                // (while repeating the filtering/display process)
+                is DuneList -> psi.argumentList.filter { it.list?.value?.atom != null }.map {
+                    it.list!!
+                }
                 else -> emptyList()
             }
         }

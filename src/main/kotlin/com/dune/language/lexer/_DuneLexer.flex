@@ -53,13 +53,13 @@ NEWLINE=("\r"* "\n")
   "("                  { return LPAREN; }
   ")"                  { return RPAREN; }
   ";" [^\n]*           { return COMMENT; }
-  [^ \t\n\r()\";]+     { return ATOM; }
+  [^ \t\n\r()\";]+     { return ATOM_VALUE; }
   "\""                 { yybegin(IN_STRING); tokenStart(); }
 }
 
 // https://dune.readthedocs.io/en/stable/reference/lexical-conventions.html
 <IN_STRING> {
-    "\"" { yybegin(INITIAL); tokenEnd(); return STRING; }
+    "\"" { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
     "\\" { NEWLINE } ([ \t] *) { }
     "\\" [\\\'\"ntbr ] { }
     "\\" [0-9] [0-9] [0-9] { }
@@ -68,7 +68,7 @@ NEWLINE=("\r"* "\n")
     "\\" . { }
     { NEWLINE } { }
     . { }
-    <<EOF>> { yybegin(INITIAL); tokenEnd(); return STRING; }
+    <<EOF>> { yybegin(INITIAL); tokenEnd(); return STRING_VALUE; }
 }
 
 [^] { return BAD_CHARACTER; }
