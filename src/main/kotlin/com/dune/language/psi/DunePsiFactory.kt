@@ -7,13 +7,13 @@ import com.intellij.psi.PsiFileFactory
 
 object DunePsiFactory {
 
-    fun createAtom(project: Project, name: String): DuneAtom {
+    fun createNamedAtom(project: Project, name: String): DuneNamedAtom {
         val newChild = (PsiFileFactory.getInstance(project).createFileFromText(
             "dune",
             DuneFileType,
             "($name)",
         ) as DuneFile).firstChild as DuneList
-        return newChild.value?.atom ?: error("DunePsiFactory#createValue failed: unable to create atom <$name>.")
+        return newChild.value?.atom?.namedAtom ?: error("DunePsiFactory#createValue failed: unable to create atom <$name>.")
     }
 
 }

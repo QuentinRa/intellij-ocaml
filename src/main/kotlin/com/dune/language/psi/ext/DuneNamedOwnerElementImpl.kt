@@ -1,6 +1,7 @@
 package com.dune.language.psi.ext
 
 import com.dune.language.psi.DunePsiFactory
+import com.dune.language.psi.DuneTypes
 import com.dune.language.psi.DuneValue
 import com.dune.language.psi.api.DuneElementImpl
 import com.dune.language.psi.api.DuneNamedElement
@@ -11,9 +12,9 @@ import com.intellij.psi.util.PsiTreeUtil
 
 // Base class for DuneNamedElement elements
 open class DuneNamedElementImpl(type: IElementType) : DuneElementImpl(type), DuneNamedElement {
-    override fun getName(): String? = text
+    override fun getName(): String? = findPsiChildByType(DuneTypes.ATOM_VALUE_ID)?.text
     override fun setName(name: String): PsiElement? {
-        val newElement = DunePsiFactory.createAtom(project, name)
+        val newElement = DunePsiFactory.createNamedAtom(project, name)
         return replace(newElement)
     }
 }
@@ -27,5 +28,5 @@ open class DuneNamedOwnerElementImpl(type: IElementType) : DuneElementImpl(type)
     }
 
     override fun getNameIdentifier(): PsiElement?
-        = PsiTreeUtil.getChildOfType(this, DuneValue::class.java)?.atom
+        = PsiTreeUtil.getChildOfType(this, DuneValue::class.java)?.atom?.namedAtom
 }

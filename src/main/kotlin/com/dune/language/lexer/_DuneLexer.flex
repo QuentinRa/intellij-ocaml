@@ -53,7 +53,8 @@ NEWLINE=("\r"* "\n")
   "("                  { return LPAREN; }
   ")"                  { return RPAREN; }
   ";" [^\n]*           { return COMMENT; }
-  [^ \t\n\r()\";]+     { return ATOM_VALUE; }
+  \w (\w|[-.#])*        { return ATOM_VALUE_ID; }
+  [^ \t\n\r()\";]+     { return ATOM_VALUE_COMPLEX; }
   "\""                 { yybegin(IN_STRING); tokenStart(); }
 }
 

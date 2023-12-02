@@ -19,8 +19,6 @@
     LPAREN = "("
     RPAREN = ")"
     COMMENT = "COMMENT"
-    ATOM_VALUE = "ATOM_VALUE"
-    STRING_VALUE = "STRING_VALUE"
     WHITE_SPACE = "WHITE_SPACE"
   ]
 }
@@ -40,11 +38,19 @@ list ::= LPAREN [WHITE_SPACE] [value { WHITE_SPACE argument }*] [WHITE_SPACE] RP
     extends="com.dune.language.psi.ext.DuneNamedOwnerElementImpl"
 }
 
-atom ::= ATOM_VALUE
+value ::= atom | STRING_VALUE | list
+argument ::= atom | STRING_VALUE | list { implements="value" }
+
+// While both "a" and "a/b" are atoms
+// Only "a" can be renamed or be a filename
+// while "a/b", "a.{ml,mli}" "-a" may be renamed or not
+// (not handled tho)
+atom ::= named_atom | expr_atom
+
+named_atom ::= ATOM_VALUE_ID
 {
     implements="com.dune.language.psi.api.DuneNamedElement"
     extends="com.dune.language.psi.ext.DuneNamedElementImpl"
 }
 
-value ::= atom | STRING_VALUE | list
-argument ::= atom | STRING_VALUE | list { implements="value" }
+expr_atom ::= ATOM_VALUE_COMPLEX

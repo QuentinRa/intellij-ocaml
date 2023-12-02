@@ -15,13 +15,13 @@ class DuneHighlightingAnnotator : Annotator {
         if (holder.isBatchMode) return
         if (element !is LeafPsiElement) return
         val elementType = element.elementType
-        if (elementType != DuneTypes.ATOM_VALUE) return
+        if (elementType != DuneTypes.ATOM_VALUE_ID && elementType != DuneTypes.ATOM_VALUE_COMPLEX) return
 
         // The top-level values are instructions (ex: (top_level ))
         // If they are nested, they are parameters (ex: (top_level (nested)))
         // Otherwise, they are arguments (ex: (top_level argument (nested argument)))
-        val color = if (element.parent.parent?.prevSibling?.elementType == DuneTypes.LPAREN)
-                if (element.parent.parent?.parent?.parent is PsiFile) DuneColor.INSTRUCTION
+        val color = if (element.parent.parent?.parent?.prevSibling?.elementType == DuneTypes.LPAREN)
+                if (element.parent.parent?.parent?.parent?.parent is PsiFile) DuneColor.INSTRUCTION
                 else DuneColor.ARGUMENT
             else
                 DuneColor.PARAMETER
