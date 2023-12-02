@@ -190,60 +190,54 @@ Generalize steps
 
 **Base features** (✅ = YES, ❌ = No/Not yet, 🆗 = Must compile first)
 
-|                         | OCaml | ReasonML | VSCode        |
-|-------------------------|-------|----------|---------------|
-| Highlighter             | ✅     | ✅        | ✅             |
-| Find Usages             | ❌     | ✅        | ❌             |
-| Type inference (hint)   | ❌     | ❌        | ❌<sup>1</sup> |
-| Type checking           | ❌     | ❌        | ❌<sup>1</sup> |
-| Autocompletion          | ❌     | ✅        | ✅<sup>2</sup> |
-| Live Templates/Snippets | ✅     | ✅        | ✅             |
-| Debugging               | ❌     | ?        | ?             |
+|                           | OCaml | ReasonML | VSCode        | VSCode LSP |
+|---------------------------|-------|----------|---------------|------------|
+| Highlighter               | ✅     | ✅        | ✅             | ✅          |
+| Find Usages               | ❌     | ✅        | ❌             | ✅          |
+| Type inference (codelens) | ❌     | ❌        | ❌             | ✅          |
+| Type checking             | ❌     | ❌        | ❌             | ✅          |
+| Autocompletion            | ❌     | ✅        | ✅<sup>1</sup> | ✅          |
+| Live Templates/Snippets   | ✅     | ✅        | ✅             | ✅          |
+| Debugging                 | ❌     | ?        | ?             | ?          |
+| Navigation <sup>2</sup>   | ❌     | ✅        | ❌             | ✅          |
+| Warnings                  | ❌     | ❌        | ❌             | ✅          |
+| Error                     | ❌     | ❌        | ❌             | ✅          |
 
-<sup>1</sup> It was supposed to be 🆗, but it doesn't work on basic projects.
+<sup>1</sup> Autocompletion is not context sensitive
 
-<sup>2</sup> Autocompletion is not context sensitive
+<sup>2</sup> From a function/type/etc. to its declaration/implementation
 
 **Build Systems** (✅ = Triggered from the editor, ❌ = Manually, 🆗 = Using An External Plugin, 😓 = Syntax Highlight Only)
 
-|                      | OCaml | ReasonML | VSCode        |
-|----------------------|-------|----------|---------------|
-| Native Build         | ❌     | ❌        | ❌             |
-| Dune integration     | 😓    | 😓       | ❌<sup>3</sup> |
-| Makefile integration | ?     | ?        | ?             |
-| REPL integration     | ❌     | ❌        | ✅             |
+|                      | OCaml | ReasonML | VSCode | VSCode (LSP)   |
+|----------------------|-------|----------|--------|----------------|
+| Native Build         | ❌     | ❌        | ❌      | ❌              |
+| Dune integration     | 😓    | 😓       | ❌      | ✅ <sup>3</sup> |
+| Makefile integration | ?     | ?        | ?      | ?              |
+| REPL integration     | ❌     | ❌        | ✅      | ✅              |
 
-<sup>3</sup> It was supposed to be ✅, but command palette doesn't any dune command.
+<sup>3</sup> Run "build task" and select which dune file to build.
 
 **IntelliJ Features**
 
-|                              | OCaml | ReasonML | VSCode        |
-|------------------------------|-------|----------|---------------|
-| Structure/Outline View       | ✅     | ✅        | ❌             |
-| Spell-checker                | ✅     | ✅        | ❌             |
-| Braces Matching              | ✅     | ✅        | ✅             |
-| Comment Handler (line/block) | ✅     | ✅        | ✅             |
-| Navigate to declaration      | ✅     | ✅        | ❌<sup>4</sup> |
-| Navigate to implementation   | ✅     | ✅        | ❌<sup>4</sup> |
-| Refactoring                  | ❌     | ?        | ❌             |
-| Parser Recovery <sup>3</sup> | ✅     | ❌        | ❌             |
+|                              | OCaml | ReasonML | VSCode | VSCode LSP |
+|------------------------------|-------|----------|--------|------------|
+| Structure/Outline View       | ✅     | ✅        | ❌      | ✅          |
+| Spell-checker                | ✅     | ✅        | ❌      | ❌          |
+| Braces Matching              | ✅     | ✅        | ✅      | ✅          |
+| Comment Handler (line/block) | ✅     | ✅        | ✅      | ✅          |
+| Navigate to declaration      | ✅     | ✅        | ❌      | ✅          |
+| Navigate to implementation   | ✅     | ✅        | ❌      | ✅          |
+| Refactoring                  | ❌     | ?        | ❌      | ✅          |
+| Parser Recovery <sup>4</sup> | ✅     | ❌        | ❌      | ✅          |
 
-<sup>4</sup> It was supposed to be ✅, but navigation doesn't work.
-
-<sup>5</sup> Ability of the plugin to work on a file that doesn't compile
+<sup>4</sup> Ability of the plugin to work on a file that doesn't compile
 
 **External Dependencies**
 
-|                  | OCaml | ReasonML | VSCode |
-|------------------|-------|----------|--------|
-| OCaml LSP Server | ❌     | ❌        | ?      |
-| Merlin           | ❌     | ❌        | ❌      |
-| Opam             | ❌     | ✅        | ✅      |
-
-**External Tools Support**
-
 |             | OCaml | ReasonML | VSCode |
 |-------------|-------|----------|--------|
+| Opam        | ❌     | ✅        | ✅      |
 | OCamlFormat | ❌     | ✅        | ✅      |
 
 ## 🎯 What's my goal?
