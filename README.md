@@ -93,6 +93,8 @@ Dune
 
 **Roadmap I**
 
+* Check references
+* Check Documentation
 * Test DunePsiFactory
   * Cannot rename ":xxx"
   * Cannot rename "-xxx"
@@ -100,9 +102,7 @@ Dune
 * Test Dune Structure View
   * Do not show empty lists
   * Do not show values (strings, atoms)
-* Check references
-* Check Documentation
-* Modules (files) indexes
+* Modules (files but not just files) indexes
 * Handle Include and Open
   * [ ] Line Markers?
 * Check completion
@@ -120,6 +120,14 @@ Dune
   * [ ] Stub parsers are not ignoring valid parents
   * [ ] Add them to indexes
   * [ ] Ensure Line Marker is still working
+
+```none
+FilenameIndex.getVirtualFilesByName(
+  "filename.extension",
+  false,
+  GlobalSearchScope.projectScope(element.project)
+)
+```
 
 **Roadmap I#Testing**
 
@@ -182,51 +190,61 @@ Generalize steps
 
 **Base features** (✅ = YES, ❌ = No/Not yet, 🆗 = Must compile first)
 
-|                         | OCaml | ReasonML | VSCode |
-|-------------------------|-------|----------|--------|
-| Highlighter             | ✅     | ✅        | ✅      |
-| Find Usages             | ❌     | ✅        | ?      |
-| Type inference (hint)   | ❌     | ❌        | 🆗     |
-| Type checking           | ❌     | ❌        | 🆗     |
-| Autocompletion          | ❌     | ✅        | ✅      |
-| Live Templates/Snippets | ✅     | ✅        | ✅      |
-| Debugging               | ❌     | ?        | ✅      |
+|                         | OCaml | ReasonML | VSCode        |
+|-------------------------|-------|----------|---------------|
+| Highlighter             | ✅     | ✅        | ✅             |
+| Find Usages             | ❌     | ✅        | ❌             |
+| Type inference (hint)   | ❌     | ❌        | ❌<sup>1</sup> |
+| Type checking           | ❌     | ❌        | ❌<sup>1</sup> |
+| Autocompletion          | ❌     | ✅        | ✅<sup>2</sup> |
+| Live Templates/Snippets | ✅     | ✅        | ✅             |
+| Debugging               | ❌     | ?        | ?             |
+
+<sup>1</sup> It was supposed to be 🆗, but it doesn't work on basic projects.
+
+<sup>2</sup> Autocompletion is not context sensitive
 
 **Build Systems** (✅ = Triggered from the editor, ❌ = Manually, 🆗 = Using An External Plugin, 😓 = Syntax Highlight Only)
 
-|                      | OCaml | ReasonML | VSCode |
-|----------------------|-------|----------|--------|
-| Native Build         | ❌     | ❌        | ❌      |
-| Dune integration     | 😓    | 😓       | ✅      |
-| Makefile integration | 🆗    | 🆗       | 🆗     |
-| REPL integration     | ❌     | ❌        | ✅      |
+|                      | OCaml | ReasonML | VSCode        |
+|----------------------|-------|----------|---------------|
+| Native Build         | ❌     | ❌        | ❌             |
+| Dune integration     | 😓    | 😓       | ❌<sup>3</sup> |
+| Makefile integration | ?     | ?        | ?             |
+| REPL integration     | ❌     | ❌        | ✅             |
+
+<sup>3</sup> It was supposed to be ✅, but command palette doesn't any dune command.
 
 **IntelliJ Features**
 
-|                              | OCaml | ReasonML |
-|------------------------------|-------|----------|
-| Structure View               | ✅     | ✅        |
-| Spell-checker                | ✅     | ✅        |
-| Braces Matching              | ✅     | ✅        |
-| Comment Handler (line/block) | ✅     | ✅        |
-| Navigate to declaration      | ✅     | ✅        |
-| Navigate to implementation   | ✅     | ✅        |
-| Parser Recovery <sup>1</sup> | ✅     | ❌        |
+|                              | OCaml | ReasonML | VSCode        |
+|------------------------------|-------|----------|---------------|
+| Structure/Outline View       | ✅     | ✅        | ❌             |
+| Spell-checker                | ✅     | ✅        | ❌             |
+| Braces Matching              | ✅     | ✅        | ✅             |
+| Comment Handler (line/block) | ✅     | ✅        | ✅             |
+| Navigate to declaration      | ✅     | ✅        | ❌<sup>4</sup> |
+| Navigate to implementation   | ✅     | ✅        | ❌<sup>4</sup> |
+| Refactoring                  | ❌     | ?        | ❌             |
+| Parser Recovery <sup>3</sup> | ✅     | ❌        | ❌             |
 
-<sup>1</sup> Ability of the plugin to work on a file that doesn't compile
+<sup>4</sup> It was supposed to be ✅, but navigation doesn't work.
+
+<sup>5</sup> Ability of the plugin to work on a file that doesn't compile
 
 **External Dependencies**
 
 |                  | OCaml | ReasonML | VSCode |
 |------------------|-------|----------|--------|
-| OCaml LSP Server | ❌     | ❌        | ✅      |
+| OCaml LSP Server | ❌     | ❌        | ?      |
 | Merlin           | ❌     | ❌        | ❌      |
+| Opam             | ❌     | ✅        | ✅      |
 
 **External Tools Support**
 
 |             | OCaml | ReasonML | VSCode |
 |-------------|-------|----------|--------|
-| OCamlFormat | ❌     | ✅        | ?      |
+| OCamlFormat | ❌     | ✅        | ✅      |
 
 ## 🎯 What's my goal?
 
