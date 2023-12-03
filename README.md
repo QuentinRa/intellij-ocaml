@@ -90,6 +90,9 @@ Dune
 * [x] Structure View
 * [x] Braces matching
 * [x] Commenter
+* [ ] Add references for paths/files
+* [ ] Add folding for variables
+* [ ] Live Templates
 
 **Roadmap I**
 
@@ -120,6 +123,7 @@ Dune
   * [ ] Stub parsers are not ignoring valid parents
   * [ ] Add them to indexes
   * [ ] Ensure Line Marker is still working
+* Check refactoring
 
 ```none
 FilenameIndex.getVirtualFilesByName(
@@ -188,6 +192,8 @@ Generalize steps
 
 ## Plugin Features Overview
 
+The goal is to have a plugin similar to VSCode with OCaml LSP server, but without the LSP server as it is not fully available for plugin developers yet, and as it exclusive to paid users.
+
 **Base features** (✅ = YES, ❌ = No/Not yet, 🆗 = Must compile first)
 
 |                           | OCaml | ReasonML | VSCode        | VSCode LSP |
@@ -229,6 +235,7 @@ Generalize steps
 | Navigate to declaration      | ✅     | ✅        | ❌      | ✅          |
 | Navigate to implementation   | ✅     | ✅        | ❌      | ✅          |
 | Refactoring                  | ❌     | ?        | ❌      | ✅          |
+| UML Generation               | ❌     | ❌        | ❌      | ?          |
 | Parser Recovery <sup>4</sup> | ✅     | ❌        | ❌      | ✅          |
 
 <sup>4</sup> Ability of the plugin to work on a file that doesn't compile

@@ -1,6 +1,8 @@
 package com.ocaml.language
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.DebugUtil
 import com.intellij.psi.util.PsiTreeUtil
@@ -41,6 +43,20 @@ abstract class OCamlBaseParsingTestCase(fileExt: String, parserDefinition: OCaml
         return PsiTreeUtil.findChildrenOfType(
             parseCode(code), T::class.java
         ).toList()
+    }
+
+    protected fun hasError(file: PsiFile): Boolean {
+        var hasErrors = false
+        file.accept(object : PsiElementVisitor() {
+            override fun visitElement(element: PsiElement) {
+                if (element is PsiErrorElement) {
+                    hasErrors = true
+                    return
+                }
+                element.acceptChildren(this)
+            }
+        })
+        return hasErrors
     }
 }
 abstract class OCamlParsingTestCase : OCamlBaseParsingTestCase("ml", OCamlParserDefinition())
