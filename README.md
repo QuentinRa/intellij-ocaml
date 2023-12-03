@@ -68,6 +68,8 @@ User features
     * [x] Variables
     * [x] Handle Visibility (public/private)
     * [ ] Filters (nested variables?)
+    * [ ] Add types?
+    * [ ] Add function arguments?
   * [ ] Surround With
   * [x] Live Templates
     * [x] Basic implementation
@@ -97,17 +99,13 @@ Dune
 **Roadmap I**
 
 * Check references
+  * Handle Include and Open
+    * Line Markers?
+  * Modules (files but not just files) indexes
+  * Dune file references?
 * Check Documentation
-* Test DunePsiFactory
-  * Cannot rename ":xxx"
-  * Cannot rename "-xxx"
-  * Cannot rename "a/b/c"
-* Test Dune Structure View
-  * Do not show empty lists
-  * Do not show values (strings, atoms)
 * Modules (files but not just files) indexes
-* Handle Include and Open
-  * [ ] Line Markers?
+* Add function parameters in annotator
 * Check completion
 * Check folding
   * OCaml Folding
@@ -135,12 +133,18 @@ FilenameIndex.getVirtualFilesByName(
 
 **Roadmap I#Testing**
 
-* Add dune tests (annotator, parser)
 * Add reference/include tests
-* Add presentation tests
 * Add template tests
 * Extract StructureView#getChildren and test it
 * Add OCamlLanguageUtils tests
+* Add dune tests (annotator, parser)
+* Test DunePsiFactory
+  * Cannot rename ":xxx"
+  * Cannot rename "-xxx"
+  * Cannot rename "a/b/c"
+* Test Dune Structure View
+  * Do not show empty lists
+  * Do not show values (strings, atoms)
 
 **Roadmap II**
 

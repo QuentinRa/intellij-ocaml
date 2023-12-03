@@ -10,7 +10,7 @@ Tests for IDE Features
 | Files        | N/A    |                                  |
 | Highlight    | N/A    |                                  |
 | LineMarkers  | ✅      |                                  |
-| Presentation | ❌      | Check the presentation           |
+| Presentation | ✅      | Tested Simple Let/Val            |
 | Settings     | N/A    |                                  |
 | Spelling     | N/A    |                                  |
 | Structure    | ✅      | Test Let/Val, only basic/pattern |

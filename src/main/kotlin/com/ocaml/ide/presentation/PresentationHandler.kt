@@ -31,8 +31,7 @@ fun getPresentationForStructure(psi: PsiElement): ItemPresentation {
         is OCamlLetBindings -> null
         else -> psi.getIcon(Iconable.ICON_FLAG_VISIBILITY)
     }
-    val textAttributes = null
-    return PresentationData(presentation, null, icon, textAttributes)
+    return PresentationData(presentation, null, icon, null)
 }
 
 fun getPresentationForElement(psi: OCamlQualifiedNamedElement): ItemPresentation? {
