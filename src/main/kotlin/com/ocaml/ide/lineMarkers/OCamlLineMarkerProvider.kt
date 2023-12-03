@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.ocaml.icons.OCamlIcons
+import com.ocaml.language.psi.OCamlImplUtils.Companion.toLeaf
 import com.ocaml.language.psi.OCamlLetBinding
 import com.ocaml.language.psi.OCamlValueDescription
 import com.ocaml.language.psi.api.OCamlLetDeclaration
@@ -56,7 +57,7 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
     ) {
         if (element !is OCamlLetDeclaration || !element.isGlobal()) return
         val qualifiedName = element.qualifiedName ?: return
-        processQualifiedName<T>(qualifiedName, element.nameIdentifier, text, isInterface, project, scope, result)
+        processQualifiedName<T>(qualifiedName, element.nameIdentifier?.toLeaf(), text, isInterface, project, scope, result)
     }
 
     private inline fun <reified T : OCamlNameIdentifierOwner> processQualifiedName(
@@ -85,7 +86,7 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
     ) {
         if (!element.isGlobal()) return
         // Handle variable declarations of multiple variables
-        val nameIdentifier = element.nameIdentifier
+        val nameIdentifier = element.nameIdentifier?.toLeaf()
         if (nameIdentifier != null) {
             processQualifiedName<OCamlValueDescription>(
                 element.qualifiedName!!,

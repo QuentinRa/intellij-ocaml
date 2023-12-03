@@ -98,6 +98,12 @@ Dune
 
 **Roadmap I**
 
+* Better anonymous variable handling
+  * `let () = ()` is valid, but there is no variable so it's anonymous...
+  * `let ('a'..'z') = ()` is valid, what's the name?
+* Handle variable aliases
+  * `let x as yxz = ()`: two variables
+* Custom presentation for operators?
 * Check references
   * Handle Include and Open
     * Line Markers?

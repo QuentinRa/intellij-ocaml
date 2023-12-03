@@ -20,15 +20,18 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
     constructor(node: ASTNode) : super(node)
     constructor(stub: OCamlLetBindingStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getNameIdentifier(): PsiElement? {
-        return valueName?.firstChild?.firstChild
-    }
+    override fun getNameIdentifier(): PsiElement? = valueName?.lowercaseIdent?.firstChild ?: valueName
 
     override fun getName(): String? {
-       return super.getName() ?: computeValueNames().joinToString(",") { it.text }
+        // Operators names are formatted by OCaml
+        if (valueName?.operatorName != null) return "( ${valueName!!.operatorName!!.text} )"
+        // Handle pattern variables
+        if (nameIdentifier == null) return computeValueNames().joinToString(",") { it.text }
+        // Fallback to the default behavior
+        return super.getName()
     }
 
-    override fun isFunction() : Boolean {
+    override fun isFunction(): Boolean {
         // we should check the type as this check is not enough
         // but there is no type inference yet
         return getParameterList().isNotEmpty()
@@ -44,12 +47,12 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
     }
 }
 
-fun OCamlLetBinding.computeValueNames() : List<PsiElement> =
+fun OCamlLetBinding.computeValueNames(): List<PsiElement> =
     PsiTreeUtil.findChildrenOfType(this, OCamlValueName::class.java).map {
         it.firstChild.firstChild
     }
 
-fun expandLetBindingStructuredName(structuredName: String?) : List<String> {
+fun expandLetBindingStructuredName(structuredName: String?): List<String> {
     if (structuredName.isNullOrEmpty()) return listOf()
     if (!structuredName.contains(",")) return listOf(structuredName)
     val parts = structuredName.split(",").toMutableList()
@@ -58,9 +61,11 @@ fun expandLetBindingStructuredName(structuredName: String?) : List<String> {
     return parts.map { part -> "$prefix.$part" }
 }
 
-private class OCamlLetBindingDeconstruction(private val psi: PsiElement, private val letBinding: OCamlLetBinding) : OCamlLetBindingImpl(letBinding.node) {
+private class OCamlLetBindingDeconstruction(private val psi: PsiElement, private val letBinding: OCamlLetBinding) :
+    OCamlLetBindingImpl(letBinding.node) {
     override fun getNameIdentifier(): PsiElement = psi
     override fun isFunction(): Boolean = false
+
     // Ensure TreeAnchorizer is still working as expected:
     override fun equals(other: Any?): Boolean = letBinding == other
     override fun hashCode(): Int = letBinding.hashCode()

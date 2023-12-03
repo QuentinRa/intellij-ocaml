@@ -18,8 +18,13 @@ abstract class OCamlValBindingMixin : OCamlStubbedNamedElementImpl<OCamlValBindi
     constructor(node: ASTNode) : super(node)
     constructor(stub: OCamlValBindingStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getNameIdentifier(): PsiElement? {
-        return valueName?.firstChild?.firstChild
+    override fun getNameIdentifier(): PsiElement? = valueName?.firstChild?.firstChild ?: valueName
+
+    override fun getName(): String? {
+        // Operators names are formatted by OCaml
+        if (valueName?.operatorName != null) return "( ${valueName!!.operatorName!!.text} )"
+        // Fallback to the default behavior
+        return super.getName()
     }
 
     override fun isFunction() : Boolean {
