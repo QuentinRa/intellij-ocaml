@@ -103,7 +103,16 @@ Dune
   * `let ('a'..'z') = ()` is valid, what's the name?
 * Handle variable aliases
   * `let x as yxz = ()`: two variables
+* Handle destructured
+  * `let ((+), a) = (),();;`
+  * `let (_,(+)) = ()`
+* **Clean the code for let bindings and adapt tests**
+  * Index mustn't include "`_`" from `(_)`
+  * Index mustn't include `()`
+  * Index must include `( + )` from `((+))`
 * Custom presentation for operators?
+  * Function?
+  * Add test
 * Check references
   * Handle Include and Open
     * Line Markers?

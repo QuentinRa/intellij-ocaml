@@ -1,5 +1,7 @@
 package com.ocaml.language.psi.api
 
+import com.intellij.psi.impl.source.tree.LeafPsiElement
+
 interface OCamlLetDeclaration {
     fun isFunction() : Boolean
 
@@ -11,3 +13,4 @@ interface OCamlLetDeclaration {
 }
 
 fun OCamlNamedElement.isAnonymous() : Boolean = name == "_"
+fun LeafPsiElement.isAnonymous() : Boolean = text == "_"

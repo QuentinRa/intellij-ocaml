@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.ElementBase
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.PlatformIcons
@@ -26,7 +27,11 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
         // Operators names are formatted by OCaml
         if (valueName?.operatorName != null) return "( ${valueName!!.operatorName!!.text} )"
         // Handle pattern variables
-        if (nameIdentifier == null) return computeValueNames().joinToString(",") { it.text }
+        if (valueName == null) return computeValueNames().joinToString(",") {
+            // Operators names are formatted by OCaml
+            if (it is OCamlValueName && it.operatorName != null) "( ${it.operatorName!!.text} )"
+            else it.text
+        }
         // Fallback to the default behavior
         return super.getName()
     }
@@ -48,8 +53,12 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
 }
 
 fun OCamlLetBinding.computeValueNames(): List<PsiElement> =
-    PsiTreeUtil.findChildrenOfType(this, OCamlValueName::class.java).map {
-        it.firstChild.firstChild
+    PsiTreeUtil.findChildrenOfType(this, OCamlValueName::class.java).mapNotNull {
+        val nameIdentifier = it.lowercaseIdent?.firstChild ?: it
+        if ((nameIdentifier as? LeafPsiElement)?.isAnonymous() == true)
+            null
+        else
+            nameIdentifier
     }
 
 fun expandLetBindingStructuredName(structuredName: String?): List<String> {
@@ -64,6 +73,12 @@ fun expandLetBindingStructuredName(structuredName: String?): List<String> {
 private class OCamlLetBindingDeconstruction(private val psi: PsiElement, private val letBinding: OCamlLetBinding) :
     OCamlLetBindingImpl(letBinding.node) {
     override fun getNameIdentifier(): PsiElement = psi
+    override fun getName(): String? {
+        // Operators names are formatted by OCaml
+        if (psi is OCamlValueName && psi.operatorName != null) return "( ${psi.operatorName!!.text} )"
+        // Fallback to the default behavior
+        return nameIdentifier.text
+    }
     override fun isFunction(): Boolean = false
 
     // Ensure TreeAnchorizer is still working as expected:

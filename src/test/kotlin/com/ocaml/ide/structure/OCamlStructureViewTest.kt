@@ -47,6 +47,8 @@ class OCamlStructureViewTest : OCamlBasePlatformTestCase() {
     @Test
     fun test_anonymous() {
         assertEmpty(configureStructureView("A.ml", "let _ = ()"))
+        assertEmpty(configureStructureView("A.ml", "let () = ()"))
+        assertEmpty(configureStructureView("A.ml", "let (_) = ()"))
         //Not possible: "val _ : unit"
     }
 

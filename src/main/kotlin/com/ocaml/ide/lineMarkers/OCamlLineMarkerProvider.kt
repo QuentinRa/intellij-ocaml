@@ -102,7 +102,7 @@ class OCamlLineMarkerProvider : RelatedItemLineMarkerProvider() {
             element.computeValueNames().forEachIndexed { index, it ->
                 processQualifiedName<OCamlValueDescription>(
                     qualifiedNames[index],
-                    it,
+                    it.toLeaf(),
                     "let/val",
                     false,
                     project,
