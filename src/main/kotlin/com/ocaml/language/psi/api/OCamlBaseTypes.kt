@@ -12,3 +12,5 @@ class OCamlElementType(debugName: String) : IElementType(debugName, OCamlLanguag
         return OCamlTypes.Factory.createElement(this)
     }
 }
+
+class OCamlTokenType(debugName: String) : IElementType(debugName, OCamlLanguage)
