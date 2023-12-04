@@ -54,7 +54,7 @@ class PresentationHandlerTests : OCamlBasePlatformTestCase() {
         assertEquals(expectedName, presentation.presentableText)
         assertNull(presentation.locationString)
         assertNotNull(icon)
-        val iconList = icon?.allIconsStable()?.asList()
+        val iconList = icon?.allIconsStable()
         assertNotNull(iconList)
         assertSize(2, iconList!!)
         return iconList
