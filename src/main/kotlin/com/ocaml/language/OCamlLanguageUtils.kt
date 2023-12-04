@@ -1,6 +1,7 @@
 package com.ocaml.language
 
 import com.intellij.openapi.util.io.FileUtilRt
+import com.ocaml.language.psi.OCamlOperatorName
 import java.util.*
 
 // todo: add tests
@@ -14,4 +15,6 @@ object OCamlLanguageUtils {
             ) else it.toString()
         }
     }
+
+    fun OCamlOperatorName.pretty() : String  = "( $text )"
 }

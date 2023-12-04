@@ -9,6 +9,7 @@ import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.PlatformIcons
 import com.ocaml.icons.OCamlIcons
+import com.ocaml.language.OCamlLanguageUtils.pretty
 import com.ocaml.language.psi.OCamlLetBinding
 import com.ocaml.language.psi.OCamlValueName
 import com.ocaml.language.psi.api.OCamlStubbedNamedElementImpl
@@ -21,15 +22,21 @@ abstract class OCamlLetBindingMixin : OCamlStubbedNamedElementImpl<OCamlLetBindi
     constructor(node: ASTNode) : super(node)
     constructor(stub: OCamlLetBindingStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getNameIdentifier(): PsiElement? = valueName?.lowercaseIdent?.firstChild ?: valueName
+    override fun getNameIdentifier(): PsiElement? {
+        val name = valueName?.lowercaseIdent?.firstChild ?: valueName
+        return if ((name as? LeafPsiElement)?.isAnonymous() == true)
+            null
+        else
+            name
+    }
 
     override fun getName(): String? {
         // Operators names are formatted by OCaml
-        if (valueName?.operatorName != null) return "( ${valueName!!.operatorName!!.text} )"
+        if (valueName?.operatorName != null) return valueName!!.operatorName!!.pretty()
         // Handle pattern variables
         if (valueName == null) return computeValueNames().joinToString(",") {
             // Operators names are formatted by OCaml
-            if (it is OCamlValueName && it.operatorName != null) "( ${it.operatorName!!.text} )"
+            if (it is OCamlValueName && it.operatorName != null) it.operatorName!!.pretty()
             else it.text
         }
         // Fallback to the default behavior
@@ -70,22 +77,6 @@ fun expandLetBindingStructuredName(structuredName: String?): List<String> {
     return parts.map { part -> "$prefix.$part" }
 }
 
-private class OCamlLetBindingDeconstruction(private val psi: PsiElement, private val letBinding: OCamlLetBinding) :
-    OCamlLetBindingImpl(letBinding.node) {
-    override fun getNameIdentifier(): PsiElement = psi
-    override fun getName(): String? {
-        // Operators names are formatted by OCaml
-        if (psi is OCamlValueName && psi.operatorName != null) return "( ${psi.operatorName!!.text} )"
-        // Fallback to the default behavior
-        return nameIdentifier.text
-    }
-    override fun isFunction(): Boolean = false
-
-    // Ensure TreeAnchorizer is still working as expected:
-    override fun equals(other: Any?): Boolean = letBinding == other
-    override fun hashCode(): Int = letBinding.hashCode()
-}
-
 fun handleStructuredLetBinding(letBinding: OCamlLetBinding): List<PsiElement> {
     if (letBinding.nameIdentifier == null) {
         // we are expanding children variable names
@@ -96,4 +87,20 @@ fun handleStructuredLetBinding(letBinding: OCamlLetBinding): List<PsiElement> {
         return listOf()
     }
     return listOf(letBinding)
+}
+
+private class OCamlLetBindingDeconstruction(private val psi: PsiElement, private val letBinding: OCamlLetBinding) :
+    OCamlLetBindingImpl(letBinding.node) {
+    override fun getNameIdentifier(): PsiElement = psi
+    override fun getName(): String? {
+        // Operators names are formatted by OCaml
+        if (psi is OCamlValueName && psi.operatorName != null) return psi.operatorName!!.pretty()
+        // Fallback to the default behavior
+        return nameIdentifier.text
+    }
+    override fun isFunction(): Boolean = false
+
+    // Ensure TreeAnchorizer is still working as expected:
+    override fun equals(other: Any?): Boolean = letBinding == other
+    override fun hashCode(): Int = letBinding.hashCode()
 }

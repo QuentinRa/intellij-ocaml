@@ -48,6 +48,7 @@ abstract class OCamlStubbedNamedElementImpl<StubT> : OCamlStubbedElementImpl<Stu
         val stub = greenStub
         return if (stub !== null)
             stub.qualifiedName
+        else if (name == null) null
         else {
             val ancestor = PsiTreeUtil.getParentOfType(this, OCamlQualifiedNamedElement::class.java)
             return if (ancestor == null) name
