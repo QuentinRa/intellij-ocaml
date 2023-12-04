@@ -12,5 +12,5 @@ interface OCamlLetDeclaration {
     fun isGlobal() : Boolean
 }
 
-fun OCamlNamedElement.isAnonymous() : Boolean = name == "_"
+fun OCamlNamedElement.isAnonymous() : Boolean = name == null || name == "_"
 fun LeafPsiElement.isAnonymous() : Boolean = text == "_"

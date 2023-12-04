@@ -29,4 +29,28 @@ class OCamlLineMarkerProviderTest : OCamlBasePlatformTestCase() {
         mlMarkers.forEach { assertEquals(OCamlIcons.Gutter.IMPLEMENTING, it.icon) }
         mliMarkers.forEach { assertEquals(OCamlIcons.Gutter.IMPLEMENTED, it.icon) }
     }
+
+    @Test
+    fun testPatternMarkers() {
+        val ml = myFixture.configureByText("A.ml", "let (x,y) = ()")
+        val mli = myFixture.configureByText("A.mli", "val x : unit;;val y: unit")
+        val mlMarkers = OCamlLineMarkerProvider().collectNavigationMarkersForTest(ml)
+        val mliMarkers = OCamlLineMarkerProvider().collectNavigationMarkersForTest(mli)
+        assertSize(2, mlMarkers)
+        assertSize(2, mliMarkers)
+        mlMarkers.forEach { assertEquals(OCamlIcons.Gutter.IMPLEMENTING, it.icon) }
+        mliMarkers.forEach { assertEquals(OCamlIcons.Gutter.IMPLEMENTED, it.icon) }
+    }
+
+    @Test
+    fun testOperatorsMarkers() {
+        val ml = myFixture.configureByText("A.ml", "let ((+),_) = ();;let (-) = ();;")
+        val mli = myFixture.configureByText("A.mli", "val ( + ) : unit;;val ( -): unit")
+        val mlMarkers = OCamlLineMarkerProvider().collectNavigationMarkersForTest(ml)
+        val mliMarkers = OCamlLineMarkerProvider().collectNavigationMarkersForTest(mli)
+        assertSize(2, mlMarkers)
+        assertSize(2, mliMarkers)
+        mlMarkers.forEach { assertEquals(OCamlIcons.Gutter.IMPLEMENTING, it.icon) }
+        mliMarkers.forEach { assertEquals(OCamlIcons.Gutter.IMPLEMENTED, it.icon) }
+    }
 }

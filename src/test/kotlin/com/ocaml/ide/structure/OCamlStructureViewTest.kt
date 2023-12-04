@@ -98,5 +98,10 @@ class OCamlStructureViewTest : OCamlBasePlatformTestCase() {
             "let ((a,b),c) = ()",
             FakeTreeElement("a"), FakeTreeElement("b"), FakeTreeElement("c")
         )
+
+        assertStructureTree("A.ml",
+            "let (((+),(-)),_, (a)) = ()",
+            FakeTreeElement("( + )"), FakeTreeElement("( - )"), FakeTreeElement("a")
+        )
     }
 }

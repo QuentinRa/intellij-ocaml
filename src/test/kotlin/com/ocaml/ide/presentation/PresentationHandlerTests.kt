@@ -15,8 +15,11 @@ class PresentationHandlerTests : OCamlBasePlatformTestCase() {
 
     private var simpleVariableAssignation : OCamlLetBinding? = null
     private var simpleFunctionAssignation : OCamlLetBinding? = null
+    private var simpleOperatorAssignation : OCamlLetBinding? = null
+
     private var simpleVariableDeclaration : OCamlValueDescription? = null
     private var simpleFunctionDeclaration : OCamlValueDescription? = null
+    private var simpleOperatorDeclaration : OCamlValueDescription? = null
 
     override fun setUp() {
         super.setUp()
@@ -24,28 +27,34 @@ class PresentationHandlerTests : OCamlBasePlatformTestCase() {
             """
                let x = 5 
                let f a b = () 
+               let (+) a b = () 
             """
         )
         simpleVariableAssignation = ocamlElements[0] as? OCamlLetBinding
         simpleFunctionAssignation = ocamlElements[1] as? OCamlLetBinding
+        simpleOperatorAssignation = ocamlElements[2] as? OCamlLetBinding
 
         val ocamlInterfaceElements = configureOCamlInterface<OCamlNamedElement>(
             """
                val x : int 
                val f : int -> int -> int 
+               val ( + ) : int -> int -> int 
             """
         )
         simpleVariableDeclaration = ocamlInterfaceElements[0] as? OCamlValueDescription
         simpleFunctionDeclaration = ocamlInterfaceElements[1] as? OCamlValueDescription
+        simpleOperatorDeclaration = ocamlInterfaceElements[2] as? OCamlValueDescription
     }
 
     override fun tearDown() {
         super.tearDown()
         simpleVariableAssignation = null
         simpleFunctionAssignation = null
+        simpleOperatorAssignation = null
 
         simpleVariableDeclaration = null
         simpleFunctionDeclaration = null
+        simpleOperatorDeclaration = null
     }
 
     private fun testPresentationForStructure(e: PsiElement, expectedName: String): List<Icon> {
@@ -71,6 +80,10 @@ class PresentationHandlerTests : OCamlBasePlatformTestCase() {
         assertEquals(OCamlIcons.Nodes.FUNCTION, funAssignationIcons[0])
         assertEquals(PlatformIcons.PUBLIC_ICON, funAssignationIcons[1])
 
+        val opAssignationIcons = testPresentationForStructure(simpleOperatorAssignation!!, "( + )")
+        assertEquals(OCamlIcons.Nodes.FUNCTION, opAssignationIcons[0])
+        assertEquals(PlatformIcons.PUBLIC_ICON, opAssignationIcons[1])
+
         // declarations
         val varDeclarationIcons = testPresentationForStructure(simpleVariableDeclaration!!, "x")
         assertEquals(OCamlIcons.Nodes.VARIABLE, varDeclarationIcons[0])
@@ -79,5 +92,9 @@ class PresentationHandlerTests : OCamlBasePlatformTestCase() {
         val funDeclarationIcons = testPresentationForStructure(simpleFunctionDeclaration!!, "f")
         assertEquals(OCamlIcons.Nodes.FUNCTION, funDeclarationIcons[0])
         assertEquals(PlatformIcons.PUBLIC_ICON, funDeclarationIcons[1])
+
+        val opDeclarationIcons = testPresentationForStructure(simpleOperatorDeclaration!!, "( + )")
+        assertEquals(OCamlIcons.Nodes.FUNCTION, opDeclarationIcons[0])
+        assertEquals(PlatformIcons.PUBLIC_ICON, opDeclarationIcons[1])
     }
 }
