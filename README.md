@@ -103,6 +103,7 @@ Dune
     * Line Markers?
   * Modules (files but not just files) indexes
   * Dune file references?
+  * [Doc](https://plugins.jetbrains.com/docs/intellij/references-and-resolve.html)
 * Check Documentation
 * Modules (files but not just files) indexes
 * Add function parameters in annotator

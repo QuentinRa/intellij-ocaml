@@ -34,7 +34,7 @@ private items ::= list | COMMENT | WHITE_SPACE
 list ::= LPAREN [WHITE_SPACE] [value { WHITE_SPACE argument }*] [WHITE_SPACE] RPAREN
 {
     pin=1
-    implements="com.dune.language.psi.api.DuneNamedOwnerElement"
+    implements=["com.dune.language.psi.api.DuneNamedOwnerElement"]
     extends="com.dune.language.psi.ext.DuneNamedOwnerElementImpl"
 }
 
@@ -49,7 +49,7 @@ atom ::= named_atom | expr_atom
 
 named_atom ::= ATOM_VALUE_ID
 {
-    implements="com.dune.language.psi.api.DuneNamedElement"
+    implements=["com.dune.language.psi.api.DuneNamedElement"]
     extends="com.dune.language.psi.ext.DuneNamedElementImpl"
 }
 

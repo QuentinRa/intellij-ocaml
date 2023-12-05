@@ -1,8 +1,6 @@
 package com.dune.language.psi.ext
 
-import com.dune.language.psi.DunePsiFactory
-import com.dune.language.psi.DuneTypes
-import com.dune.language.psi.DuneValue
+import com.dune.language.psi.*
 import com.dune.language.psi.api.DuneElementImpl
 import com.dune.language.psi.api.DuneNamedElement
 import com.dune.language.psi.api.DuneNamedOwnerElement
@@ -22,11 +20,9 @@ open class DuneNamedElementImpl(type: IElementType) : DuneElementImpl(type), Dun
 // Base class for DuneNamedOwnerElement elements
 open class DuneNamedOwnerElementImpl(type: IElementType) : DuneElementImpl(type), DuneNamedOwnerElement {
     override fun getName(): String? = (nameIdentifier as? DuneNamedElement)?.name
-
     override fun setName(name: String): PsiElement? {
         return (nameIdentifier as? DuneNamedElement)?.setName(name)
     }
-
     override fun getNameIdentifier(): PsiElement?
         = PsiTreeUtil.getChildOfType(this, DuneValue::class.java)?.atom?.namedAtom
 }
